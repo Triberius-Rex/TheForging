@@ -1,0 +1,10 @@
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.csproj.AssemblyReference.cache
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.csproj.SuggestedBindingRedirects.cache
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.GeneratedMSBuildEditorConfig.editorconfig
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.csproj.CoreCompileInputs.cache
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.csproj.CopyComplete
+/home/gcron7703/ServUO/ServUO.exe.config
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.exe
+/home/gcron7703/ServUO/Application/obj/Debug/ServUO.pdb
+/home/gcron7703/ServUO/ServUO.exe
+/home/gcron7703/ServUO/ServUO.pdb
