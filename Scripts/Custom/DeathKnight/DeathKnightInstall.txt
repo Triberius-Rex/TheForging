@@ -1,0 +1,6 @@
+Installation instructions.
+
+Drop the DeathKnight Folder in a Custom Folder or in your Scripts Folder.  Merge the Distro Files with your own.  Restart your server.  Find a location for your new Champion Spawn or let it fall through the Randomized cycle of Felucca T2A Champion Spawns.  If adding a New platform Remember to raise it's Z axis by 20 so the platform shows and set it to the HorrorofKrynn spawn. 
+Use 
+[add LordSoth to add the DeathKnight
+[add UndeadKnight if you just want to add the Undead Knights.

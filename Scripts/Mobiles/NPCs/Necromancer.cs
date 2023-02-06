@@ -1,0 +1,64 @@
+using System.Collections.Generic;
+using Server.Items;
+
+namespace Server.Mobiles
+{
+    public class Necromancer : BaseVendor
+    {
+        private readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
+        [Constructable]
+        public Necromancer()
+            : base("the Necromancer")
+        {
+            SetSkill(SkillName.EvalInt, 80.0, 100.0);
+            SetSkill(SkillName.Inscribe, 80.0, 100.0);
+            SetSkill(SkillName.Necromancy, 80.0, 100.0);
+            SetSkill(SkillName.Meditation, 80.0, 100.0);
+            SetSkill(SkillName.MagicResist, 80.0, 100.0);
+
+            Hue = 0x3C6;
+        }
+
+        public Necromancer(Serial serial)
+            : base(serial)
+        {
+        }
+
+        protected override List<SBInfo> SBInfos => m_SBInfos;
+
+        public override void InitSBInfo()
+        {
+            m_SBInfos.Add(new SBNecromancer());
+        }
+
+
+        public override void InitOutfit()
+        {
+            base.InitOutfit();
+            SetWearable(new Shoes(), 0x151, 1);
+            SetWearable(new Robe(), 0x455, 1);
+			SetWearable(new FancyShirt(), 0x455, 1);
+
+            Item hair = new Item(Utility.RandomList(0x203B, 0x2049, 0x2048, 0x204A))
+            {
+                Layer = Layer.Hair
+            };
+            SetWearable(hair, 0x3c6);
+			FacialHairItemID = 0;
+		}
+
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.Write(0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadInt();
+        }
+    }
+}

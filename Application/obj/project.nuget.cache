@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "hQEvDXQYep7aeFKibsM8bg/wk4dfvpztoNK91cbIa0EzbS/adSXzpYonQmaBCy2K9TpjnqrwNNNTORLbtq2FOA==",
+  "success": true,
+  "projectFilePath": "/home/gcron7703/ServUO/Application/ServUO.csproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.2/microsoft.netframework.referenceassemblies.1.0.2.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.2/microsoft.netframework.referenceassemblies.net48.1.0.2.nupkg.sha512",
+    "/root/.nuget/packages/system.drawing.common/4.7.0/system.drawing.common.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}
