@@ -8,7 +8,7 @@
 ////  A_Li_N from RunUO for suggesting using a DateTime Method instead of a timer         ////  
 ////  Updated on 11/16/2008 to include new Abilities and Updates for RunUO 2.0 SVN 301    ////
 ////  Damage and Armor Rating calcuations,  Additional Loot Drops added.                  //// 
-////  Converted to a more UO Themed Champion Spawn "The Fall of Dupre"                    ////
+////  Converted to a more UO Themed Champion Spawn "The Fall of Dupre" for ServUO         ////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,9 +86,9 @@ namespace Server.Mobiles
             SetResistance(ResistanceType.Poison, 60, 70);
             SetResistance(ResistanceType.Energy, 60, 70);
             
-	    SetSkill( SkillName.Parry, 150.0 );
-	    SetSkill( SkillName.Swords, 150.0 );
-	    SetSkill( SkillName.Tactics, 150.0 );
+	        SetSkill( SkillName.Parry, 150.0 );
+	        SetSkill( SkillName.Swords, 150.0 );
+	        SetSkill( SkillName.Tactics, 150.0 );
             SetSkill( SkillName.Anatomy, 150.0 );
             SetSkill( SkillName.Magery, 150.0);
             SetSkill( SkillName.SpiritSpeak, 150.0);
