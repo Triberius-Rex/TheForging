@@ -294,7 +294,7 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (Hits < 250 && DateTime.Now >= m_NextPowerWordKillTime)            
+            if (Hits < 5000 && DateTime.Now >= m_NextPowerWordKillTime)            
                 PowerWordKill();
                 
            
@@ -302,7 +302,7 @@ namespace Server.Mobiles
 
         public void DoSpecialAbility(Mobile target)
         {
-            if (Hits < 500 ) 
+            if (Hits < 10000 ) 
                 SpawnUndeadArmy(target);
          
         }
