@@ -9,6 +9,8 @@
 [![GitHub](https://img.shields.io/github/license/servuo/servuo.svg?color=a)](https://github.com/ServUO/ServUO/blob/master/LICENSE)
 
 
+The Forging GIT is a the codebase for much of The Forging Server.  This allows collabrative work, and a backup codebase in the event of a catastrophic failure of the hardware the server is running on.  
+
 [ServUO] is a community driven Ultima Online Server Emulator written in C#.
 
 
