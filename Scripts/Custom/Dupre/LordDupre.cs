@@ -222,11 +222,10 @@ namespace Server.Mobiles
 
             foreach (Mobile m in list)
             {
-                m.SendMessage("Dupre's corruption of the vitures has granted him a remarkable power over death, the ability to kill with a single word.....too bad you were listening!"); 
+                m.SendMessage("Dupre's corruption of the vitures has granted him a remarkable power over death, the ability to kill with a single word.....too bad you were listening!");
+                Thread.Sleep(2000); 
                 DoHarmful(m);                
-                m.FixedParticles(0x36CB, 1, 9, 9911, 67, 5, EffectLayer.Head);
-                int toPowerWordKill = Utility.RandomMinMax(50000, 60000);
-                m.Damage(toPowerWordKill, this);
+                
             }
             NextPowerWordKillTime = DateTime.Now + TimeSpan.FromMinutes(15.0);
         }
@@ -289,12 +288,14 @@ namespace Server.Mobiles
                     skeleton.MoveToWorld(loc, map);
                     skeleton.Combatant = target;
                 }
-            }
+            }m.FixedParticles(0x36CB, 1, 9, 9911, 67, 5, EffectLayer.Head);
+                int toPowerWordKill = Utility.RandomMinMax(50000, 60000);
+                m.Damage(toPowerWordKill, this);
         }
 
         public override void OnThink()
         {
-            if (Hits < 250 && DateTime.Now >= m_NextPowerWordKillTime)            
+            if (Hits < 5000 && DateTime.Now >= m_NextPowerWordKillTime)            
                 PowerWordKill();
                 
            
@@ -302,7 +303,7 @@ namespace Server.Mobiles
 
         public void DoSpecialAbility(Mobile target)
         {
-            if (Hits < 500 ) 
+            if (Hits < 10000 ) 
                 SpawnUndeadArmy(target);
          
         }
