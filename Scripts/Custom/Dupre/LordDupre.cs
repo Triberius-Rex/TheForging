@@ -224,9 +224,7 @@ namespace Server.Mobiles
             {
                 m.SendMessage("Dupre's corruption of the vitures has granted him a remarkable power over death, the ability to kill with a single word.....too bad you were listening!"); 
                 DoHarmful(m);                
-                m.FixedParticles(0x36CB, 1, 9, 9911, 67, 5, EffectLayer.Head);
-                int toPowerWordKill = Utility.RandomMinMax(50000, 60000);
-                m.Damage(toPowerWordKill, this);
+                
             }
             NextPowerWordKillTime = DateTime.Now + TimeSpan.FromMinutes(15.0);
         }
@@ -289,7 +287,10 @@ namespace Server.Mobiles
                     skeleton.MoveToWorld(loc, map);
                     skeleton.Combatant = target;
                 }
-            }
+            }m.FixedParticles(0x36CB, 1, 9, 9911, 67, 5, EffectLayer.Head);
+                int toPowerWordKill = Utility.RandomMinMax(50000, 60000);
+                await Task.Delay(2000);
+                m.Damage(toPowerWordKill, this);
         }
 
         public override void OnThink()
