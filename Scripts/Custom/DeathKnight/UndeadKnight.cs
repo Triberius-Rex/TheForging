@@ -49,7 +49,7 @@ namespace Server.Mobiles
             AddItem(new HoodedShroudOfShadows());
            
 
-            new Nightmare().Rider = this;
+            new DreadWarhorse().Rider = this;
 
 			switch ( Utility.Random( 6 ) )
 			{
