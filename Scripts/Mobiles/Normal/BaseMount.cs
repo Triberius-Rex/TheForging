@@ -1,8 +1,9 @@
-using Server.Items;
-using Server.Multis;
-using Server.Network;
 using System;
+
+using Server.Items;
+using Server.Network;
 using System.Collections.Generic;
+using Server.Multis;
 
 namespace Server.Mobiles
 {
@@ -19,7 +20,7 @@ namespace Server.Mobiles
 
     public abstract class BaseMount : BaseCreature, IMount
     {
-        private static readonly Dictionary<Mobile, BlockEntry> m_Table = new Dictionary<Mobile, BlockEntry>();
+        private static Dictionary<Mobile, BlockEntry> m_Table = new Dictionary<Mobile, BlockEntry>();
         private Mobile m_Rider;
 
         public BaseMount(string name, int bodyID, int itemID, AIType aiType, FightMode fightMode, int rangePerception, int rangeFight, double activeSpeed, double passiveSpeed)
@@ -36,14 +37,32 @@ namespace Server.Mobiles
         {
         }
 
-        public virtual TimeSpan MountAbilityDelay => TimeSpan.Zero;
+        public virtual TimeSpan MountAbilityDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextMountAbility { get; set; }
 
-        public virtual bool AllowMaleRider => true;
+        public virtual bool AllowMaleRider
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-        public virtual bool AllowFemaleRider => true;
+        public virtual bool AllowFemaleRider
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         [Hue, CommandProperty(AccessLevel.GameMaster)]
         public override int Hue
@@ -166,7 +185,7 @@ namespace Server.Mobiles
 
         public static void Dismount(Mobile dismounter, Mobile dismounted, BlockMountType blockmounttype, TimeSpan delay, bool message)
         {
-            if (!dismounted.Mounted && !Spells.Ninjitsu.AnimalForm.UnderTransformation(dismounted) && !dismounted.Flying)
+            if (!dismounted.Mounted && !Server.Spells.Ninjitsu.AnimalForm.UnderTransformation(dismounted) && !dismounted.Flying)
                 return;
 
             if (dismounted is ChaosDragoonElite)
@@ -183,7 +202,7 @@ namespace Server.Mobiles
                 if (message)
                     dismounted.SendLocalizedMessage(1040023); // You have been knocked off of your mount!
             }
-            else if (Spells.Ninjitsu.AnimalForm.UnderTransformation(dismounted))
+            else if (Core.ML && Spells.Ninjitsu.AnimalForm.UnderTransformation(dismounted))
             {
                 Spells.Ninjitsu.AnimalForm.RemoveContext(dismounted, true);
             }
@@ -210,7 +229,7 @@ namespace Server.Mobiles
 
         public static void SetMountPrevention(Mobile mob, BlockMountType type, TimeSpan duration)
         {
-            SetMountPrevention(mob, null, type, duration);
+            SetMountPrevention(mob, null, type, duration);   
         }
 
         public static void SetMountPrevention(Mobile mob, IMount mount, BlockMountType type, TimeSpan duration)
@@ -266,7 +285,7 @@ namespace Server.Mobiles
                 return BlockMountType.None;
             }
 
-            if (entry.m_Type >= BlockMountType.RidingSwipe && entry.m_Expiration > DateTime.UtcNow)
+            if (Core.TOL && entry.m_Type >= BlockMountType.RidingSwipe && entry.m_Expiration > DateTime.UtcNow)
             {
                 return BlockMountType.DismountRecovery;
             }
@@ -334,7 +353,7 @@ namespace Server.Mobiles
 
         public static void ExpireMountPrevention(Mobile m)
         {
-            if (m_Table.ContainsKey(m))
+            if(m_Table.ContainsKey(m))
                 m_Table.Remove(m);
 
             BuffInfo.RemoveBuff(m, BuffIcon.DismountPrevention);
@@ -344,7 +363,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(NextMountAbility);
 
@@ -380,11 +399,11 @@ namespace Server.Mobiles
         {
             base.OnDeath(c);
 
-            Mobile owner = GetMaster();
+            var owner = GetMaster();
 
             if (owner != null && m_Table.ContainsKey(owner))
             {
-                BlockEntry entry = m_Table[owner];
+                var entry = m_Table[owner];
 
                 if (entry.m_Type >= BlockMountType.RidingSwipe && entry.m_Mount == this)
                 {
@@ -399,7 +418,7 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -431,7 +450,10 @@ namespace Server.Mobiles
 
             if (from.IsBodyMod && !from.Body.IsHuman)
             {
-                PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1062061, from.NetState);
+                if (Core.AOS) // You cannot ride a mount in your current form.
+                    PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 1062061, from.NetState);
+                else
+                    from.SendLocalizedMessage(1061628); // You can't do that while polymorphed.
 
                 return;
             }
@@ -463,7 +485,7 @@ namespace Server.Mobiles
                 return;
             }
 
-            if (!DesignContext.Check(from))
+            if (!Multis.DesignContext.Check(from))
                 return;
 
             if (from.HasTrade)
@@ -481,19 +503,19 @@ namespace Server.Mobiles
                 if (canAccess)
                 {
                     if (Poisoned)
-                        PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1049692, from.NetState); // This mount is too ill to ride.
+                        PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 1049692, from.NetState); // This mount is too ill to ride.
                     else
                         Rider = from;
                 }
                 else if (!Controlled && !Summoned)
                 {
                     // That mount does not look broken! You would have to tame it to ride it.
-                    PrivateOverheadMessage(MessageType.Regular, 0x3B2, 501263, from.NetState);
+                    PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 501263, from.NetState);
                 }
                 else
                 {
                     // This isn't your mount; it refuses to let you ride.
-                    PrivateOverheadMessage(MessageType.Regular, 0x3B2, 501264, from.NetState);
+                    PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 501264, from.NetState);
                 }
             }
             else
@@ -549,7 +571,7 @@ namespace Server.Mobiles
             {
                 if (m_Type >= BlockMountType.RidingSwipe)
                 {
-                    if (DateTime.UtcNow < m_Expiration)
+                    if (Core.SA && DateTime.UtcNow < m_Expiration)
                     {
                         return false;
                     }
@@ -565,23 +587,23 @@ namespace Server.Mobiles
                             default:
                             case BlockMountType.RidingSwipe:
                                 {
-                                    if (m_Mount is Mobile && ((Mobile)m_Mount).Hits >= ((Mobile)m_Mount).HitsMax)
+                                    if ((!Core.SA && m_Mount == null) || m_Mount is Mobile && ((Mobile)m_Mount).Hits >= ((Mobile)m_Mount).HitsMax)
                                     {
-                                        ExpireMountPrevention(m_Mobile);
+                                        BaseMount.ExpireMountPrevention(m_Mobile);
                                         return true;
                                     }
                                 }
                                 break;
                             case BlockMountType.RidingSwipeEthereal:
                                 {
-                                    ExpireMountPrevention(m_Mobile);
+                                    BaseMount.ExpireMountPrevention(m_Mobile);
                                     return true;
                                 }
                             case BlockMountType.RidingSwipeFlying:
                                 {
                                     if (m_Mobile.Hits >= m_Mobile.HitsMax)
                                     {
-                                        ExpireMountPrevention(m_Mobile);
+                                        BaseMount.ExpireMountPrevention(m_Mobile);
                                         return true;
                                     }
                                 }
@@ -594,7 +616,7 @@ namespace Server.Mobiles
 
                 if (DateTime.UtcNow >= m_Expiration)
                 {
-                    ExpireMountPrevention(m_Mobile);
+                    BaseMount.ExpireMountPrevention(m_Mobile);
                     return true;
                 }
 
@@ -620,8 +642,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override double DefaultWeight => 0;
-        public IMount Mount => m_Mount;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public IMount Mount
+        {
+            get
+            {
+                return m_Mount;
+            }
+        }
         public override void OnAfterDelete()
         {
             if (m_Mount != null)
@@ -644,7 +678,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_Mount);
         }
@@ -655,7 +689,7 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {

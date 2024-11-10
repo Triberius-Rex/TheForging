@@ -1,9 +1,11 @@
 #region References
-using Server.Engines.Quests;
+using System;
+
+using Server.Engines.XmlSpawner2;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
+using Server.Engines.Quests;
 #endregion
 
 namespace Server.SkillHandlers
@@ -45,7 +47,7 @@ namespace Server.SkillHandlers
             {
                 from.RevealingAction();
 
-                if (targeted is BaseCreature && from.CanBeHarmful((Mobile)targeted, true, false, true))
+                if (targeted is BaseCreature && from.CanBeHarmful((Mobile)targeted, true))
                 {
                     BaseCreature creature = (BaseCreature)targeted;
 
@@ -137,7 +139,7 @@ namespace Server.SkillHandlers
                             diff -= (music - 100.0) * 0.5;
                         }
 
-                        if (questTargets || (from.CanBeHarmful(m_Creature, true, false, true) && from.CanBeHarmful(target, true, false, true)))
+                        if (questTargets || (from.CanBeHarmful(m_Creature, true) && from.CanBeHarmful(target, true)))
                         {
                             if (from.Player && !BaseInstrument.CheckMusicianship(from))
                             {
@@ -148,6 +150,8 @@ namespace Server.SkillHandlers
                             }
                             else
                             {
+                                //from.DoHarmful( m_Creature );
+                                //from.DoHarmful( creature );
                                 if (!from.CheckTargetSkill(SkillName.Provocation, target, diff - 25.0, diff + 25.0))
                                 {
                                     from.NextSkillTime = Core.TickCount + (10000 - ((masteryBonus / 5) * 1000));
@@ -206,8 +210,10 @@ namespace Server.SkillHandlers
 
                     return false;
                 }
-
-                return false;
+                else
+                {
+                    return false;
+                }
             }
         }
     }

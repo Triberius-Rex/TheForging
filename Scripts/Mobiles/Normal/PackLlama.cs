@@ -1,6 +1,7 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Items;
-using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
@@ -9,7 +10,7 @@ namespace Server.Mobiles
     {
         [Constructable]
         public PackLlama()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a pack llama";
             Body = 292;
@@ -40,17 +41,39 @@ namespace Server.Mobiles
             Fame = 0;
             Karma = 200;
 
+            VirtualArmor = 16;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 29.1;
 
-			SetWearable(new StrongBackpack());
+            Container pack = Backpack;
+
+            if (pack != null)
+                pack.Delete();
+
+            pack = new StrongBackpack();
+            pack.Movable = false;
+
+            AddItem(pack);
         }
 
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+            }
+        }
 
-        public override bool CanAutoStable => (Backpack == null || Backpack.Items.Count == 0) && base.CanAutoStable;
+        public override bool CanAutoStable { get { return (Backpack == null || Backpack.Items.Count == 0) && base.CanAutoStable; } }
 
         public PackLlama(Serial serial)
             : base(serial)
@@ -58,6 +81,16 @@ namespace Server.Mobiles
         }
 
         #region Pack Animal Methods
+        public override bool OnBeforeDeath()
+        {
+            if (!base.OnBeforeDeath())
+                return false;
+
+            PackAnimal.CombineBackpacks(this);
+
+            return true;
+        }
+
         public override DeathMoveResult GetInventoryMoveResultFor(Item item)
         {
             return DeathMoveResult.MoveToCorpse;
@@ -113,7 +146,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

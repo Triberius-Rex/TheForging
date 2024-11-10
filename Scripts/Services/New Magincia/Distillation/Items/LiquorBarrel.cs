@@ -1,6 +1,8 @@
-using Server.Engines.Craft;
-using Server.Engines.Distillation;
+using Server;
 using System;
+using Server.Engines.Distillation;
+using Server.Mobiles;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
@@ -23,7 +25,7 @@ namespace Server.Items
         public DateTime MaturationBegin { get { return m_MaturationBegin; } set { m_MaturationBegin = value; InvalidateProperties(); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public TimeSpan MutrationDuration => m_MaturationDuration;
+        public TimeSpan MutrationDuration { get { return m_MaturationDuration; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public string Label { get { return m_Label; } set { m_Label = value; InvalidateProperties(); } }
@@ -44,14 +46,14 @@ namespace Server.Items
         public Mobile Distiller { get { return m_Distiller; } set { m_Distiller = value; InvalidateProperties(); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual bool IsMature => m_Liquor != Liquor.None && (m_MaturationDuration == TimeSpan.MinValue || m_MaturationBegin + m_MaturationDuration < DateTime.UtcNow);
+        public virtual bool IsMature { get { return m_Liquor != Liquor.None && (m_MaturationDuration == TimeSpan.MinValue || m_MaturationBegin + m_MaturationDuration < DateTime.UtcNow); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsEmpty => m_Liquor == Liquor.None;
+        public bool IsEmpty { get { return m_Liquor == Liquor.None; } }
 
-        public override int LabelNumber => m_UsesRemaining == 0 || m_Liquor == Liquor.None ? 1150816 : 1150807;  // liquor barrel
+        public override int LabelNumber { get { return m_UsesRemaining == 0 || m_Liquor == Liquor.None ? 1150816 : 1150807; } } // liquor barrel
 
-        public override double DefaultWeight => 5.0;
+        public override double DefaultWeight { get { return 5.0; } }
 
         [Constructable]
         public LiquorBarrel()
@@ -77,8 +79,8 @@ namespace Server.Items
                     else
                     {
                         from.PlaySound(0x240);
-                        from.SendLocalizedMessage(1150815); // You have poured matured liquid into the bottle.
-                        UsesRemaining--;
+                        from.SendMessage("You pour the liquior into a bottle and place it in your backpack.");
+                        m_UsesRemaining--;
                     }
                 }
                 else
@@ -89,7 +91,7 @@ namespace Server.Items
                     {
                         TimeSpan remaining = (m_MaturationBegin + m_MaturationDuration) - DateTime.UtcNow;
                         if (remaining.TotalDays > 0)
-                            from.SendLocalizedMessage(1150814, string.Format("{0}\t{1}", remaining.Days.ToString(), remaining.Hours.ToString()));
+                            from.SendLocalizedMessage(1150814, String.Format("{0}\t{1}", remaining.Days.ToString(), remaining.Hours.ToString()));
                         else
                             from.SendLocalizedMessage(1150813, remaining.TotalHours.ToString());
                     }
@@ -117,11 +119,11 @@ namespace Server.Items
                 int cliloc = IsMature ? 1150804 : 1150812;  // maturing: ~1_NAME~ / // matured: ~1_NAME~
 
                 if (m_Label == null)
-                    list.Add(cliloc, string.Format("#{0}", DistillationSystem.GetLabel(m_Liquor, m_IsStrong)));
+                    list.Add(cliloc, String.Format("#{0}", DistillationSystem.GetLabel(m_Liquor, m_IsStrong)));
                 else
                     list.Add(cliloc, m_Label);
 
-                list.Add(1150454, string.Format("#{0}", DistillationSystem.GetLabel(m_Liquor, m_IsStrong))); // Liquor Type: ~1_TYPE~
+                list.Add(1150454, String.Format("#{0}", DistillationSystem.GetLabel(m_Liquor, m_IsStrong))); // Liquor Type: ~1_TYPE~
 
                 if (m_Distiller != null)
                     list.Add(1150679, m_Distiller.Name); // Distiller: ~1_NAME~
@@ -180,7 +182,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write((int)m_Liquor);
             writer.Write(m_MaturationBegin);

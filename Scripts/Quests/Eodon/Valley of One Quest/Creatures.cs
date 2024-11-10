@@ -1,7 +1,8 @@
-using Server.Engines.Quests;
-using Server.Items;
 using System;
+using Server;
+using Server.Items;
 using System.Collections.Generic;
+using Server.Engines.Quests;
 using System.Linq;
 
 namespace Server.Mobiles
@@ -52,13 +53,13 @@ namespace Server.Mobiles
             SetSpecialAbility(SpecialAbility.TailSwipe);
         }
 
-        public override bool AutoDispel => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override bool UseSmartAI => true;
-        public override bool ReacquireOnMovement => true;
-        public override bool AttacksFocus => true;
-        public override bool CanFlee => false;
-        public override int TreasureMapLevel => 7;
+        public override bool AutoDispel { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+        public override bool UseSmartAI { get { return true; } }
+        public override bool ReacquireOnMovement { get { return true; } }
+        public override bool AttacksFocus { get { return true; } }
+        public override bool CanFlee { get { return false; } }
+        public override int TreasureMapLevel { get { return 7; } }
 
         // Missing Tail Swipe Ability
 
@@ -124,7 +125,7 @@ namespace Server.Mobiles
                 z = Map.GetAverageZ(x, y);
                 Point3D p = new Point3D(x, y, z);
 
-                if (Spells.SpellHelper.AdjustField(ref p, Map, 12, false))/*Map.CanFit(x, y, z, 16, false, false, true))/*Map.CanSpawnMobile(x, y, z)*/
+                if (Server.Spells.SpellHelper.AdjustField(ref p, Map, 12, false))/*Map.CanFit(x, y, z, 16, false, false, true))/*Map.CanSpawnMobile(x, y, z)*/
                 {
                     MovementPath path = new MovementPath(this, p);
 
@@ -148,7 +149,7 @@ namespace Server.Mobiles
             for (int i = 0; i < path.Directions.Length; ++i)
             {
                 Movement.Movement.Offset(path.Directions[i], ref x, ref y);
-                IPoint3D p = new Point3D(x, y, Map.GetAverageZ(x, y));
+                IPoint3D p = new Point3D(x, y, Map.GetAverageZ(x, y)) as IPoint3D;
 
                 Timer.DelayCall(TimeSpan.FromMilliseconds(time), new TimerStateCallback(ManaDrainEffects_Callback), new object[] { p, Map });
 
@@ -162,7 +163,7 @@ namespace Server.Mobiles
             IPoint3D p = objs[0] as IPoint3D;
             Map map = objs[1] as Map;
 
-            FreezeItem item = new FreezeItem(Utility.RandomList(6913, 6915, 6917, 6919), this);
+            var item = new FreezeItem(Utility.RandomList(6913, 6915, 6917, 6919), this);
             Spells.SpellHelper.GetSurfaceTop(ref p);
 
             item.MoveToWorld(new Point3D(p), Map);
@@ -171,7 +172,7 @@ namespace Server.Mobiles
         private class FreezeItem : Item
         {
             public Item Static { get; private set; }
-            public BaseCreature Owner { get; }
+            public BaseCreature Owner { get; private set; }
 
             public FreezeItem(int id, BaseCreature owner)
                 : base(id)
@@ -265,7 +266,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -284,7 +285,7 @@ namespace Server.Mobiles
 
         private int _LastTeleport;
 
-        private readonly Point3D[] _TeleList =
+        private Point3D[] _TeleList =
         {
             new Point3D(874, 1439, 0),
             new Point3D(847, 1425, 0),
@@ -303,13 +304,13 @@ namespace Server.Mobiles
             new Point3D(869, 1404, 20),
         };
 
-        private readonly Point3D[] _PlayerTeleList =
+        private Point3D[] _PlayerTeleList =
         {
             new Point3D(875, 1380, -20),
             new Point3D(855, 1442, -20)
         };
 
-        private readonly int[] _BarrelIDs =
+        private int[] _BarrelIDs =
         {
             3703,   4014,   5453,   7861,
             17650
@@ -360,10 +361,10 @@ namespace Server.Mobiles
             AddLoot(LootPack.SuperBoss, 2);
         }
 
-        public override bool AutoDispel => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override bool UseSmartAI => true;
-        public override int TreasureMapLevel => 7;
+        public override bool AutoDispel { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+        public override bool UseSmartAI { get { return true; } }
+        public override int TreasureMapLevel { get { return 7; } }
 
         public GreatApe(Serial serial)
             : base(serial)
@@ -381,7 +382,7 @@ namespace Server.Mobiles
             {
                 _NextSpecial = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(45, 60));
 
-                switch (Utility.Random(Teleports ? 3 : 2))
+                switch(Utility.Random(Teleports ? 3 : 2))
                 {
                     case 0:
                         IPooledEnumerable eable = Map.GetMobilesInRange(Location, 10);
@@ -534,7 +535,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write(Teleports);
         }
 
@@ -558,7 +559,7 @@ namespace Server.Mobiles
 
         [Constructable]
         public TigerCub()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a tiger cub";
             Body = 1309;
@@ -599,8 +600,8 @@ namespace Server.Mobiles
                 if (quest != null && !quest.Completed)
                     quest.Update(this);
 
-                Protector.PrivateOverheadMessage(Network.MessageType.Regular, 0x35, 1156501, Protector.NetState); // *You watch as the Tiger Cub safely returns to the Kurak Tribe*
-
+                Protector.PrivateOverheadMessage(Server.Network.MessageType.Regular, 0x35, 1156501, Protector.NetState); // *You watch as the Tiger Cub safely returns to the Kurak Tribe*
+                
                 Timer.DelayCall(TimeSpan.FromSeconds(.25), Delete);
                 Protector = null;
             }
@@ -610,16 +611,16 @@ namespace Server.Mobiles
         {
             if (from == Protector)
             {
-                PrivateOverheadMessage(Network.MessageType.Regular, 0x35, 1156500, from.NetState); // *The cub looks at you playfully. Your attack fails as you are overwhelmed by its cuteness*
+                PrivateOverheadMessage(Server.Network.MessageType.Regular, 0x35, 1156500, from.NetState); // *The cub looks at you playfully. Your attack fails as you are overwhelmed by its cuteness*
                 return 0;
             }
 
             return base.Damage(amount, from, informMount, checkfizzle);
         }
 
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.Meat | FoodType.Fish;
-        public override PackInstinct PackInstinct => PackInstinct.Feline;
+        public override int Meat { get { return 1; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat | FoodType.Fish; } }
+        public override PackInstinct PackInstinct { get { return PackInstinct.Feline; } }
 
         public TigerCub(Serial serial)
             : base(serial)
@@ -630,7 +631,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
             writer.Write(Protector);
         }
 
@@ -641,7 +642,7 @@ namespace Server.Mobiles
             int version = reader.ReadInt();
             Protector = reader.ReadMobile();
 
-            if (version == 0)
+            if(version == 0)
             {
                 ControlSlots = 1;
                 MinTameSkill = 0;
@@ -675,7 +676,7 @@ namespace Server.Mobiles
             Karma = -12000;
 
             Timer.DelayCall(TimeSpan.FromMinutes(10), Delete);
-
+            
         }
 
         public override void GenerateLoot()
@@ -692,7 +693,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -739,7 +740,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -758,7 +759,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a volcano elemental";
-            Body = 15;
+            Body = 15; 
             Hue = 2726;
 
             SetStr(446, 510);
@@ -827,7 +828,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

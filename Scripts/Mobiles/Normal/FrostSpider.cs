@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -41,9 +42,13 @@ namespace Server.Mobiles
             Fame = 775;
             Karma = -775;
 
+            VirtualArmor = 28; 
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 74.7;
+
+            PackItem(new SpidersSilk(7));
         }
 
         public FrostSpider(Serial serial)
@@ -51,19 +56,30 @@ namespace Server.Mobiles
         {
         }
 
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Arachnid;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Arachnid;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
             AddLoot(LootPack.Poor);
-            AddLoot(LootPack.LootItem<SpidersSilk>(7));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

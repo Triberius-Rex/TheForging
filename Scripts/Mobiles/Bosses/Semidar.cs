@@ -1,6 +1,7 @@
+using System;
+using System.Collections;
 using Server.Engines.CannedEvil;
 using Server.Items;
-using System;
 
 namespace Server.Mobiles
 {
@@ -42,6 +43,7 @@ namespace Server.Mobiles
             Fame = 24000;
             Karma = -24000;
 
+            VirtualArmor = 20;
             SetSpecialAbility(SpecialAbility.LifeDrain);
 
             ForceActiveSpeed = 0.3;
@@ -53,12 +55,48 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Pain;
-        public override Type[] UniqueList => new[] { typeof(GladiatorsCollar) };
-        public override Type[] SharedList => new[] { typeof(RoyalGuardSurvivalKnife), typeof(TheMostKnowledgePerson), typeof(LieutenantOfTheBritannianRoyalGuard) };
-        public override Type[] DecorativeList => new[] { typeof(LavaTile), typeof(DemonSkull) };
-        public override MonsterStatuetteType[] StatueTypes => new MonsterStatuetteType[] { };
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Pain;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(GladiatorsCollar) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[] { typeof(RoyalGuardSurvivalKnife), typeof(TheMostKnowledgePerson), typeof(LieutenantOfTheBritannianRoyalGuard) };
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[] { typeof(LavaTile), typeof(DemonSkull) };
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[] { };
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -72,10 +110,16 @@ namespace Server.Mobiles
                 reflect = true; // Always reflect if caster isn't female
         }
 
+        /*public override void AlterDamageScalarFrom(Mobile caster, ref double scalar)
+        {
+            if (caster.Body.IsMale)
+                scalar = 20; // Male bodies always reflect.. damage scaled 20x
+        }*/
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

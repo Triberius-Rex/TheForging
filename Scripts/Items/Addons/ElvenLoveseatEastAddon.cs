@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ElvenLoveseatEastAddon : BaseAddon
@@ -5,8 +7,8 @@ namespace Server.Items
         [Constructable]
         public ElvenLoveseatEastAddon()
         {
-            AddComponent(new AddonComponent(0x3089), 0, 0, 0);
-            AddComponent(new AddonComponent(0x3088), 1, 0, 0);
+            this.AddComponent(new AddonComponent(0x3089), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x3088), 1, 0, 0);
         }
 
         public ElvenLoveseatEastAddon(Serial serial)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ElvenLoveseatEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ElvenLoveseatEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -42,8 +50,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ElvenLoveseatEastAddon();
-        public override int LabelNumber => 1073372;// elven loveseat (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ElvenLoveseatEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073372;
+            }
+        }// elven loveseat (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

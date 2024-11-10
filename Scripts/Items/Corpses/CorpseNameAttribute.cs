@@ -8,9 +8,15 @@ namespace Server
         private readonly string m_Name;
         public CorpseNameAttribute(string name)
         {
-            m_Name = name;
+            this.m_Name = name;
         }
 
-        public string Name => m_Name;
+        public string Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+        }
     }
 }

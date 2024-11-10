@@ -1,5 +1,8 @@
-using Server.Mobiles;
+using System;
 using System.Collections.Generic;
+using Server;
+using Server.Items;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -17,7 +20,7 @@ namespace Server.Items
             }
         }
 
-        private static readonly Dictionary<Mobile, BladeWeaveRedirect> m_NewAttack = new Dictionary<Mobile, BladeWeaveRedirect>();
+        private static Dictionary<Mobile, BladeWeaveRedirect> m_NewAttack = new Dictionary<Mobile, BladeWeaveRedirect>();
 
         public static bool BladeWeaving(Mobile attacker, out WeaponAbility a)
         {
@@ -31,7 +34,11 @@ namespace Server.Items
             return success;
         }
 
-        public override int BaseMana => 30;
+        public Bladeweave()
+        {
+        }
+
+        public override int BaseMana { get { return 30; } }
 
         public override bool OnBeforeSwing(Mobile attacker, Mobile defender)
         {
@@ -46,8 +53,8 @@ namespace Server.Items
             }
             else
             {
-                bool canfeint = attacker.Skills[Feint.GetSecondarySkill(attacker)].Value >= Feint.GetRequiredSecondarySkill(attacker);
-                bool canblock = attacker.Skills[Block.GetSecondarySkill(attacker)].Value >= Block.GetRequiredSecondarySkill(attacker);
+                bool canfeint = attacker.Skills[WeaponAbility.Feint.GetSecondarySkill(attacker)].Value >= WeaponAbility.Feint.GetRequiredSecondarySkill(attacker);
+                bool canblock = attacker.Skills[WeaponAbility.Block.GetSecondarySkill(attacker)].Value >= WeaponAbility.Block.GetRequiredSecondarySkill(attacker);
 
                 if (canfeint && canblock)
                 {
@@ -66,31 +73,31 @@ namespace Server.Items
             switch (ran)
             {
                 case 0:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(ArmorIgnore, 1028838);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.ArmorIgnore, 1028838);
                     break;
                 case 1:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(BleedAttack, 1028839);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.BleedAttack, 1028839);
                     break;
                 case 2:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(ConcussionBlow, 1028840);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.ConcussionBlow, 1028840);
                     break;
                 case 3:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(CrushingBlow, 1028841);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.CrushingBlow, 1028841);
                     break;
                 case 4:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(DoubleStrike, 1028844);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.DoubleStrike, 1028844);
                     break;
                 case 5:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(MortalStrike, 1028846);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.MortalStrike, 1028846);
                     break;
                 case 6:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(ParalyzingBlow, 1028848);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.ParalyzingBlow, 1028848);
                     break;
                 case 7:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(Block, 1028853);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.Block, 1028853);
                     break;
                 case 8:
-                    m_NewAttack[attacker] = new BladeWeaveRedirect(Feint, 1028857);
+                    m_NewAttack[attacker] = new BladeWeaveRedirect(WeaponAbility.Feint, 1028857);
                     break;
                 default:
                     // should never happen
@@ -98,7 +105,7 @@ namespace Server.Items
             }
 
 
-            return m_NewAttack[attacker].NewAbility.OnBeforeSwing(attacker, defender);
+            return ((BladeWeaveRedirect)m_NewAttack[attacker]).NewAbility.OnBeforeSwing(attacker, defender);
         }
 
         public override bool OnBeforeDamage(Mobile attacker, Mobile defender)

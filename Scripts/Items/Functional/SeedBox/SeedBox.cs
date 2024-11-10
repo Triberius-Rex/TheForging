@@ -1,23 +1,24 @@
-using Server.ContextMenus;
-using Server.Engines.VeteranRewards;
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
-using Server.Multis;
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.Engines.VeteranRewards;
+using Server.Items;
+using Server.Gumps;
 using System.Linq;
+using Server.ContextMenus;
+using Server.Multis;
+using Server.Mobiles;
 
 namespace Server.Engines.Plants
 {
-    [Flipable(19288, 19290)]
+    [FlipableAttribute(19288, 19290)]
     public class SeedBox : Container, IRewardItem, ISecurable
     {
         public static readonly int MaxSeeds = 5000;
         public static readonly int MaxUnique = 300;
 
-        public override int DefaultMaxItems => MaxUnique;
-        public override bool DisplaysContent => false;
+        public override int DefaultMaxItems { get { return MaxUnique; } }
+        public override bool DisplaysContent { get { return false; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem { get; set; }
@@ -34,7 +35,7 @@ namespace Server.Engines.Plants
             {
                 int count = 0;
 
-                if (Entries != null)
+                if(Entries != null)
                     Entries.ForEach(e => count += e == null || e.Seed == null ? 0 : e.Seed.Amount);
 
                 return count;
@@ -42,14 +43,15 @@ namespace Server.Engines.Plants
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int UniqueCount => Entries == null ? 0 : Entries.Where(e => e != null && e.Seed != null && e.Seed.Amount > 0).Count();
+        public int UniqueCount
+        {
+            get { return Entries == null ? 0 : Entries.Where(e => e != null && e.Seed != null && e.Seed.Amount > 0).Count(); }
+        }
 
-        public override int DefaultMaxWeight => 0;
-        public override double DefaultWeight => 10.0;
+        public override double DefaultWeight { get { return 10.0; } }
 
         [Constructable]
-        public SeedBox()
-            : base(19288)
+        public SeedBox() : base(19288)
         {
             Entries = new List<SeedEntry>();
 
@@ -65,7 +67,7 @@ namespace Server.Engines.Plants
 
         public override void OnDoubleClick(Mobile m)
         {
-            if (IsChildOf(m.Backpack) || (CheckAccessible(m) && m.InRange(GetWorldLocation(), 3)))
+            if (IsChildOf(m.Backpack) || (CheckAccessible(m) && m.InRange(this.GetWorldLocation(), 3)))
             {
                 if (m is PlayerMobile)
                     BaseGump.SendGump(new SeedBoxGump((PlayerMobile)m, this));
@@ -78,7 +80,6 @@ namespace Server.Engines.Plants
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
             base.GetContextMenuEntries(from, list);
-
             SetSecureLevelEntry.AddTo(from, this, list);
         }
 
@@ -117,18 +118,13 @@ namespace Server.Engines.Plants
             }
         }
 
-        public override bool OnDragDropInto(Mobile from, Item item, Point3D p)
-        {
-            return false;
-        }
-
         public bool TryAddSeed(Mobile from, Seed seed, int index = -1)
         {
             if (!from.Backpack.CheckHold(from, seed, true, true) || seed.Amount <= 0)
             {
                 return false;
             }
-            else if (!from.InRange(GetWorldLocation(), 3) || from.Map != Map)
+            else if (!from.InRange(this.GetWorldLocation(), 3) || from.Map != this.Map)
             {
                 return false;
             }
@@ -141,6 +137,8 @@ namespace Server.Engines.Plants
                 {
                     entry.Seed.Amount += seed.Amount;
                     seed.Delete();
+
+                    entry.Seed.InvalidateProperties();
                 }
                 else if (UniqueCount < MaxUnique)
                 {
@@ -148,6 +146,7 @@ namespace Server.Engines.Plants
                     DropItem(seed);
 
                     seed.Movable = false;
+                    seed.InvalidateProperties();
                 }
                 else
                 {
@@ -156,8 +155,6 @@ namespace Server.Engines.Plants
 
                 if (entry != null)
                 {
-                    InvalidateProperties();
-
                     if (Entries.Contains(entry))
                     {
                         if (index > -1 && index < Entries.Count - 1)
@@ -180,22 +177,13 @@ namespace Server.Engines.Plants
 
                     if (from is PlayerMobile)
                     {
-                        var gump = from.FindGump<SeedBoxGump>();
+                        var gump = new SeedBoxGump((PlayerMobile)from, this);
+                        gump.CheckPage(entry);
 
-                        if (gump != null)
-                        {
-                            gump.CheckPage(entry);
-                            gump.Refresh();
-                        }
-                        else
-                        {
-                            gump = new SeedBoxGump((PlayerMobile)from, this);
-                            gump.CheckPage(entry);
-
-                            BaseGump.SendGump(gump);
-                        }
+                        BaseGump.SendGump(gump);
                     }
 
+                    InvalidateProperties();
                     return true;
                 }
             }
@@ -252,11 +240,6 @@ namespace Server.Engines.Plants
 
         public void DropSeed(Mobile from, SeedEntry entry, int amount)
         {
-            if (!from.InRange(GetWorldLocation(), 3))
-            {
-                return;
-            }
-
             if (amount > entry.Seed.Amount)
                 amount = entry.Seed.Amount;
 
@@ -269,10 +252,8 @@ namespace Server.Engines.Plants
             }
             else
             {
-                seed = new Seed(entry.Seed.PlantType, entry.Seed.PlantHue, true)
-                {
-                    Amount = amount
-                };
+                seed = new Seed(entry.Seed.PlantType, entry.Seed.PlantHue, true);
+                seed.Amount = amount;
 
                 entry.Seed.Amount -= amount;
             }
@@ -311,23 +292,23 @@ namespace Server.Engines.Plants
                 list.Add(1076220); // 4th Year Veteran Reward
             }
 
-            list.Add(1151847, string.Format("{0}\t{1}", TotalCount.ToString(), MaxSeeds.ToString())); // Seeds in Box: ~1_val~ / ~2_val~
-            list.Add(1151848, string.Format("{0}\t{1}", UniqueCount.ToString(), MaxUnique.ToString())); // Unique Seeds In Box: ~1_val~ / ~2_val~
+            list.Add(1151847, String.Format("{0}\t{1}", TotalCount.ToString(), MaxSeeds.ToString())); // Seeds in Box: ~1_val~ / ~2_val~
+            list.Add(1151848, String.Format("{0}\t{1}", UniqueCount.ToString(), MaxUnique.ToString())); // Unique Seeds In Box: ~1_val~ / ~2_val~
         }
 
         private void CheckEntries()
         {
-            List<Item> toDelete = new List<Item>(Items);
+            List<Item> toDelete = new List<Item>(this.Items);
 
-            foreach (Item item in toDelete.Where(i => i != null && i.Amount == 0))
+            foreach (var item in toDelete.Where(i => i != null && i.Amount == 0))
                 item.Delete();
 
             List<SeedEntry> entries = new List<SeedEntry>(Entries);
 
-            foreach (SeedEntry entry in entries.Where(e => e != null && (e.Seed == null || e.Seed.Amount == 0 || e.Seed.Deleted)))
+            foreach(var entry in entries.Where(e => e != null && (e.Seed == null || e.Seed.Amount == 0 || e.Seed.Deleted)))
                 Entries.Remove(entry);
 
-            ColUtility.Free(entries);
+            ColUtility.Free(entries); 
             ColUtility.Free(toDelete);
         }
 
@@ -351,7 +332,7 @@ namespace Server.Engines.Plants
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write(IsRewardItem);
             writer.Write((int)Level);
@@ -404,7 +385,7 @@ namespace Server.Engines.Plants
             Timer.DelayCall(
                 () =>
                 {
-                    foreach (Item item in Items.Where(i => i.Movable))
+                    foreach (var item in Items.Where(i => i.Movable))
                         item.Movable = false;
                 });
 

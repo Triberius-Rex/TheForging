@@ -1,10 +1,11 @@
+using System;
 using Server.Items.MusicBox;
 
 namespace Server.Items
-{
+{ 
     public class SuteksDirtyGear : Item
     {
-        public override int LabelNumber => 1115722;  // Sutek's Dirty Gear
+        public override int LabelNumber { get { return 1115722; } } // Sutek's Dirty Gear
 
         [Constructable]
         public SuteksDirtyGear()
@@ -13,15 +14,15 @@ namespace Server.Items
         }
 
         [Constructable]
-        public SuteksDirtyGear(int amount)
-            : base(0x1053)
+        public SuteksDirtyGear(int amount) 
+            : base (0x1053)
         {
             Hue = 1102;
         }
 
         public SuteksDirtyGear(Serial serial)
             : base(serial)
-        {
+        { 
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -47,16 +48,16 @@ namespace Server.Items
             Delete();
         }
 
-        public override void Serialize(GenericWriter writer)
-        {
+        public override void Serialize(GenericWriter writer) 
+        { 
             base.Serialize(writer);
-            writer.Write(0); // version 
+            writer.Write((int)0); // version 
         }
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+        public override void Deserialize(GenericReader reader) 
+        { 
+            base.Deserialize(reader); 
+            int version = reader.ReadInt(); 
         }
     }
 }

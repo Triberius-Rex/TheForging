@@ -38,24 +38,86 @@ namespace Server.Mobiles
             Fame = 5000;
             Karma = -5000;
 
-			CraftResource res = (CraftResource)Utility.RandomMinMax(201, 206); // All normal scales
+            CraftResource res = CraftResource.None;
 
-            SetWearable((Item)Activator.CreateInstance(Utility.RandomList(_WeaponsList)));
-			SetWearable(new DragonHelm() { Resource = res });
-			SetWearable(new DragonChest() { Resource = res });
-			SetWearable(new DragonArms() { Resource = res });
-			SetWearable(new DragonGloves() { Resource = res });
-			SetWearable(new DragonLegs() { Resource = res });
-			SetWearable(new ChaosShield());
-			SetWearable(new Shirt(), dropChance: 1);
-			SetWearable(new Boots(), dropChance: 1);
+            switch (Utility.Random(6))
+            {
+                case 0:
+                    res = CraftResource.BlackScales;
+                    break;
+                case 1:
+                    res = CraftResource.RedScales;
+                    break;
+                case 2:
+                    res = CraftResource.BlueScales;
+                    break;
+                case 3:
+                    res = CraftResource.YellowScales;
+                    break;
+                case 4:
+                    res = CraftResource.GreenScales;
+                    break;
+                case 5:
+                    res = CraftResource.WhiteScales;
+                    break;
+            }
+
+            BaseWeapon melee = null;
+
+            switch (Utility.Random(3))
+            {
+                case 0:
+                    melee = new Kryss();
+                    break;
+                case 1:
+                    melee = new Broadsword();
+                    break;
+                case 2:
+                    melee = new Katana();
+                    break;
+            }
+
+            melee.Movable = false;
+            AddItem(melee);
+
+            DragonHelm helm = new DragonHelm();
+            helm.Resource = res;
+            helm.Movable = false;
+            AddItem(helm);
+
+            DragonChest chest = new DragonChest();
+            chest.Resource = res;
+            chest.Movable = false;
+            AddItem(chest);
+
+            DragonArms arms = new DragonArms();
+            arms.Resource = res;
+            arms.Movable = false;
+            AddItem(arms);
+
+            DragonGloves gloves = new DragonGloves();
+            gloves.Resource = res;
+            gloves.Movable = false;
+            AddItem(gloves);
+
+            DragonLegs legs = new DragonLegs();
+            legs.Resource = res;
+            legs.Movable = false;
+            AddItem(legs);
+
+            ChaosShield shield = new ChaosShield();
+            shield.Movable = false;
+            AddItem(shield);
+
+            AddItem(new Shirt());
+            AddItem(new Boots());
 
             int amount = Utility.RandomMinMax(1, 3);
 
-            switch (res)
+            switch ( res )
             {
                 case CraftResource.BlackScales:
-					AddItem(new BlackScales(amount));
+                    AddItem(new BlackScales(amount));
                     break;
                 case CraftResource.RedScales:
                     AddItem(new RedScales(amount));
@@ -84,15 +146,41 @@ namespace Server.Mobiles
         {
         }
 
-		private static readonly Type[] _WeaponsList = new Type[]
-		{
-			typeof(Kryss), typeof(Broadsword), typeof(Katana)
-		};
-
-        public override bool AutoDispel => true;
-        public override bool CanRummageCorpses => true;
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.AOS;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override int GetIdleSound()
         {
             return 0x2CE;
@@ -137,7 +225,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

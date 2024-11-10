@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a darknight creeper corpse")]
@@ -39,6 +42,8 @@ namespace Server.Mobiles
 
             Fame = 22000;
             Karma = -22000;
+
+            VirtualArmor = 34;
         }
 
         public DarknightCreeper(Serial serial)
@@ -46,22 +51,75 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool IgnoreYoungProtection => true;
-        public override bool Unprovokable => true;
-        public override bool AreaPeaceImmune => true;
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Poison.Lethal;
-        public override int TreasureMapLevel => 1;
+        public override bool CanFlee { get { return false; } }
+
+        public override bool IgnoreYoungProtection
+        {
+            get
+            {
+                return Core.ML;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool AreaPeaceImmune
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 2);
         }
 
+       
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

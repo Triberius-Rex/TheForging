@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -15,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Plate;
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Plate;
+            }
+        }
 
         public override double ArmorRating
         {
@@ -37,7 +43,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);//version
+            writer.Write((int)1);//version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -64,7 +70,7 @@ namespace Server.Items
         {
             base.AddNameProperties(list);
 
-            if (LastParryChance > 0)
+            if (Core.EJ && LastParryChance > 0)
             {
                 list.Add(1158861, LastParryChance.ToString()); // Last Parry Chance: ~1_val~%
             }
@@ -79,56 +85,126 @@ namespace Server.Items
 
         public override int OnHit(BaseWeapon weapon, int damage)
         {
-            if (ArmorAttributes.SelfRepair > Utility.Random(10))
+            if (Core.AOS)
             {
-                HitPoints += 2;
-            }
-            else
-            {
-                double halfArmor = ArmorRating / 2.0;
-                int absorbed = (int)(halfArmor + (halfArmor * Utility.RandomDouble()));
-
-                if (absorbed < 2)
-                    absorbed = 2;
-
-                int wear;
-
-                if (weapon.Type == WeaponType.Bashing)
-                    wear = (absorbed / 2);
-                else
-                    wear = Utility.Random(2);
-
-                if (wear > 0 && MaxHitPoints > 0)
+                if (ArmorAttributes.SelfRepair > Utility.Random(10))
                 {
-                    if (HitPoints >= wear)
-                    {
-                        HitPoints -= wear;
-                        wear = 0;
-                    }
+                    HitPoints += 2;
+                }
+                else
+                {
+                    double halfArmor = ArmorRating / 2.0;
+                    int absorbed = (int)(halfArmor + (halfArmor * Utility.RandomDouble()));
+
+                    if (absorbed < 2)
+                        absorbed = 2;
+
+                    int wear;
+
+                    if (weapon.Type == WeaponType.Bashing)
+                        wear = (absorbed / 2);
                     else
-                    {
-                        wear -= HitPoints;
-                        HitPoints = 0;
-                    }
+                        wear = Utility.Random(2);
 
-                    if (wear > 0)
+                    if (wear > 0 && MaxHitPoints > 0)
                     {
-                        if (MaxHitPoints > wear)
+                        if (HitPoints >= wear)
                         {
-                            MaxHitPoints -= wear;
-
-                            if (Parent is Mobile)
-                                ((Mobile)Parent).LocalOverheadMessage(MessageType.Regular, 0x3B2, 1061121); // Your equipment is severely damaged.
+                            HitPoints -= wear;
+                            wear = 0;
                         }
                         else
                         {
-                            Delete();
+                            wear -= HitPoints;
+                            HitPoints = 0;
+                        }
+
+                        if (wear > 0)
+                        {
+                            if (MaxHitPoints > wear)
+                            {
+                                MaxHitPoints -= wear;
+
+                                if (Parent is Mobile)
+                                    ((Mobile)Parent).LocalOverheadMessage(MessageType.Regular, 0x3B2, 1061121); // Your equipment is severely damaged.
+                            }
+                            else
+                            {
+                                Delete();
+                            }
                         }
                     }
                 }
-            }
 
-            return 0;
+                return 0;
+            }
+            else
+            {
+                Mobile owner = Parent as Mobile;
+                if (owner == null)
+                    return damage;
+
+                double ar = ArmorRating;
+                double chance = (owner.Skills[SkillName.Parry].Value - (ar * 2.0)) / 100.0;
+
+                if (chance < 0.01)
+                    chance = 0.01;
+                /*
+                FORMULA: Displayed AR = ((Parrying Skill * Base AR of Shield) / 200) + 1 
+
+                FORMULA: % Chance of Blocking = parry skill - (shieldAR * 2)
+
+                FORMULA: Melee Damage Absorbed = (AR of Shield) / 2 | Archery Damage Absorbed = AR of Shield 
+                */
+                if (owner.CheckSkill(SkillName.Parry, chance))
+                {
+                    if (weapon.Skill == SkillName.Archery)
+                        damage -= (int)ar;
+                    else
+                        damage -= (int)(ar / 2.0);
+
+                    if (damage < 0)
+                        damage = 0;
+
+                    owner.FixedEffect(0x37B9, 10, 16);
+
+                    if (25 > Utility.Random(100)) // 25% chance to lower durability
+                    {
+                        int wear = Utility.Random(2);
+
+                        if (wear > 0 && MaxHitPoints > 0)
+                        {
+                            if (HitPoints >= wear)
+                            {
+                                HitPoints -= wear;
+                                wear = 0;
+                            }
+                            else
+                            {
+                                wear -= HitPoints;
+                                HitPoints = 0;
+                            }
+
+                            if (wear > 0)
+                            {
+                                if (MaxHitPoints > wear)
+                                {
+                                    MaxHitPoints -= wear;
+
+                                    if (Parent is Mobile)
+                                        ((Mobile)Parent).LocalOverheadMessage(MessageType.Regular, 0x3B2, 1061121); // Your equipment is severely damaged.
+                                }
+                                else
+                                {
+                                    Delete();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return damage;
+            }
         }
 
         public override int GetLuckBonus()
@@ -148,7 +224,7 @@ namespace Server.Items
             }
         }
 
-        public override void DistributeExceptionalBonuses(Mobile from, bool runic)
+        public override void DistributeExceptionalBonuses(Mobile from, int amount)
         {
         }
 

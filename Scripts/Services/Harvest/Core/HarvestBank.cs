@@ -11,83 +11,89 @@ namespace Server.Engines.Harvest
         private HarvestVein m_Vein, m_DefaultVein;
         public HarvestBank(HarvestDefinition def, HarvestVein defaultVein)
         {
-            m_Maximum = Utility.RandomMinMax(def.MinTotal, def.MaxTotal);
-            m_Current = m_Maximum;
-            m_DefaultVein = defaultVein;
-            m_Vein = m_DefaultVein;
+            this.m_Maximum = Utility.RandomMinMax(def.MinTotal, def.MaxTotal);
+            this.m_Current = this.m_Maximum;
+            this.m_DefaultVein = defaultVein;
+            this.m_Vein = this.m_DefaultVein;
 
-            m_Definition = def;
+            this.m_Definition = def;
         }
 
-        public HarvestDefinition Definition => m_Definition;
+        public HarvestDefinition Definition
+        {
+            get
+            {
+                return this.m_Definition;
+            }
+        }
         public int Current
         {
             get
             {
-                CheckRespawn();
-                return m_Current;
+                this.CheckRespawn();
+                return this.m_Current;
             }
         }
         public HarvestVein Vein
         {
             get
             {
-                CheckRespawn();
-                return m_Vein;
+                this.CheckRespawn();
+                return this.m_Vein;
             }
             set
             {
-                m_Vein = value;
+                this.m_Vein = value;
             }
         }
         public HarvestVein DefaultVein
         {
             get
             {
-                CheckRespawn();
-                return m_DefaultVein;
+                this.CheckRespawn();
+                return this.m_DefaultVein;
             }
         }
         public void CheckRespawn()
         {
-            if (m_Current == m_Maximum || m_NextRespawn > DateTime.UtcNow)
+            if (this.m_Current == this.m_Maximum || this.m_NextRespawn > DateTime.UtcNow)
                 return;
 
-            m_Current = m_Maximum;
+            this.m_Current = this.m_Maximum;
 
-            if (m_Definition.RandomizeVeins)
+            if (this.m_Definition.RandomizeVeins)
             {
-                m_DefaultVein = m_Definition.GetVeinFrom(Utility.RandomDouble());
+                this.m_DefaultVein = this.m_Definition.GetVeinFrom(Utility.RandomDouble());
             }
 
-            m_Vein = m_DefaultVein;
+            this.m_Vein = this.m_DefaultVein;
         }
 
         public void Consume(int amount, Mobile from)
         {
-            CheckRespawn();
+            this.CheckRespawn();
 
-            if (m_Current == m_Maximum)
+            if (this.m_Current == this.m_Maximum)
             {
-                double min = m_Definition.MinRespawn.TotalMinutes;
-                double max = m_Definition.MaxRespawn.TotalMinutes;
+                double min = this.m_Definition.MinRespawn.TotalMinutes;
+                double max = this.m_Definition.MaxRespawn.TotalMinutes;
                 double rnd = Utility.RandomDouble();
 
-                m_Current = m_Maximum - amount;
+                this.m_Current = this.m_Maximum - amount;
 
                 double minutes = min + (rnd * (max - min));
-                if (m_Definition.RaceBonus && from.Race == Race.Elf)
+                if (this.m_Definition.RaceBonus && from.Race == Race.Elf)	//def.RaceBonus = Core.ML
                     minutes *= .75;	//25% off the time.  
 
-                m_NextRespawn = DateTime.UtcNow + TimeSpan.FromMinutes(minutes);
+                this.m_NextRespawn = DateTime.UtcNow + TimeSpan.FromMinutes(minutes);
             }
             else
             {
-                m_Current -= amount;
+                this.m_Current -= amount;
             }
 
-            if (m_Current < 0)
-                m_Current = 0;
+            if (this.m_Current < 0)
+                this.m_Current = 0;
         }
     }
 }

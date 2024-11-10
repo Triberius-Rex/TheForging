@@ -1,9 +1,10 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Engines.Plants;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Engines.Quests.Matriarch
 {
@@ -11,14 +12,14 @@ namespace Server.Engines.Quests.Matriarch
     {
         public BaseSolenMatriarch()
         {
-            Name = "the solen matriarch";
+            this.Name = "the solen matriarch";
 
-            Body = 0x328;
+            this.Body = 0x328;
 
-            if (!RedSolen)
-                Hue = 0x44E;
+            if (!this.RedSolen)
+                this.Hue = 0x44E;
 
-            SpeechHue = 0;
+            this.SpeechHue = 0;
         }
 
         public BaseSolenMatriarch(Serial serial)
@@ -27,11 +28,17 @@ namespace Server.Engines.Quests.Matriarch
         }
 
         public override void CheckMorph()
-        {
+        {          
         }
 
         public abstract bool RedSolen { get; }
-        public override bool DisallowAllMoves => false;
+        public override bool DisallowAllMoves
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override int GetIdleSound()
         {
             return 0x10D;
@@ -39,21 +46,21 @@ namespace Server.Engines.Quests.Matriarch
 
         public override bool CanTalkTo(PlayerMobile to)
         {
-            if (SolenMatriarchQuest.IsFriend(to, RedSolen))
+            if (SolenMatriarchQuest.IsFriend(to, this.RedSolen))
                 return true;
 
             SolenMatriarchQuest qs = to.Quest as SolenMatriarchQuest;
 
-            return qs != null && qs.RedSolen == RedSolen;
+            return qs != null && qs.RedSolen == this.RedSolen;
         }
 
         public override void OnTalk(PlayerMobile player, bool contextMenu)
         {
-            Direction = GetDirectionTo(player);
+            this.Direction = this.GetDirectionTo(player);
 
             SolenMatriarchQuest qs = player.Quest as SolenMatriarchQuest;
 
-            if (qs != null && qs.RedSolen == RedSolen)
+            if (qs != null && qs.RedSolen == this.RedSolen)
             {
                 if (qs.IsObjectiveInProgress(typeof(KillInfiltratorsObjective)))
                 {
@@ -102,9 +109,9 @@ namespace Server.Engines.Quests.Matriarch
                     }
                 }
             }
-            else if (SolenMatriarchQuest.IsFriend(player, RedSolen))
+            else if (SolenMatriarchQuest.IsFriend(player, this.RedSolen))
             {
-                QuestSystem newQuest = new SolenMatriarchQuest(player, RedSolen);
+                QuestSystem newQuest = new SolenMatriarchQuest(player, this.RedSolen);
 
                 if (player.Quest == null && QuestSystem.CanOfferQuest(player, typeof(SolenMatriarchQuest)))
                 {
@@ -127,13 +134,13 @@ namespace Server.Engines.Quests.Matriarch
                 {
                     SolenMatriarchQuest qs = player.Quest as SolenMatriarchQuest;
 
-                    if (qs != null && qs.RedSolen == RedSolen)
+                    if (qs != null && qs.RedSolen == this.RedSolen)
                     {
-                        SayTo(player, 1054080); // Thank you for that plant seed. Those have such wonderful flavor.
+                        this.SayTo(player, 1054080); // Thank you for that plant seed. Those have such wonderful flavor.
                     }
                     else
                     {
-                        QuestSystem newQuest = new SolenMatriarchQuest(player, RedSolen);
+                        QuestSystem newQuest = new SolenMatriarchQuest(player, this.RedSolen);
 
                         if (player.Quest == null && QuestSystem.CanOfferQuest(player, typeof(SolenMatriarchQuest)))
                         {
@@ -141,7 +148,7 @@ namespace Server.Engines.Quests.Matriarch
                         }
                         else
                         {
-                            newQuest.AddConversation(new DontOfferConversation(SolenMatriarchQuest.IsFriend(player, RedSolen)));
+                            newQuest.AddConversation(new DontOfferConversation(SolenMatriarchQuest.IsFriend(player, this.RedSolen)));
                         }
                     }
 
@@ -150,7 +157,7 @@ namespace Server.Engines.Quests.Matriarch
                 }
                 else if (dropped is ZoogiFungus)
                 {
-                    OnGivenFungi(player, (ZoogiFungus)dropped);
+                    this.OnGivenFungi(player, (ZoogiFungus)dropped);
 
                     return dropped.Deleted;
                 }
@@ -171,7 +178,7 @@ namespace Server.Engines.Quests.Matriarch
                 {
                     SolenMatriarchQuest qs = pm.Quest as SolenMatriarchQuest;
 
-                    if (qs != null && qs.RedSolen == RedSolen)
+                    if (qs != null && qs.RedSolen == this.RedSolen)
                     {
                         if (qs.IsObjectiveInProgress(typeof(ProcessFungiObjective)))
                         {
@@ -184,11 +191,11 @@ namespace Server.Engines.Quests.Matriarch
 
         public void OnGivenFungi(PlayerMobile player, ZoogiFungus fungi)
         {
-            Direction = GetDirectionTo(player);
+            this.Direction = this.GetDirectionTo(player);
 
             SolenMatriarchQuest qs = player.Quest as SolenMatriarchQuest;
 
-            if (qs != null && qs.RedSolen == RedSolen)
+            if (qs != null && qs.RedSolen == this.RedSolen)
             {
                 QuestObjective obj = qs.FindObjective(typeof(ProcessFungiObjective));
 
@@ -221,7 +228,7 @@ namespace Server.Engines.Quests.Matriarch
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -238,14 +245,14 @@ namespace Server.Engines.Quests.Matriarch
             public ProcessZoogiFungusEntry(BaseSolenMatriarch matriarch, PlayerMobile from)
                 : base(6184)
             {
-                m_Matriarch = matriarch;
-                m_From = from;
+                this.m_Matriarch = matriarch;
+                this.m_From = from;
             }
 
             public override void OnClick()
             {
-                if (m_From.Alive)
-                    m_From.Target = new ProcessFungiTarget(m_Matriarch, m_From);
+                if (this.m_From.Alive)
+                    this.m_From.Target = new ProcessFungiTarget(this.m_Matriarch, this.m_From);
             }
         }
 
@@ -256,8 +263,8 @@ namespace Server.Engines.Quests.Matriarch
             public ProcessFungiTarget(BaseSolenMatriarch matriarch, PlayerMobile from)
                 : base(-1, false, TargetFlags.None)
             {
-                m_Matriarch = matriarch;
-                m_From = from;
+                this.m_Matriarch = matriarch;
+                this.m_From = from;
             }
 
             protected override void OnTargetCancel(Mobile from, TargetCancelType cancelType)
@@ -271,10 +278,10 @@ namespace Server.Engines.Quests.Matriarch
                 {
                     ZoogiFungus fungus = (ZoogiFungus)targeted;
 
-                    if (fungus.IsChildOf(m_From.Backpack))
-                        m_Matriarch.OnGivenFungi(m_From, (ZoogiFungus)targeted);
+                    if (fungus.IsChildOf(this.m_From.Backpack))
+                        this.m_Matriarch.OnGivenFungi(this.m_From, (ZoogiFungus)targeted);
                     else
-                        m_From.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
+                        this.m_From.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
                 }
             }
         }
@@ -292,12 +299,18 @@ namespace Server.Engines.Quests.Matriarch
         {
         }
 
-        public override bool RedSolen => true;
+        public override bool RedSolen
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -320,12 +333,18 @@ namespace Server.Engines.Quests.Matriarch
         {
         }
 
-        public override bool RedSolen => false;
+        public override bool RedSolen
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

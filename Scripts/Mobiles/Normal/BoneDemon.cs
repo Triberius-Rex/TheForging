@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a bone demon corpse")]
@@ -38,6 +40,8 @@ namespace Server.Mobiles
 
             Fame = 20000;
             Karma = -20000;
+
+            VirtualArmor = 44;
         }
 
         public BoneDemon(Serial serial)
@@ -45,10 +49,41 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool Unprovokable => true;
-        public override bool AreaPeaceImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override int TreasureMapLevel => 1;
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool AreaPeaceImmune
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 8);
@@ -57,7 +92,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

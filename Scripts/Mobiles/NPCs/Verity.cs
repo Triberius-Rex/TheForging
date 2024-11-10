@@ -1,14 +1,14 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Verity : MondainQuester
     {
         [Constructable]
         public Verity()
             : base("Verity", "the librarian")
-        {
+        { 
         }
 
         public Verity(Serial serial)
@@ -16,36 +16,42 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] 
                 {
                     typeof(FriendsOfTheLibraryQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = true;
-            Race = Race.Human;
-
-            Hue = 0x83EF;
-            HairItemID = 0x2047;
-            HairHue = 0x3B3;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = true;
+            this.Race = Race.Human;
+			
+            this.Hue = 0x83EF;
+            this.HairItemID = 0x2047;
+            this.HairHue = 0x3B3;
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new Shoes(), 0x754, 1);
-            SetWearable(new Shirt(), 0x653, 1);
-            SetWearable(new Cap(), 0x901, 1);
-			SetWearable(new Kilt(), 0x901, 1);
+            this.AddItem(new Backpack());
+            this.AddItem(new Shoes(0x754));
+            this.AddItem(new Shirt(0x653));
+            this.AddItem(new Cap(0x901));
+            this.AddItem(new Kilt(0x901));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

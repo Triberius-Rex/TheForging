@@ -1,6 +1,6 @@
-using Server.Engines.Craft;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
 
 namespace Server.Engines.BulkOrders
 {
@@ -17,7 +17,7 @@ namespace Server.Engines.BulkOrders
             0.003000000 // Frostwood
         };
 
-        public override BODType BODType => BODType.Carpentry;
+        public override BODType BODType { get { return BODType.Carpentry; } }
 
         [Constructable]
         public SmallCarpentryBOD()
@@ -32,36 +32,36 @@ namespace Server.Engines.BulkOrders
                 int amountMax = Utility.RandomList(10, 15, 20);
 
                 BulkMaterialType material = BulkMaterialType.None;
-
-                if (useMaterials)
+                
+                if(useMaterials)
                     material = GetRandomMaterial(BulkMaterialType.OakWood, m_CarpentryMaterialChances);
 
                 bool reqExceptional = Utility.RandomBool() || (material == BulkMaterialType.None);
 
                 SmallBulkEntry entry = entries[Utility.Random(entries.Length)];
 
-                Hue = 1512;
-                AmountMax = amountMax;
-                Type = entry.Type;
-                Number = entry.Number;
-                Graphic = entry.Graphic;
-                RequireExceptional = reqExceptional;
-                Material = material;
-                GraphicHue = entry.Hue;
+                this.Hue = 1512;
+                this.AmountMax = amountMax;
+                this.Type = entry.Type;
+                this.Number = entry.Number;
+                this.Graphic = entry.Graphic;
+                this.RequireExceptional = reqExceptional;
+                this.Material = material;
+                this.GraphicHue = entry.Hue;
             }
         }
 
         public SmallCarpentryBOD(int amountCur, int amountMax, Type type, int number, int graphic, bool reqExceptional, BulkMaterialType mat, int hue)
         {
-            Hue = 1512;
-            AmountMax = amountMax;
-            AmountCur = amountCur;
-            Type = type;
-            Number = number;
-            Graphic = graphic;
-            RequireExceptional = reqExceptional;
-            Material = mat;
-            GraphicHue = hue;
+            this.Hue = 1512;
+            this.AmountMax = amountMax;
+            this.AmountCur = amountCur;
+            this.Type = type;
+            this.Number = number;
+            this.Graphic = graphic;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
+            this.GraphicHue = hue;
         }
 
         public SmallCarpentryBOD(Serial serial)
@@ -71,13 +71,13 @@ namespace Server.Engines.BulkOrders
 
         private SmallCarpentryBOD(SmallBulkEntry entry, BulkMaterialType material, int amountMax, bool reqExceptional)
         {
-            Hue = 1512;
-            AmountMax = amountMax;
-            Type = entry.Type;
-            Number = entry.Number;
-            Graphic = entry.Graphic;
-            RequireExceptional = reqExceptional;
-            Material = material;
+            this.Hue = 1512;
+            this.AmountMax = amountMax;
+            this.Type = entry.Type;
+            this.Number = entry.Number;
+            this.Graphic = entry.Graphic;
+            this.RequireExceptional = reqExceptional;
+            this.Material = material;
         }
 
         public static SmallCarpentryBOD CreateRandomFor(Mobile m)
@@ -177,7 +177,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

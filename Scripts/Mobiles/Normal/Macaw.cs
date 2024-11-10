@@ -1,3 +1,5 @@
+using System;
+using Server.Items;
 using Server.Mobiles;
 
 namespace Server.Items
@@ -52,10 +54,10 @@ namespace Server.Items
         public override int GetHurtSound() { return 0x2F1; }
         public override int GetDeathSound() { return 0x2F2; }
 
-        public override MeatType MeatType => MeatType.Bird;
-        public override int Feathers => 32;
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+        public override MeatType MeatType { get { return MeatType.Bird; } }
+        public override int Feathers { get { return 32; } }
+        public override int Meat { get { return 1; } }
+        public override FoodType FavoriteFood { get { return FoodType.FruitsAndVegies | FoodType.GrainsAndHay; } }
 
         public override void GenerateLoot()
         {
@@ -63,15 +65,15 @@ namespace Server.Items
         }
 
         protected override void OnLocationChange(Point3D oldLocation)
-        {
-            base.OnLocationChange(oldLocation);
+		{
+			base.OnLocationChange(oldLocation);
 
             if (MacawSpawner != null && !InRange(MacawSpawner.Location, 20))
-            {
+			{
                 MacawSpawner.Spawn.Remove(this);
                 MacawSpawner = null;
-            }
-        }
+			}
+		}
 
         public override void OnDeath(Container c)
         {
@@ -98,7 +100,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

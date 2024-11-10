@@ -1,20 +1,23 @@
+﻿using System;
+using Server.Network;
+using Server.Mobiles;
 using Server.Engines.Quests;
 using Server.Gumps;
-using Server.Mobiles;
-using Server.Network;
-using System;
 
 namespace Server.Items
 {
     public class ClockworkMechanism : BaseDecayingItem
     {
-        public override bool HiddenQuestItemHue => true;
-        public override int Lifespan => 3600;
-        public override bool UseSeconds => false;
+        public override bool HiddenQuestItemHue { get { return true; } }
+        public override int Lifespan { get { return 3600; } }
+        public override bool UseSeconds { get { return false; } }
 
         private int m_CreatureDef;
 
-        public ClockworkCreatureDef CreatureDef => ClockworkCreature.Definitions[m_CreatureDef];
+        public ClockworkCreatureDef CreatureDef
+        {
+            get { return ClockworkCreature.Definitions[m_CreatureDef]; }
+        }
 
         [Constructable]
         public ClockworkMechanism()
@@ -28,7 +31,7 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1112858, string.Format("#{0}", ((int)CreatureDef.CreatureType).ToString())); // ~1_TYPE~ clockwork mechanism
+            list.Add(1112858, String.Format("#{0}", ((int)CreatureDef.CreatureType).ToString())); // ~1_TYPE~ clockwork mechanism
         }
 
         public override void GetProperties(ObjectPropertyList list)
@@ -46,7 +49,7 @@ namespace Server.Items
         public override bool DropToItem(Mobile from, Item target, Point3D p)
         {
             if (from.Backpack == target)
-            {
+            {                
                 base.DropToItem(from, target, p);
                 return true;
             }
@@ -72,7 +75,7 @@ namespace Server.Items
                 MadScientistQuest.BarkIngredient(from);
             }
             else
-            {
+            { 
                 if (!from.HasGump(typeof(BeginQuestGump)))
                 {
                     from.SendGump(new BeginQuestGump(this));
@@ -87,7 +90,7 @@ namespace Server.Items
 
             creature.MoveToWorld(p, from.Map);
 
-            Timer.DelayCall(TimeSpan.FromSeconds(5.0), delegate
+            Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerCallback(delegate
             {
                 from.PlaySound(0xFA);
                 from.PlaySound(0x5BC);
@@ -103,14 +106,15 @@ namespace Server.Items
                     Effects.SendLocationEffect(loc, from.Map, 0x1A9F, 10, 16, 0x481, 4);
                     Effects.SendLocationEffect(loc, from.Map, 0x1A8, 25, 16, 0x47E, 4);
                 }
-
+                    
                 from.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1112987, from.NetState); // The training clockwork fails and the creature vanishes.
 
-                Timer.DelayCall(TimeSpan.FromSeconds(1.0), delegate
-                {
-                    creature.Delete();
-                });
-            });
+                Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerCallback(
+                    delegate
+                    {
+                        creature.Delete();
+                    }));
+            }));
         }
 
         public ClockworkMechanism(Serial serial)
@@ -121,9 +125,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_CreatureDef);
+            writer.Write((int)m_CreatureDef);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -137,7 +141,7 @@ namespace Server.Items
 
         public class BeginQuestGump : Gump
         {
-            private readonly ClockworkMechanism m_Mechanism;
+            private ClockworkMechanism m_Mechanism;
 
             public BeginQuestGump(ClockworkMechanism mechanism)
                 : base(340, 340)

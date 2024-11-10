@@ -1,9 +1,11 @@
-﻿namespace Server
+﻿using System;
+
+namespace Server
 {
     public interface IDynamicEnum
     {
-        string Value { get; set; }
-        string[] Values { get; }
-        bool IsValid { get; }
+        String Value { get; set; }
+        String[] Values { get; }
+        Boolean IsValid { get; }
     }
 }

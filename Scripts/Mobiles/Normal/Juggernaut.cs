@@ -1,4 +1,6 @@
+using System;
 using Server.Items;
+using Server.Network;
 
 namespace Server.Mobiles
 {
@@ -38,16 +40,15 @@ namespace Server.Mobiles
             Fame = 12000;
             Karma = -12000;
 
-            SetSpecialAbility(SpecialAbility.ColossalBlow);
-        }
+            VirtualArmor = 70;
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.Rich);
-            AddLoot(LootPack.Gems);
-            AddLoot(LootPack.LootItem<PowerCrystal>(10.0));
-            AddLoot(LootPack.LootItem<ClockworkAssembly>(40.0));
-            AddLoot(LootPack.LootItemCallback(Golem.SpawnGears, 5.0, 1, false, false));
+            if (0.1 > Utility.RandomDouble())
+                PackItem(new PowerCrystal());
+
+            if (0.4 > Utility.RandomDouble())
+                PackItem(new ClockworkAssembly());
+
+            SetSpecialAbility(SpecialAbility.ColossalBlow);
         }
 
         public Juggernaut(Serial serial)
@@ -55,11 +56,72 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override int Meat => 1;
-        public override int TreasureMapLevel => 5;
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.AOS;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (0.05 > Utility.RandomDouble())
+            {
+                if (!IsParagon)
+                {
+                    if (0.75 > Utility.RandomDouble())
+                        c.DropItem(DawnsMusicGear.RandomCommon);
+                    else
+                        c.DropItem(DawnsMusicGear.RandomUncommon);
+                }
+                else
+                    c.DropItem(DawnsMusicGear.RandomRare);
+            }
+        }
+
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.Rich);
+            AddLoot(LootPack.Gems, 1);
+        }
 
         public override int GetDeathSound()
         {
@@ -79,12 +141,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class SubtextSign : Sign
@@ -7,14 +9,14 @@ namespace Server.Items
         public SubtextSign(SignType type, SignFacing facing, string subtext)
             : base(type, facing)
         {
-            m_Subtext = subtext;
+            this.m_Subtext = subtext;
         }
 
         [Constructable]
         public SubtextSign(int itemID, string subtext)
             : base(itemID)
         {
-            m_Subtext = subtext;
+            this.m_Subtext = subtext;
         }
 
         public SubtextSign(Serial serial)
@@ -27,30 +29,37 @@ namespace Server.Items
         {
             get
             {
-                return m_Subtext;
+                return this.m_Subtext;
             }
             set
             {
-                m_Subtext = value;
-                InvalidateProperties();
+                this.m_Subtext = value;
+                this.InvalidateProperties();
             }
+        }
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            if (!String.IsNullOrEmpty(this.m_Subtext))
+                this.LabelTo(from, this.m_Subtext);
         }
 
         public override void AddNameProperties(ObjectPropertyList list)
         {
             base.AddNameProperties(list);
 
-            if (!string.IsNullOrEmpty(m_Subtext))
-                list.Add(m_Subtext);
+            if (!String.IsNullOrEmpty(this.m_Subtext))
+                list.Add(this.m_Subtext);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_Subtext);
+            writer.Write(this.m_Subtext);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -59,7 +68,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Subtext = reader.ReadString();
+            this.m_Subtext = reader.ReadString();
         }
     }
 }

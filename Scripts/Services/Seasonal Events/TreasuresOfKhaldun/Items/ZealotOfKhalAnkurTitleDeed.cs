@@ -1,8 +1,11 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class ZealotOfKhalAnkurTitleDeed : BaseRewardTitleDeed
     {
-        public override TextDefinition Title => 1158684;  // Zealot of Khal Ankur
+        public override TextDefinition Title { get { return 1158684; } } // Zealot of Khal Ankur
 
         [Constructable]
         public ZealotOfKhalAnkurTitleDeed()
@@ -17,7 +20,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

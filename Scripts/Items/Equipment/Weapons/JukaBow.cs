@@ -1,20 +1,24 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x13B2, 0x13B1)]
+    [FlipableAttribute(0x13B2, 0x13B1)]
     public class JukaBow : Bow
     {
         [Constructable]
         public JukaBow()
-        { 
-		}
+        { }
 
         public JukaBow(Serial serial)
             : base(serial)
-        { 
-		}
+        { }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsModified => Slayer != SlayerName.None;
+        public override int AosStrengthReq => 80;
+        public override int AosDexterityReq => 80;
+        public override int OldStrengthReq => 80;
+        public override int OldDexterityReq => 80;
 
         public override bool CanEquip(Mobile from)
         {
@@ -43,7 +47,7 @@ namespace Server.Items
             }
             else
             {
-                from.BeginTarget(2, false, Targeting.TargetFlags.None, OnTargetGears);
+                from.BeginTarget(2, false, Targeting.TargetFlags.None, new TargetCallback(OnTargetGears));
                 from.SendMessage("Select the gears you wish to use.");
             }
         }
@@ -54,7 +58,7 @@ namespace Server.Items
 
             if (g == null || !g.IsChildOf(from.Backpack))
             {
-                from.SendMessage("Those are not gears."); 
+                from.SendMessage("Those are not gears."); // Apparently gears that aren't in your backpack aren't really gears at all. :-(
             }
             else if (IsModified)
             {

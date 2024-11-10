@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class BraveKnightOfTheBritannia : Katana
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public BraveKnightOfTheBritannia()
         {
@@ -19,10 +21,34 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1094909;// Brave Knight of The Britannia [Replica]
-        public override int InitMinHits => 150;
-        public override int InitMaxHits => 150;
-        public override bool CanFortify => false;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1094909;
+            }
+        }// Brave Knight of The Britannia [Replica]
+        public override int InitMinHits
+        {
+            get
+            {
+                return 150;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 150;
+            }
+        }
+        public override bool CanFortify
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void GetDamageTypes(Mobile wielder, out int phys, out int fire, out int cold, out int pois, out int nrgy, out int chaos, out int direct)
         {
             phys = chaos = direct = 0;
@@ -36,7 +62,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

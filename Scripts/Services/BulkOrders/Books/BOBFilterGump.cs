@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Mobiles;
 
@@ -5,9 +6,9 @@ namespace Server.Engines.BulkOrders
 {
     public class BOBFilterGump : Gump
     {
-        private static readonly int[,] m_MaterialFilters = new int[,]
-            {
-                { 1044067,  1 }, // Blacksmithy
+        private static int[,] m_MaterialFilters = new int[,]
+			{
+				{ 1044067,  1 }, // Blacksmithy
 				{ 1062226,  3 }, // Iron
 				{ 1018332,  4 }, // Dull Copper
 				{ 1018333,  5 }, // Shadow Iron
@@ -215,13 +216,13 @@ namespace Server.Engines.BulkOrders
             AddButton(505, 670, 4017, 4018, 0, GumpButtonType.Reply, 0);
         }
 
-        public override void OnResponse(Network.NetState sender, RelayInfo info)
+        public override void OnResponse(Server.Network.NetState sender, RelayInfo info)
         {
             BOBFilter f = (m_From.UseOwnFilter ? m_From.BOBFilter : m_Book.Filter);
 
             int index = info.ButtonID;
 
-            switch (index)
+            switch ( index )
             {
                 case 0: // Apply
                     {
@@ -268,7 +269,7 @@ namespace Server.Engines.BulkOrders
                                 if (filters[index, 0] == 0)
                                     break;
 
-                                switch (type)
+                                switch ( type )
                                 {
                                     case 0:
                                         f.Type = filters[index, 1];

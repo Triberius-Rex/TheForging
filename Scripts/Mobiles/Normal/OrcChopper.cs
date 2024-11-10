@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Misc;
 
@@ -38,6 +39,44 @@ namespace Server.Mobiles
             Fame = 4500;
             Karma = -4500;
 
+            VirtualArmor = 54;
+
+            PackItem(new Log(Utility.RandomMinMax(1, 10)));
+            PackItem(new Board(Utility.RandomMinMax(10, 20)));
+            PackItem(new ExecutionersAxe());
+
+            // TODO: Skull?
+            switch (Utility.Random(7))
+            {
+                case 0:
+                    PackItem(new Arrow());
+                    break;
+                case 1:
+                    PackItem(new Lockpick());
+                    break;
+                case 2:
+                    PackItem(new Shaft());
+                    break;
+                case 3:
+                    PackItem(new Ribs());
+                    break;
+                case 4:
+                    PackItem(new Bandage());
+                    break;
+                case 5:
+                    PackItem(new BeverageBottle(BeverageType.Wine));
+                    break;
+                case 6:
+                    PackItem(new Jug(BeverageType.Cider));
+                    break;
+            }
+
+            if (Core.AOS)
+                PackItem(Loot.RandomNecromancyReagent());
+
+            if (0.5 > Utility.RandomDouble())
+                PackItem(new Yeast());
+
             SetWeaponAbility(WeaponAbility.WhirlwindAttack);
             SetWeaponAbility(WeaponAbility.CrushingBlow);
         }
@@ -47,20 +86,51 @@ namespace Server.Mobiles
         {
         }
 
-        public override InhumanSpeech SpeechType => InhumanSpeech.Orc;
-        public override bool CanRummageCorpses => true;
-        public override int Meat => 1;
+        public override InhumanSpeech SpeechType
+        {
+            get
+            {
+                return InhumanSpeech.Orc;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Orc;
+        public override TribeType Tribe { get { return TribeType.Orc; } }
+
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.SavagesAndOrcs;
+            }
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            c.DropItem(new DoubleAxe());
+
+            if (Utility.RandomDouble() < 0.1)
+                c.DropItem(new EvilOrcHelm());
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager, 2);
-            AddLoot(LootPack.LootItem<EvilOrcHelm>(10.0));
-            AddLoot(LootPack.LootItem<Yeast>(50.0, true));
-            AddLoot(LootPack.LootItem<Log>(1, 10, true));
-            AddLoot(LootPack.LootItem<Board>(10, 20, true));
-            AddLoot(LootPack.LootItem<ExecutionersAxe>());
         }
 
         public override bool IsEnemy(Mobile m)
@@ -89,7 +159,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

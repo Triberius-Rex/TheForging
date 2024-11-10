@@ -1,18 +1,19 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    [CorpseName("a ballem corpse")]
+    [CorpseName("a Ballem corpse")]
     public class Ballem : BaseVoidCreature
     {
-        public override VoidEvolution Evolution => VoidEvolution.Killing;
-        public override int Stage => 2;
+        public override VoidEvolution Evolution { get { return VoidEvolution.Killing; } }
+        public override int Stage { get { return 2; } }
 
         [Constructable]
         public Ballem()
-            : base(AIType.AI_Melee, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "ballem";
+            Name = "a Ballem";
             Body = 304;
             Hue = 2071;
             BaseSoundID = 684;
@@ -45,7 +46,21 @@ namespace Server.Mobiles
             Fame = 1800;
             Karma = -1800;
 
+            VirtualArmor = 54;
+
+            PackItem(new DaemonBone(15));
+
             SetWeaponAbility(WeaponAbility.CrushingBlow);
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (Utility.RandomDouble() < 0.10)
+            {
+                c.DropItem(new AncientPotteryFragments());
+            }
         }
 
         public Ballem(Serial serial)
@@ -53,34 +68,59 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-        public override bool Unprovokable => true;
-
-        public override bool BardImmune => true;
-
-        public override bool CanRummageCorpses => true;
-
-        public override bool BleedImmune => true;
+        public override bool BardImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Average);
-            AddLoot(LootPack.LootItem<DaemonBone>(15, true));
-            AddLoot(LootPack.LootItem<AncientPotteryFragments>(10.0));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 }

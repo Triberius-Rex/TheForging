@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Craft;
 using Server.Mobiles;
 using Server.Network;
@@ -16,7 +17,7 @@ namespace Server.Items
         public RecipeScroll(int recipeID)
             : base(0x2831)
         {
-            m_RecipeID = recipeID;
+            this.m_RecipeID = recipeID;
         }
 
         public RecipeScroll(Serial serial)
@@ -24,26 +25,32 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074560;// recipe scroll
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074560;
+            }
+        }// recipe scroll
         [CommandProperty(AccessLevel.GameMaster)]
         public int RecipeID
         {
             get
             {
-                return m_RecipeID;
+                return this.m_RecipeID;
             }
             set
             {
-                m_RecipeID = value;
-                InvalidateProperties();
+                this.m_RecipeID = value;
+                this.InvalidateProperties();
             }
         }
         public Recipe Recipe
         {
             get
             {
-                if (Recipe.Recipes.ContainsKey(m_RecipeID))
-                    return Recipe.Recipes[m_RecipeID];
+                if (Recipe.Recipes.ContainsKey(this.m_RecipeID))
+                    return Recipe.Recipes[this.m_RecipeID];
 
                 return null;
             }
@@ -52,7 +59,7 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            Recipe r = Recipe;
+            Recipe r = this.Recipe;
 
             if (r != null)
                 list.Add(1049644, r.TextDefinition.ToString()); // [~1_stuff~]
@@ -60,13 +67,13 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                 return;
             }
 
-            Recipe r = Recipe;
+            Recipe r = this.Recipe;
 
             if (r != null && from is PlayerMobile)
             {
@@ -81,7 +88,7 @@ namespace Server.Items
                     {
                         pm.SendLocalizedMessage(1073451, r.TextDefinition.ToString()); // You have learned a new recipe: ~1_RECIPE~
                         pm.AcquireRecipe(r);
-                        Delete();
+                        this.Delete();
                     }
                     else
                     {
@@ -99,9 +106,9 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_RecipeID);
+            writer.Write((int)this.m_RecipeID);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -110,11 +117,11 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch( version )
             {
                 case 0:
                     {
-                        m_RecipeID = reader.ReadInt();
+                        this.m_RecipeID = reader.ReadInt();
 
                         break;
                     }
@@ -123,7 +130,7 @@ namespace Server.Items
     }
 
     public class DoomRecipeScroll : RecipeScroll
-    {
+    {  
         [Constructable]
         public DoomRecipeScroll()
             : base(Utility.RandomList(355, 356, 456, 585))
@@ -139,7 +146,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -147,84 +154,6 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-        }
-    }
-
-    public class SmallElegantAquariumRecipeScroll : RecipeScroll
-    {
-        [Constructable]
-        public SmallElegantAquariumRecipeScroll()
-            : base(153)
-        {
-        }
-
-        public SmallElegantAquariumRecipeScroll(Serial serial)
-            : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            reader.ReadInt();
-        }
-    }
-
-    public class WallMountedAquariumRecipeScroll : RecipeScroll
-    {
-        [Constructable]
-        public WallMountedAquariumRecipeScroll()
-            : base(154)
-        {
-        }
-
-        public WallMountedAquariumRecipeScroll(Serial serial)
-            : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            reader.ReadInt();
-        }
-    }
-
-    public class LargeElegantAquariumRecipeScroll : RecipeScroll
-    {
-        [Constructable]
-        public LargeElegantAquariumRecipeScroll()
-            : base(155)
-        {
-        }
-
-        public LargeElegantAquariumRecipeScroll(Serial serial)
-            : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            reader.ReadInt();
         }
     }
 }

@@ -1,9 +1,9 @@
-using Server.Engines.Quests;
+using System;
 using Server.Gumps;
 using Server.Mobiles;
-using Server.Network;
-using System;
+using Server.Engines.Quests;
 using System.Collections.Generic;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -15,7 +15,7 @@ namespace Server.Items
         public ShrineOfSingularity() : base(0x48A8)
         {
             Movable = false;
-            Name = "Shrine Of Singularity";
+            Name = "Shrine Of Singularity";	
         }
 
         public ShrineOfSingularity(Serial serial)
@@ -23,48 +23,50 @@ namespace Server.Items
         {
         }
 
-        public override bool HandlesOnSpeech => true;
+        public override bool HandlesOnSpeech
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnSpeech(SpeechEventArgs e)
         {
             PlayerMobile pm = e.Mobile as PlayerMobile;
 
-            if (pm.AbyssEntry)
-            {
-                pm.SendLocalizedMessage(1112697);  //You enter a state of peaceful contemplation, focusing on the meaning of Singularity.
-            }
-            else if (!e.Handled && pm.InRange(Location, 2) && e.Speech.ToLower().Trim() == "unorus" && QuestHelper.CheckDoneOnce(pm, typeof(TheArisenQuest), null, false))
+            if (pm != null && !e.Handled && pm.InRange(Location, 2) && e.Speech.ToLower().Trim() == "unorus")
             {
                 e.Handled = true;
                 e.Mobile.PlaySound(0xF9);
 
-                var quest = QuestHelper.GetQuest<QuestOfSingularity>(pm);
+                QuestOfSingularity quest = GetSingularityQuest(pm);
 
                 if (HasDelay(pm) && pm.AccessLevel == AccessLevel.Player)
-                {
                     pm.PublicOverheadMessage(MessageType.Regular, 0x47E, 1112685); // You need more time to contemplate the Book of Circles before trying again.
-                }
+                else if (pm.AbyssEntry)
+                    pm.SendLocalizedMessage(1112697);  //You enter a state of peaceful contemplation, focusing on the meaning of Singularity.
                 else if (quest == null)
                 {
-                    quest = new QuestOfSingularity
-                    {
-                        Owner = pm,
-                        Quester = this
-                    };
+                    quest = new QuestOfSingularity();
+
+                    quest.Owner = pm;
+                    quest.Quester = this;
 
                     pm.SendGump(new MondainQuestGump(quest));
                 }
                 else if (quest.Completed)
-                {
                     pm.SendGump(new MondainQuestGump(quest, MondainQuestGump.Section.Complete, false, true));
-                }
                 else if (!pm.HasGump(typeof(QAndAGump)))
-                {
                     pm.SendGump(new QAndAGump(pm, quest));
-                }
             }
         }
 
-        private static readonly Dictionary<Mobile, DateTime> m_RestartTable = new Dictionary<Mobile, DateTime>();
+        private QuestOfSingularity GetSingularityQuest(PlayerMobile pm)
+        {
+            return QuestHelper.GetQuest(pm, typeof(QuestOfSingularity)) as QuestOfSingularity;
+        }
+
+        private static Dictionary<Mobile, DateTime> m_RestartTable = new Dictionary<Mobile, DateTime>();
 
         public static void AddToTable(Mobile from)
         {
@@ -97,9 +99,9 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
-            Timer.DelayCall(TimeSpan.FromSeconds(10), DefragDelays_Callback);
+            Timer.DelayCall(TimeSpan.FromSeconds(10), new TimerCallback(DefragDelays_Callback));
         }
 
         public override void Deserialize(GenericReader reader)
@@ -112,16 +114,12 @@ namespace Server.Items
 
             if (version == 0)
             {
-                Item book = new BookOfCircles
-                {
-                    Movable = false
-                };
+                Item book = new BookOfCircles();
+                book.Movable = false;
                 book.MoveToWorld(new Point3D(1000, 3991, -33), Map.TerMur);
 
-                book = new ShrineMantra
-                {
-                    Movable = false
-                };
+                book = new ShrineMantra();
+                book.Movable = false;
                 book.MoveToWorld(new Point3D(994, 3991, -33), Map.TerMur);
             }
 
@@ -135,7 +133,7 @@ namespace Server.Items
 
         public static void Initialize()
         {
-            if (Instance == null)
+            if (Core.SA && Instance == null)
             {
                 Instance = new ShrineOfSingularity();
                 Instance.MoveToWorld(new Point3D(995, 3802, -19), Map.TerMur);

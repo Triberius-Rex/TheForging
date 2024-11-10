@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Gumps
 {
     public delegate void WarningGumpCallback(Mobile from, bool okay, object state);
@@ -35,7 +37,7 @@ namespace Server.Gumps
             }
             else if (header.String != null)
             {
-                AddHtml(10, 10, width - 20, height - 80, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", headerColor, header.String), false, true);
+                AddHtml(10, 10, width - 20, height - 80, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", headerColor, header.String), false, true);
             }
 
             AddImageTiled(10, 40, width - 20, height - 80, 2624);
@@ -47,7 +49,7 @@ namespace Server.Gumps
             }
             else if (content.String != null)
             {
-                AddHtml(10, 40, width - 20, height - 80, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", contentColor, content.String), false, true);
+                AddHtml(10, 40, width - 20, height - 80, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", contentColor, content.String), false, true);
             }
 
             AddImageTiled(10, height - 30, width - 20, 20, 2624);
@@ -63,7 +65,7 @@ namespace Server.Gumps
             }
         }
 
-        public override void OnResponse(Network.NetState sender, RelayInfo info)
+        public override void OnResponse(Server.Network.NetState sender, RelayInfo info)
         {
             if (info.ButtonID == 1 && m_Callback != null)
                 m_Callback(sender.Mobile, true, m_State);

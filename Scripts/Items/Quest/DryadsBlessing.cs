@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class DryadsBlessing : PeerlessKey
@@ -6,8 +8,8 @@ namespace Server.Items
         public DryadsBlessing()
             : base(0x21C)
         {
-            Weight = 1.0;
-            Hue = 0x488; // TOOD check
+            this.Weight = 1.0;
+            this.Hue = 0x488; // TOOD check
         }
 
         public DryadsBlessing(Serial serial)
@@ -18,14 +20,14 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

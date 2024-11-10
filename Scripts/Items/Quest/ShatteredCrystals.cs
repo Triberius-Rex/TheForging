@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ShatteredCrystals : PeerlessKey
@@ -6,8 +8,8 @@ namespace Server.Items
         public ShatteredCrystals()
             : base(0x223F)
         {
-            Weight = 1;
-            Hue = 0x47E;
+            this.Weight = 1;
+            this.Hue = 0x47E;
         }
 
         public ShatteredCrystals(Serial serial)
@@ -15,18 +17,24 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074266;// shattered crystal
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074266;
+            }
+        }// shattered crystal
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

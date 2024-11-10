@@ -1,7 +1,8 @@
-using Server.Items;
 using System;
+using Server;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -23,7 +24,7 @@ namespace Server.Mobiles
 
         public void AddToPlan(object tp, int value, int cost)
         {
-            PlanningEntry entry = Entries.FirstOrDefault(e => e.TrainPoint == tp);
+            var entry = Entries.FirstOrDefault(e => e.TrainPoint == tp);
 
             if (entry != null)
                 Entries.Remove(entry);
@@ -32,13 +33,13 @@ namespace Server.Mobiles
 
             if (tp is MagicalAbility && (MagicalAbility)tp <= MagicalAbility.WrestlingMastery)
             {
-                TrainingPoint trainingPoint = PetTrainingHelper.GetTrainingPoint(tp);
+                var trainingPoint = PetTrainingHelper.GetTrainingPoint(tp);
 
-                foreach (PlanningEntry en in Entries)
+                foreach (var en in Entries)
                 {
                     if (trainingPoint.Requirements != null && trainingPoint.Requirements.Length > 0)
                     {
-                        foreach (TrainingPointRequirement req in trainingPoint.Requirements.Where(r => r != null))
+                        foreach (var req in trainingPoint.Requirements.Where(r => r != null))
                         {
                             if ((req.Requirement is WeaponAbility && en.TrainPoint is WeaponAbility) ||
                                (req.Requirement is SpecialAbility && en.TrainPoint is SpecialAbility) ||
@@ -96,9 +97,9 @@ namespace Server.Mobiles
 
             writer.Write(Entries.Count);
 
-            for (int i = 0; i < Entries.Count; i++)
+            for(int i = 0; i < Entries.Count; i++)
             {
-                PlanningEntry entry = Entries[i];
+                var entry = Entries[i];
                 object o = entry.TrainPoint;
 
                 if (o is MagicalAbility)

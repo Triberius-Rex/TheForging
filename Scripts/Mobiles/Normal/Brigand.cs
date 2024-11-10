@@ -18,13 +18,13 @@ namespace Server.Mobiles
             {
                 Body = 0x191;
                 Name = NameList.RandomName("female");
-                SetWearable(new Skirt(), Utility.RandomNeutralHue(), dropChance: 1);
+                AddItem(new Skirt(Utility.RandomNeutralHue()));
             }
             else
             {
                 Body = 0x190;
                 Name = NameList.RandomName("male");
-                SetWearable(new ShortPants(), Utility.RandomNeutralHue(), dropChance: 1);
+                AddItem(new ShortPants(Utility.RandomNeutralHue()));
             }
 
             SetStr(86, 100);
@@ -43,12 +43,35 @@ namespace Server.Mobiles
             Fame = 1000;
             Karma = -1000;
 
-            SetWearable(new Boots(), Utility.RandomNeutralHue(), dropChance: 1);
-			SetWearable(new FancyShirt(), dropChance: 1);
-			SetWearable(new Bandana(), dropChance: 1);
+            AddItem(new Boots(Utility.RandomNeutralHue()));
+            AddItem(new FancyShirt());
+            AddItem(new Bandana());
 
-			SetWearable((Item)Activator.CreateInstance(Utility.RandomList(_WeaponsList)), dropChance: 1);
-			
+            switch ( Utility.Random(7))
+            {
+                case 0:
+                    AddItem(new Longsword());
+                    break;
+                case 1:
+                    AddItem(new Cutlass());
+                    break;
+                case 2:
+                    AddItem(new Broadsword());
+                    break;
+                case 3:
+                    AddItem(new Axe());
+                    break;
+                case 4:
+                    AddItem(new Club());
+                    break;
+                case 5:
+                    AddItem(new Dagger());
+                    break;
+                case 6:
+                    AddItem(new Spear());
+                    break;
+            }
+
             Utility.AssignRandomHair(this);
         }
 
@@ -57,17 +80,30 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool ClickTitle => false;
-        public override bool AlwaysMurderer => true;
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-        public override bool ShowFameTitle => false;
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		private static readonly Type[] _WeaponsList =
-		{
-			typeof(Longsword), typeof(Cutlass), typeof(Broadsword), typeof(Axe), typeof(Club), typeof(Dagger), typeof(Spear)
-		};
-
-		public override void OnDeath(Container c)
+        public override void OnDeath(Container c)
         {
             base.OnDeath(c);
 
@@ -83,12 +119,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

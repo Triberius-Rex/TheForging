@@ -1,9 +1,9 @@
-using Server.Engines.Craft;
+using System;
 using Server.Engines.Quests;
 using Server.Engines.Quests.Hag;
 using Server.Mobiles;
 using Server.Network;
-using System;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
@@ -23,7 +23,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public ItemQuality Quality { get { return _Quality; } set { _Quality = value; InvalidateProperties(); } }
 
-        public bool PlayerConstructed => true;
+        public bool PlayerConstructed { get { return true; } }
 
         [Constructable]
         public Spyglass()
@@ -91,7 +91,7 @@ namespace Server.Items
         {
             if (_Resource > CraftResource.Iron)
             {
-                list.Add(1053099, "#{0}\t{1}", CraftResources.GetLocalizationNumber(_Resource), string.Format("#{0}", LabelNumber.ToString())); // ~1_oretype~ ~2_armortype~
+                list.Add(1053099, "#{0}\t{1}", CraftResources.GetLocalizationNumber(_Resource), String.Format("#{0}", LabelNumber.ToString())); // ~1_oretype~ ~2_armortype~
             }
             else
             {
@@ -121,7 +121,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)_Resource);
             writer.Write(_Crafter);

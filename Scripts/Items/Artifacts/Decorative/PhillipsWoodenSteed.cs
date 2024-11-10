@@ -1,13 +1,15 @@
+using System;
+
 namespace Server.Items
 {
     public class PhillipsWoodenSteed : MonsterStatuette
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public PhillipsWoodenSteed()
             : base(MonsterStatuetteType.PhillipsWoodenSteed)
         {
-            LootType = LootType.Regular;
+            this.LootType = LootType.Regular;
         }
 
         public PhillipsWoodenSteed(Serial serial)
@@ -15,13 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

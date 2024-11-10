@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class HolidayBell : Item
     {
@@ -43,11 +45,11 @@
         public HolidayBell(string maker)
             : base(0x1C12)
         {
-            m_Maker = maker;
+            this.m_Maker = maker;
 
-            LootType = LootType.Blessed;
-            Hue = m_Hues[Utility.Random(m_Hues.Length)];
-            SoundID = 0x0F5 + Utility.Random(14);
+            this.LootType = LootType.Blessed;
+            this.Hue = m_Hues[Utility.Random(m_Hues.Length)];
+            this.SoundID = 0x0F5 + Utility.Random(14);
         }
 
         public HolidayBell(Serial serial)
@@ -60,12 +62,12 @@
         {
             get
             {
-                return m_SoundID;
+                return this.m_SoundID;
             }
             set
             {
-                m_SoundID = value;
-                InvalidateProperties();
+                this.m_SoundID = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -73,33 +75,39 @@
         {
             get
             {
-                return m_Maker;
+                return this.m_Maker;
             }
             set
             {
-                m_Maker = value;
+                this.m_Maker = value;
             }
         }
-        public override string DefaultName => string.Format("A Holiday Bell From {0}", Giver);
+        public override string DefaultName
+        {
+            get
+            {
+                return String.Format("A Holiday Bell From {0}", this.Giver);
+            }
+        }
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.SendLocalizedMessage(500446); // That is too far away.
             }
             else
-                from.PlaySound(m_SoundID);
+                from.PlaySound(this.m_SoundID);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Maker);
+            writer.Write((string)this.m_Maker);
 
-            writer.WriteEncodedInt(m_SoundID);
+            writer.WriteEncodedInt((int)this.m_SoundID);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -108,10 +116,10 @@
 
             int version = reader.ReadInt();
 
-            m_Maker = reader.ReadString();
-            m_SoundID = reader.ReadEncodedInt();
+            this.m_Maker = reader.ReadString();
+            this.m_SoundID = reader.ReadEncodedInt();
 
-            Utility.Intern(ref m_Maker);
+            Utility.Intern(ref this.m_Maker);
         }
     }
 }

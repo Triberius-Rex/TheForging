@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
+
 using Server.Items;
 using Server.Network;
 using Server.Spells;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
@@ -47,6 +48,8 @@ namespace Server.Mobiles
             Fame = 15000;
             Karma = -15000;
 
+            VirtualArmor = 60;
+
             Tamable = false;
 
             SetWeaponAbility(WeaponAbility.Bladeweave);
@@ -57,34 +60,46 @@ namespace Server.Mobiles
         public StygianDragon(Serial serial)
             : base(serial)
         {
-        }
+        }        
 
-        public override Type[] UniqueSAList => new[]
+        public override Type[] UniqueSAList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(BurningAmber), typeof(DraconisWrath), typeof(DragonHideShield), typeof(FallenMysticsSpellbook),
                     typeof(LifeSyphon), typeof(GargishSignOfOrder), typeof(HumanSignOfOrder), typeof(VampiricEssence)
                 };
-        public override Type[] SharedSAList => new[]
+            }
+        }
+        public override Type[] SharedSAList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(AxesOfFury), typeof(SummonersKilt), typeof(GiantSteps),
                     typeof(TokenOfHolyFavor)
                 };
+            }
+        }
 
-        public override bool AlwaysMurderer => true;
-        public override bool Unprovokable => false;
-        public override bool BardImmune => false;
-        public override bool AutoDispel => !Controlled;
-        public override int Meat => 19;
-        public override int Hides => 30;
-        public override HideType HideType => HideType.Barbed;
-        public override int Scales => 7;
-        public override ScaleType ScaleType => (Body == 12 ? ScaleType.Yellow : ScaleType.Red);
-        public override int DragonBlood => 48;
-        public override bool CanFlee => false;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override bool Unprovokable { get { return false; } }
+        public override bool BardImmune { get { return false; } }
+        public override bool AutoDispel { get { return !Controlled; } }
+        public override int Meat { get { return 19; } }
+        public override int Hides { get { return 30; } }
+        public override HideType HideType { get { return HideType.Barbed; } }
+        public override int Scales { get { return 7; } }
+        public override ScaleType ScaleType { get { return (Body == 12 ? ScaleType.Yellow : ScaleType.Red); } }
+        public override int DragonBlood { get { return 48; } }
+        public override bool CanFlee { get { return false; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss, 4);
+            AddLoot(LootPack.AosSuperBoss, 4);
             AddLoot(LootPack.Gems, 8);
         }
 
@@ -113,15 +128,15 @@ namespace Server.Mobiles
             base.OnDeath(c);
 
             c.DropItem(new StygianDragonHead());
-
-            if (Paragon.ChestChance > Utility.RandomDouble())
-                c.DropItem(new ParagonChest(Name, 5));
+			
+			if ( Paragon.ChestChance > Utility.RandomDouble() )
+            	c.DropItem( new ParagonChest( Name, 5 ) );
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -141,16 +156,16 @@ namespace Server.Mobiles
 
         public class CrimsonMeteorTimer : Timer
         {
-            private readonly Mobile m_From;
-            private readonly Map m_Map;
+            private Mobile m_From;
+            private Map m_Map;
             private int m_Count;
-            private readonly int m_MaxCount;
+            private int m_MaxCount;
             private bool m_DoneDamage;
             private Point3D m_LastTarget;
             private Rectangle2D m_ShowerArea;
-            private readonly List<Mobile> m_ToDamage;
+            private List<Mobile> m_ToDamage;
 
-            private readonly int m_MinDamage, m_MaxDamage;
+            private int m_MinDamage, m_MaxDamage;
 
             public CrimsonMeteorTimer(Mobile from, Point3D loc, int min, int max)
                 : base(TimeSpan.FromMilliseconds(250.0), TimeSpan.FromMilliseconds(250.0))
@@ -189,17 +204,16 @@ namespace Server.Mobiles
 
                 if (0.33 > Utility.RandomDouble())
                 {
-                    FireField field = new FireField(m_From, 25, Utility.RandomBool());
+                    var field = new FireField(m_From, 25, Utility.RandomBool());
                     field.MoveToWorld(m_LastTarget, m_Map);
                 }
 
                 Point3D start = new Point3D();
-                Point3D finish = new Point3D
-                {
-                    X = m_ShowerArea.X + Utility.Random(m_ShowerArea.Width),
-                    Y = m_ShowerArea.Y + Utility.Random(m_ShowerArea.Height),
-                    Z = m_From.Z
-                };
+                Point3D finish = new Point3D();
+
+                finish.X = m_ShowerArea.X + Utility.Random(m_ShowerArea.Width);
+                finish.Y = m_ShowerArea.Y + Utility.Random(m_ShowerArea.Height);
+                finish.Z = m_From.Z;
 
                 SpellHelper.AdjustField(ref finish, m_Map, 16, false);
 
@@ -248,7 +262,7 @@ namespace Server.Mobiles
         #region Fire Column
         public void DoFireColumn()
         {
-            Map map = Map;
+            var map = Map;
 
             if (map == null)
                 return;
@@ -274,7 +288,7 @@ namespace Server.Mobiles
             Point3D p = new Point3D(x, y, Z);
             SpellHelper.AdjustField(ref p, map, 16, false);
 
-            FireField fire = new FireField(this, Utility.RandomMinMax(25, 32), south);
+            var fire = new FireField(this, Utility.RandomMinMax(25, 32), south);
             fire.MoveToWorld(p, map);
 
             for (int i = 0; i < 7; i++)
@@ -293,9 +307,9 @@ namespace Server.Mobiles
         #region Fire Field
         public class FireField : Item
         {
-            private readonly Mobile m_Owner;
-            private readonly Timer m_Timer;
-            private readonly DateTime m_Destroy;
+            private Mobile m_Owner;
+            private Timer m_Timer;
+            private DateTime m_Destroy;
 
             [Constructable]
             public FireField(Mobile owner, int duration, bool south)
@@ -305,7 +319,7 @@ namespace Server.Mobiles
                 m_Destroy = DateTime.UtcNow + TimeSpan.FromSeconds(duration);
 
                 m_Owner = owner;
-                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), OnTick);
+                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), new TimerCallback(OnTick));
             }
 
             private static int GetItemID(bool south)
@@ -348,7 +362,7 @@ namespace Server.Mobiles
 
                     eable.Free();
 
-                    foreach (Mobile mob in list)
+                    foreach (var mob in list)
                     {
                         DealDamage(mob);
                     }
@@ -403,8 +417,8 @@ namespace Server.Mobiles
 
         private class StygianFireballTimer : Timer
         {
-            private readonly StygianDragon m_Dragon;
-            private readonly Mobile m_Combatant;
+            private StygianDragon m_Dragon;
+            private Mobile m_Combatant;
             private int m_Ticks;
 
             public StygianFireballTimer(StygianDragon dragon, Mobile combatant)
@@ -424,7 +438,7 @@ namespace Server.Mobiles
                 {
                     int damage = Utility.RandomMinMax(120, 150);
 
-                    DelayCall(TimeSpan.FromSeconds(.20), new TimerStateCallback(DoDamage_Callback), new object[] { m_Combatant, m_Dragon, damage });
+                    Timer.DelayCall(TimeSpan.FromSeconds(.20), new TimerStateCallback(DoDamage_Callback), new object[] { m_Combatant, m_Dragon, damage });
 
                     Stop();
                 }

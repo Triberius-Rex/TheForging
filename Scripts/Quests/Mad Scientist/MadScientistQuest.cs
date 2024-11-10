@@ -1,9 +1,9 @@
-using Server.Commands;
-using Server.Items;
-using Server.Mobiles;
-using Server.Network;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Server.Items;
+using Server.Network;
+using Server.Commands;
+using Server.Mobiles;
 using System.Linq;
 
 namespace Server.Engines.Quests
@@ -13,7 +13,7 @@ namespace Server.Engines.Quests
         #region Generation
         public static void Initialize()
         {
-            CommandSystem.Register("GenSutek", AccessLevel.Developer, GenQuest_Command);
+            CommandSystem.Register("GenSutek", AccessLevel.Developer, new CommandEventHandler(GenQuest_Command));
         }
 
         private static void GenQuest_Command(CommandEventArgs e)
@@ -25,18 +25,16 @@ namespace Server.Engines.Quests
                 WeakEntityCollection.Add("sa", new SutekIngredientItem(def));
             }
 
-            XmlSpawner sp = new XmlSpawner("Sutek")
-            {
-                SpawnRange = 5,
-                HomeRange = 5
-            };
+            XmlSpawner sp = new XmlSpawner("Sutek");
+            sp.SpawnRange = 5;
+            sp.HomeRange = 5;
             sp.MoveToWorld(new Point3D(917, 594, -14), Map.TerMur);
             sp.Respawn();
             WeakEntityCollection.Add("sa", sp);
 
             List<Item> toDelete = new List<Item>(World.Items.Values.Where(i => i is XmlSpawner && (i.Name == "PerfectTimingSpawner" || i.Name == "PerfectTimingSpawner2")));
 
-            foreach (Item item in toDelete)
+            foreach (var item in toDelete)
             {
                 item.Delete();
             }
@@ -50,7 +48,7 @@ namespace Server.Engines.Quests
         public static readonly int NeededIngredients = 20;
         public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(15.0);
 
-        public static readonly SutekIngredientInfo[] m_Ingredients =
+        public static readonly SutekIngredientInfo[] m_Ingredients = new SutekIngredientInfo[]
         {
             new SutekIngredientInfo(SutekIngredient.Feathers,      new Point3D(921, 598, -8),    0x1BD3, 1023578),
             new SutekIngredientInfo(SutekIngredient.Shafts,        new Point3D(918, 591, -14),   0x1BD6, 1027125),
@@ -111,7 +109,7 @@ namespace Server.Engines.Quests
             new SutekIngredientInfo(SutekIngredient.Nails,         new Point3D(915, 589, -14),   0x102E, 1024142),
         };
 
-        private static readonly Dictionary<Mobile, QuestContext> m_Table = new Dictionary<Mobile, QuestContext>();
+        private static Dictionary<Mobile, QuestContext> m_Table = new Dictionary<Mobile, QuestContext>();
         #endregion
 
         public static bool QuestStarted(Mobile from)
@@ -156,22 +154,22 @@ namespace Server.Engines.Quests
 
             QuestContext context = m_Table[from];
 
-            from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1112821, string.Format("#{0}", (int)context.CurrentIngredient)); // I need to add some ~1_INGREDIENT~.
+            from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1112821, String.Format("#{0}", (int)context.CurrentIngredient)); // I need to add some ~1_INGREDIENT~.
         }
 
         public class QuestContext
         {
-            private readonly Mobile m_Owner;
+            private Mobile m_Owner;
             private int m_IngredientsLeft = NeededIngredients;
             private SutekIngredient m_CurrentIngredient;
             private Timer m_ExpireTimer;
-            private readonly ClockworkMechanism m_Mechanism;
+            private ClockworkMechanism m_Mechanism;
 
-            public Mobile Owner => m_Owner;
-            public int IngredientsLeft => m_IngredientsLeft;
-            public SutekIngredient CurrentIngredient => m_CurrentIngredient;
-            public Timer ExpireTimer => m_ExpireTimer;
-            public ClockworkMechanism Mechanism => m_Mechanism;
+            public Mobile Owner { get { return m_Owner; } }
+            public int IngredientsLeft { get { return m_IngredientsLeft; } }
+            public SutekIngredient CurrentIngredient { get { return m_CurrentIngredient; } }
+            public Timer ExpireTimer { get { return m_ExpireTimer; } }
+            public ClockworkMechanism Mechanism { get { return m_Mechanism; } }
 
             public QuestContext(Mobile from, ClockworkMechanism mechanism)
             {
@@ -184,12 +182,12 @@ namespace Server.Engines.Quests
                 if (m_ExpireTimer != null)
                     m_ExpireTimer.Stop();
 
-                m_ExpireTimer = Timer.DelayCall(Timeout, OnExpired);
+                m_ExpireTimer = Timer.DelayCall(Timeout, new TimerCallback(OnExpired));
 
                 SutekIngredient[] ingredients = (SutekIngredient[])Enum.GetValues(typeof(SutekIngredient));
                 m_CurrentIngredient = ingredients[Utility.Random(ingredients.Length)];
 
-                m_Owner.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1112821, string.Format("#{0}", (int)m_CurrentIngredient)); // I need to add some ~1_INGREDIENT~.
+                m_Owner.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1112821, String.Format("#{0}", (int)m_CurrentIngredient)); // I need to add some ~1_INGREDIENT~.
 
                 m_IngredientsLeft--;
             }
@@ -221,6 +219,6 @@ namespace Server.Engines.Quests
                     StartTimer();
                 }
             }
-        }
+        }        
     }
 }

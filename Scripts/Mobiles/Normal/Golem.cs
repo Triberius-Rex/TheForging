@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server.Items;
+using Server.Network;
 
 namespace Server.Mobiles
 {
@@ -7,7 +8,13 @@ namespace Server.Mobiles
     public class Golem : BaseCreature, IRepairableMobile
     {
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual Type RepairResource => typeof(IronIngot);
+        public virtual Type RepairResource
+        {
+            get
+            {
+                return typeof(IronIngot);
+            }
+        }
 
         public double Scalar(Mobile m)
         {
@@ -38,7 +45,7 @@ namespace Server.Mobiles
         [Constructable]
         public Golem(bool summoned, double scalar)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.4, 0.8)
-        {
+        {               
             Name = "a golem";
             Body = 752;
 
@@ -48,7 +55,7 @@ namespace Server.Mobiles
 
             if (summoned)
             {
-                Hue = 2101;
+                Hue = 2101;               
 
                 SetResistance(ResistanceType.Fire, 50, 65);
                 SetResistance(ResistanceType.Poison, 75, 85);
@@ -74,6 +81,8 @@ namespace Server.Mobiles
 
                 Fame = 3500;
                 Karma = -3500;
+
+                SpawnPackItems();
             }
 
             SetDamage(13, 24);
@@ -89,34 +98,21 @@ namespace Server.Mobiles
             SetSpecialAbility(SpecialAbility.ColossalBlow);
         }
 
-        public override void GenerateLoot()
+        public virtual void SpawnPackItems()
         {
-            AddLoot(LootPack.LootItem<IronIngot>(Utility.RandomMinMax(13, 21), true));
-            AddLoot(LootPack.LootItem<PowerCrystal>(1.0));
-            AddLoot(LootPack.LootItem<ClockworkAssembly>(15.0));
-            AddLoot(LootPack.LootItem<ArcaneGem>(20.0, 1, false, true));
-            AddLoot(LootPack.LootItem<Gears>(25.0));
+            PackItem(new IronIngot(Utility.RandomMinMax(13, 21)));
 
-            AddLoot(LootPack.LootItemCallback(SpawnGears, 5.0, 1, false, false));
-        }
+            if (0.1 > Utility.RandomDouble())
+                PackItem(new PowerCrystal());
 
-        public static Item SpawnGears(IEntity e)
-        {
-            if (!(e is BaseCreature) || !((BaseCreature)e).IsParagon)
-            {
-                if (0.75 > Utility.RandomDouble())
-                {
-                    return DawnsMusicGear.RandomCommon;
-                }
-                else
-                {
-                    return DawnsMusicGear.RandomUncommon;
-                }
-            }
-            else
-            {
-                return DawnsMusicGear.RandomRare;
-            }
+            if (0.15 > Utility.RandomDouble())
+                PackItem(new ClockworkAssembly());
+
+            if (0.2 > Utility.RandomDouble())
+                PackItem(new ArcaneGem());
+
+            if (0.25 > Utility.RandomDouble())
+                PackItem(new Gears());
         }
 
         public Golem(Serial serial)
@@ -124,14 +120,34 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool IsScaredOfScaryThings => false;
-        public override bool IsScaryToPets => !Controlled;
-        public override bool IsBondable => false;
-        public override FoodType FavoriteFood => FoodType.None;
-        public override bool DeleteOnRelease => true;
-        public override bool AutoDispel => !Controlled;
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override bool IsScaredOfScaryThings { get { return false; } }
+        public override bool IsScaryToPets { get { return !Controlled; } }
+        public override bool IsBondable { get { return false; } }
+        public override FoodType FavoriteFood { get { return FoodType.None; } }
+        public override bool CanBeDistracted { get { return false; } }
+        public override bool DeleteOnRelease { get { return true; } }
+        public override bool AutoDispel { get { return !Controlled; } }
+        public override bool BleedImmune { get { return true; } }
+        public override bool BardImmune { get { return !Core.AOS || !Controlled; } }
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (0.05 > Utility.RandomDouble() && !Controlled)
+            {
+                if (!IsParagon)
+                {
+                    if (0.75 > Utility.RandomDouble())
+                        c.DropItem(DawnsMusicGear.RandomCommon);
+                    else
+                        c.DropItem(DawnsMusicGear.RandomUncommon);
+                }
+                else
+                    c.DropItem(DawnsMusicGear.RandomRare);
+            }
+        }
 
         public override int GetAngerSound()
         {
@@ -197,7 +213,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

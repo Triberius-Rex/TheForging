@@ -1,20 +1,26 @@
-using Server.Mobiles;
-using Server.Network;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Spells.SkillMasteries
 {
     public class StaggerSpell : SkillMasteryMove
     {
-        public override int BaseMana => 20;
-        public override double RequiredSkill => 90.0;
+        public override int BaseMana { get { return 20; } }
+        public override double RequiredSkill { get { return 90.0; } }
 
-        public override SkillName MoveSkill => SkillName.Macing;
-        public override TextDefinition AbilityMessage => new TextDefinition(1155980);  // *You ready yourself to stagger your opponent!*
-        public override TimeSpan CooldownPeriod => TimeSpan.FromSeconds(2);
+        public override SkillName MoveSkill { get { return SkillName.Macing; } }
+        public override TextDefinition AbilityMessage { get { return new TextDefinition(1155980); } } // *You ready yourself to stagger your opponent!*
+        public override TimeSpan CooldownPeriod { get { return TimeSpan.FromSeconds(2); } }
 
         private static Dictionary<Mobile, int> _Table;
+
+        public StaggerSpell()
+        {
+        }
 
         public override bool Validate(Mobile from)
         {

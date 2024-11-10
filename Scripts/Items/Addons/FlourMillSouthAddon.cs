@@ -1,6 +1,6 @@
-using Server.Network;
 using System;
 using System.Collections.Generic;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -17,9 +17,9 @@ namespace Server.Items
         [Constructable]
         public FlourMillSouthAddon()
         {
-            AddComponent(new AddonComponent(0x192C), 0, -1, 0);
-            AddComponent(new AddonComponent(0x192E), 0, 0, 0);
-            AddComponent(new AddonComponent(0x1930), 0, 1, 0);
+            this.AddComponent(new AddonComponent(0x192C), 0, -1, 0);
+            this.AddComponent(new AddonComponent(0x192E), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x1930), 0, 1, 0);
         }
 
         public FlourMillSouthAddon(Serial serial)
@@ -27,50 +27,82 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new FlourMillSouthDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new FlourMillSouthDeed();
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public int MaxFlour => 2;
+        public int MaxFlour
+        {
+            get
+            {
+                return 2;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public int CurFlour
         {
             get
             {
-                return m_Flour;
+                return this.m_Flour;
             }
             set
             {
-                m_Flour = Math.Max(0, Math.Min(value, MaxFlour));
-                UpdateStage();
+                this.m_Flour = Math.Max(0, Math.Min(value, this.MaxFlour));
+                this.UpdateStage();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool HasFlour => (m_Flour > 0);
+        public bool HasFlour
+        {
+            get
+            {
+                return (this.m_Flour > 0);
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsFull => (m_Flour >= MaxFlour);
+        public bool IsFull
+        {
+            get
+            {
+                return (this.m_Flour >= this.MaxFlour);
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsWorking => (m_Timer != null);
+        public bool IsWorking
+        {
+            get
+            {
+                return (this.m_Timer != null);
+            }
+        }
         public void StartWorking(Mobile from)
         {
-            if (IsWorking)
+            if (this.IsWorking)
                 return;
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerStateCallback(FinishWorking_Callback), from);
-            UpdateStage();
+            this.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerStateCallback(FinishWorking_Callback), from);
+            this.UpdateStage();
         }
 
         public void UpdateStage()
         {
-            if (IsWorking)
-                UpdateStage(FlourMillStage.Working);
-            else if (HasFlour)
-                UpdateStage(FlourMillStage.Filled);
+            if (this.IsWorking)
+                this.UpdateStage(FlourMillStage.Working);
+            else if (this.HasFlour)
+                this.UpdateStage(FlourMillStage.Filled);
             else
-                UpdateStage(FlourMillStage.Empty);
+                this.UpdateStage(FlourMillStage.Empty);
         }
 
         public void UpdateStage(FlourMillStage stage)
         {
-            List<AddonComponent> components = Components;
+            List<AddonComponent> components = this.Components;
+
+            int[][] stageTable = m_StageTable;
 
             for (int i = 0; i < components.Count; ++i)
             {
@@ -79,7 +111,7 @@ namespace Server.Items
                 if (component == null)
                     continue;
 
-                int[] itemTable = FindItemTable(component.ItemID);
+                int[] itemTable = this.FindItemTable(component.ItemID);
 
                 if (itemTable != null)
                     component.ItemID = itemTable[(int)stage];
@@ -88,21 +120,21 @@ namespace Server.Items
 
         public override void OnComponentUsed(AddonComponent c, Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 4) || !from.InLOS(this))
+            if (!from.InRange(this.GetWorldLocation(), 4) || !from.InLOS(this))
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
-            else if (!IsFull)
+            else if (!this.IsFull)
                 from.SendLocalizedMessage(500997); // You need more wheat to make a sack of flour.
             else
-                StartWorking(from);
+                this.StartWorking(from);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_Flour);
+            writer.Write((int)this.m_Flour);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -111,38 +143,37 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
-                        m_Flour = reader.ReadInt();
+                        this.m_Flour = reader.ReadInt();
                         break;
                     }
             }
 
-            UpdateStage();
+            this.UpdateStage();
         }
 
         private void FinishWorking_Callback(object state)
         {
-            if (m_Timer != null)
+            if (this.m_Timer != null)
             {
-                m_Timer.Stop();
-                m_Timer = null;
+                this.m_Timer.Stop();
+                this.m_Timer = null;
             }
 
             Mobile from = state as Mobile;
 
-            if (from != null && !from.Deleted && !Deleted && IsFull)
+            if (from != null && !from.Deleted && !this.Deleted && this.IsFull)
             {
-                SackFlour flour = new SackFlour
-                {
-                    ItemID = (Utility.RandomBool() ? 4153 : 4165)
-                };
+                SackFlour flour = new SackFlour();
+
+                flour.ItemID = (Utility.RandomBool() ? 4153 : 4165);
 
                 if (from.PlaceInBackpack(flour))
                 {
-                    m_Flour = 0;
+                    this.m_Flour = 0;
                 }
                 else
                 {
@@ -151,7 +182,7 @@ namespace Server.Items
                 }
             }
 
-            UpdateStage();
+            this.UpdateStage();
         }
 
         private int[] FindItemTable(int itemID)
@@ -183,13 +214,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new FlourMillSouthAddon();
-        public override int LabelNumber => 1044348;// flour mill (south)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new FlourMillSouthAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044348;
+            }
+        }// flour mill (south)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

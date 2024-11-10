@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -18,8 +19,8 @@ namespace Server.Mobiles
             SetInt(285, 310);
 
             SetHits(150, 160);
-            SetMana(285, 310);
-            SetStam(145, 165);
+			SetMana(285, 310);
+			SetStam(145, 165);
 
             SetDamage(15, 18);
 
@@ -50,16 +51,47 @@ namespace Server.Mobiles
         {
         }
 
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Arachnid;
-        public override Poison PoisonImmune => Poison.Regular;
-        public override Poison HitPoison => Poison.Regular;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Arachnid;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Regular;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Regular;
+            }
+        }
         public override void GenerateLoot()
         {
+            PackItem(new SpidersSilk(8));
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<SpidersSilk>(8, true));
-            AddLoot(LootPack.LootItem<LuckyCoin>(1.0));
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (!Controlled && Utility.RandomDouble() < 0.01)
+                c.DropItem(new LuckyCoin());
         }
 
         public override int GetIdleSound()
@@ -85,13 +117,24 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2);
+            writer.Write((int)2);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0)
+            {
+                Hue = 0;
+                Body = 736;
+            }
+
+            if (version == 1 && (AbilityProfile == null || AbilityProfile.MagicalAbility == MagicalAbility.None))
+            {
+                SetMagicalAbility(MagicalAbility.Poisoning);
+            }
         }
     }
 }

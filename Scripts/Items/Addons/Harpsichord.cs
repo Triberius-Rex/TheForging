@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -22,7 +23,7 @@ namespace Server.Items
 
     public class HarpsichordRoll : Item
     {
-        public override int LabelNumber => 1098233;  // An Harpsichord Roll
+        public override int LabelNumber { get { return 1098233; } } // An Harpsichord Roll
 
         private MusicName m_Music;
 
@@ -78,7 +79,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write((int)m_Music);
         }
@@ -128,12 +129,12 @@ namespace Server.Items
 
     public class HarpsichordAddon : BaseAddon
     {
-        public override bool ForceShowProperties => false;
-        public override bool RetainDeedHue => true;
+        public override bool ForceShowProperties { get { return false; } }
+        public override bool RetainDeedHue { get { return true; } }
 
         public List<MusicName> List;
 
-        public override BaseAddonDeed Deed => new HarpsichordAddonDeed((HarpsichordColor)Hue, List);
+        public override BaseAddonDeed Deed { get { return new HarpsichordAddonDeed((HarpsichordColor)Hue, List); } }
 
         [Constructable]
         public HarpsichordAddon(HarpsichordColor hue, DirectionType type, List<MusicName> list)
@@ -278,17 +279,17 @@ namespace Server.Items
                         }
                 }
             }
-        }
+        }        
     }
 
     public class HarpsichordAddonDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1152937;  // Harpsichord Deed
+        public override int LabelNumber { get { return 1152937; } } // Harpsichord Deed
 
         private DirectionType _Direction;
         private List<MusicName> _List;
 
-        public override BaseAddon Addon => new HarpsichordAddon((HarpsichordColor)Hue, _Direction, _List);
+        public override BaseAddon Addon { get { return new HarpsichordAddon((HarpsichordColor)Hue, _Direction, _List); } }
 
         [Constructable]
         public HarpsichordAddonDeed()

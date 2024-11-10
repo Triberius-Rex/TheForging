@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class AppleTrunkAddon : BaseAddon
@@ -6,7 +8,7 @@ namespace Server.Items
         public AppleTrunkAddon()
             : base()
         {
-            AddComponent(new LocalizedAddonComponent(0xD98, 1076785), 0, 0, 0);
+            this.AddComponent(new LocalizedAddonComponent(0xD98, 1076785), 0, 0, 0);
         }
 
         public AppleTrunkAddon(Serial serial)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new AppleTrunkDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new AppleTrunkDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -36,7 +44,7 @@ namespace Server.Items
         public AppleTrunkDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public AppleTrunkDeed(Serial serial)
@@ -44,8 +52,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new AppleTrunkAddon();
-        public override int LabelNumber => 1076785;// Apple Trunk
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new AppleTrunkAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076785;
+            }
+        }// Apple Trunk
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

@@ -1,5 +1,6 @@
-using Server.Commands;
+using System;
 using Server.Regions;
+using Server.Commands;
 
 namespace Server
 {
@@ -7,14 +8,14 @@ namespace Server
     {
         public static void Initialize()
         {
-            CommandSystem.Register("GetLocation", AccessLevel.Administrator, GetLocation_OnCommand);
+            CommandSystem.Register("GetLocation", AccessLevel.Administrator, new CommandEventHandler(GetLocation_OnCommand));
         }
 
-        private readonly string m_RegionName;
-        private readonly Rectangle2D[] m_Bounds;
+        private string m_RegionName;
+        private Rectangle2D[] m_Bounds;
 
-        public string RegionName => m_RegionName;
-        public Rectangle2D[] Bounds => m_Bounds;
+        public string RegionName { get { return m_RegionName; } }
+        public Rectangle2D[] Bounds { get { return m_Bounds; } }
 
         public WorldLocationInfo(string regionName, params Rectangle2D[] bounds)
         {
@@ -22,13 +23,13 @@ namespace Server
             m_Bounds = bounds;
         }
 
-        public static WorldLocationInfo[][] Locations => m_Locations;
-        private static readonly WorldLocationInfo[][] m_Locations = new[]
-        {
-            new[] // Felucca
+        public static WorldLocationInfo[][] Locations { get { return m_Locations; } }
+        private static WorldLocationInfo[][] m_Locations = new WorldLocationInfo[][]
+		{
+			new WorldLocationInfo[] // Felucca
 			{
-                new WorldLocationInfo("an island southeast of Britain", new Rectangle2D(1620, 1900, 594, 150),
-                                                                        new Rectangle2D(1810, 2040, 200, 120),
+                new WorldLocationInfo("an island southeast of Britain", new Rectangle2D(1620, 1900, 594, 150), 
+                                                                        new Rectangle2D(1810, 2040, 200, 120), 
                                                                         new Rectangle2D(1980, 2040, 250, 380)),
 
                 new WorldLocationInfo("near Buccaneer's Den", new Rectangle2D(2560, 1900, 400, 500)),
@@ -63,7 +64,7 @@ namespace Server
 
                 new WorldLocationInfo("a forest east of cove", new Rectangle2D(2210, 1030, 600, 240)),
                 new WorldLocationInfo("a forest north of Minoc", new Rectangle2D(2300, 0, 500, 370)),
-                new WorldLocationInfo("a forest east of Minoc", new Rectangle2D(2300, 370, 500, 230)),
+				new WorldLocationInfo("a forest east of Minoc", new Rectangle2D(2300, 370, 500, 230)),
                 new WorldLocationInfo("a forest near Minoc and Vesper", new Rectangle2D(2230, 520, 620, 510)),
 
                 new WorldLocationInfo("a forest north of Vesper", new Rectangle2D(2800, 0, 700, 832)),
@@ -84,11 +85,14 @@ namespace Server
                                                                            new Rectangle2D(5700, 2300, 440, 260)),
 
                 new WorldLocationInfo("somewhere in the Lost Lands", new Rectangle2D(5120, 2300, 1020, 1800))
-            },
-            new[] // Trammel
+
+                //new WorldLocationInfo("", new Rectangle2D()),
+				
+			},
+			new WorldLocationInfo[] // Trammel
 			{
-                new WorldLocationInfo("an island southeast of Britain", new Rectangle2D(1620, 1900, 594, 150),
-                                                                        new Rectangle2D(1810, 2040, 200, 120),
+                new WorldLocationInfo("an island southeast of Britain", new Rectangle2D(1620, 1900, 594, 150), 
+                                                                        new Rectangle2D(1810, 2040, 200, 120), 
                                                                         new Rectangle2D(1980, 2040, 250, 380)),
 
                 new WorldLocationInfo("near Buccaneer's Den", new Rectangle2D(2560, 1900, 400, 500)),
@@ -125,7 +129,7 @@ namespace Server
 
                 new WorldLocationInfo("a forest east of cove", new Rectangle2D(2210, 1030, 600, 240)),
                 new WorldLocationInfo("a forest north of Minoc", new Rectangle2D(2300, 0, 500, 370)),
-                new WorldLocationInfo("a forest east of Minoc", new Rectangle2D(2300, 370, 500, 230)),
+				new WorldLocationInfo("a forest east of Minoc", new Rectangle2D(2300, 370, 500, 230)),
                 new WorldLocationInfo("a forest near Minoc and Vesper", new Rectangle2D(2230, 520, 620, 510)),
 
                 new WorldLocationInfo("a forest north of Vesper", new Rectangle2D(2800, 0, 700, 832)),
@@ -146,24 +150,24 @@ namespace Server
                                                                            new Rectangle2D(5700, 2300, 440, 260)),
 
                 new WorldLocationInfo("somewhere in the Lost Lands", new Rectangle2D(5120, 2300, 1020, 1800))
-            },
-            new[] // Ilshenar
+			},
+			new WorldLocationInfo[] // Ilshenar
 			{
                 new WorldLocationInfo("somewhere in Ilshenar", new Rectangle2D(0, 0, 2300, 1598))
-            },
-            new[] // Malas
+			},
+			new WorldLocationInfo[] // Malas
 			{
                 new WorldLocationInfo("somewhere in Malas", new Rectangle2D(0, 0, 2558, 2046))
-            },
-            new[] // Tokuno
+			},
+			new WorldLocationInfo[] // Tokuno
 			{
                 new WorldLocationInfo("somewhere in Tokuno", new Rectangle2D(0, 0, 1446, 1446))
-            },
-            new[] // TerMur
+			},
+			new WorldLocationInfo[] // TerMur
 			{
                 new WorldLocationInfo("somewhere in TerMur", new Rectangle2D(270, 2754, 1000, 1339))
-            },
-        };
+			},
+		};
 
         public static string GetLocationString(IEntity e)
         {
@@ -172,23 +176,19 @@ namespace Server
 
         public static string GetLocationString(Point3D p, Map map)
         {
-            if (map == null)
-                return "an unknown location";
-
             Region r = Region.Find(p, map);
-		
-            if (r != null && r.Name != null)
-	    {
-		if (r is TownRegion)
-                    return string.Format("somewhere near {0}.", r.Name);
-    
-                if (r is DungeonRegion)
-                    return string.Format("somewhere in dungeon {0}.", r.Name);
-	    }
-		
+
+            if (r.Name != null && r is TownRegion)
+            {
+                return string.Format("somewhere near {0}.", r.Name);
+            }
+            else if (r.Name != null && r is DungeonRegion)
+            {
+                return string.Format("somewhere in dungeon {0}.", r.Name);
+            }
+
             int mapID = map.MapID;
-		
-            if (mapID < 0 || mapID >= m_Locations.Length)
+            if (mapID < 0 || mapID > m_Locations.Length)
                 return "an unknown location";
 
             WorldLocationInfo[] infos = m_Locations[mapID];

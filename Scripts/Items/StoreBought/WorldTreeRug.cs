@@ -1,10 +1,11 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
 {
     public class SmallWorldTreeRugAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new SmallWorldTreeRugAddonDeed();
+        public override BaseAddonDeed Deed { get { return new SmallWorldTreeRugAddonDeed(); } }
 
         [Constructable]
         public SmallWorldTreeRugAddon()
@@ -27,16 +28,16 @@ namespace Server.Items
             }
         }
 
-        private static readonly int[,] m_SouthInfo = new int[,]
+        private static int[,] m_SouthInfo = new int[,]
         {
-              {40514, 1, 1, 0}, {40513, 1, 0, 0}, {40512, 1, -1, 0}// 1	2	3	
+			  {40514, 1, 1, 0}, {40513, 1, 0, 0}, {40512, 1, -1, 0}// 1	2	3	
 			, {40511, 0, -1, 0}, {40510, -1, -1, 0}, {40509, -1, 0, 0}// 4	5	6	
 			, {40508, -1, 1, 0}, {40507, 0, 1, 0}, {40506, 0, 0, 0}// 7	8	9	
 		};
 
-        private static readonly int[,] m_EastInfo = new int[,]
+        private static int[,] m_EastInfo = new int[,]
         {
-              {40523, 1, 1, 0}, {40522, 0, 1, 0}, {40521, -1, 1, 0}// 1	2	3	
+			  {40523, 1, 1, 0}, {40522, 0, 1, 0}, {40521, -1, 1, 0}// 1	2	3	
 			, {40520, -1, 0, 0}, {40519, -1, -1, 0}, {40518, 0, -1, 0}// 4	5	6	
 			, {40517, 1, -1, 0}, {40516, 1, 0, 0}, {40515, 0, 0, 0}// 7	8	9	
 	    };
@@ -50,7 +51,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -63,8 +64,8 @@ namespace Server.Items
 
     public class SmallWorldTreeRugAddonDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new SmallWorldTreeRugAddon(m_South);
-        public override int LabelNumber => 1157206;  // Small World Tree
+        public override BaseAddon Addon { get { return new SmallWorldTreeRugAddon(m_South); } }
+        public override int LabelNumber { get { return 1157206; } } // Small World Tree
 
         [Constructable]
         public SmallWorldTreeRugAddonDeed()
@@ -74,7 +75,10 @@ namespace Server.Items
         private bool m_South;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool South => m_South;
+        public bool South
+        {
+            get { return m_South; }
+        }
 
         public void GetOptions(RewardOptionList list)
         {
@@ -110,7 +114,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -123,7 +127,7 @@ namespace Server.Items
 
     public class LargeWorldTreeRugAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new LargeWorldTreeRugAddonDeed();
+        public override BaseAddonDeed Deed { get { return new LargeWorldTreeRugAddonDeed(); } }
 
         [Constructable]
         public LargeWorldTreeRugAddon()
@@ -146,9 +150,9 @@ namespace Server.Items
             }
         }
 
-        private static readonly int[,] m_SouthInfo = new int[,]
+        private static int[,] m_SouthInfo = new int[,]
         {
-              {40546, -2, -1, 0}, {40545, -1, -1, 0}, {40544, -2, 0, 0}// 1	2	3	
+			  {40546, -2, -1, 0}, {40545, -1, -1, 0}, {40544, -2, 0, 0}// 1	2	3	
 			, {40543, -1, 0, 0}, {40542, -2, 1, 0}, {40541, -1, 1, 0}// 4	5	6	
 			, {40540, -2, 2, 0}, {40539, -1, 2, 0}, {40536, 0, -1, 0}// 7	8	9	
 			, {40534, 1, -1, 0}, {40533, 2, -1, 0}, {40532, 0, 0, 0}// 10	11	12	
@@ -158,9 +162,9 @@ namespace Server.Items
 			, {40537, 1, -2, 0}, {40535, 2, -2, 0}// 22	23	
 		};
 
-        private static readonly int[,] m_EastInfo = new int[,]
+        private static int[,] m_EastInfo = new int[,] 
         {
-              {40572, -2, -1, 0}, {40571, -1, -2, 0}, {40570, -1, -1, 0}// 1	2	3	
+			  {40572, -2, -1, 0}, {40571, -1, -2, 0}, {40570, -1, -1, 0}// 1	2	3	
 			, {40569, 0, -2, 0}, {40568, 0, -1, 0}, {40567, 1, -2, 0}// 4	5	6	
 			, {40566, 1, -1, 0}, {40565, 2, -2, 0}, {40564, 2, -1, 0}// 7	8	9	
 			, {40563, -2, 0, 0}, {40562, -2, 1, 0}, {40561, -1, 0, 0}// 10	11	12	
@@ -179,7 +183,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -192,13 +196,16 @@ namespace Server.Items
 
     public class LargeWorldTreeRugAddonDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new LargeWorldTreeRugAddon(m_South);
-        public override int LabelNumber => 1157207;  // Large World Tree
+        public override BaseAddon Addon { get { return new LargeWorldTreeRugAddon(m_South); } }
+        public override int LabelNumber { get { return 1157207; } } // Large World Tree
 
         private bool m_South;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool South => m_South;
+        public bool South
+        {
+            get { return m_South; }
+        }
 
         public void GetOptions(RewardOptionList list)
         {
@@ -239,7 +246,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

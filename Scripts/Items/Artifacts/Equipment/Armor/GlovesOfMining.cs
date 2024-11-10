@@ -1,11 +1,12 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
 {
-    [Flipable(0x13c6, 0x13ce)]
+    [FlipableAttribute(0x13c6, 0x13ce)]
     public class LeatherGlovesOfMining : BaseGlovesOfMining
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public LeatherGlovesOfMining(int bonus)
             : base(bonus, 0x13C6)
@@ -18,22 +19,108 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 2;
-        public override int BaseFireResistance => 4;
-        public override int BaseColdResistance => 3;
-        public override int BasePoisonResistance => 3;
-        public override int BaseEnergyResistance => 3;
-        public override int InitMinHits => 30;
-        public override int InitMaxHits => 40;
-        public override int StrReq => 20;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Leather;
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
-        public override ArmorMeditationAllowance DefMedAllowance => ArmorMeditationAllowance.All;
-        public override int LabelNumber => 1045122;// leather blacksmith gloves of mining
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 13;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Leather;
+            }
+        }
+        public override CraftResource DefaultResource
+        {
+            get
+            {
+                return CraftResource.RegularLeather;
+            }
+        }
+        public override ArmorMeditationAllowance DefMedAllowance
+        {
+            get
+            {
+                return ArmorMeditationAllowance.All;
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1045122;
+            }
+        }// leather blacksmith gloves of mining
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -43,7 +130,7 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x13d5, 0x13dd)]
+    [FlipableAttribute(0x13d5, 0x13dd)]
     public class StuddedGlovesOfMining : BaseGlovesOfMining
     {
         [Constructable]
@@ -58,21 +145,101 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 2;
-        public override int BaseFireResistance => 4;
-        public override int BaseColdResistance => 3;
-        public override int BasePoisonResistance => 3;
-        public override int BaseEnergyResistance => 4;
-        public override int InitMinHits => 35;
-        public override int InitMaxHits => 45;
-        public override int StrReq => 25;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Studded;
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
-        public override int LabelNumber => 1045123;// studded leather blacksmith gloves of mining
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 35;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 25;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 25;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Studded;
+            }
+        }
+        public override CraftResource DefaultResource
+        {
+            get
+            {
+                return CraftResource.RegularLeather;
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1045123;
+            }
+        }// studded leather blacksmith gloves of mining
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -83,7 +250,7 @@ namespace Server.Items
     }
 
     [Alterable(typeof(DefBlacksmithy), typeof(GargishKiltOfMining))]
-    [Flipable(0x13eb, 0x13f2)]
+    [FlipableAttribute(0x13eb, 0x13f2)]
     public class RingmailGlovesOfMining : BaseGlovesOfMining
     {
         [Constructable]
@@ -98,20 +265,101 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 1;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 3;
-        public override int InitMinHits => 40;
-        public override int InitMaxHits => 50;
-        public override int StrReq => 40;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Ringmail;
-        public override int LabelNumber => 1045124;// ringmail blacksmith gloves of mining
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 50;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int OldDexBonus
+        {
+            get
+            {
+                return -1;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 22;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Ringmail;
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1045124;
+            }
+        }// ringmail blacksmith gloves of mining
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -121,9 +369,24 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x13eb, 0x13f2)]
+    [FlipableAttribute(0x13eb, 0x13f2)]
     public class GargishKiltOfMining : BaseGlovesOfMining
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public GargishKiltOfMining() : this(5)
         {
@@ -141,20 +404,101 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 1;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 3;
-        public override int InitMinHits => 40;
-        public override int InitMaxHits => 50;
-        public override int StrReq => 40;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Ringmail;
-        public override int LabelNumber => 1045124;// ringmail blacksmith gloves of mining
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 50;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int OldDexBonus
+        {
+            get
+            {
+                return -1;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 22;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Ringmail;
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1045124;
+            }
+        }// ringmail blacksmith gloves of mining
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -171,9 +515,9 @@ namespace Server.Items
         public BaseGlovesOfMining(int bonus, int itemID)
             : base(itemID)
         {
-            m_Bonus = bonus;
+            this.m_Bonus = bonus;
 
-            Hue = CraftResources.GetHue((CraftResource)Utility.RandomMinMax((int)CraftResource.DullCopper, (int)CraftResource.Valorite));
+            this.Hue = CraftResources.GetHue((CraftResource)Utility.RandomMinMax((int)CraftResource.DullCopper, (int)CraftResource.Valorite));
         }
 
         public BaseGlovesOfMining(Serial serial)
@@ -186,28 +530,28 @@ namespace Server.Items
         {
             get
             {
-                return m_Bonus;
+                return this.m_Bonus;
             }
             set
             {
-                m_Bonus = value;
-                InvalidateProperties();
+                this.m_Bonus = value;
+                this.InvalidateProperties();
 
-                if (m_Bonus == 0)
+                if (this.m_Bonus == 0)
                 {
-                    if (m_SkillMod != null)
-                        m_SkillMod.Remove();
+                    if (this.m_SkillMod != null)
+                        this.m_SkillMod.Remove();
 
-                    m_SkillMod = null;
+                    this.m_SkillMod = null;
                 }
-                else if (m_SkillMod == null && Parent is Mobile)
+                else if (this.m_SkillMod == null && this.Parent is Mobile)
                 {
-                    m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, m_Bonus);
-                    ((Mobile)Parent).AddSkillMod(m_SkillMod);
+                    this.m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, this.m_Bonus);
+                    ((Mobile)this.Parent).AddSkillMod(this.m_SkillMod);
                 }
-                else if (m_SkillMod != null)
+                else if (this.m_SkillMod != null)
                 {
-                    m_SkillMod.Value = m_Bonus;
+                    this.m_SkillMod.Value = this.m_Bonus;
                 }
             }
         }
@@ -215,13 +559,13 @@ namespace Server.Items
         {
             base.OnAdded(parent);
 
-            if (m_Bonus != 0 && parent is Mobile)
+            if (this.m_Bonus != 0 && parent is Mobile)
             {
-                if (m_SkillMod != null)
-                    m_SkillMod.Remove();
+                if (this.m_SkillMod != null)
+                    this.m_SkillMod.Remove();
 
-                m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, m_Bonus);
-                ((Mobile)parent).AddSkillMod(m_SkillMod);
+                this.m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, this.m_Bonus);
+                ((Mobile)parent).AddSkillMod(this.m_SkillMod);
             }
         }
 
@@ -229,27 +573,27 @@ namespace Server.Items
         {
             base.OnRemoved(parent);
 
-            if (m_SkillMod != null)
-                m_SkillMod.Remove();
+            if (this.m_SkillMod != null)
+                this.m_SkillMod.Remove();
 
-            m_SkillMod = null;
+            this.m_SkillMod = null;
         }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            if (m_Bonus != 0)
-                list.Add(1062005, m_Bonus.ToString()); // mining bonus +~1_val~
+            if (this.m_Bonus != 0)
+                list.Add(1062005, this.m_Bonus.ToString()); // mining bonus +~1_val~
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Bonus);
+            writer.Write((int)this.m_Bonus);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -258,22 +602,22 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_Bonus = reader.ReadInt();
+                        this.m_Bonus = reader.ReadInt();
                         break;
                     }
             }
 
-            if (m_Bonus != 0 && Parent is Mobile)
+            if (this.m_Bonus != 0 && this.Parent is Mobile)
             {
-                if (m_SkillMod != null)
-                    m_SkillMod.Remove();
+                if (this.m_SkillMod != null)
+                    this.m_SkillMod.Remove();
 
-                m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, m_Bonus);
-                ((Mobile)Parent).AddSkillMod(m_SkillMod);
+                this.m_SkillMod = new DefaultSkillMod(SkillName.Mining, true, this.m_Bonus);
+                ((Mobile)this.Parent).AddSkillMod(this.m_SkillMod);
             }
         }
     }

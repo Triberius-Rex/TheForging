@@ -1,16 +1,17 @@
-using Server.Gumps;
+using System;
+using Server;
 using Server.Items;
 using Server.Mobiles;
+using Server.Gumps;
 using Server.Network;
 using Server.Targeting;
-using System;
 using System.Collections.Generic;
 
 namespace Server.Engines.NewMagincia
 {
     public class CommodityBrokerGump : BaseBazaarGump
     {
-        private readonly CommodityBroker m_Broker;
+        private CommodityBroker m_Broker;
 
         public CommodityBrokerGump(CommodityBroker broker, Mobile from)
             : base(520, 520)
@@ -29,7 +30,7 @@ namespace Server.Engines.NewMagincia
             }
 
             AddHtmlLocalized(10, 55, 260, 18, 1114514, "#1150313", BlueColor16, false, false); // Proprietor:
-            AddHtml(280, 55, 260, 18, Color(string.Format("{0}", broker.Name), BlueColor), false, false);
+            AddHtml(280, 55, 260, 18, Color(String.Format("{0}", broker.Name), BlueColor), false, false);
 
             AddHtmlLocalized(10, 100, 500, 18, 1114513, "#1150328", GreenColor16, false, false); // OWNER MENU
 
@@ -104,7 +105,7 @@ namespace Server.Engines.NewMagincia
                     {
                         amount = Convert.ToInt32(text1);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
 
                     if (amount > 0)
                     {
@@ -120,7 +121,7 @@ namespace Server.Engines.NewMagincia
                     {
                         amount1 = Convert.ToInt32(text2);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
 
                     if (amount1 > 0)
                     {
@@ -160,7 +161,7 @@ namespace Server.Engines.NewMagincia
 
         public class InternalTarget : Target
         {
-            private readonly CommodityBroker m_Broker;
+            private CommodityBroker m_Broker;
             private bool m_HasPickedCommodity;
 
             public InternalTarget(CommodityBroker broker) : this(broker, false)
@@ -228,7 +229,7 @@ namespace Server.Engines.NewMagincia
 
     public class CommodityTargetGump : BaseBazaarGump
     {
-        private readonly CommodityBroker m_Broker;
+        private CommodityBroker m_Broker;
 
         public CommodityTargetGump(CommodityBroker broker)
             : base(520, 520)
@@ -247,7 +248,7 @@ namespace Server.Engines.NewMagincia
             }
 
             AddHtmlLocalized(10, 55, 260, 18, 1114514, "#1150313", BlueColor16, false, false); // Proprietor:
-            AddHtml(280, 55, 260, 18, Color(string.Format("{0}", broker.Name), BlueColor), false, false);
+            AddHtml(280, 55, 260, 18, Color(String.Format("{0}", broker.Name), BlueColor), false, false);
 
             /* Target commodity items or filled commodity deeds in your backpack to add them to the 
 			 * broker's inventory. These items will be retrievable, and the broker will not trade them 
@@ -271,9 +272,9 @@ namespace Server.Engines.NewMagincia
 
     public class SetPricesAndLimitsGump : BaseBazaarGump
     {
-        private readonly CommodityBroker m_Broker;
+        private CommodityBroker m_Broker;
         private int m_Index;
-        private readonly int m_Page;
+        private int m_Page;
 
         public SetPricesAndLimitsGump(CommodityBroker broker) : this(broker, -1, 0) { }
 
@@ -311,7 +312,7 @@ namespace Server.Engines.NewMagincia
                 int col16 = col == YellowColor ? YellowColor16 : OrangeColor16;
                 CommodityBrokerEntry entry = broker.CommodityEntries[i];
 
-                AddHtmlLocalized(1, y, 130, 18, 1114514, string.Format("#{0}", entry.Label), col16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
+                AddHtmlLocalized(1, y, 130, 18, 1114514, String.Format("#{0}", entry.Label), col16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
                 AddHtml(170, y, 45, 18, Color(AlignRight(FormatAmt(entry.BuyPricePer)), col), false, false);
                 AddHtml(230, y, 80, 18, Color(AlignRight(FormatAmt(entry.BuyLimit)), col), false, false);
                 AddHtml(315, y, 45, 18, Color(AlignRight(FormatAmt(entry.SellPricePer)), col), false, false);
@@ -392,22 +393,22 @@ namespace Server.Engines.NewMagincia
                     {
                         buyAt = Convert.ToInt32(relay1.Text);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
                     try
                     {
                         buyLmt = Convert.ToInt32(relay2.Text);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
                     try
                     {
                         sellAt = Convert.ToInt32(relay3.Text);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
                     try
                     {
                         sellLmt = Convert.ToInt32(relay4.Text);
                     }
-                    catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                    catch { }
 
                     if (buyLmt < 0 || buyLmt > 60000 || sellLmt < 0 || sellLmt > 60000)
                         from.SendLocalizedMessage(1150776); // You have entered an invalid numeric value. Negative values are not allowed. Trade quantities are limited to 60,000 per transaction.
@@ -441,9 +442,9 @@ namespace Server.Engines.NewMagincia
 
     public class ViewInventoryGump : BaseBazaarGump
     {
-        private readonly CommodityBroker m_Broker;
-        private readonly int m_Index;
-        private readonly int m_Page;
+        private CommodityBroker m_Broker;
+        private int m_Index;
+        private int m_Page;
 
         public ViewInventoryGump(CommodityBroker broker) : this(broker, -1)
         {
@@ -454,7 +455,7 @@ namespace Server.Engines.NewMagincia
         }
 
         public ViewInventoryGump(CommodityBroker broker, int index, int page)
-            : base(660, 520)
+            : base (660, 520)
         {
             m_Broker = broker;
             m_Index = index;
@@ -484,7 +485,7 @@ namespace Server.Engines.NewMagincia
                 int col16 = col == YellowColor ? YellowColor16 : OrangeColor16;
                 CommodityBrokerEntry entry = broker.CommodityEntries[i];
 
-                AddHtmlLocalized(1, y, 260, 18, 1114514, string.Format("#{0}", entry.Label), col16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
+                AddHtmlLocalized(1, y, 260, 18, 1114514, String.Format("#{0}", entry.Label), col16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
                 AddHtml(360, y, 55, 18, Color(AlignRight(FormatAmt(entry.Stock)), col), false, false);
 
                 AddButton(440, y, 4014, 4016, 1000 + i, GumpButtonType.Reply, 0); // SELECT
@@ -506,7 +507,7 @@ namespace Server.Engines.NewMagincia
                 AddButton(390, 350, 4005, 4007, 401, GumpButtonType.Reply, 0);
 
             AddHtmlLocalized(160, 415, 150, 18, 1150202, OrangeColor16, false, false); // WITHDRAW
-            AddBackground(250, 415, 360, 22, 9350);
+            AddBackground(250, 415, 360, 22, 9350); 
             AddTextEntry(251, 415, 358, 20, LabelHueBlue, 0, "");
             AddButton(620, 415, 4014, 4016, 1, GumpButtonType.Reply, 0);
 
@@ -539,7 +540,7 @@ namespace Server.Engines.NewMagincia
                         {
                             amount = Convert.ToInt32(relay.Text);
                         }
-                        catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                        catch { }
 
                         if (amount <= 0 || amount > entry.Stock)
                             from.SendLocalizedMessage(1150215); // You have entered an invalid value, or a non-numeric value. Please try again.
@@ -623,10 +624,10 @@ namespace Server.Engines.NewMagincia
 
     public class CommodityInventoryGump : BaseBazaarGump
     {
-        private readonly CommodityBroker m_Broker;
-        private readonly List<CommodityBrokerEntry> m_Entries;
+        private CommodityBroker m_Broker;
+        private List<CommodityBrokerEntry> m_Entries;
         private bool m_Buy;
-        private readonly int m_Page;
+        private int m_Page;
         private int m_Index;
 
         public CommodityInventoryGump(CommodityBroker broker) : this(broker, -1, true, 0, 0)
@@ -654,7 +655,7 @@ namespace Server.Engines.NewMagincia
             }
 
             AddHtmlLocalized(10, 55, 310, 18, 1114514, "#1150313", BlueColor16, false, false); // Proprietor:
-            AddHtml(330, 55, 320, 18, Color(string.Format("{0}", broker.Name), BlueColor), false, false);
+            AddHtml(330, 55, 320, 18, Color(String.Format("{0}", broker.Name), BlueColor), false, false);
 
             if (cliloc != 0)
             {
@@ -674,7 +675,7 @@ namespace Server.Engines.NewMagincia
                 }
                 else
                 {
-                    AddHtmlLocalized(10, 127, 640, 354, 1114513, string.Format("#{0}", cliloc), OrangeColor16, false, false);
+                    AddHtmlLocalized(10, 127, 640, 354, 1114513, String.Format("#{0}", cliloc), OrangeColor16, false, false);
                 }
 
                 AddButton(10, 490, 0xFAE, 0xFAF, 999, GumpButtonType.Reply, 0);
@@ -729,7 +730,7 @@ namespace Server.Engines.NewMagincia
                         }
 
                         // what we're selling/buying
-                        AddHtmlLocalized(200, y, 164, 20, 1114514, string.Format("#{0}", entry.Label), OrangeColor16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
+                        AddHtmlLocalized(200, y, 164, 20, 1114514, String.Format("#{0}", entry.Label), OrangeColor16, false, false); // <DIV ALIGN=RIGHT>~1_TOKEN~</DIV>
                         AddTooltip(entry.Label);
 
                         // buy from player
@@ -806,7 +807,7 @@ namespace Server.Engines.NewMagincia
                     return;
                 case 500: // TRADE
                     {
-                        for (int i = 0; i < m_Entries.Count; i++)
+                        for (var i = 0; i < m_Entries.Count; i++)
                         {
                             int buyid = 2 + i;
                             int sellid = 102 + i;
@@ -846,7 +847,7 @@ namespace Server.Engines.NewMagincia
                             {
                                 amount = Convert.ToInt32(relay.Text);
                             }
-                            catch (Exception e) { Diagnostics.ExceptionLogging.LogException(e); }
+                            catch { }
 
                             if (amount > 0)
                             {
@@ -900,12 +901,12 @@ namespace Server.Engines.NewMagincia
 
     public class ConfirmRemoveEntryGump : BaseConfirmGump
     {
-        private readonly CommodityBroker m_Broker;
-        private readonly CommodityBrokerEntry m_Entry;
-        private readonly int m_Index;
+        private CommodityBroker m_Broker;
+        private CommodityBrokerEntry m_Entry;
+        private int m_Index;
 
-        public override string TitleString => "Remove Commodity Confirmation";
-        public override string LabelString => "Are you sure you want to remove this entry from your commodity broker? Any unused stock will be placed in your bankbox.";
+        public override string TitleString { get { return "Remove Commodity Confirmation"; } }
+        public override string LabelString { get { return "Are you sure you want to remove this entry from your commodity broker? Any unused stock will be placed in your bankbox."; } }
 
         public ConfirmRemoveEntryGump(CommodityBroker broker, int index)
         {
@@ -932,10 +933,10 @@ namespace Server.Engines.NewMagincia
 
     public class ConfirmBuyCommodityGump : BaseBazaarGump
     {
-        private readonly Gump _Gump;
-        private readonly CommodityBroker m_Broker;
-        private readonly int m_Amount;
-        private readonly CommodityBrokerEntry m_Entry;
+        private Gump _Gump;
+        private CommodityBroker m_Broker;
+        private int m_Amount;
+        private CommodityBrokerEntry m_Entry;
 
         public ConfirmBuyCommodityGump(CommodityBroker broker, int amount, CommodityBrokerEntry entry, bool buy, Gump g)
             : base(660, 520)
@@ -957,7 +958,7 @@ namespace Server.Engines.NewMagincia
             }
 
             AddHtmlLocalized(10, 55, 310, 18, 1114514, "#1150313", BlueColor16, false, false); // Proprietor:
-            AddHtml(330, 55, 320, 18, Color(string.Format("{0}", broker.Name), BlueColor), false, false);
+            AddHtml(330, 55, 320, 18, Color(String.Format("{0}", broker.Name), BlueColor), false, false);
 
             AddHtmlLocalized(10, 127, 640, 64, 1114513, "#1150666", RedColor16, false, false); // Please review the details of this transaction. If you wish to make this trade, click the TRADE button below. Otherwise, click the MAIN MENU button to return to the price list.
 
@@ -969,7 +970,7 @@ namespace Server.Engines.NewMagincia
                 AddHtmlLocalized(230, 193, 420, 18, m_Broker.GetLabelID(entry), DarkGreenColor16, false, false);
 
                 AddHtmlLocalized(10, 213, 210, 18, 1114514, "#1150152", OrangeColor16, false, false); // Quantity to Buy:
-                AddHtml(230, 213, 420, 18, Color(string.Format("{0}", amount), DarkGreenColor), false, false);
+                AddHtml(230, 213, 420, 18, Color(String.Format("{0}", amount), DarkGreenColor), false, false);
 
                 AddHtmlLocalized(10, 233, 210, 18, 1114514, "#1150246", OrangeColor16, false, false); // Total Cost:
                 AddHtml(230, 233, 420, 18, Color(FormatAmt(cost), DarkGreenColor), false, false);
@@ -985,7 +986,7 @@ namespace Server.Engines.NewMagincia
                 AddHtmlLocalized(230, 193, 420, 18, m_Broker.GetLabelID(entry), DarkGreenColor16, false, false);
 
                 AddHtmlLocalized(10, 213, 210, 18, 1114514, "#1150153", OrangeColor16, false, false); // Quantity to Sell:
-                AddHtml(230, 213, 420, 18, Color(string.Format("{0}", amount), DarkGreenColor), false, false);
+                AddHtml(230, 213, 420, 18, Color(String.Format("{0}", amount), DarkGreenColor), false, false);
 
                 AddHtmlLocalized(10, 233, 210, 18, 1114514, "#1150251", OrangeColor16, false, false); // Gold You Will Receive:
                 AddHtml(230, 233, 420, 18, Color(FormatAmt(cost), DarkGreenColor), false, false);

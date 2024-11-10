@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Engines.Quests.Doom
 {
     public class GrandGrimoire : Item
@@ -6,10 +8,10 @@ namespace Server.Engines.Quests.Doom
         public GrandGrimoire()
             : base(0xEFA)
         {
-            Weight = 1.0;
-            Hue = 0x835;
-            Layer = Layer.OneHanded;
-            LootType = LootType.Blessed;
+            this.Weight = 1.0;
+            this.Hue = 0x835;
+            this.Layer = Layer.OneHanded;
+            this.LootType = LootType.Blessed;
         }
 
         public GrandGrimoire(Serial serial)
@@ -17,12 +19,18 @@ namespace Server.Engines.Quests.Doom
         {
         }
 
-        public override int LabelNumber => 1060801;// The Grand Grimoire
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1060801;
+            }
+        }// The Grand Grimoire
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

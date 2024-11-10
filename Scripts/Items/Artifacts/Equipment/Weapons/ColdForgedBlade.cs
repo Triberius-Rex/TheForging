@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class ColdForgedBlade : ElvenSpellblade
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public ColdForgedBlade()
         {
@@ -12,7 +14,7 @@ namespace Server.Items
             Attributes.WeaponSpeed = 25;
             Attributes.WeaponDamage = 50;
 
-            Hue = GetElementalDamageHue();
+            Hue = this.GetElementalDamageHue();
         }
 
         public ColdForgedBlade(Serial serial)
@@ -20,7 +22,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072916;// Cold Forged Blade
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072916;
+            }
+        }// Cold Forged Blade
         public override void GetDamageTypes(Mobile wielder, out int phys, out int fire, out int cold, out int pois, out int nrgy, out int chaos, out int direct)
         {
             phys = fire = pois = nrgy = chaos = direct = 0;

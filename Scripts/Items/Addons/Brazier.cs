@@ -1,10 +1,11 @@
+using System;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
 
 namespace Server.Items
-{
+{ 
     public class RewardBrazier : Item, IRewardItem
     {
         private static readonly int[] m_Art = new int[]
@@ -16,15 +17,15 @@ namespace Server.Items
         [Constructable]
         public RewardBrazier()
             : this(Utility.RandomList(m_Art))
-        {
+        { 
         }
 
         [Constructable]
         public RewardBrazier(int itemID)
             : base(itemID)
         {
-            LootType = LootType.Blessed;
-            Weight = 10.0;
+            this.LootType = LootType.Blessed;
+            this.Weight = 10.0;
         }
 
         public RewardBrazier(Serial serial)
@@ -32,63 +33,68 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public override void OnDelete()
         {
-            TurnOff();
+            this.TurnOff();
 
             base.OnDelete();
         }
 
         public void TurnOff()
         {
-            if (m_Fire != null)
+            if (this.m_Fire != null)
             {
-                m_Fire.Delete();
-                m_Fire = null;
+                this.m_Fire.Delete();
+                this.m_Fire = null;
             }
         }
 
         public void TurnOn()
         {
-            if (m_Fire == null)
-                m_Fire = new Item();
-
-            m_Fire.ItemID = 0x19AB;
-            m_Fire.Movable = false;
-            m_Fire.MoveToWorld(new Point3D(X, Y, Z + ItemData.Height + 2), Map);
+            if (this.m_Fire == null)
+                this.m_Fire = new Item();
+ 
+            this.m_Fire.ItemID = 0x19AB;
+            this.m_Fire.Movable = false;
+            this.m_Fire.MoveToWorld(new Point3D(this.X, this.Y, this.Z + this.ItemData.Height + 2), this.Map);
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
             }
-            else if (IsLockedDown)
+            else if (this.IsLockedDown)
             {
                 BaseHouse house = BaseHouse.FindHouseAt(from);
 
                 if (house != null && house.IsCoOwner(from))
                 {
-                    if (m_Fire != null)
-                        TurnOff();
+                    if (this.m_Fire != null)
+                        this.TurnOff();
                     else
-                        TurnOn();
+                        this.TurnOn();
                 }
                 else
                     from.SendLocalizedMessage(502436); // That is not accessible.
@@ -99,15 +105,15 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D old)
         {
-            if (m_Fire != null)
-                m_Fire.MoveToWorld(new Point3D(X, Y, Z + ItemData.Height), Map);
+            if (this.m_Fire != null)
+                this.m_Fire.MoveToWorld(new Point3D(this.X, this.Y, this.Z + this.ItemData.Height), this.Map);
         }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (this.m_IsRewardItem)
                 list.Add(1076222); // 6th Year Veteran Reward
         }
 
@@ -116,9 +122,9 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
-            writer.Write(m_Fire);
+			
+            writer.Write((bool)this.m_IsRewardItem);
+            writer.Write((Item)this.m_Fire);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -126,9 +132,9 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
-            m_Fire = reader.ReadItem();
+			
+            this.m_IsRewardItem = reader.ReadBool();
+            this.m_Fire = reader.ReadItem();
         }
     }
 
@@ -139,8 +145,8 @@ namespace Server.Items
         public RewardBrazierDeed()
             : base(0x14F0)
         {
-            LootType = LootType.Blessed;
-            Weight = 1.0;
+            this.LootType = LootType.Blessed;
+            this.Weight = 1.0;
         }
 
         public RewardBrazierDeed(Serial serial)
@@ -148,26 +154,32 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1080527;// Brazier Deed
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1080527;
+            }
+        }// Brazier Deed
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public override void OnDoubleClick(Mobile from)
         {
-            if (m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
+            if (this.m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
                 return;
 
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.CloseGump(typeof(InternalGump));
                 from.SendGump(new InternalGump(this));
@@ -180,7 +192,7 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            if (m_IsRewardItem)
+            if (this.m_IsRewardItem)
                 list.Add(1076222); // 6th Year Veteran Reward
         }
 
@@ -190,7 +202,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)this.m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -198,8 +210,8 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
+			
+            this.m_IsRewardItem = reader.ReadBool();
         }
 
         private class InternalGump : Gump
@@ -208,39 +220,37 @@ namespace Server.Items
             public InternalGump(RewardBrazierDeed brazier)
                 : base(100, 200)
             {
-                m_Brazier = brazier;
+                this.m_Brazier = brazier;
 
-                Closable = true;
-                Disposable = true;
-                Dragable = true;
-                Resizable = false;
+                this.Closable = true;
+                this.Disposable = true;
+                this.Dragable = true;
+                this.Resizable = false;
 
-                AddPage(0);
-                AddBackground(0, 0, 200, 200, 2600);
+                this.AddPage(0);
+                this.AddBackground(0, 0, 200, 200, 2600);
 
-                AddPage(1);
-                AddLabel(45, 15, 0, "Choose a Brazier:");
+                this.AddPage(1);
+                this.AddLabel(45, 15, 0, "Choose a Brazier:");
 
-                AddItem(40, 75, 0x19AA);
-                AddButton(55, 50, 0x845, 0x846, 0x19AA, GumpButtonType.Reply, 0);
+                this.AddItem(40, 75, 0x19AA);
+                this.AddButton(55, 50, 0x845, 0x846, 0x19AA, GumpButtonType.Reply, 0);
 
-                AddItem(100, 75, 0x19BB);
-                AddButton(115, 50, 0x845, 0x846, 0x19BB, GumpButtonType.Reply, 0);
+                this.AddItem(100, 75, 0x19BB);
+                this.AddButton(115, 50, 0x845, 0x846, 0x19BB, GumpButtonType.Reply, 0);
             }
 
             public override void OnResponse(NetState sender, RelayInfo info)
             {
-                if (m_Brazier == null || m_Brazier.Deleted)
+                if (this.m_Brazier == null || this.m_Brazier.Deleted)
                     return;
 
                 Mobile m = sender.Mobile;
 
                 if (info.ButtonID == 0x19AA || info.ButtonID == 0x19BB)
                 {
-                    RewardBrazier brazier = new RewardBrazier(info.ButtonID)
-                    {
-                        IsRewardItem = m_Brazier.IsRewardItem
-                    };
+                    RewardBrazier brazier = new RewardBrazier(info.ButtonID);
+                    brazier.IsRewardItem = this.m_Brazier.IsRewardItem;
 
                     if (!m.PlaceInBackpack(brazier))
                     {
@@ -248,7 +258,7 @@ namespace Server.Items
                         m.SendLocalizedMessage(1078837); // Your backpack is full! Please make room and try again.
                     }
                     else
-                        m_Brazier.Delete();
+                        this.m_Brazier.Delete();
                 }
             }
         }

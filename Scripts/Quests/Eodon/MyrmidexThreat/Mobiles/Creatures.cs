@@ -1,10 +1,14 @@
+using Server;
+using System;
+using Server.Engines.Quests;
+using System.Linq;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Network;
+using Server.Movement;
 using Server.Spells;
 using Server.Spells.SkillMasteries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Server.Misc;
 
 namespace Server.Mobiles
 {
@@ -16,10 +20,10 @@ namespace Server.Mobiles
 
         private List<BaseCreature> _Spawn;
 
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Parasitic;
-        public override Poison HitPoison => Poison.Parasitic;
-        public override bool Unprovokable => true;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Parasitic; } }
+        public override Poison HitPoison { get { return Poison.Parasitic; } }
+        public override bool Unprovokable { get { return true; } }
 
         [Constructable]
         public MyrmidexQueen()
@@ -63,7 +67,7 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.SuperBoss, 5);
-        }
+        }	
 
         public override void OnThink()
         {
@@ -97,7 +101,7 @@ namespace Server.Mobiles
 
         public void ThrowEggs()
         {
-            if (Map == null)
+            if (this.Map == null)
                 return;
 
             int delay = 0;
@@ -110,27 +114,27 @@ namespace Server.Mobiles
 
                 Movement.Movement.Offset(d, ref xOffset, ref yOffset);
 
-                int x = X + (27 * xOffset);
-                int y = Y + (27 * yOffset);
+                int x = this.X + (27 * xOffset);
+                int y = this.Y + (27 * yOffset);
 
-                Point3D p = new Point3D(x, y, Map.GetAverageZ(x, y));
+                Point3D p = new Point3D(x, y, this.Map.GetAverageZ(x, y));
 
-                if (!Map.CanFit(p, 16, false, false))
+                if (!this.Map.CanFit(p, 16, false, false))
                     continue;
 
                 Timer.DelayCall(TimeSpan.FromSeconds(delay), () =>
                     {
-                        Entity e = new Entity(Serial.Zero, p, Map);
-                        MovingParticles(e, 4313, 10, 0, false, true, 1371, 0, 9502, 6014, 0x11D, EffectLayer.Waist, 0);
+                        Entity e = new Entity(Serial.Zero, p, this.Map);
+                        this.MovingParticles(e, 4313, 10, 0, false, true, 1371, 0, 9502, 6014, 0x11D, EffectLayer.Waist, 0);
 
                         Timer.DelayCall(TimeSpan.FromSeconds(Utility.RandomMinMax(2, 3)), () =>
                             {
-                                Type t = Utility.RandomList(typeof(MyrmidexWarrior), typeof(MyrmidexDrone), typeof(MyrmidexLarvae));
+                                Type t = Utility.RandomList<Type>(typeof(MyrmidexWarrior), typeof(MyrmidexDrone), typeof(MyrmidexLarvae));
                                 BaseCreature bc = Activator.CreateInstance(t) as BaseCreature;
 
                                 if (bc != null)
                                 {
-                                    bc.MoveToWorld(p, Map);
+                                    bc.MoveToWorld(p, this.Map);
                                     _Spawn.Add(bc);
                                 }
                             });
@@ -142,47 +146,47 @@ namespace Server.Mobiles
 
         public void SpitOoze()
         {
-            if (Map == null)
+            if (this.Map == null)
                 return;
 
-            IPooledEnumerable eable = Map.GetMobilesInRange(Location, 7);
+            IPooledEnumerable eable = this.Map.GetMobilesInRange(this.Location, 7);
 
             foreach (Mobile m in eable)
             {
-                if (m != this && SpellHelper.ValidIndirectTarget(this, m) && CanBeHarmful(m, false))
+                if (m != this && SpellHelper.ValidIndirectTarget(this, m) && this.CanBeHarmful(m, false))
                 {
                     List<OozeItem> list = new List<OozeItem>();
 
-                    OozeItem ooze1 = new OozeItem(this, 40222);
+                    var ooze1 = new OozeItem(this, 40222);
                     ooze1.MoveToWorld(m.Location, m.Map);
 
-                    OozeItem ooze2 = new OozeItem(this, Utility.Random(40214, 2));
+                    var ooze2 = new OozeItem(this, Utility.Random(40214, 2));
                     ooze2.MoveToWorld(new Point3D(m.X - 1, m.Y, m.Z), m.Map);
 
-                    OozeItem ooze3 = new OozeItem(this, Utility.Random(40216, 2));
+                    var ooze3 = new OozeItem(this, Utility.Random(40216, 2));
                     ooze3.MoveToWorld(new Point3D(m.X, m.Y + 1, m.Z), m.Map);
 
-                    OozeItem ooze4 = new OozeItem(this, Utility.Random(40218, 2));
+                    var ooze4 = new OozeItem(this, Utility.Random(40218, 2));
                     ooze4.MoveToWorld(new Point3D(m.X, m.Y - 1, m.Z), m.Map);
 
-                    OozeItem ooze5 = new OozeItem(this, Utility.Random(40220, 2));
+                    var ooze5 = new OozeItem(this, Utility.Random(40220, 2));
                     ooze5.MoveToWorld(new Point3D(m.X + 1, m.Y, m.Z), m.Map);
 
-                    OozeItem ooze6 = new OozeItem(this, 40210);
+                    var ooze6 = new OozeItem(this, 40210);
                     ooze6.MoveToWorld(new Point3D(m.X - 1, m.Y + 1, m.Z), m.Map);
 
-                    OozeItem ooze7 = new OozeItem(this, 40211);
+                    var ooze7 = new OozeItem(this, 40211);
                     ooze7.MoveToWorld(new Point3D(m.X + 1, m.Y + 1, m.Z), m.Map);
 
-                    OozeItem ooze8 = new OozeItem(this, 40212);
+                    var ooze8 = new OozeItem(this, 40212);
                     ooze8.MoveToWorld(new Point3D(m.X - 1, m.Y - 1, m.Z), m.Map);
 
-                    OozeItem ooze9 = new OozeItem(this, 40213);
+                    var ooze9 = new OozeItem(this, 40213);
                     ooze9.MoveToWorld(new Point3D(m.X + 1, m.Y - 1, m.Z), m.Map);
 
                     Timer.DelayCall(TimeSpan.FromSeconds(Utility.RandomMinMax(20, 30)), () =>
                     {
-                        ooze1.Delete(); ooze2.Delete(); ooze3.Delete(); ooze4.Delete(); ooze5.Delete();
+                        ooze1.Delete(); ooze2.Delete(); ooze3.Delete(); ooze4.Delete(); ooze5.Delete(); 
                         ooze6.Delete(); ooze7.Delete(); ooze8.Delete(); ooze9.Delete();
                     });
 
@@ -195,22 +199,22 @@ namespace Server.Mobiles
 
         public void DropRocks()
         {
-            if (Map == null)
+            if (this.Map == null)
                 return;
 
-            IPooledEnumerable eable = Map.GetMobilesInRange(Location, 12);
+            IPooledEnumerable eable = this.Map.GetMobilesInRange(this.Location, 12);
             List<Mobile> random = new List<Mobile>();
 
             foreach (Mobile m in eable)
             {
-                if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && CanBeHarmful(m, false))
+                if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && this.CanBeHarmful(m, false))
                     random.Add(m);
             }
 
             eable.Free();
             Mobile target = null;
-
-            if (random.Count > 0)
+            
+            if(random.Count > 0)
                 target = random[Utility.Random(random.Count)];
 
             if (target != null)
@@ -225,10 +229,10 @@ namespace Server.Mobiles
 
                 Timer.DelayCall(TimeSpan.FromMilliseconds(250), () =>
                     {
-                        Effects.SendLocationEffect(target.Location, Map, 40136, 120);
+                        Effects.SendLocationEffect(target.Location, this.Map, 40136, 120);
                         target.PrivateOverheadMessage(MessageType.Regular, 0x21, 1156835, target.NetState); // *Crunch Crunch Crunch* 
                     });
-
+ 
                 AOS.Damage(target, this, Utility.RandomMinMax(80, 100), 100, 0, 0, 0, 0);
                 target.SendSpeedControl(SpeedControlType.WalkSpeed);
 
@@ -240,15 +244,15 @@ namespace Server.Mobiles
 
         public void RaiseRocks()
         {
-            if (Map == null)
+            if (this.Map == null)
                 return;
 
-            IPooledEnumerable eable = Map.GetMobilesInRange(Location, 12);
+            IPooledEnumerable eable = this.Map.GetMobilesInRange(this.Location, 12);
             List<Mobile> random = new List<Mobile>();
 
             foreach (Mobile m in eable)
             {
-                if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && CanBeHarmful(m, false))
+                if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && this.CanBeHarmful(m, false))
                     random.Add(m);
             }
 
@@ -266,37 +270,37 @@ namespace Server.Mobiles
                 switch (d)
                 {
                     case Direction.West:
-                        r = new Rectangle2D(X - 24, Y - 2, 20, 5); break;
+                        r = new Rectangle2D(this.X - 24, this.Y - 2, 20, 5); break;
                     case Direction.North:
-                        r = new Rectangle2D(X - 2, Y - 24, 5, 20); break;
+                        r = new Rectangle2D(this.X - 2, this.Y - 24, 5, 20); break;
                     case Direction.East:
-                        r = new Rectangle2D(X + 4, Y - 2, 20, 5); break;
+                        r = new Rectangle2D(this.X + 4, this.Y - 2, 20, 5); break;
                     case Direction.South:
-                        r = new Rectangle2D(X - 4, Y + 4, 20, 5); break;
+                        r = new Rectangle2D(this.X - 4, this.Y + 4, 20, 5); break;
                 }
 
                 for (int x = r.X; x <= r.X + r.Width; x++)
                 {
                     for (int y = r.Y; y <= r.Y + r.Height; y++)
                     {
-                        if (x > X - 4 && x < X + 4 && y > Y - 4 && y < Y + 4)
+                        if (x > this.X - 4 && x < this.X + 4 && y > this.Y - 4 && y < this.Y + 4)
                             continue;
 
                         if (0.75 > Utility.RandomDouble())
                         {
-                            int id = Utility.RandomList(2282, 2273, 2277, 40106, 40107, 40108, 40106, 40107, 40108, 40106, 40107, 40108);
-                            Effects.SendLocationEffect(new Point3D(x, y, Map.GetAverageZ(x, y)), Map, id, 60);
+                            int id = Utility.RandomList<int>(2282, 2273, 2277, 40106, 40107, 40108, 40106, 40107, 40108, 40106, 40107, 40108);
+                            Effects.SendLocationEffect(new Point3D(x, y, this.Map.GetAverageZ(x, y)), this.Map, id, 60);
                         }
                     }
                 }
 
-                IPooledEnumerable eable2 = Map.GetMobilesInBounds(r);
+                IPooledEnumerable eable2 = this.Map.GetMobilesInBounds(r);
 
                 foreach (Mobile m in eable2)
                 {
-                    if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && CanBeHarmful(m, false))
+                    if (m.Alive && m is PlayerMobile && SpellHelper.ValidIndirectTarget(this, m) && this.CanBeHarmful(m, false))
                     {
-                        if (m.X > X - 4 && m.X < X + 4 && m.Y > Y - 4 && m.Y < Y + 4)
+                        if (m.X > this.X - 4 && m.X < this.X + 4 && m.Y > this.Y - 4 && m.Y < this.Y + 4)
                             continue;
 
                         m.Freeze(TimeSpan.FromSeconds(2));
@@ -313,7 +317,7 @@ namespace Server.Mobiles
 
         public class OozeItem : Item
         {
-            public override int LabelNumber => 1156831;  // Noxious Goo
+            public override int LabelNumber { get { return 1156831; } } // Noxious Goo
 
             public BaseCreature Owner { get; set; }
 
@@ -383,22 +387,22 @@ namespace Server.Mobiles
 
         public MyrmidexQueen(Serial serial)
             : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
+		{
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
 
             writer.Write(_Spawn.Count);
             _Spawn.ForEach(sp => writer.Write(sp));
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int v = reader.ReadInt();
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int v = reader.ReadInt();
 
             _Spawn = new List<BaseCreature>();
 
@@ -414,16 +418,16 @@ namespace Server.Mobiles
             _NextCombo1 = DateTime.UtcNow;
             _NextCombo2 = DateTime.UtcNow;
             _NextEggThrow = DateTime.UtcNow;
-        }
+		}
     }
 
     public class Zipactriotl : BaseCreature
     {
         public bool IsQuest { get; set; }
 
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Parasitic;
-        public override bool Unprovokable => true;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Parasitic; } }
+        public override bool Unprovokable { get { return true; } }
 
         private DateTime _NextMastery;
         private DateTime _NextSpecial;
@@ -471,13 +475,13 @@ namespace Server.Mobiles
             SetWeaponAbility(WeaponAbility.ParalyzingBlow);
         }
 
-        public override bool TeleportsTo => true;
-        public override TimeSpan TeleportDuration => TimeSpan.FromSeconds(15);
-        public override double TeleportProb => 0.33;
+        public override bool TeleportsTo { get { return true; } }
+        public override TimeSpan TeleportDuration { get { return TimeSpan.FromSeconds(15); } }
+        public override double TeleportProb { get { return 0.33; } }
 
         public override Mobile GetTeleportTarget()
         {
-            IPooledEnumerable eable = GetMobilesInRange(TeleportRange);
+            IPooledEnumerable eable = this.GetMobilesInRange(TeleportRange);
             List<Mobile> list = new List<Mobile>();
 
             foreach (Mobile m in eable)
@@ -529,7 +533,7 @@ namespace Server.Mobiles
 
         public void DoSpecial()
         {
-            Map map = Map;
+            Map map = this.Map;
 
             if (map == null || map == Map.Internal)
                 return;
@@ -550,25 +554,27 @@ namespace Server.Mobiles
             }
             eable.Free();
 
-            for (int i = 0; i < _Offsets.Length; i += 2)
+            for ( int i = 0; i < _Offsets.Length; i += 2 )
             {
-                int tarx = X + (int)(_Offsets[i] * dist);
-                int tary = Y + (int)(_Offsets[i + 1] * dist);
-                int tarz = Map.GetAverageZ(tarx, tary);
+                int tarx = this.X + (int)(_Offsets[i] * dist);
+                int tary = this.Y + (int)(_Offsets[i + 1] * dist);
+                int tarz = this.Map.GetAverageZ(tarx, tary);
 
                 if (tarx == p.X && tary == p.Y)
                     continue;
 
                 p = new Point3D(tarx, tary, tarz);
 
-                Timer.DelayCall(TimeSpan.FromMilliseconds(350 * counter), point =>
+                Timer.DelayCall<Point3D>(TimeSpan.FromMilliseconds(350 * counter), (point) =>
                     {
-                        Entity e = new Entity(Serial.Zero, point, map);
-                        MovingParticles(e, 0x3818, 10, 0, false, false, 1150, 0, 9502, 6014, 0x11D, EffectLayer.Waist, 0);
+                        //Point3D point = new Point3D(tarx, tary, tarz);
 
-                        Timer.DelayCall(TimeSpan.FromMilliseconds(250), pnt =>
+                        Entity e = new Entity(Serial.Zero, point, map);
+                        this.MovingParticles(e, 0x3818, 10, 0, false, false, 1150, 0, 9502, 6014, 0x11D, EffectLayer.Waist, 0);
+
+                        Timer.DelayCall<Point3D>(TimeSpan.FromMilliseconds(250), (pnt) =>
                         {
-                            Effects.SendLocationEffect(pnt, Map, 14089, 30, 1150, 4); // TODO: Check
+                            Effects.SendLocationEffect(pnt, this.Map, 14089, 30, 1150, 4); // TODO: Check
                         }, point);
                     }, p);
 
@@ -577,7 +583,7 @@ namespace Server.Mobiles
 
             Timer.DelayCall(TimeSpan.FromMilliseconds(Utility.RandomMinMax(300, 350) * (_Offsets.Length / 2)), () =>
                 {
-                    eable = map.GetMobilesInRange(Location, dist);
+                    eable = map.GetMobilesInRange(this.Location, dist);
 
                     foreach (Mobile m in eable)
                     {
@@ -619,26 +625,26 @@ namespace Server.Mobiles
                 });
         }
 
-        private static readonly double[] _Offsets =
-        {
+        private static readonly double[] _Offsets = new double[]
+			{
                 Math.Cos( 300.0 / 180.0 * Math.PI ), Math.Sin( 300.0 / 180.0 * Math.PI ),
-                Math.Cos( 320.0 / 180.0 * Math.PI ), Math.Sin( 320.0 / 180.0 * Math.PI ),
+				Math.Cos( 320.0 / 180.0 * Math.PI ), Math.Sin( 320.0 / 180.0 * Math.PI ),
                 Math.Cos( 340.0 / 180.0 * Math.PI ), Math.Sin( 340.0 / 180.0 * Math.PI ),
                 Math.Cos( 000.0 / 180.0 * Math.PI ), Math.Sin( 000.0 / 180.0 * Math.PI ),
                 Math.Cos( 020.0 / 180.0 * Math.PI ), Math.Sin( 020.0 / 180.0 * Math.PI ),
-                Math.Cos( 040.0 / 180.0 * Math.PI ), Math.Sin( 040.0 / 180.0 * Math.PI ),
+				Math.Cos( 040.0 / 180.0 * Math.PI ), Math.Sin( 040.0 / 180.0 * Math.PI ),
                 Math.Cos( 060.0 / 180.0 * Math.PI ), Math.Sin( 060.0 / 180.0 * Math.PI ),
-                Math.Cos( 080.0 / 180.0 * Math.PI ), Math.Sin( 080.0 / 180.0 * Math.PI ),
+				Math.Cos( 080.0 / 180.0 * Math.PI ), Math.Sin( 080.0 / 180.0 * Math.PI ),
                 Math.Cos( 100.0 / 180.0 * Math.PI ), Math.Sin( 100.0 / 180.0 * Math.PI ),
-                Math.Cos( 120.0 / 180.0 * Math.PI ), Math.Sin( 120.0 / 180.0 * Math.PI ),
-                Math.Cos( 140.0 / 180.0 * Math.PI ), Math.Sin( 140.0 / 180.0 * Math.PI ),
+				Math.Cos( 120.0 / 180.0 * Math.PI ), Math.Sin( 120.0 / 180.0 * Math.PI ),
+				Math.Cos( 140.0 / 180.0 * Math.PI ), Math.Sin( 140.0 / 180.0 * Math.PI ),
                 Math.Cos( 160.0 / 180.0 * Math.PI ), Math.Sin( 160.0 / 180.0 * Math.PI ),
-                Math.Cos( 180.0 / 180.0 * Math.PI ), Math.Sin( 180.0 / 180.0 * Math.PI ),
+				Math.Cos( 180.0 / 180.0 * Math.PI ), Math.Sin( 180.0 / 180.0 * Math.PI ),
                 Math.Cos( 200.0 / 180.0 * Math.PI ), Math.Sin( 200.0 / 180.0 * Math.PI ),
                 Math.Cos( 220.0 / 180.0 * Math.PI ), Math.Sin( 220.0 / 180.0 * Math.PI ),
-                Math.Cos( 240.0 / 180.0 * Math.PI ), Math.Sin( 240.0 / 180.0 * Math.PI ),
+				Math.Cos( 240.0 / 180.0 * Math.PI ), Math.Sin( 240.0 / 180.0 * Math.PI ),
                 Math.Cos( 260.0 / 180.0 * Math.PI ), Math.Sin( 260.0 / 180.0 * Math.PI ),
-                Math.Cos( 280.0 / 180.0 * Math.PI ), Math.Sin( 280.0 / 180.0 * Math.PI ),
+				Math.Cos( 280.0 / 180.0 * Math.PI ), Math.Sin( 280.0 / 180.0 * Math.PI ),
 
                 Math.Cos( 260.0 / 180.0 * Math.PI ), Math.Sin( 260.0 / 180.0 * Math.PI ),
                 Math.Cos( 240.0 / 180.0 * Math.PI ), Math.Sin( 240.0 / 180.0 * Math.PI ),
@@ -657,12 +663,12 @@ namespace Server.Mobiles
                 Math.Cos( 340.0 / 180.0 * Math.PI ), Math.Sin( 340.0 / 180.0 * Math.PI ),
                 Math.Cos( 320.0 / 180.0 * Math.PI ), Math.Sin( 320.0 / 180.0 * Math.PI ),
                 Math.Cos( 300.0 / 180.0 * Math.PI ), Math.Sin( 300.0 / 180.0 * Math.PI ),
-        };
+			};
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.SuperBoss, 5);
-        }
+        }	
 
         public override void Delete()
         {
@@ -699,7 +705,7 @@ namespace Server.Mobiles
 
     public class IgnisFatalis : BaseCreature
     {
-        public override bool AlwaysMurderer => true;
+        public override bool AlwaysMurderer { get { return true; } }
 
         [Constructable]
         public IgnisFatalis()

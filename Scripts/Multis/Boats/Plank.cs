@@ -1,8 +1,9 @@
-using Server.ContextMenus;
-using Server.Mobiles;
-using Server.Multis;
 using System;
 using System.Collections.Generic;
+using Server;
+using Server.Multis;
+using Server.ContextMenus;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -31,7 +32,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);//version
+            writer.Write((int)0);//version
 
             writer.Write(Boat);
             writer.Write((int)Side);
@@ -80,10 +81,10 @@ namespace Server.Items
         public uint KeyValue { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsOpen => ItemID == 0x3ED5 || ItemID == 0x3ED4 || ItemID == 0x3E84 || ItemID == 0x3E89;
+        public bool IsOpen { get { return ItemID == 0x3ED5 || ItemID == 0x3ED4 || ItemID == 0x3E84 || ItemID == 0x3E89; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Starboard => Side == PlankSide.Starboard;
+        public bool Starboard { get { return Side == PlankSide.Starboard; } }
 
         public void SetFacing(Direction dir)
         {
@@ -168,7 +169,7 @@ namespace Server.Items
                     {
                         z = from.Z + j;
 
-                        if (map.CanFit(x, y, z, 16, false, false) && !Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map))
+                        if (map.CanFit(x, y, z, 16, false, false) && !Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map) && !Region.Find(new Point3D(x, y, z), map).IsPartOf(typeof(Factions.StrongholdRegion)))
                         {
                             if (i == 1 && j >= -2 && j <= 2)
                                 return true;
@@ -180,7 +181,7 @@ namespace Server.Items
 
                     z = map.GetAverageZ(x, y);
 
-                    if (map.CanFit(x, y, z, 16, false, false) && !Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map))
+                    if (map.CanFit(x, y, z, 16, false, false) && !Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map) && !Region.Find(new Point3D(x, y, z), map).IsPartOf(typeof(Factions.StrongholdRegion)))
                     {
                         if (i == 1)
                             return true;
@@ -248,8 +249,8 @@ namespace Server.Items
 
         public class PlanksContext : ContextMenuEntry
         {
-            private readonly Plank m_Plank;
-            private readonly Mobile m_From;
+            private Plank m_Plank;
+            private Mobile m_From;
 
             public PlanksContext(Mobile from, Plank plank) : base(6132, 10)
             {
@@ -273,7 +274,7 @@ namespace Server.Items
             if (Boat == null)
                 return;
 
-            Boat.Refresh(from);
+            Boat.Refresh();
 
             if (BaseBoat.IsDriving(from))
             {
@@ -334,7 +335,7 @@ namespace Server.Items
 
         private class CloseTimer : Timer
         {
-            private readonly Plank m_Plank;
+            private Plank m_Plank;
 
             public CloseTimer(Plank plank)
                 : base(TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0))

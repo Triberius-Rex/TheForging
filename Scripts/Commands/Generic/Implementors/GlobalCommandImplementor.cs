@@ -7,12 +7,12 @@ namespace Server.Commands.Generic
     {
         public GlobalCommandImplementor()
         {
-            Accessors = new string[] { "Global" };
-            SupportRequirement = CommandSupport.Global;
-            SupportsConditionals = true;
-            AccessLevel = AccessLevel.Administrator;
-            Usage = "Global <command> [condition]";
-            Description = "Invokes the command on all appropriate objects in the world. Optional condition arguments can further restrict the set of objects.";
+            this.Accessors = new string[] { "Global" };
+            this.SupportRequirement = CommandSupport.Global;
+            this.SupportsConditionals = true;
+            this.AccessLevel = AccessLevel.Administrator;
+            this.Usage = "Global <command> [condition]";
+            this.Description = "Invokes the command on all appropriate objects in the world. Optional condition arguments can further restrict the set of objects.";
         }
 
         public override void Compile(Mobile from, BaseCommand command, ref string[] args, ref object obj)
@@ -23,7 +23,7 @@ namespace Server.Commands.Generic
 
                 bool items, mobiles;
 
-                if (!CheckObjectTypes(from, command, ext, out items, out mobiles))
+                if (!this.CheckObjectTypes(from, command, ext, out items, out mobiles))
                     return;
 
                 ArrayList list = new ArrayList();
@@ -50,10 +50,9 @@ namespace Server.Commands.Generic
 
                 obj = list;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                from.SendMessage(e.Message);
-                Diagnostics.ExceptionLogging.LogException(e);
+                from.SendMessage(ex.Message);
             }
         }
     }

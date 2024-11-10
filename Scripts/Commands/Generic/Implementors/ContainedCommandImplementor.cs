@@ -1,7 +1,7 @@
-using Server.Items;
-using Server.Targeting;
 using System;
 using System.Collections;
+using Server.Items;
+using Server.Targeting;
 
 namespace Server.Commands.Generic
 {
@@ -9,16 +9,16 @@ namespace Server.Commands.Generic
     {
         public ContainedCommandImplementor()
         {
-            Accessors = new string[] { "Contained" };
-            SupportRequirement = CommandSupport.Contained;
-            AccessLevel = AccessLevel.GameMaster;
-            Usage = "Contained <command> [condition]";
-            Description = "Invokes the command on all child items in a targeted container. Optional condition arguments can further restrict the set of objects.";
+            this.Accessors = new string[] { "Contained" };
+            this.SupportRequirement = CommandSupport.Contained;
+            this.AccessLevel = AccessLevel.GameMaster;
+            this.Usage = "Contained <command> [condition]";
+            this.Description = "Invokes the command on all child items in a targeted container. Optional condition arguments can further restrict the set of objects.";
         }
 
         public override void Process(Mobile from, BaseCommand command, string[] args)
         {
-            if (command.ValidateArgs(this, new CommandEventArgs(from, command.Commands[0], GenerateArgString(args), args)))
+            if (command.ValidateArgs(this, new CommandEventArgs(from, command.Commands[0], this.GenerateArgString(args), args)))
                 from.BeginTarget(-1, command.ObjectTypes == ObjectTypes.All, TargetFlags.None, new TargetStateCallback(OnTarget), new object[] { command, args });
         }
 
@@ -49,7 +49,7 @@ namespace Server.Commands.Generic
 
                     bool items, mobiles;
 
-                    if (!CheckObjectTypes(from, command, ext, out items, out mobiles))
+                    if (!this.CheckObjectTypes(from, command, ext, out items, out mobiles))
                         return;
 
                     if (!items)
@@ -72,12 +72,11 @@ namespace Server.Commands.Generic
 
                     ext.Filter(list);
 
-                    RunCommand(from, list, command, args);
+                    this.RunCommand(from, list, command, args);
                 }
                 catch (Exception e)
                 {
                     from.SendMessage(e.Message);
-                    Diagnostics.ExceptionLogging.LogException(e);
                 }
             }
         }

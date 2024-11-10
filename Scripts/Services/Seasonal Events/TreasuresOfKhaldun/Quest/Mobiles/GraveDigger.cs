@@ -1,16 +1,19 @@
-using Server.Engines.Quests;
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
-using System.Collections.Generic;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
     public class GraveDigger : BaseVendor
     {
         protected readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override bool IsActiveVendor => false;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
+        public override bool IsActiveVendor { get { return false; } }
 
         public override void InitSBInfo()
         {
@@ -21,11 +24,14 @@ namespace Server.Engines.Khaldun
 
         public static void Initialize()
         {
-            if (TramInstance == null)
+            if (Core.TOL)
             {
-                TramInstance = new GraveDigger();
-                TramInstance.MoveToWorld(new Point3D(1382, 1447, 10), Map.Trammel);
-                TramInstance.Direction = Direction.South;
+                if (TramInstance == null)
+                {
+                    TramInstance = new GraveDigger();
+                    TramInstance.MoveToWorld(new Point3D(1382, 1447, 10), Map.Trammel);
+                    TramInstance.Direction = Direction.South;
+                }
             }
         }
 
@@ -52,14 +58,14 @@ namespace Server.Engines.Khaldun
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            AddItem(new Backpack());
 
-            SetWearable(new Surcoat(), 1634, 1);
-            SetWearable(new Kilt(), 946, 1);
-            SetWearable(new FancyShirt(), 1411, 1);
-            SetWearable(new ThighBoots(), 2013, 1);
-            SetWearable(new GoldBracelet(), dropChance: 1);
-            SetWearable(new GoldRing(), dropChance: 1);
+            SetWearable(new Surcoat(), 1634);
+            SetWearable(new Kilt(), 946);
+            SetWearable(new FancyShirt(), 1411);
+            SetWearable(new ThighBoots(), 2013);
+            SetWearable(new GoldBracelet());
+            SetWearable(new GoldRing());
         }
 
         public override void OnDoubleClick(Mobile m)
@@ -107,7 +113,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -120,6 +126,13 @@ namespace Server.Engines.Khaldun
             {
                 TramInstance = this;
             }
+            /*else if (Map == Map.Felucca)
+            {
+                FelInstance = this;
+            }*/
+
+            if (!Core.TOL)
+                Delete();
         }
     }
 }

@@ -1,38 +1,42 @@
+using System;
 using Server.Gumps;
 using Server.Items;
-using Server.Spells.Spellweaving;
-using System;
 using System.Collections.Generic;
+using Server;
+using Server.Mobiles;
+using Server.Spells;
+using Server.Network;
+using Server.Spells.Spellweaving;
 
 namespace Server.Spells.Mysticism
 {
-    public class EnchantSpell : MysticSpell
-    {
+	public class EnchantSpell : MysticSpell
+	{
         private static readonly string ModName = "EnchantAttribute";
 
-        public override SpellCircle Circle => SpellCircle.Second;
-        public override bool ClearHandsOnCast => false;
+        public override SpellCircle Circle { get { return SpellCircle.Second; } }
+        public override bool ClearHandsOnCast { get { return false; } }
 
         public BaseWeapon Weapon { get; set; }
         public AosWeaponAttribute Attribute { get; set; }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
+		private static SpellInfo m_Info = new SpellInfo(
                 "Enchant", "In Ort Ylem",
-                230,
-                9022,
-                Reagent.SpidersSilk,
-                Reagent.MandrakeRoot,
-                Reagent.SulfurousAsh
-            );
+				230,
+				9022,
+				Reagent.SpidersSilk,
+				Reagent.MandrakeRoot,
+				Reagent.SulfurousAsh
+			);
 
-        public EnchantSpell(Mobile caster, Item scroll) : base(caster, scroll, m_Info)
-        {
-        }
+		public EnchantSpell( Mobile caster, Item scroll ) : base( caster, scroll, m_Info )
+		{
+		}
 
-        public EnchantSpell(Mobile caster, Item scroll, BaseWeapon weapon, AosWeaponAttribute attribute) : base(caster, scroll, m_Info)
+        public EnchantSpell( Mobile caster, Item scroll, BaseWeapon weapon, AosWeaponAttribute attribute ) : base( caster, scroll, m_Info )
         {
             Weapon = weapon;
-            Attribute = attribute;
+            this.Attribute = attribute;
         }
 
         public override bool CheckCast()
@@ -52,14 +56,14 @@ namespace Server.Spells.Mysticism
                         Caster.CloseGump(typeof(EnchantSpellGump));
                     }
 
-                    EnchantSpellGump gump = new EnchantSpellGump(Caster, Scroll, wep);
+                    var gump = new EnchantSpellGump(Caster, Scroll, wep);
                     int serial = gump.Serial;
 
                     Caster.SendGump(gump);
 
                     Timer.DelayCall(TimeSpan.FromSeconds(30), () =>
                     {
-                        Gump current = Caster.FindGump(typeof(EnchantSpellGump));
+                        var current = Caster.FindGump(typeof(EnchantSpellGump));
 
                         if (current != null && current.Serial == serial)
                         {
@@ -128,13 +132,13 @@ namespace Server.Spells.Mysticism
                 int sec = (int)Caster.Skills[DamageSkill].Value;
 
                 int value = (60 * (prim + sec)) / 240;
-                double duration = ((prim + sec) / 2.0) + 30.0;
+                double duration = ((double)(prim + sec) / 2.0) + 30.0;
                 int malus = 0;
 
                 if (Table == null)
                     Table = new Dictionary<Mobile, EnchantmentTimer>();
 
-                Enhancement.SetValue(Caster, Attribute, value, ModName);
+                Enhancement.SetValue(Caster, this.Attribute, value, ModName);
 
                 if (prim >= 80 && sec >= 80 && Weapon.Attributes.SpellChanneling == 0)
                 {
@@ -143,11 +147,11 @@ namespace Server.Spells.Mysticism
                     malus = 1;
                 }
 
-                Table[Caster] = new EnchantmentTimer(Caster, Weapon, Attribute, value, malus, duration);
+                Table[Caster] = new EnchantmentTimer(Caster, Weapon, this.Attribute, value, malus, duration);
 
                 int loc;
 
-                switch (Attribute)
+                switch (this.Attribute)
                 {
                     default:
                     case AosWeaponAttribute.HitLightning: loc = 1060423; break;
@@ -202,10 +206,8 @@ namespace Server.Spells.Mysticism
 
         public static void RemoveEnchantment(Mobile caster)
         {
-            if (Table != null && Table.ContainsKey(caster))
+            if(Table != null && Table.ContainsKey(caster))
             {
-                var weapon = Table[caster].Weapon;
-
                 Table[caster].Stop();
                 Table[caster] = null;
                 Table.Remove(caster);
@@ -214,25 +216,18 @@ namespace Server.Spells.Mysticism
                 caster.PlaySound(0x1E6);
 
                 Enhancement.RemoveMobile(caster);
-
-                if (weapon != null)
-                {
-                    weapon.InvalidateProperties();
-                }
-
-                BuffInfo.RemoveBuff(caster, BuffIcon.Enchant);
             }
         }
 
         public static void OnWeaponRemoved(BaseWeapon wep, Mobile from)
         {
-            if (IsUnderSpellEffects(from, wep))
+            if(IsUnderSpellEffects(from, wep))
                 RemoveEnchantment(from);
 
             if (wep.EnchantedWeilder != null)
                 wep.EnchantedWeilder = null;
         }
-    }
+	}
 
     public class EnchantmentTimer : Timer
     {
@@ -250,12 +245,12 @@ namespace Server.Spells.Mysticism
             AttributeValue = value;
             CastingMalus = malus;
 
-            Start();
+            this.Start();
         }
 
         protected override void OnTick()
         {
-            if (Weapon != null)
+            if(Weapon != null)
                 Weapon.EnchantedWeilder = null;
 
             EnchantSpell.RemoveEnchantment(Owner);

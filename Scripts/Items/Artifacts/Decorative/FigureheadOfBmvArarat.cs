@@ -1,17 +1,20 @@
-﻿namespace Server.Items
+﻿using System;
+using Server.Items;
+
+namespace Server.Items
 {
     public class FigureheadOfBmvArarat : BaseDecorationArtifact
     {
-        public override int ArtifactRarity => 8;
-        public override bool IsArtifact => true;
+        public override int ArtifactRarity { get { return 8; } }
+        public override bool IsArtifact { get { return true; } }
 
         [Constructable]
         public FigureheadOfBmvArarat()
             : base(0x2D0E)
         {
-            Name = "Figurehead Of The Bmv Ararat";
-            Weight = 10.0;
-            Hue = 2968; // checked
+            this.Name = "Figurehead Of The Bmv Ararat";
+            this.Weight = 10.0;
+            this.Hue = 2968; // checked
         }
 
         public FigureheadOfBmvArarat(Serial serial)
@@ -22,7 +25,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

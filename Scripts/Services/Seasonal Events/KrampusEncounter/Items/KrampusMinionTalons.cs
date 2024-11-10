@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class KrampusMinionTalons : BaseShoes
     {
-        public override int LabelNumber => 1125644;  // krampus minion talons
+        public override int LabelNumber { get { return 1125644; } } // krampus minion talons
 
         [Constructable]
         public KrampusMinionTalons()
@@ -22,12 +24,21 @@ namespace Server.Items
         {
         }
 
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+        public override bool CanBeWornByGargoyles { get { return true; } }
+
+        public override CraftResource DefaultResource
+        {
+            get
+            {
+                return CraftResource.RegularLeather;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

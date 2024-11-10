@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,37 +10,42 @@ namespace Server.Mobiles
         public AcidElementalRenowned()
             : base(AIType.AI_Mage)
         {
-            Name = "Acid Elemental";
-            Title = "[Renowned]";
-            Body = 0x9E;
-            BaseSoundID = 278;
+            this.Name = "Acid Elemental";
+            this.Title = "[Renowned]";
+            this.Body = 0x9E;
+            this.BaseSoundID = 278;
 
-            SetStr(450, 600);
-            SetDex(120, 185);
-            SetInt(361, 435);
+            this.SetStr(450, 600);
+            this.SetDex(120, 185);
+            this.SetInt(361, 435);
 
-            SetHits(2000, 2400);
+            this.SetHits(2000, 2400);
 
-            SetDamage(9, 15);
+            this.SetDamage(9, 15);
 
-            SetDamageType(ResistanceType.Physical, 25);
-            SetDamageType(ResistanceType.Poison, 50);
-            SetDamageType(ResistanceType.Energy, 25);
+            this.SetDamageType(ResistanceType.Physical, 25);
+            this.SetDamageType(ResistanceType.Poison, 50);
+            this.SetDamageType(ResistanceType.Energy, 25);
 
-            SetResistance(ResistanceType.Physical, 40, 70);
-            SetResistance(ResistanceType.Fire, 30, 50);
-            SetResistance(ResistanceType.Cold, 20, 40);
-            SetResistance(ResistanceType.Poison, 10, 30);
-            SetResistance(ResistanceType.Energy, 20, 50);
+            this.SetResistance(ResistanceType.Physical, 40, 70);
+            this.SetResistance(ResistanceType.Fire, 30, 50);
+            this.SetResistance(ResistanceType.Cold, 20, 40);
+            this.SetResistance(ResistanceType.Poison, 10, 30);
+            this.SetResistance(ResistanceType.Energy, 20, 50);
 
-            SetSkill(SkillName.EvalInt, 80.1, 100.0);
-            SetSkill(SkillName.Magery, 80.1, 100.0);
-            SetSkill(SkillName.MagicResist, 65.2, 100.0);
-            SetSkill(SkillName.Tactics, 90.1, 100.0);
-            SetSkill(SkillName.Wrestling, 80.1, 100.0);
+            this.SetSkill(SkillName.EvalInt, 80.1, 100.0);
+            this.SetSkill(SkillName.Magery, 80.1, 100.0);
+            this.SetSkill(SkillName.MagicResist, 65.2, 100.0);
+            this.SetSkill(SkillName.Tactics, 90.1, 100.0);
+            this.SetSkill(SkillName.Wrestling, 80.1, 100.0);
 
-            Fame = 12500;
-            Karma = -12500;
+            this.Fame = 12500;
+            this.Karma = -12500;
+
+            this.VirtualArmor = 70;
+
+            this.PackItem(new Nightshade(4));
+            this.PackItem(new LesserPoisonPotion());
         }
 
         public AcidElementalRenowned(Serial serial)
@@ -48,21 +53,43 @@ namespace Server.Mobiles
         {
         }
 
-        public override Type[] UniqueSAList => new Type[] { typeof(BreastplateOfTheBerserker), typeof(TerathanWarriorCostume) };
-        public override Type[] SharedSAList => new Type[] { typeof(MysticsGarb) };
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override Type[] UniqueSAList
+        {
+            get
+            {
+                return new Type[] { typeof(BreastplateOfTheBerserker),  typeof(TerathanWarriorCostume)};
+            }
+        }
+        public override Type[] SharedSAList
+        {
+            get
+            {
+                return new Type[] { typeof(MysticsGarb) };
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Rich, 2);
-            AddLoot(LootPack.LootItem<Nightshade>(4));
-            AddLoot(LootPack.LootItem<LesserPoisonPotion>());
+            this.AddLoot(LootPack.Rich, 2);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

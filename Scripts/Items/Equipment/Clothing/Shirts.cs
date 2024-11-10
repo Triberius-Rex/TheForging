@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseShirt : BaseClothing
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -32,7 +34,7 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x1efd, 0x1efe)]
+    [FlipableAttribute(0x1efd, 0x1efe)]
     public class FancyShirt : BaseShirt
     {
         [Constructable]
@@ -45,7 +47,7 @@ namespace Server.Items
         public FancyShirt(int hue)
             : base(0x1EFD, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public FancyShirt(Serial serial)
@@ -57,7 +59,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -68,7 +70,7 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x1517, 0x1518)]
+    [FlipableAttribute(0x1517, 0x1518)]
     public class Shirt : BaseShirt
     {
         [Constructable]
@@ -81,7 +83,7 @@ namespace Server.Items
         public Shirt(int hue)
             : base(0x1517, hue)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public Shirt(Serial serial)
@@ -93,7 +95,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -101,6 +103,9 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
+
+            if (this.Weight == 2.0)
+                this.Weight = 1.0;
         }
     }
 
@@ -117,8 +122,8 @@ namespace Server.Items
         public ClothNinjaJacket(int hue)
             : base(0x2794, hue)
         {
-            Weight = 5.0;
-            Layer = Layer.InnerTorso;
+            this.Weight = 5.0;
+            this.Layer = Layer.InnerTorso;
         }
 
         public ClothNinjaJacket(Serial serial)
@@ -130,7 +135,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -153,7 +158,7 @@ namespace Server.Items
         public ElvenShirt(int hue)
             : base(0x3175, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public ElvenShirt(Serial serial)
@@ -161,6 +166,13 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Elf;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -188,7 +200,7 @@ namespace Server.Items
         public ElvenDarkShirt(int hue)
             : base(0x3176, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public ElvenDarkShirt(Serial serial)
@@ -196,6 +208,13 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Elf;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -223,7 +242,7 @@ namespace Server.Items
         public GargishClothChest(int hue)
             : base(0x0406, Layer.InnerTorso, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public GargishClothChest(Serial serial)
@@ -231,6 +250,20 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnAdded(object parent)
         {
             base.OnAdded(parent);
@@ -238,16 +271,16 @@ namespace Server.Items
             if (parent is Mobile)
             {
                 if (((Mobile)parent).Female)
-                    ItemID = 0x0405;
+                    this.ItemID = 0x0405;
                 else
-                    ItemID = 0x0406;
+                    this.ItemID = 0x0406;
             }
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -269,7 +302,7 @@ namespace Server.Items
         public FemaleGargishClothChest(int hue)
             : base(0x0405, Layer.InnerTorso, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public FemaleGargishClothChest(Serial serial)
@@ -277,10 +310,24 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -302,7 +349,7 @@ namespace Server.Items
         public MaleGargishClothChest(int hue)
             : base(0x0406, Layer.InnerTorso, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public MaleGargishClothChest(Serial serial)
@@ -310,10 +357,24 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

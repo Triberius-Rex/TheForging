@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -8,39 +9,39 @@ namespace Server.Mobiles
         public Ninja()
             : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
-            Title = "the ninja";
+            this.Title = "the ninja";
 
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            SetSkill(SkillName.Fencing, 64.0, 80.0);
-            SetSkill(SkillName.Macing, 64.0, 80.0);
-            SetSkill(SkillName.Ninjitsu, 60.0, 80.0);
-            SetSkill(SkillName.Parry, 64.0, 80.0);
-            SetSkill(SkillName.Tactics, 64.0, 85.0);
-            SetSkill(SkillName.Swords, 64.0, 85.0);
+            this.SetSkill(SkillName.Fencing, 64.0, 80.0);
+            this.SetSkill(SkillName.Macing, 64.0, 80.0);
+            this.SetSkill(SkillName.Ninjitsu, 60.0, 80.0);
+            this.SetSkill(SkillName.Parry, 64.0, 80.0);
+            this.SetSkill(SkillName.Tactics, 64.0, 85.0);
+            this.SetSkill(SkillName.Swords, 64.0, 85.0);
 
-            SpeechHue = Utility.RandomDyedHue();
+            this.SpeechHue = Utility.RandomDyedHue();
 
-            Hue = Utility.RandomSkinHue();
+            this.Hue = Utility.RandomSkinHue();
 
-            if (Female = Utility.RandomBool())
+            if (this.Female = Utility.RandomBool())
             {
-                Body = 0x191;
-                Name = NameList.RandomName("female");
+                this.Body = 0x191;
+                this.Name = NameList.RandomName("female");
             }
             else
             {
-                Body = 0x190;
-                Name = NameList.RandomName("male");
+                this.Body = 0x190;
+                this.Name = NameList.RandomName("male");
             }
 
-            if (!Female)
-				SetWearable(new LeatherNinjaHood(), dropChance: 1);
+            if (!this.Female)
+                this.AddItem(new LeatherNinjaHood());
 
-			SetWearable(new LeatherNinjaPants(), dropChance: 1);
-            SetWearable(new LeatherNinjaBelt(), dropChance: 1);
-            SetWearable(new LeatherNinjaJacket(), dropChance: 1);
-            SetWearable(new NinjaTabi(), dropChance: 1);
+            this.AddItem(new LeatherNinjaPants());
+            this.AddItem(new LeatherNinjaBelt());
+            this.AddItem(new LeatherNinjaJacket());
+            this.AddItem(new NinjaTabi());
 
             int hairHue = Utility.RandomNondyedHue();
 
@@ -48,6 +49,8 @@ namespace Server.Mobiles
 
             if (Utility.Random(7) != 0)
                 Utility.AssignRandomFacialHair(this, hairHue);
+
+            this.PackGold(250, 300);
         }
 
         public Ninja(Serial serial)
@@ -55,14 +58,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanTeach => true;
-        public override bool ClickTitle => false;
-
-        public override void GenerateLoot()
+        public override bool CanTeach
         {
-            AddLoot(LootPack.LootGold(250, 300));
+            get
+            {
+                return true;
+            }
         }
-
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

@@ -1,6 +1,6 @@
+using System;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Fifth
 {
@@ -19,10 +19,19 @@ namespace Server.Spells.Fifth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fifth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fifth;
+            }
+        }
         public override TimeSpan GetCastDelay()
         {
-            return TimeSpan.FromTicks(base.GetCastDelay().Ticks * 3);
+            if (Core.AOS)
+                return TimeSpan.FromTicks(base.GetCastDelay().Ticks * ((Core.SE) ? 3 : 5));
+
+            return base.GetCastDelay() + TimeSpan.FromSeconds(6.0);
         }
 
         public override bool CheckCast()
@@ -30,9 +39,9 @@ namespace Server.Spells.Fifth
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 2) > Caster.FollowersMax)
+            if ((this.Caster.Followers + (Core.SE ? 2 : 1)) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
+                this.Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;
             }
 
@@ -41,54 +50,61 @@ namespace Server.Spells.Fifth
 
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(IPoint3D p)
         {
-            Map map = Caster.Map;
+            Map map = this.Caster.Map;
 
             SpellHelper.GetSurfaceTop(ref p);
 
             if (map == null || !map.CanSpawnMobile(p.X, p.Y, p.Z))
             {
-                Caster.SendLocalizedMessage(501942); // That location is blocked.
+                this.Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
-            else if (SpellHelper.CheckTown(p, Caster) && CheckSequence())
+            else if (SpellHelper.CheckTown(p, this.Caster) && this.CheckSequence())
             {
-                BaseCreature.Summon(new BladeSpirits(true), false, Caster, new Point3D(p), 0x212, TimeSpan.FromSeconds(120));
+                TimeSpan duration;
+
+                if (Core.AOS)
+                    duration = TimeSpan.FromSeconds(120);
+                else
+                    duration = TimeSpan.FromSeconds(Utility.Random(80, 40));
+
+                BaseCreature.Summon(new BladeSpirits(true), false, this.Caster, new Point3D(p), 0x212, duration);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
         {
             private BladeSpiritsSpell m_Owner;
             public InternalTarget(BladeSpiritsSpell owner)
-                : base(10, true, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, true, TargetFlags.None)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is IPoint3D)
-                    m_Owner.Target((IPoint3D)o);
+                    this.m_Owner.Target((IPoint3D)o);
             }
 
             protected override void OnTargetOutOfLOS(Mobile from, object o)
             {
                 from.SendLocalizedMessage(501943); // Target cannot be seen. Try again.
-                from.Target = new InternalTarget(m_Owner);
-                from.Target.BeginTimeout(from, TimeoutTime - DateTime.UtcNow);
-                m_Owner = null;
+                from.Target = new InternalTarget(this.m_Owner);
+                from.Target.BeginTimeout(from, this.TimeoutTime - DateTime.UtcNow);
+                this.m_Owner = null;
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                if (m_Owner != null)
-                    m_Owner.FinishSequence();
+                if (this.m_Owner != null)
+                    this.m_Owner.FinishSequence();
             }
         }
     }

@@ -1,9 +1,9 @@
+using System;
 using Server.Engines.PartySystem;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
 using Server.Network;
-using System;
 
 namespace Server.Engines.Quests.Doom
 {
@@ -65,7 +65,7 @@ namespace Server.Engines.Quests.Doom
             Effects.SendLocationParticles(EffectItem.Create(loc, map, EffectItem.DefaultDuration), 0x3728, 10, 10, 0, 0, 2023, 0);
             Effects.PlaySound(loc, map, 0x1FE);
 
-            TeleportPets(from, loc, map);
+            BaseCreature.TeleportPets(from, loc, map);
 
             from.MoveToWorld(loc, map);
         }
@@ -91,7 +91,7 @@ namespace Server.Engines.Quests.Doom
             if (Deleted || m_AngryAt == null)
                 return;
 
-            Timer.DelayCall(TimeSpan.FromSeconds(4.0), EndGiveWarning);
+            Timer.DelayCall(TimeSpan.FromSeconds(4.0), new TimerCallback(EndGiveWarning));
         }
 
         public virtual void EndGiveWarning()
@@ -110,12 +110,12 @@ namespace Server.Engines.Quests.Doom
             if (Deleted || m_AngryAt == null)
                 return;
 
-            Timer.DelayCall(TimeSpan.FromSeconds(30.0), EndSummonDragon);
+            Timer.DelayCall(TimeSpan.FromSeconds(30.0), new TimerCallback(EndSummonDragon));
         }
 
         public virtual void BeginRemove(TimeSpan delay)
         {
-            Timer.DelayCall(delay, EndRemove);
+            Timer.DelayCall(delay, new TimerCallback(EndRemove));
         }
 
         public virtual void EndRemove()
@@ -202,7 +202,7 @@ namespace Server.Engines.Quests.Doom
                 {
                     for (int i = 0; i < p.Members.Count; ++i)
                     {
-                        PartyMemberInfo pmi = p.Members[i];
+                        PartyMemberInfo pmi = (PartyMemberInfo)p.Members[i];
                         Mobile member = pmi.Mobile;
 
                         if (member != from && member.Map == Map.Malas && member.Region.IsPartOf("Doom"))
@@ -240,7 +240,7 @@ namespace Server.Engines.Quests.Doom
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

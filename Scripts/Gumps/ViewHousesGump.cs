@@ -1,9 +1,10 @@
+using System;
+using System.Collections.Generic;
 using Server.Accounting;
 using Server.Commands;
 using Server.Items;
 using Server.Multis;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Gumps
 {
@@ -57,7 +58,7 @@ namespace Server.Gumps
 
                     object name = FindHouseName(list[i]);
 
-                    AddHtml(15, 40 + ((i % 15) * 20), 20, 20, Color(string.Format("{0}.", i + 1), White), false, false);
+                    AddHtml(15, 40 + ((i % 15) * 20), 20, 20, Color(String.Format("{0}.", i + 1), White), false, false);
 
                     if (name is int)
                         AddHtmlLocalized(35, 40 + ((i % 15) * 20), 160, 20, (int)name, White16, false, false);
@@ -81,7 +82,7 @@ namespace Server.Gumps
                 bool valid = Sextant.Format(sel.Location, map, ref xLong, ref yLat, ref xMins, ref yMins, ref xEast, ref ySouth);
 
                 if (valid)
-                    location = string.Format("{0}Â° {1}'{2}, {3}Â° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
+                    location = String.Format("{0}° {1}'{2}, {3}° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
                 else
                     location = "unknown";
 
@@ -133,14 +134,14 @@ namespace Server.Gumps
 
         public static void Initialize()
         {
-            CommandSystem.Register("ViewHouses", AccessLevel.GameMaster, ViewHouses_OnCommand);
+            CommandSystem.Register("ViewHouses", AccessLevel.GameMaster, new CommandEventHandler(ViewHouses_OnCommand));
         }
 
         [Usage("ViewHouses")]
         [Description("Displays a menu listing all houses of a targeted player. The menu also contains specific house details, and options to: go to house, open house menu, and demolish house.")]
         public static void ViewHouses_OnCommand(CommandEventArgs e)
         {
-            e.Mobile.BeginTarget(-1, false, TargetFlags.None, ViewHouses_OnTarget);
+            e.Mobile.BeginTarget(-1, false, TargetFlags.None, new TargetCallback(ViewHouses_OnTarget));
         }
 
         public static void ViewHouses_OnTarget(Mobile from, object targeted)
@@ -175,7 +176,7 @@ namespace Server.Gumps
             return list;
         }
 
-        public override void OnResponse(Network.NetState sender, RelayInfo info)
+        public override void OnResponse(Server.Network.NetState sender, RelayInfo info)
         {
             if (m_Selection == null)
             {
@@ -186,7 +187,7 @@ namespace Server.Gumps
             }
             else if (!m_Selection.Deleted)
             {
-                switch (info.ButtonID)
+                switch ( info.ButtonID )
                 {
                     case 0:
                         {
@@ -238,7 +239,7 @@ namespace Server.Gumps
             int multiID = house.ItemID;
             HousePlacementEntry[] entries;
 
-            entries = HousePlacementEntry.PreBuiltHouses;
+            entries = HousePlacementEntry.ClassicHouses;
 
             for (int i = 0; i < entries.Length; ++i)
             {
@@ -267,17 +268,17 @@ namespace Server.Gumps
 
         public string Right(string text)
         {
-            return string.Format("<div align=right>{0}</div>", text);
+            return String.Format("<div align=right>{0}</div>", text);
         }
 
         public string Center(string text)
         {
-            return string.Format("<CENTER>{0}</CENTER>", text);
+            return String.Format("<CENTER>{0}</CENTER>", text);
         }
 
         public string Color(string text, int color)
         {
-            return string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
+            return String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
         }
 
         public void AddBlackAlpha(int x, int y, int width, int height)

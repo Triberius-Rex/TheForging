@@ -1,12 +1,16 @@
-using Server.Gumps;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Server;
+using Server.Gumps;
+using Server.Multis;
+using Server.Network;
 
 namespace Server.Items
 {
     public class WoodworkersBench : BaseAddon
     {
-        public override BaseAddonDeed Deed => new WoodworkersBenchDeed();
+        public override BaseAddonDeed Deed { get { return new WoodworkersBenchDeed(); } }
 
         [Constructable]
         public WoodworkersBench()
@@ -44,7 +48,7 @@ namespace Server.Items
             {
                 TimeSpan tsRem = (_Table[m].Item2 + TimeSpan.FromMinutes(BonusDuration) - DateTime.UtcNow);
 
-                m.SendLocalizedMessage(1071522, string.Format("{0}\t{1}", tsRem.Minutes.ToString(), tsRem.Seconds.ToString())); // You already have the bench's buff. Time remaining of the buff: ~1_VAL~ min ~2_VAL~ sec
+                m.SendLocalizedMessage(1071522, String.Format("{0}\t{1}", tsRem.Minutes.ToString(), tsRem.Seconds.ToString())); // You already have the bench's buff. Time remaining of the buff: ~1_VAL~ min ~2_VAL~ sec
             }
             else
             {
@@ -68,10 +72,8 @@ namespace Server.Items
                 _Table = new Dictionary<Mobile, Tuple<bool, DateTime, SkillMod>>();
             }
 
-            DefaultSkillMod mod = new DefaultSkillMod(SkillName.Carpentry, true, 5.0)
-            {
-                ObeyCap = false
-            };
+            var mod = new DefaultSkillMod(SkillName.Carpentry, true, 5.0);
+            mod.ObeyCap = false;
             m.AddSkillMod(mod);
 
             _Table[m] = new Tuple<bool, DateTime, SkillMod>(true, DateTime.UtcNow, mod);
@@ -118,7 +120,7 @@ namespace Server.Items
 
             List<Mobile> list = new List<Mobile>(_Table.Keys);
 
-            foreach (Mobile m in list)
+            foreach (var m in list)
             {
                 if (_Table[m].Item2 + TimeSpan.FromMinutes(BonusDuration + Cooldown) < DateTime.UtcNow)
                 {
@@ -127,7 +129,7 @@ namespace Server.Items
                 else if (_Table[m].Item1 && _Table[m].Item2 + TimeSpan.FromMinutes(BonusDuration) < DateTime.UtcNow)
                 {
                     m.RemoveSkillMod(_Table[m].Item3);
-                    DateTime dt = _Table[m].Item2;
+                    var dt = _Table[m].Item2;
 
                     if (m.NetState != null)
                     {
@@ -174,8 +176,8 @@ namespace Server.Items
 
     public class WoodworkersBenchDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1026641;  // Woodworker's Bench
-        public override BaseAddon Addon => new WoodworkersBench(m_East);
+        public override int LabelNumber { get { return 1026641; } } // Woodworker's Bench
+        public override BaseAddon Addon { get { return new WoodworkersBench(m_East); } }
 
         private bool m_East;
 

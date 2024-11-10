@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -20,13 +21,13 @@ namespace Server.Mobiles
                 case 3: Hue = 245; break;
             }
 
-            SetStr(213, 294);
-            SetDex(80, 82);
+			SetStr(213, 294);
+			SetDex(80, 82);
             SetInt(18, 22);
 
-            SetHits(333, 370);
+			SetHits(333, 370);
 
-            SetDamage(21, 28);
+			SetDamage(21, 28);
 
             SetDamageType(ResistanceType.Physical, 100);
 
@@ -39,6 +40,11 @@ namespace Server.Mobiles
             SetSkill(SkillName.MagicResist, 25.0);
             SetSkill(SkillName.Tactics, 30.0, 50.0);
             SetSkill(SkillName.Wrestling, 30.0, 80.0);
+
+            if (0.75 > Utility.RandomDouble())
+                PackItem(new AcidSac());
+
+            PackItem(new CongealedSlugAcid());
         }
 
         public AcidSlug(Serial serial)
@@ -49,8 +55,6 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Average);
-            AddLoot(LootPack.LootItem<AcidSac>(75.0));
-            AddLoot(LootPack.LootItem<CongealedSlugAcid>());
         }
 
         public override int GetIdleSound()
@@ -87,7 +91,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

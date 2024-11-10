@@ -1,9 +1,12 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class ConjurersTrinket : BaseTalisman
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1094800;  // Conjurer's Trinket
+        public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1094800; } } // Conjurer's Trinket
 
         [Constructable]
         public ConjurersTrinket()
@@ -26,7 +29,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

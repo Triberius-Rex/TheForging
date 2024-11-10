@@ -43,49 +43,73 @@ namespace Server.Commands.Generic
         private object m_Value;
         private FieldInfo m_Field;
 
-        public Type Type => m_Type;
+        public Type Type
+        {
+            get
+            {
+                return this.m_Type;
+            }
+        }
 
-        public object Value => m_Value;
+        public object Value
+        {
+            get
+            {
+                return this.m_Value;
+            }
+        }
 
-        public FieldInfo Field => m_Field;
+        public FieldInfo Field
+        {
+            get
+            {
+                return this.m_Field;
+            }
+        }
 
-        public bool HasField => (m_Field != null);
+        public bool HasField
+        {
+            get
+            {
+                return (this.m_Field != null);
+            }
+        }
 
         public PropertyValue(Type type, object value)
         {
-            m_Type = type;
-            m_Value = value;
+            this.m_Type = type;
+            this.m_Value = value;
         }
 
         public void Load(MethodEmitter method)
         {
-            if (m_Field != null)
+            if (this.m_Field != null)
             {
                 method.LoadArgument(0);
-                method.LoadField(m_Field);
+                method.LoadField(this.m_Field);
             }
-            else if (m_Value == null)
+            else if (this.m_Value == null)
             {
-                method.LoadNull(m_Type);
+                method.LoadNull(this.m_Type);
             }
             else
             {
-                if (m_Value is int)
-                    method.Load((int)m_Value);
-                else if (m_Value is long)
-                    method.Load((long)m_Value);
-                else if (m_Value is float)
-                    method.Load((float)m_Value);
-                else if (m_Value is double)
-                    method.Load((double)m_Value);
-                else if (m_Value is char)
-                    method.Load((char)m_Value);
-                else if (m_Value is bool)
-                    method.Load((bool)m_Value);
-                else if (m_Value is string)
-                    method.Load((string)m_Value);
-                else if (m_Value is Enum)
-                    method.Load((Enum)m_Value);
+                if (this.m_Value is int)
+                    method.Load((int)this.m_Value);
+                else if (this.m_Value is long)
+                    method.Load((long)this.m_Value);
+                else if (this.m_Value is float)
+                    method.Load((float)this.m_Value);
+                else if (this.m_Value is double)
+                    method.Load((double)this.m_Value);
+                else if (this.m_Value is char)
+                    method.Load((char)this.m_Value);
+                else if (this.m_Value is bool)
+                    method.Load((bool)this.m_Value);
+                else if (this.m_Value is string)
+                    method.Load((string)this.m_Value);
+                else if (this.m_Value is Enum)
+                    method.Load((Enum)this.m_Value);
                 else
                     throw new InvalidOperationException("Unrecognized comparison value.");
             }
@@ -93,31 +117,31 @@ namespace Server.Commands.Generic
 
         public void Acquire(TypeBuilder typeBuilder, ILGenerator il, string fieldName)
         {
-            if (m_Value is string)
+            if (this.m_Value is string)
             {
-                string toParse = (string)m_Value;
+                string toParse = (string)this.m_Value;
 
-                if (!m_Type.IsValueType && toParse == "null")
+                if (!this.m_Type.IsValueType && toParse == "null")
                 {
-                    m_Value = null;
+                    this.m_Value = null;
                 }
-                else if (m_Type == typeof(string))
+                else if (this.m_Type == typeof(string))
                 {
                     if (toParse == @"@""null""")
                         toParse = "null";
 
-                    m_Value = toParse;
+                    this.m_Value = toParse;
                 }
-                else if (m_Type.IsEnum)
+                else if (this.m_Type.IsEnum)
                 {
-                    m_Value = Enum.Parse(m_Type, toParse, true);
+                    this.m_Value = Enum.Parse(this.m_Type, toParse, true);
                 }
                 else
                 {
                     MethodInfo parseMethod = null;
                     object[] parseArgs = null;
 
-                    MethodInfo parseNumber = m_Type.GetMethod(
+                    MethodInfo parseNumber = this.m_Type.GetMethod(
                         "Parse",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
@@ -139,7 +163,7 @@ namespace Server.Commands.Generic
                     }
                     else
                     {
-                        MethodInfo parseGeneral = m_Type.GetMethod(
+                        MethodInfo parseGeneral = this.m_Type.GetMethod(
                             "Parse",
                             BindingFlags.Public | BindingFlags.Static,
                             null,
@@ -152,13 +176,13 @@ namespace Server.Commands.Generic
 
                     if (parseMethod != null)
                     {
-                        m_Value = parseMethod.Invoke(null, parseArgs);
+                        this.m_Value = parseMethod.Invoke(null, parseArgs);
 
-                        if (!m_Type.IsPrimitive)
+                        if (!this.m_Type.IsPrimitive)
                         {
-                            m_Field = typeBuilder.DefineField(
+                            this.m_Field = typeBuilder.DefineField(
                                 fieldName,
-                                m_Type,
+                                this.m_Type,
                                 FieldAttributes.Private | FieldAttributes.InitOnly);
 
                             il.Emit(OpCodes.Ldarg_0);
@@ -169,16 +193,16 @@ namespace Server.Commands.Generic
                                 il.Emit(OpCodes.Ldc_I4, (int)parseArgs[1]);
 
                             il.Emit(OpCodes.Call, parseMethod);
-                            il.Emit(OpCodes.Stfld, m_Field);
+                            il.Emit(OpCodes.Stfld, this.m_Field);
                         }
                     }
                     else
                     {
                         throw new InvalidOperationException(
-                            string.Format(
+                            String.Format(
                                 "Unable to convert string \"{0}\" into type '{1}'.",
-                                m_Value,
-                                m_Type));
+                                this.m_Value,
+                                this.m_Type));
                     }
                 }
             }
@@ -192,8 +216,8 @@ namespace Server.Commands.Generic
 
         public PropertyCondition(Property property, bool not)
         {
-            m_Property = property;
-            m_Not = not;
+            this.m_Property = property;
+            this.m_Not = not;
         }
 
         public abstract void Construct(TypeBuilder typeBuilder, ILGenerator il, int index);
@@ -222,15 +246,15 @@ namespace Server.Commands.Generic
         public StringCondition(Property property, bool not, StringOperator op, object value, bool ignoreCase)
             : base(property, not)
         {
-            m_Operator = op;
-            m_Value = new PropertyValue(property.Type, value);
+            this.m_Operator = op;
+            this.m_Value = new PropertyValue(property.Type, value);
 
-            m_IgnoreCase = ignoreCase;
+            this.m_IgnoreCase = ignoreCase;
         }
 
         public override void Construct(TypeBuilder typeBuilder, ILGenerator il, int index)
         {
-            m_Value.Acquire(typeBuilder, il, "v" + index);
+            this.m_Value.Acquire(typeBuilder, il, "v" + index);
         }
 
         public override void Compile(MethodEmitter emitter)
@@ -239,7 +263,7 @@ namespace Server.Commands.Generic
 
             string methodName;
 
-            switch (m_Operator)
+            switch ( this.m_Operator )
             {
                 case StringOperator.Equal:
                     methodName = "Equals";
@@ -261,9 +285,9 @@ namespace Server.Commands.Generic
                     throw new InvalidOperationException("Invalid string comparison operator.");
             }
 
-            if (m_IgnoreCase || methodName == "Equals")
+            if (this.m_IgnoreCase || methodName == "Equals")
             {
-                Type type = (m_IgnoreCase ? typeof(Insensitive) : typeof(string));
+                Type type = (this.m_IgnoreCase ? typeof(Insensitive) : typeof(String));
 
                 emitter.BeginCall(
                     type.GetMethod(
@@ -277,8 +301,8 @@ namespace Server.Commands.Generic
                         },
                         null));
 
-                emitter.Chain(m_Property);
-                m_Value.Load(emitter);
+                emitter.Chain(this.m_Property);
+                this.m_Value.Load(emitter);
 
                 emitter.FinishCall();
             }
@@ -287,9 +311,9 @@ namespace Server.Commands.Generic
                 Label notNull = emitter.CreateLabel();
                 Label moveOn = emitter.CreateLabel();
 
-                LocalBuilder temp = emitter.AcquireTemp(m_Property.Type);
+                LocalBuilder temp = emitter.AcquireTemp(this.m_Property.Type);
 
-                emitter.Chain(m_Property);
+                emitter.Chain(this.m_Property);
 
                 emitter.StoreLocal(temp);
                 emitter.LoadLocal(temp);
@@ -314,14 +338,14 @@ namespace Server.Commands.Generic
                         },
                         null));
 
-                m_Value.Load(emitter);
+                this.m_Value.Load(emitter);
 
                 emitter.FinishCall();
 
                 emitter.MarkLabel(moveOn);
             }
 
-            if (m_Not != inverse)
+            if (this.m_Not != inverse)
                 emitter.LogicalNot();
         }
     }
@@ -344,32 +368,32 @@ namespace Server.Commands.Generic
         public ComparisonCondition(Property property, bool not, ComparisonOperator op, object value)
             : base(property, not)
         {
-            m_Operator = op;
-            m_Value = new PropertyValue(property.Type, value);
+            this.m_Operator = op;
+            this.m_Value = new PropertyValue(property.Type, value);
         }
 
         public override void Construct(TypeBuilder typeBuilder, ILGenerator il, int index)
         {
-            m_Value.Acquire(typeBuilder, il, "v" + index);
+            this.m_Value.Acquire(typeBuilder, il, "v" + index);
         }
 
         public override void Compile(MethodEmitter emitter)
         {
-            emitter.Chain(m_Property);
+            emitter.Chain(this.m_Property);
 
             bool inverse = false;
 
             bool couldCompare =
-                emitter.CompareTo(1, delegate ()
+                emitter.CompareTo(1, delegate()
                 {
-                    m_Value.Load(emitter);
+                    this.m_Value.Load(emitter);
                 });
 
             if (couldCompare)
             {
                 emitter.Load(0);
 
-                switch (m_Operator)
+                switch ( this.m_Operator )
                 {
                     case ComparisonOperator.Equal:
                         emitter.Compare(OpCodes.Ceq);
@@ -400,9 +424,9 @@ namespace Server.Commands.Generic
             {
                 // This type is -not- comparable
                 // We can only support == and != operations
-                m_Value.Load(emitter);
+                this.m_Value.Load(emitter);
 
-                switch (m_Operator)
+                switch ( this.m_Operator )
                 {
                     case ComparisonOperator.Equal:
                         emitter.Compare(OpCodes.Ceq);
@@ -422,7 +446,7 @@ namespace Server.Commands.Generic
                 }
             }
 
-            if (m_Not != inverse)
+            if (this.m_Not != inverse)
                 emitter.LogicalNot();
         }
     }

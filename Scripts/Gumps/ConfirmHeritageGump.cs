@@ -1,6 +1,6 @@
+﻿using System;
 using Server.Items;
 using Server.Network;
-using System;
 
 namespace Server.Gumps
 {
@@ -8,25 +8,25 @@ namespace Server.Gumps
     {
         private readonly HeritageToken m_Token;
         private readonly Type[] m_Selected;
-        private readonly Mobile m_User;
+		private readonly Mobile m_User;
         public ConfirmHeritageGump(HeritageToken token, Type[] selected, int cliloc, Mobile from)
             : base(60, 36)
         {
-            m_Token = token;
-            m_Selected = selected;
-            m_User = from;
+            this.m_Token = token;
+            this.m_Selected = selected;
+			this.m_User = from;
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddBackground(0, 0, 291, 99, 0x13BE);
-            AddImageTiled(5, 6, 280, 20, 0xA40);
-            AddHtmlLocalized(9, 8, 280, 20, 1070972, 0x7FFF, false, false); // Click "OKAY" to redeem the following promotional item:
-            AddImageTiled(5, 31, 280, 40, 0xA40);
-            AddHtmlLocalized(9, 35, 272, 40, cliloc, 0x7FFF, false, false);
-            AddButton(180, 73, 0xFB7, 0xFB8, (int)Buttons.Okay, GumpButtonType.Reply, 0);
-            AddHtmlLocalized(215, 75, 100, 20, 1011036, 0x7FFF, false, false); // OKAY
-            AddButton(5, 73, 0xFB1, 0xFB2, (int)Buttons.Cancel, GumpButtonType.Reply, 0);
-            AddHtmlLocalized(40, 75, 100, 20, 1060051, 0x7FFF, false, false); // CANCEL
+            this.AddBackground(0, 0, 291, 99, 0x13BE);
+            this.AddImageTiled(5, 6, 280, 20, 0xA40);
+            this.AddHtmlLocalized(9, 8, 280, 20, 1070972, 0x7FFF, false, false); // Click "OKAY" to redeem the following promotional item:
+            this.AddImageTiled(5, 31, 280, 40, 0xA40);
+            this.AddHtmlLocalized(9, 35, 272, 40, cliloc, 0x7FFF, false, false);
+            this.AddButton(180, 73, 0xFB7, 0xFB8, (int)Buttons.Okay, GumpButtonType.Reply, 0);
+            this.AddHtmlLocalized(215, 75, 100, 20, 1011036, 0x7FFF, false, false); // OKAY
+            this.AddButton(5, 73, 0xFB1, 0xFB2, (int)Buttons.Cancel, GumpButtonType.Reply, 0);
+            this.AddHtmlLocalized(40, 75, 100, 20, 1060051, 0x7FFF, false, false); // CANCEL
         }
 
         private enum Buttons
@@ -36,36 +36,44 @@ namespace Server.Gumps
         }
         public override void OnResponse(NetState sender, RelayInfo info)
         {
-            if (m_Token == null || m_Token.Deleted ||
-                m_User == null || m_User.Deleted)
+            if (this.m_Token == null || this.m_Token.Deleted ||
+				this.m_User == null || this.m_User.Deleted)
                 return;
 
-            if (!m_Token.IsChildOf(m_User.Backpack))
-            {
-                sender.Mobile.SendLocalizedMessage(1062334); // This item must be in your backpack to be used.
-                return;
-            }
+			if (!this.m_Token.IsChildOf(this.m_User.Backpack))
+			{
+				sender.Mobile.SendLocalizedMessage(1062334); // This item must be in your backpack to be used.
+				return;
+			}
 
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case (int)Buttons.Okay:
-
+					
                     Item item = null;
 
-                    foreach (Type type in m_Selected)
+                    foreach (Type type in this.m_Selected)
                     {
-                        item = Loot.Construct(type);
+                        try
+                        {
+                            item = Activator.CreateInstance(type) as Item;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine(ex.StackTrace);
+                        }
 
                         if (item != null)
                         {
-                            m_Token.Delete();
+                            this.m_Token.Delete();
                             sender.Mobile.AddToBackpack(item);
                         }
                     }
 
                     break;
                 case (int)Buttons.Cancel:
-                    sender.Mobile.SendGump(new HeritageTokenGump(m_Token, m_User));
+                    sender.Mobile.SendGump(new HeritageTokenGump(this.m_Token, this.m_User));
                     break;
             }
         }

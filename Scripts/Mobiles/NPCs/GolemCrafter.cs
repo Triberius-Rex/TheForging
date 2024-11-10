@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Mobiles
@@ -9,9 +10,9 @@ namespace Server.Mobiles
         public GolemCrafter()
             : base("the golem crafter")
         {
-            SetSkill(SkillName.Lockpicking, 60.0, 83.0);
-            SetSkill(SkillName.RemoveTrap, 75.0, 98.0);
-            SetSkill(SkillName.Tinkering, 64.0, 100.0);
+            this.SetSkill(SkillName.Lockpicking, 60.0, 83.0);
+            this.SetSkill(SkillName.RemoveTrap, 75.0, 98.0);
+            this.SetSkill(SkillName.Tinkering, 64.0, 100.0);
         }
 
         public GolemCrafter(Serial serial)
@@ -19,18 +20,24 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBTinker(this));
-            m_SBInfos.Add(new SBVagabond());
+            this.m_SBInfos.Add(new SBTinker(this));
+            this.m_SBInfos.Add(new SBVagabond());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

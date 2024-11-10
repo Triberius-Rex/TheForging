@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("an interred grizzle corpse")]
@@ -7,53 +10,63 @@ namespace Server.Mobiles
         public InterredGrizzle()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "an interred grizzle";
-            Body = 259;
+            this.Name = "an interred grizzle";
+            this.Body = 259;
 
-            SetStr(451, 500);
-            SetDex(201, 250);
-            SetInt(801, 850);
+            this.SetStr(451, 500);
+            this.SetDex(201, 250);
+            this.SetInt(801, 850);
 
-            SetHits(1500);
-            SetStam(150);
+            this.SetHits(1500);
+            this.SetStam(150);
 
-            SetDamage(16, 19);
+            this.SetDamage(16, 19);
 
-            SetDamageType(ResistanceType.Physical, 30);
-            SetDamageType(ResistanceType.Fire, 70);
+            this.SetDamageType(ResistanceType.Physical, 30);
+            this.SetDamageType(ResistanceType.Fire, 70);
 
-            SetResistance(ResistanceType.Physical, 35, 55);
-            SetResistance(ResistanceType.Fire, 20, 65);
-            SetResistance(ResistanceType.Cold, 55, 80);
-            SetResistance(ResistanceType.Poison, 20, 35);
-            SetResistance(ResistanceType.Energy, 60, 80);
+            this.SetResistance(ResistanceType.Physical, 35, 55);
+            this.SetResistance(ResistanceType.Fire, 20, 65);
+            this.SetResistance(ResistanceType.Cold, 55, 80);
+            this.SetResistance(ResistanceType.Poison, 20, 35);
+            this.SetResistance(ResistanceType.Energy, 60, 80);
 
-            SetSkill(SkillName.Meditation, 77.7, 84.0);
-            SetSkill(SkillName.EvalInt, 72.2, 79.6);
-            SetSkill(SkillName.Magery, 83.7, 89.6);
-            SetSkill(SkillName.Poisoning, 0);
-            SetSkill(SkillName.Anatomy, 0);
-            SetSkill(SkillName.MagicResist, 80.2, 87.3);
-            SetSkill(SkillName.Tactics, 104.5, 105.1);
-            SetSkill(SkillName.Wrestling, 105.1, 109.4);
+            this.SetSkill(SkillName.Meditation, 77.7, 84.0);
+            this.SetSkill(SkillName.EvalInt, 72.2, 79.6);
+            this.SetSkill(SkillName.Magery, 83.7, 89.6);
+            this.SetSkill(SkillName.Poisoning, 0);
+            this.SetSkill(SkillName.Anatomy, 0);
+            this.SetSkill(SkillName.MagicResist, 80.2, 87.3);
+            this.SetSkill(SkillName.Tactics, 104.5, 105.1);
+            this.SetSkill(SkillName.Wrestling, 105.1, 109.4);
 
-            Fame = 3700;  // Guessed
-            Karma = -3700;  // Guessed
+            this.Fame = 3700;  // Guessed
+            this.Karma = -3700;  // Guessed
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                this.PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
         }
+		public override bool CanBeParagon { get { return false; } }
+        /*
+        public override bool OnBeforeDeath()
+        {
+        SpillAcid( 1, 4, 10, 6, 10 );
 
+        return base.OnBeforeDeath();
+        }
+        */
         public InterredGrizzle(Serial serial)
             : base(serial)
         {
         }
-
-        public override bool CanBeParagon => false;
-
-        public override int TreasureMapLevel => 4;
+		
+		public override int TreasureMapLevel { get { return 4; } }
 
         public override void GenerateLoot() // -- Need to verify
         {
-            AddLoot(LootPack.FilthyRich);
-            AddLoot(LootPack.ArcanistScrolls, 0, 1);
+            this.AddLoot(LootPack.FilthyRich);
         }
 
         public override void OnDamage(int amount, Mobile from, bool willKill)
@@ -97,7 +110,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,6 +1,6 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Engines.BulkOrders
 {
@@ -15,7 +15,7 @@ namespace Server.Engines.BulkOrders
         private LargeBulkEntry[] m_Entries;
 
         public LargeBOD(int hue, int amountMax, bool requireExeptional, BulkMaterialType material, LargeBulkEntry[] entries)
-            : base(0x2258)
+            : base(Core.AOS ? 0x2258 : 0x14EF)
         {
             Weight = 1.0;
             Hue = hue; // Blacksmith: 0x44E; Tailoring: 0x483
@@ -28,7 +28,7 @@ namespace Server.Engines.BulkOrders
         }
 
         public LargeBOD()
-            : base(0x2258)
+            : base(Core.AOS ? 0x2258 : 0x14EF)
         {
             Weight = 1.0;
             LootType = LootType.Blessed;
@@ -114,7 +114,13 @@ namespace Server.Engines.BulkOrders
                 }
             }
         }
-        public override int LabelNumber => 1045151;// a bulk order deed
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1045151;
+            }
+        }// a bulk order deed
         public static BulkMaterialType GetRandomMaterial(BulkMaterialType start, double[] chances)
         {
             double random = Utility.RandomDouble();
@@ -190,15 +196,15 @@ namespace Server.Engines.BulkOrders
         public override void OnDoubleClick(Mobile from)
         {
             if (IsChildOf(from.Backpack) || InSecureTrade || RootParent is PlayerVendor)
-            {
-                EventSink.InvokeBODUsed(new BODUsedEventArgs(from, this));
-                from.SendGump(new LargeBODGump(from, this));
-            }
-            else
-            {
-                from.SendLocalizedMessage(1045156); // You must have the deed in your backpack to use it.
-            }
-        }
+			{
+				EventSink.InvokeBODUsed(new BODUsedEventArgs(from, this));
+				from.SendGump(new LargeBODGump(from, this));
+			}
+			else
+			{
+				from.SendLocalizedMessage(1045156); // You must have the deed in your backpack to use it.
+			}
+		}
 
         public void BeginCombine(Mobile from)
         {
@@ -281,13 +287,13 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(m_AmountMax);
             writer.Write(m_RequireExceptional);
             writer.Write((int)m_Material);
 
-            writer.Write(m_Entries.Length);
+            writer.Write((int)m_Entries.Length);
 
             for (int i = 0; i < m_Entries.Length; ++i)
                 m_Entries[i].Serialize(writer);
@@ -299,7 +305,7 @@ namespace Server.Engines.BulkOrders
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                 case 0:
@@ -315,6 +321,12 @@ namespace Server.Engines.BulkOrders
                         break;
                     }
             }
+
+            if (Weight == 0.0)
+                Weight = 1.0;
+
+            if (Core.AOS && ItemID == 0x14EF)
+                ItemID = 0x2258;
 
             if (Parent == null && Map == Map.Internal && Location == Point3D.Zero)
                 Delete();

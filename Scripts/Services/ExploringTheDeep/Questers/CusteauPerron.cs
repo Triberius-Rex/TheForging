@@ -1,45 +1,44 @@
+using System;
 using Server.Commands;
-using Server.Engines.Quests;
-using Server.Gumps;
 using Server.Items;
+using Server.Gumps;
 using Server.Network;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
-{
-    public class CousteauPerron : Mobile
-    {
-        public virtual bool IsInvulnerable => true;
-
-        [Constructable]
-        public CousteauPerron()
+{    
+	public class CousteauPerron : Mobile
+	{	
+        public virtual bool IsInvulnerable {  get { return true; } }
+		
+		[Constructable]
+		public CousteauPerron()
         {
-            Name = "Cousteau Perron";
-            Title = "The Master Tinker";
-            Female = true;
-            Race = Race.Human;
-            Blessed = true;
+            this.Name = "Cousteau Perron";
+            this.Title = "The Master Tinker";
+            this.Female = true;
+            this.Race = Race.Human;
+            this.Blessed = true;
 
-            CantWalk = true;
-            Hue = Utility.RandomSkinHue();
+            this.CantWalk = true;
+            this.Hue = Utility.RandomSkinHue();
             Utility.AssignRandomHair(this);
 
-            AddItem(new Backpack());
-            AddItem(new FurBoots(2017));
-            AddItem(new LongPants(2017));
-            AddItem(new Doublet(1326));
-            AddItem(new LongHair(2213));
-            AddItem(new Cloak(2017));
-            AddItem(new Cap(398));
+            this.AddItem(new Backpack());
+            this.AddItem(new FurBoots(2017));
+            this.AddItem(new LongPants(2017));
+            this.AddItem(new Doublet(1326));
+            this.AddItem(new LongHair(2213));
+            this.AddItem(new Cloak(2017));
+            this.AddItem(new Cap(398));
 
-            Item gloves = new LeatherGloves
-            {
-                Hue = 2213
-            };
+            Item gloves = new LeatherGloves();
+            gloves.Hue = 2213;
             AddItem(gloves);
         }
 
-        public CousteauPerron(Serial serial) : base(serial)
-        {
+        public CousteauPerron(Serial serial): base(serial)
+		{		
         }
 
         public override void GetProperties(ObjectPropertyList list)
@@ -49,44 +48,44 @@ namespace Server.Mobiles
             list.Add(1072269); // Quest Giver
         }
 
-        public override void OnDoubleClick(Mobile from)
+        public override void OnDoubleClick(Mobile m)
         {
-            if (!(from is PlayerMobile))
+            if (!(m is PlayerMobile))
                 return;
 
-            PlayerMobile pm = (PlayerMobile)from;
+            PlayerMobile pm = (PlayerMobile)m;
 
             if (pm.ExploringTheDeepQuest == ExploringTheDeepQuestChain.CusteauPerronHouse)
             {
-                if (!from.HasGump(typeof(CousteauPerronGump)))
+                if (!m.HasGump(typeof(CousteauPerronGump)))
                 {
-                    from.SendGump(new CousteauPerronGump(from));
+                    m.SendGump(new CousteauPerronGump(m));
                     pm.ExploringTheDeepQuest = ExploringTheDeepQuestChain.CusteauPerron;
                 }
             }
             else if (pm.ExploringTheDeepQuest == ExploringTheDeepQuestChain.Sorcerers)
             {
-                if (!from.HasGump(typeof(CousteauPerronCompleteGump)))
+                if (!m.HasGump(typeof(CousteauPerronCompleteGump)))
                 {
-                    from.SendGump(new CousteauPerronCompleteGump(from));
+                    m.SendGump(new CousteauPerronCompleteGump(m));
                 }
             }
             else if (pm.ExploringTheDeepQuest == ExploringTheDeepQuestChain.CollectTheComponent)
             {
-                if (!from.HasGump(typeof(CousteauPerronPlansGump)))
+                if (!m.HasGump(typeof(CousteauPerronPlansGump)))
                 {
-                    from.SendGump(new CousteauPerronPlansGump(from));
+                    m.SendGump(new CousteauPerronPlansGump(m));
                 }
             }
             else
             {
-                from.SendLocalizedMessage(1154325); // You feel as though by doing this you are missing out on an important part of your journey...
+                m.SendLocalizedMessage(1154325); // You feel as though by doing this you are missing out on an important part of your journey...
             }
         }
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
-            PlayerMobile pm = from as PlayerMobile;
+            PlayerMobile pm = from as PlayerMobile;            
 
             if (pm != null)
             {
@@ -109,24 +108,24 @@ namespace Server.Mobiles
                 }
                 else
                 {
-                    PublicOverheadMessage(MessageType.Regular, 0x3B2, 501550); // I am not interested in this.
+                    this.PublicOverheadMessage(MessageType.Regular, 0x3B2, 501550); // I am not interested in this.
                 }
             }
             return false;
         }
 
         public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
+		{
+			base.Serialize( writer );
+			writer.Write( (int) 0 );
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
-    }
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();	
+		}        
+	}
 }
 
 namespace Server.Gumps
@@ -135,7 +134,7 @@ namespace Server.Gumps
     {
         public static void Initialize()
         {
-            CommandSystem.Register("CousteauPerron", AccessLevel.GameMaster, CousteauPerronGump_OnCommand);
+            CommandSystem.Register("CousteauPerron", AccessLevel.GameMaster, new CommandEventHandler(CousteauPerronGump_OnCommand));
         }
 
         private static void CousteauPerronGump_OnCommand(CommandEventArgs e)
@@ -145,31 +144,31 @@ namespace Server.Gumps
 
         public CousteauPerronGump(Mobile owner) : base(50, 50)
         {
-            Closable = false;
-            Disposable = true;
-            Dragable = true;
-            Resizable = false;
+            this.Closable = false;
+            this.Disposable = true;
+            this.Dragable = true;
+            this.Resizable = false;
 
             AddPage(0);
-            AddImageTiled(50, 20, 400, 460, 0x1404);
-            AddImageTiled(50, 29, 30, 450, 0x28DC);
-            AddImageTiled(34, 140, 17, 339, 0x242F);
-            AddImage(48, 135, 0x28AB);
-            AddImage(-16, 285, 0x28A2);
-            AddImage(0, 10, 0x28B5);
-            AddImage(25, 0, 0x28B4);
-            AddImageTiled(83, 15, 350, 15, 0x280A);
-            AddImage(34, 479, 0x2842);
-            AddImage(442, 479, 0x2840);
-            AddImageTiled(51, 479, 392, 17, 0x2775);
-            AddImageTiled(415, 29, 44, 450, 0xA2D);
-            AddImageTiled(415, 29, 30, 450, 0x28DC);
-            AddImage(370, 50, 0x589);
+            this.AddImageTiled(50, 20, 400, 460, 0x1404);
+            this.AddImageTiled(50, 29, 30, 450, 0x28DC);
+            this.AddImageTiled(34, 140, 17, 339, 0x242F);
+            this.AddImage(48, 135, 0x28AB);
+            this.AddImage(-16, 285, 0x28A2);
+            this.AddImage(0, 10, 0x28B5);
+            this.AddImage(25, 0, 0x28B4);
+            this.AddImageTiled(83, 15, 350, 15, 0x280A);
+            this.AddImage(34, 479, 0x2842);
+            this.AddImage(442, 479, 0x2840);
+            this.AddImageTiled(51, 479, 392, 17, 0x2775);
+            this.AddImageTiled(415, 29, 44, 450, 0xA2D);
+            this.AddImageTiled(415, 29, 30, 450, 0x28DC);
+            this.AddImage(370, 50, 0x589);
 
-            AddImage(379, 60, 0x15A9);
-            AddImage(425, 0, 0x28C9);
-            AddImage(90, 33, 0x232D);
-            AddImageTiled(130, 65, 175, 1, 0x238D);
+            this.AddImage(379, 60, 0x15A9);
+            this.AddImage(425, 0, 0x28C9);
+            this.AddImage(90, 33, 0x232D);
+            this.AddImageTiled(130, 65, 175, 1, 0x238D);
 
             AddHtmlLocalized(140, 45, 250, 24, 1154327, 0x7FFF, false, false); // Exploring the Deep
 
@@ -196,8 +195,10 @@ namespace Server.Gumps
 
         }
 
-        public override void OnResponse(NetState sender, RelayInfo info) //Function for GumpButtonType.Reply Buttons 
+        public override void OnResponse(NetState state, RelayInfo info) //Function for GumpButtonType.Reply Buttons 
         {
+            Mobile from = state.Mobile;
+
             switch (info.ButtonID)
             {
                 case 0:
@@ -213,7 +214,7 @@ namespace Server.Gumps
     {
         public static void Initialize()
         {
-            CommandSystem.Register("CousteauPerronComplete", AccessLevel.GameMaster, CousteauPerronCompleteGump_OnCommand);
+            CommandSystem.Register("CousteauPerronComplete", AccessLevel.GameMaster, new CommandEventHandler(CousteauPerronCompleteGump_OnCommand));
         }
 
         private static void CousteauPerronCompleteGump_OnCommand(CommandEventArgs e)
@@ -223,31 +224,31 @@ namespace Server.Gumps
 
         public CousteauPerronCompleteGump(Mobile owner) : base(50, 50)
         {
-            Closable = false;
-            Disposable = true;
-            Dragable = true;
-            Resizable = false;
+            this.Closable = false;
+            this.Disposable = true;
+            this.Dragable = true;
+            this.Resizable = false;
 
             AddPage(0);
-            AddImageTiled(50, 20, 400, 460, 0x1404);
-            AddImageTiled(50, 29, 30, 450, 0x28DC);
-            AddImageTiled(34, 140, 17, 339, 0x242F);
-            AddImage(48, 135, 0x28AB);
-            AddImage(-16, 285, 0x28A2);
-            AddImage(0, 10, 0x28B5);
-            AddImage(25, 0, 0x28B4);
-            AddImageTiled(83, 15, 350, 15, 0x280A);
-            AddImage(34, 479, 0x2842);
-            AddImage(442, 479, 0x2840);
-            AddImageTiled(51, 479, 392, 17, 0x2775);
-            AddImageTiled(415, 29, 44, 450, 0xA2D);
-            AddImageTiled(415, 29, 30, 450, 0x28DC);
-            AddImage(370, 50, 0x589);
+            this.AddImageTiled(50, 20, 400, 460, 0x1404);
+            this.AddImageTiled(50, 29, 30, 450, 0x28DC);
+            this.AddImageTiled(34, 140, 17, 339, 0x242F);
+            this.AddImage(48, 135, 0x28AB);
+            this.AddImage(-16, 285, 0x28A2);
+            this.AddImage(0, 10, 0x28B5);
+            this.AddImage(25, 0, 0x28B4);
+            this.AddImageTiled(83, 15, 350, 15, 0x280A);
+            this.AddImage(34, 479, 0x2842);
+            this.AddImage(442, 479, 0x2840);
+            this.AddImageTiled(51, 479, 392, 17, 0x2775);
+            this.AddImageTiled(415, 29, 44, 450, 0xA2D);
+            this.AddImageTiled(415, 29, 30, 450, 0x28DC);
+            this.AddImage(370, 50, 0x589);
 
-            AddImage(379, 60, 0x15A9);
-            AddImage(425, 0, 0x28C9);
-            AddImage(90, 33, 0x232D);
-            AddImageTiled(130, 65, 175, 1, 0x238D);
+            this.AddImage(379, 60, 0x15A9);
+            this.AddImage(425, 0, 0x28C9);
+            this.AddImage(90, 33, 0x232D);
+            this.AddImageTiled(130, 65, 175, 1, 0x238D);
 
             AddHtmlLocalized(140, 45, 250, 24, 1154327, 0x7FFF, false, false); // Exploring the Deep
 
@@ -257,8 +258,10 @@ namespace Server.Gumps
             AddButton(345, 440, 0xF7, 0xF8, 0, GumpButtonType.Reply, 0);//OK
         }
 
-        public override void OnResponse(NetState sender, RelayInfo info)
+        public override void OnResponse(NetState state, RelayInfo info)
         {
+            Mobile from = state.Mobile;
+
             switch (info.ButtonID)
             {
                 case 0:
@@ -274,7 +277,7 @@ namespace Server.Gumps
     {
         public static void Initialize()
         {
-            CommandSystem.Register("CousteauPerronPlans", AccessLevel.GameMaster, CousteauPerronPlansGump_OnCommand);
+            CommandSystem.Register("CousteauPerronPlans", AccessLevel.GameMaster, new CommandEventHandler(CousteauPerronPlansGump_OnCommand));
         }
 
         private static void CousteauPerronPlansGump_OnCommand(CommandEventArgs e)
@@ -284,42 +287,44 @@ namespace Server.Gumps
 
         public CousteauPerronPlansGump(Mobile owner) : base(50, 50)
         {
-            Closable = false;
-            Disposable = true;
-            Dragable = true;
-            Resizable = false;
+            this.Closable = false;
+            this.Disposable = true;
+            this.Dragable = true;
+            this.Resizable = false;
 
             AddPage(0);
-            AddImageTiled(50, 20, 400, 460, 0x1404);
-            AddImageTiled(50, 29, 30, 450, 0x28DC);
-            AddImageTiled(34, 140, 17, 339, 0x242F);
-            AddImage(48, 135, 0x28AB);
-            AddImage(-16, 285, 0x28A2);
-            AddImage(0, 10, 0x28B5);
-            AddImage(25, 0, 0x28B4);
-            AddImageTiled(83, 15, 350, 15, 0x280A);
-            AddImage(34, 479, 0x2842);
-            AddImage(442, 479, 0x2840);
-            AddImageTiled(51, 479, 392, 17, 0x2775);
-            AddImageTiled(415, 29, 44, 450, 0xA2D);
-            AddImageTiled(415, 29, 30, 450, 0x28DC);
-            AddImage(370, 50, 0x589);
+            this.AddImageTiled(50, 20, 400, 460, 0x1404);
+            this.AddImageTiled(50, 29, 30, 450, 0x28DC);
+            this.AddImageTiled(34, 140, 17, 339, 0x242F);
+            this.AddImage(48, 135, 0x28AB);
+            this.AddImage(-16, 285, 0x28A2);
+            this.AddImage(0, 10, 0x28B5);
+            this.AddImage(25, 0, 0x28B4);
+            this.AddImageTiled(83, 15, 350, 15, 0x280A);
+            this.AddImage(34, 479, 0x2842);
+            this.AddImage(442, 479, 0x2840);
+            this.AddImageTiled(51, 479, 392, 17, 0x2775);
+            this.AddImageTiled(415, 29, 44, 450, 0xA2D);
+            this.AddImageTiled(415, 29, 30, 450, 0x28DC);
+            this.AddImage(370, 50, 0x589);
 
-            AddImage(379, 60, 0x15A9);
-            AddImage(425, 0, 0x28C9);
-            AddImage(90, 33, 0x232D);
-            AddImageTiled(130, 65, 175, 1, 0x238D);
+            this.AddImage(379, 60, 0x15A9);
+            this.AddImage(425, 0, 0x28C9);
+            this.AddImage(90, 33, 0x232D);
+            this.AddImageTiled(130, 65, 175, 1, 0x238D);
 
             AddHtmlLocalized(140, 45, 250, 24, 1154327, 0x7FFF, false, false); // Exploring the Deep
 
             AddPage(1);
-            AddHtmlLocalized(107, 140, 300, 150, 1154293, 0x7FFF, false, true); // This is exactly what I was talking about! How did you ever find such a thing! No matter! *reads the plans carefully*  Itâ€™s all here by golly, detailed instructions on how to craft each item.  There are a number of professionals throughout the realm who will be able to assist you in crafting such things â€“ Iâ€™ve written them down on this list here *hands you a note* Simply seek the professionals I have listed and you should be well on your way!
+            AddHtmlLocalized(107, 140, 300, 150, 1154293, 0x7FFF, false, true); // This is exactly what I was talking about! How did you ever find such a thing! No matter! *reads the plans carefully*  It’s all here by golly, detailed instructions on how to craft each item.  There are a number of professionals throughout the realm who will be able to assist you in crafting such things – I’ve written them down on this list here *hands you a note* Simply seek the professionals I have listed and you should be well on your way!
 
             AddButton(345, 440, 0xF7, 0xF8, 0, GumpButtonType.Reply, 0);//OK
         }
 
-        public override void OnResponse(NetState sender, RelayInfo info)
+        public override void OnResponse(NetState state, RelayInfo info)
         {
+            Mobile from = state.Mobile;
+
             switch (info.ButtonID)
             {
                 case 0:

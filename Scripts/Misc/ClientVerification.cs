@@ -1,9 +1,9 @@
-using Server.Gumps;
-using Server.Mobiles;
-using Server.Network;
 using System;
 using System.Diagnostics;
 using System.IO;
+using Server.Gumps;
+using Server.Mobiles;
+using Server.Network;
 
 namespace Server.Misc
 {
@@ -58,8 +58,8 @@ namespace Server.Misc
 
         public static void Initialize()
         {
-            EventSink.ClientVersionReceived += EventSink_ClientVersionReceived;
-            EventSink.ClientTypeReceived += EventSink_ClientTypeReceived;
+            EventSink.ClientVersionReceived += new ClientVersionReceivedHandler(EventSink_ClientVersionReceived);
+            EventSink.ClientTypeReceived += new ClientTypeReceivedHandler(EventSink_ClientTypeReceived);
 
             m_RequiredEC = new ClientVersion(67, 0, 59, 0, ClientType.SA);
 
@@ -106,7 +106,7 @@ namespace Server.Misc
 
             if (required != null && version < required && (m_OldClientResponse == OldClientResponse.Kick || (m_OldClientResponse == OldClientResponse.LenientKick && (DateTime.UtcNow - state.Mobile.CreationTime) > m_AgeLeniency && state.Mobile is PlayerMobile && ((PlayerMobile)state.Mobile).GameTime > m_GameTimeLeniency)))
             {
-                kickMessage = string.Format("This server requires your client version be at least {0}.", required);
+                kickMessage = String.Format("This server requires your client version be at least {0}.", required);
             }
             else if (!AllowGod || !AllowRegular || !AllowUOTD)
             {
@@ -154,7 +154,7 @@ namespace Server.Misc
             }
             else if (Required != null && version < Required)
             {
-                switch (m_OldClientResponse)
+                switch( m_OldClientResponse )
                 {
                     case OldClientResponse.Warn:
                         {
@@ -174,7 +174,7 @@ namespace Server.Misc
 
         private static void EventSink_ClientTypeReceived(ClientTypeReceivedArgs e)
         {
-            NetState state = e.State;
+            var state = e.State;
             ClientVersion version = state.Version;
 
             if (state.IsEnhancedClient)
@@ -220,8 +220,8 @@ namespace Server.Misc
         {
             if (m.NetState != null && m.NetState.Version < Required)
             {
-                Gump g = new WarningGump(1060637, 30720, string.Format("Your client is out of date. Please update your client.<br>This server recommends that your client version be at least {0}.<br> <br>You are currently using version {1}.<br> <br>To patch, run UOPatch.exe inside your Ultima Online folder.", Required, m.NetState.Version), 0xFFC000, 480, 360,
-                    delegate (Mobile mob, bool selection, object o)
+                Gump g = new WarningGump(1060637, 30720, String.Format("Your client is out of date. Please update your client.<br>This server recommends that your client version be at least {0}.<br> <br>You are currently using version {1}.<br> <br>To patch, run UOPatch.exe inside your Ultima Online folder.", Required, m.NetState.Version), 0xFFC000, 480, 360,
+                    delegate(Mobile mob, bool selection, object o)
                     {
                         m.SendMessage("You will be reminded of this again.");
 
@@ -229,12 +229,11 @@ namespace Server.Misc
                             m.SendMessage("Old clients will be kicked after {0} days of character age and {1} hours of play time", m_AgeLeniency, m_GameTimeLeniency);
 
                         Timer.DelayCall(TimeSpan.FromMinutes(Utility.Random(5, 15)), delegate { SendAnnoyGump(m); });
-                    }, null, false)
-                {
-                    Dragable = false,
-                    Closable = false,
-                    Resizable = false
-                };
+                    }, null, false);
+
+                g.Dragable = false;
+                g.Closable = false;
+                g.Resizable = false;
 
                 m.SendGump(g);
             }

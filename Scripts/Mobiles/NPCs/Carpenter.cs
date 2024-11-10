@@ -1,7 +1,6 @@
-using Server.Engines.BulkOrders;
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Mobiles
 {
@@ -12,8 +11,8 @@ namespace Server.Mobiles
         public Carpenter()
             : base("the carpenter")
         {
-            SetSkill(SkillName.Carpentry, 85.0, 100.0);
-            SetSkill(SkillName.Lumberjacking, 60.0, 83.0);
+            this.SetSkill(SkillName.Carpentry, 85.0, 100.0);
+            this.SetSkill(SkillName.Lumberjacking, 60.0, 83.0);
         }
 
         public Carpenter(Serial serial)
@@ -21,27 +20,39 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.TinkersGuild;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.TinkersGuild;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBStavesWeapon());
-            m_SBInfos.Add(new SBCarpenter());
-            m_SBInfos.Add(new SBWoodenShields());
-
-            if (IsTokunoVendor)
-                m_SBInfos.Add(new SBSECarpenter());
+            this.m_SBInfos.Add(new SBStavesWeapon());
+            this.m_SBInfos.Add(new SBCarpenter());
+            this.m_SBInfos.Add(new SBWoodenShields());
+			
+            if (this.IsTokunoVendor)
+                this.m_SBInfos.Add(new SBSECarpenter());
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-            SetWearable(new HalfApron(), dropChance: 1);
+            this.AddItem(new Server.Items.HalfApron());
         }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Carpentry;
+        public override BODType BODType { get { return BODType.Carpentry; } }
 
         public override bool IsValidBulkOrder(Item item)
         {
@@ -65,7 +76,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ThrashersTail : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public ThrashersTail()
             : base(0x1A9D)
         {
-            LootType = LootType.Blessed;
-            Hue = 0x455;
+            this.LootType = LootType.Blessed;
+            this.Hue = 0x455;
         }
 
         public ThrashersTail(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074230;// Thrasher's Tail
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074230;
+            }
+        }// Thrasher's Tail
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

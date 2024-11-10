@@ -1,6 +1,9 @@
-using Server.Spells.Fourth;
-using Server.Targeting;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using Server.Targeting;
+using Server.Spells.Fourth;
 
 namespace Server.Spells.Sixth
 {
@@ -20,39 +23,45 @@ namespace Server.Spells.Sixth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Sixth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Sixth;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(IPoint3D p)
         {
-            if (!Caster.CanSee(p))
+            if (!this.Caster.CanSee(p))
             {
-                Caster.SendLocalizedMessage(500237); // Target can not be seen.
+                this.Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (SpellHelper.CheckTown(p, Caster) && CheckSequence())
+            else if (SpellHelper.CheckTown(p, this.Caster) && this.CheckSequence())
             {
-                SpellHelper.Turn(Caster, p);
+                SpellHelper.Turn(this.Caster, p);
                 SpellHelper.GetSurfaceTop(ref p);
 
-                foreach (Mobile m in AcquireIndirectTargets(p, 2).OfType<Mobile>())
+                foreach (var m in AcquireIndirectTargets(p, 2).OfType<Mobile>())
                 {
-                    CurseSpell.DoCurse(Caster, m, true);
+                    CurseSpell.DoCurse(this.Caster, m, true);
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTarget : Target
         {
             private readonly MassCurseSpell m_Owner;
             public InternalTarget(MassCurseSpell owner)
-                : base(10, true, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, true, TargetFlags.None)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
@@ -60,12 +69,12 @@ namespace Server.Spells.Sixth
                 IPoint3D p = o as IPoint3D;
 
                 if (p != null)
-                    m_Owner.Target(p);
+                    this.m_Owner.Target(p);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

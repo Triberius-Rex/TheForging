@@ -1,6 +1,6 @@
-using Server.Engines.Craft;
-using Server.Items;
 using System;
+using Server.Items;
+using Server.Engines.Craft;
 
 namespace Server.Engines.BulkOrders
 {
@@ -23,7 +23,7 @@ namespace Server.Engines.BulkOrders
         YewWood,
         Heartwood,
         Bloodwood,
-        Frostwood,
+        Frostwood
     }
 
     public enum BulkGenericType
@@ -47,7 +47,7 @@ namespace Server.Engines.BulkOrders
             }
             else if (deedType == BODType.Tinkering && itemType != null)
             {
-                if (itemType == typeof(Clock) || itemType.IsSubclassOf(typeof(Clock)))
+                if(itemType == typeof(Clock) || itemType.IsSubclassOf(typeof(Clock)))
                     return BulkGenericType.Wood;
 
                 CraftItem item = DefTinkering.CraftSystem.CraftItems.SearchFor(itemType);

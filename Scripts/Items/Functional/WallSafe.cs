@@ -1,10 +1,12 @@
-using Server.Accounting;
-using Server.ContextMenus;
-using Server.Gumps;
+using System;
+using Server;
 using Server.Mobiles;
 using Server.Multis;
 using System.Collections.Generic;
 using System.Globalization;
+using Server.Gumps;
+using Server.Accounting;
+using Server.ContextMenus;
 
 namespace Server.Items
 {
@@ -27,10 +29,10 @@ namespace Server.Items
             set;
         }
 
-        public Item Deed => new WallSafeDeed();
+        public Item Deed { get { return new WallSafeDeed(); } }
 
-        public override int LabelNumber => 1119751;  // Wall Safe
-        public override bool ForceShowProperties => true;
+        public override int LabelNumber { get { return 1119751; } } // Wall Safe
+        public override bool ForceShowProperties { get { return true; } }
 
         public List<string> History { get; set; }
 
@@ -76,10 +78,10 @@ namespace Server.Items
 
         public bool CouldFit(IPoint3D p, Map map)
         {
-            if (!map.CanFit(p.X, p.Y, p.Z, ItemData.Height))
+            if (!map.CanFit(p.X, p.Y, p.Z, this.ItemData.Height))
                 return false;
 
-            if (ItemID == 0x2375)
+            if (this.ItemID == 0x2375)
                 return BaseAddon.IsWall(p.X, p.Y - 1, p.Z, map); // North wall
             else
                 return BaseAddon.IsWall(p.X - 1, p.Y, p.Z, map); // West wall
@@ -87,13 +89,12 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile m)
         {
-            if (m is PlayerMobile && m.InRange(Location, 3))
+            if (m is PlayerMobile && m.InRange(this.Location, 3))
             {
                 BaseHouse house = BaseHouse.FindHouseAt(m);
 
                 if (house != null && house.HasSecureAccess(m, Level))
                 {
-                    m.CloseGump(typeof(WallSafeGump));
                     m.SendGump(new WallSafeGump((PlayerMobile)m, this));
                 }
                 else
@@ -121,7 +122,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(Owner);
             writer.Write(HoldAmount);
@@ -160,7 +161,7 @@ namespace Server.Items
 
     public class WallSafeDeed : Item
     {
-        public override int LabelNumber => 1155857;  // Currency Wall Safe
+        public override int LabelNumber { get { return 1155857; } } // Currency Wall Safe
 
         [Constructable]
         public WallSafeDeed() : base(0x14F0)
@@ -171,7 +172,7 @@ namespace Server.Items
         {
             if (IsChildOf(m.Backpack))
             {
-                m.BeginTarget(8, false, Targeting.TargetFlags.None, (from, targeted) =>
+                m.BeginTarget(8, false, Server.Targeting.TargetFlags.None, (from, targeted) =>
                     {
                         if (targeted is IPoint3D)
                         {
@@ -203,7 +204,7 @@ namespace Server.Items
 
                                 if (northWall)
                                     itemID = 0x8B8F;
-                                else if (westWall)
+                                else if(westWall)
                                     itemID = 0x8B90;
                                 else
                                     m.SendLocalizedMessage(500268); // This object needs to be mounted on something.
@@ -237,7 +238,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -275,7 +276,7 @@ namespace Server.Items
                 secureAmount = acct.GetSecureAccountAmount(User);
 
             AddHtmlLocalized(20, 35, 380, 16, 1155859, Safe.HoldAmount.ToString("N0", CultureInfo.GetCultureInfo("en-US")), 0xFFFF, false, false); // Gold Deposited: ~1_AMOUNT~
-            AddHtmlLocalized(20, 65, 380, 16, 1155864, string.Format("{0}\t{1}", User.Name, secureAmount.ToString("N0", CultureInfo.GetCultureInfo("en-US"))), 0xFFFF, false, false); // ~1_NAME~'s Secure Account: ~2_AMOUNT~
+            AddHtmlLocalized(20, 65, 380, 16, 1155864, String.Format("{0}\t{1}", User.Name, secureAmount.ToString("N0", CultureInfo.GetCultureInfo("en-US"))), 0xFFFF, false, false); // ~1_NAME~'s Secure Account: ~2_AMOUNT~
 
             AddHtmlLocalized(20, 125, 100, 16, 1155861, 0xFFFF, false, false); // Deposit
             AddButton(75, 125, 4005, 4006, 1, GumpButtonType.Reply, 0);
@@ -296,7 +297,7 @@ namespace Server.Items
             }
         }
 
-        public override void OnResponse(Network.NetState state, RelayInfo info)
+        public override void OnResponse(Server.Network.NetState state, RelayInfo info)
         {
             Account account = User.Account as Account;
             int secureAmount = 0;
@@ -308,12 +309,12 @@ namespace Server.Items
             {
                 case 1:
                     User.SendLocalizedMessage(1155865); // Enter amount to deposit:
-                    User.BeginPrompt(
+                    User.BeginPrompt<Account>(
                     (from, text, acct) =>
                     {
                         int v = 0;
 
-                        if (text != null && !string.IsNullOrEmpty(text))
+                        if (text != null && !String.IsNullOrEmpty(text))
                         {
                             v = Utility.ToInt32(text);
 
@@ -327,13 +328,13 @@ namespace Server.Items
                                 {
                                     Safe.HoldAmount = WallSafe.MaxGold;
                                     acct.WithdrawFromSecure(User, left);
-                                    Safe.AddHistory(string.Format("<basefont color=green>{0} +{1}", User.Name, left.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
+                                    Safe.AddHistory(String.Format("<basefont color=green>{0} +{1}", User.Name, left.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
                                 }
                                 else
                                 {
                                     Safe.HoldAmount += v;
                                     acct.WithdrawFromSecure(User, v);
-                                    Safe.AddHistory(string.Format("<basefont color=green>{0} +{1}", User.Name, v.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
+                                    Safe.AddHistory(String.Format("<basefont color=green>{0} +{1}", User.Name, v.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
                                 }
 
                                 from.SendGump(new WallSafeGump(User, Safe));
@@ -349,12 +350,12 @@ namespace Server.Items
                     break;
                 case 2:
                     User.SendLocalizedMessage(1155866); // Enter amount to withdraw:
-                    User.BeginPrompt(
+                    User.BeginPrompt<Account>(
                     (from, text, acct) =>
                     {
                         int v = 0;
 
-                        if (text != null && !string.IsNullOrEmpty(text))
+                        if (text != null && !String.IsNullOrEmpty(text))
                         {
                             v = Utility.ToInt32(text);
 
@@ -368,13 +369,13 @@ namespace Server.Items
                                 {
                                     acct.DepositToSecure(User, left);
                                     Safe.HoldAmount -= left;
-                                    Safe.AddHistory(string.Format("<basefont color=red>{0} -{1}", User.Name, left.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
+                                    Safe.AddHistory(String.Format("<basefont color=red>{0} -{1}", User.Name, left.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
                                 }
                                 else
                                 {
                                     acct.DepositToSecure(User, v);
                                     Safe.HoldAmount -= v;
-                                    Safe.AddHistory(string.Format("<basefont color=red>{0} -{1}", User.Name, v.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
+                                    Safe.AddHistory(String.Format("<basefont color=red>{0} -{1}", User.Name, v.ToString("N0", CultureInfo.GetCultureInfo("en-US"))));
                                 }
 
                                 from.SendGump(new WallSafeGump(User, Safe));

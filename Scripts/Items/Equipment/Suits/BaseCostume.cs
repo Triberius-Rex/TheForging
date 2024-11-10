@@ -1,6 +1,9 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
-    [Flipable(0x19BC, 0x19BD)]
+    [FlipableAttribute(0x19BC, 0x19BD)]
     public partial class BaseCostume : BaseShield
     {
         public bool m_Transformed;
@@ -127,9 +130,9 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(3);
-            writer.Write(m_Body);
-            writer.Write(m_Hue);
+            writer.Write((int)3);
+            writer.Write((int)m_Body);
+            writer.Write((int)m_Hue);
         }
 
         public override void Deserialize(GenericReader reader)

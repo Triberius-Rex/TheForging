@@ -1,6 +1,11 @@
+using System;
+using Server;
+using Server.Regions;
+using Server.Targeting;
+using Server.Engines.CannedEvil;
+using Server.Network;
 using Server.Gumps;
 using Server.Items;
-using Server.Regions;
 using System.Linq;
 
 namespace Server.Multis
@@ -21,6 +26,9 @@ namespace Server.Multis
         {
             Weight = 1.0;
 
+            if (!Core.AOS)
+                LootType = LootType.Newbied;
+
             MultiID = id;
             Offset = offset;
             BoatDirection = Direction.North;
@@ -34,7 +42,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(MultiID);
             writer.Write(Offset);
@@ -60,12 +68,12 @@ namespace Server.Multis
         public override void OnDoubleClick(Mobile from)
         {
             BaseBoat boat = BaseBoat.FindBoatAt(from, from.Map);
-
+            
             if (from.AccessLevel < AccessLevel.GameMaster && (from.Map == Map.Ilshenar || from.Map == Map.Malas))
             {
                 from.SendLocalizedMessage(1010567, null, 0x25); // You may not place a boat from this location.
             }
-            else if (BaseBoat.HasBoat(from) && !Boat.IsRowBoat)
+            else if (Core.HS && BaseBoat.HasBoat(from) && !Boat.IsRowBoat)
             {
                 from.SendLocalizedMessage(1116758); // You already have a ship deployed!
             }
@@ -75,7 +83,10 @@ namespace Server.Multis
             }
             else if (!from.HasGump(typeof(BoatPlacementGump)))
             {
-                from.SendLocalizedMessage(502482); // Where do you wish to place the ship?
+                if (Core.SE)
+                    from.SendLocalizedMessage(502482); // Where do you wish to place the ship?
+                else
+                    from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502482); // Where do you wish to place the ship?
 
                 from.SendGump(new BoatPlacementGump(this, from));
             }
@@ -88,7 +99,7 @@ namespace Server.Multis
             if (Deleted)
             {
                 return;
-            }
+            }           
             else
             {
                 Map map = from.Map;
@@ -122,7 +133,7 @@ namespace Server.Multis
                 {
                     if (boat.IsRowBoat)
                     {
-                        BaseBoat lastrowboat = World.Items.Values.OfType<BaseBoat>().Where(x => x.Owner == from && x.IsRowBoat && x.Map != Map.Internal && !x.MobilesOnBoard.Any()).OrderByDescending(y => y.Serial).FirstOrDefault();
+                        BaseBoat lastrowboat = World.Items.Values.OfType<BaseBoat>().Where(x => x.Owner == from && x.IsRowBoat && x.Map != Map.Internal && !x.GetMobilesOnBoard().Any()).OrderByDescending(y => y.Serial).FirstOrDefault();
 
                         if (lastrowboat != null)
                             lastrowboat.Delete();
@@ -155,7 +166,7 @@ namespace Server.Multis
                     boat.MoveToWorld(p, map);
                     boat.OnAfterPlacement(true);
 
-                    LighthouseAddon addon = LighthouseAddon.GetLighthouse(from);
+                    var addon = LighthouseAddon.GetLighthouse(from);
 
                     if (addon != null)
                     {

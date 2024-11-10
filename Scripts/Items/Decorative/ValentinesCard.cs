@@ -1,3 +1,4 @@
+﻿using System;
 using Server.Mobiles;
 using Server.Targeting;
 
@@ -13,9 +14,9 @@ namespace Server.Items
         public ValentinesCard(int itemid)
             : base(itemid)
         {
-            LootType = LootType.Blessed;
-            Hue = Utility.RandomDouble() < .001 ? 0x47E : 0xE8;
-            m_LabelNumber = Utility.Random(1077589, 5);
+            this.LootType = LootType.Blessed;
+            this.Hue = Utility.RandomDouble() < .001 ? 0x47E : 0xE8;
+            this.m_LabelNumber = Utility.Random(1077589, 5);
         }
 
         public ValentinesCard(Serial serial)
@@ -28,11 +29,11 @@ namespace Server.Items
         {
             get
             {
-                return m_From;
+                return this.m_From;
             }
             set
             {
-                m_From = value;
+                this.m_From = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -40,11 +41,11 @@ namespace Server.Items
         {
             get
             {
-                return m_To;
+                return this.m_To;
             }
             set
             {
-                m_To = value;
+                this.m_To = value;
             }
         }
         /*
@@ -59,16 +60,16 @@ namespace Server.Items
         */
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(m_LabelNumber, string.Format("{0}\t{1}", (m_To != null) ? m_To : Unsigned, (m_From != null) ? m_From : Unsigned));
+            list.Add(this.m_LabelNumber, String.Format("{0}\t{1}", (this.m_To != null) ? this.m_To : Unsigned, (this.m_From != null) ? this.m_From : Unsigned));
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (m_To == null)
+            if (this.m_To == null)
             {
-                if (IsChildOf(from))
+                if (this.IsChildOf(from))
                 {
-                    from.BeginTarget(10, false, TargetFlags.None, OnTarget);
+                    from.BeginTarget(10, false, TargetFlags.None, new TargetCallback(OnTarget));
 
                     from.SendLocalizedMessage(1077497); //To whom do you wish to give this card?
                 }
@@ -81,7 +82,7 @@ namespace Server.Items
 
         public virtual void OnTarget(Mobile from, object targeted)
         {
-            if (!Deleted)
+            if (!this.Deleted)
             {
                 if (targeted != null && targeted is Mobile)
                 {
@@ -91,10 +92,10 @@ namespace Server.Items
                     {
                         if (to != from)
                         {
-                            m_From = from.Name;
-                            m_To = to.Name;
+                            this.m_From = from.Name;
+                            this.m_To = to.Name;
                             from.SendLocalizedMessage(1077498); //You fill out the card. Hopefully the other person actually likes you...
-                            InvalidateProperties();
+                            this.InvalidateProperties();
                         }
                         else
                         {
@@ -117,10 +118,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
-            writer.Write(m_LabelNumber);
-            writer.Write(m_From);
-            writer.Write(m_To);
+            writer.Write((int)0); // version
+            writer.Write((int)this.m_LabelNumber);
+            writer.Write((string)this.m_From);
+            writer.Write((string)this.m_To);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -128,12 +129,12 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-            m_LabelNumber = reader.ReadInt();
-            m_From = reader.ReadString();
-            m_To = reader.ReadString();
+            this.m_LabelNumber = reader.ReadInt();
+            this.m_From = reader.ReadString();
+            this.m_To = reader.ReadString();
 
-            Utility.Intern(ref m_From);
-            Utility.Intern(ref m_To);
+            Utility.Intern(ref this.m_From);
+            Utility.Intern(ref this.m_To);
         }
     }
 
@@ -154,7 +155,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -182,7 +183,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

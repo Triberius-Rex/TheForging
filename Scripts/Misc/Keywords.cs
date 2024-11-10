@@ -1,3 +1,4 @@
+using System;
 using Server.Guilds;
 using Server.Gumps;
 using Server.Mobiles;
@@ -30,7 +31,15 @@ namespace Server.Misc
                         }
                     case 0x0032: // *i must consider my sins*
                         {
-                            from.SendMessage(0x3B2, "Short Term Murders: {0} Long Term Murders: {1}", from.ShortTermMurders, from.Kills);
+                            if (!Core.SE)
+                            {
+                                from.SendMessage("Short Term Murders : {0}", from.ShortTermMurders);
+                                from.SendMessage("Long Term Murders : {0}", from.Kills);
+                            }
+                            else
+                            {
+                                from.SendMessage(0x3B2, "Short Term Murders: {0} Long Term Murders: {1}", from.ShortTermMurders, from.Kills);
+                            }
                             break;
                         }
                     case 0x0035: // i renounce my young player status*

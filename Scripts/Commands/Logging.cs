@@ -1,6 +1,6 @@
-using Server.Accounting;
 using System;
 using System.IO;
+using Server.Accounting;
 
 namespace Server.Commands
 {
@@ -20,10 +20,16 @@ namespace Server.Commands
                 m_Enabled = value;
             }
         }
-        public static StreamWriter Output => m_Output;
+        public static StreamWriter Output
+        {
+            get
+            {
+                return m_Output;
+            }
+        }
         public static void Initialize()
         {
-            EventSink.Command += EventSink_Command;
+            EventSink.Command += new CommandEventHandler(EventSink_Command);
 
             if (!Directory.Exists("Logs"))
                 Directory.CreateDirectory("Logs");
@@ -35,18 +41,16 @@ namespace Server.Commands
 
             try
             {
-                m_Output = new StreamWriter(Path.Combine(directory, string.Format("{0}.log", DateTime.UtcNow.ToLongDateString())), true)
-                {
-                    AutoFlush = true
-                };
+                m_Output = new StreamWriter(Path.Combine(directory, String.Format("{0}.log", DateTime.UtcNow.ToLongDateString())), true);
+
+                m_Output.AutoFlush = true;
 
                 m_Output.WriteLine("##############################");
                 m_Output.WriteLine("Log started on {0}", DateTime.UtcNow);
                 m_Output.WriteLine();
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
             }
         }
 
@@ -57,15 +61,15 @@ namespace Server.Commands
                 Mobile m = (Mobile)o;
 
                 if (m.Account == null)
-                    return string.Format("{0} (no account)", m);
+                    return String.Format("{0} (no account)", m);
                 else
-                    return string.Format("{0} ('{1}')", m, m.Account.Username);
+                    return String.Format("{0} ('{1}')", m, m.Account.Username);
             }
             else if (o is Item)
             {
                 Item item = (Item)o;
 
-                return string.Format("0x{0:X} ({1})", item.Serial.Value, item.GetType().Name);
+                return String.Format("0x{0:X} ({1})", item.Serial.Value, item.GetType().Name);
             }
 
             return o;
@@ -76,7 +80,7 @@ namespace Server.Commands
             if (!m_Enabled)
                 return;
 
-            WriteLine(from, string.Format(format, args));
+            WriteLine(from, String.Format(format, args));
         }
 
         public static void WriteLine(Mobile from, string text)
@@ -86,28 +90,24 @@ namespace Server.Commands
 
             try
             {
-                m_Output.WriteLine("{0}: {1}: {2}", DateTime.UtcNow, from == null ? "System" : from.NetState.ToString(), text);
+                m_Output.WriteLine("{0}: {1}: {2}", DateTime.UtcNow, from.NetState, text);
 
                 string path = Core.BaseDirectory;
-                string name = "System";
 
-                if (from != null)
-                {
-                    Account acct = from.Account as Account;
-                    name = (acct == null ? from.Name : acct.Username);
-                }
+                Account acct = from.Account as Account;
+
+                string name = (acct == null ? from.Name : acct.Username);
 
                 AppendPath(ref path, "Logs");
                 AppendPath(ref path, "Commands");
-                AppendPath(ref path, from == null ? AccessLevel.Owner.ToString() : from.AccessLevel.ToString());
-                path = Path.Combine(path, string.Format("{0}.log", name));
+                AppendPath(ref path, from.AccessLevel.ToString());
+                path = Path.Combine(path, String.Format("{0}.log", name));
 
                 using (StreamWriter sw = new StreamWriter(path, true))
-                    sw.WriteLine("{0}: {1}: {2}", DateTime.UtcNow, from == null ? "System" : from.NetState.ToString(), text);
+                    sw.WriteLine("{0}: {1}: {2}", DateTime.UtcNow, from.NetState, text);
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Server.Commands
 
         public static void EventSink_Command(CommandEventArgs e)
         {
-            WriteLine(e.Mobile, "{0} {1} used command '{2} {3}'", e.Mobile == null ? "System" : e.Mobile.AccessLevel.ToString(), Format(e.Mobile), e.Command, e.ArgString);
+            WriteLine(e.Mobile, "{0} {1} used command '{2} {3}'", e.Mobile.AccessLevel, Format(e.Mobile), e.Command, e.ArgString);
         }
 
         public static void LogChangeProperty(Mobile from, object o, string name, string value)

@@ -4,22 +4,22 @@ using Server.Items;
 
 namespace Server.Mobiles
 {
-    [CorpseName("a fairy dragon corpse")]
+    [CorpseName("a Fairy dragon corpse")]
     public class FairyDragon : BaseCreature
     {
 
-        public override bool AutoDispel => !Controlled;
-        public override int TreasureMapLevel => 3;
-        public override int Meat => 9;
-        public override Poison HitPoison => Poison.Greater;
-        public override double HitPoisonChance => 0.75;
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override bool AutoDispel { get { return !Controlled; } }
+        public override int TreasureMapLevel { get { return 3; } }
+        public override int Meat { get { return 9; } }
+        public override Poison HitPoison { get { return Poison.Greater; } }
+        public override double HitPoisonChance { get { return 0.75; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat; } }
 
         [Constructable]
         public FairyDragon()
             : base(AIType.AI_Mystic, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "fairy dragon";
+            Name = "Fairy Dragon";
             Body = 718;
             BaseSoundID = 362;
 
@@ -49,6 +49,8 @@ namespace Server.Mobiles
 
             Fame = 15000;
             Karma = -15000;
+
+            VirtualArmor = 39;
         }
 
         public FairyDragon(Serial serial)

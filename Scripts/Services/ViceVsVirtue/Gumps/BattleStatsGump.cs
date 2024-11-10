@@ -1,6 +1,11 @@
-using Server.Guilds;
-using Server.Gumps;
+using System;
+using Server;
+using Server.Items;
 using Server.Mobiles;
+using Server.Gumps;
+using Server.Guilds;
+using Server.Network;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Server.Engines.VvV
@@ -9,7 +14,7 @@ namespace Server.Engines.VvV
     {
         public VvVBattle Battle { get; set; }
 
-        public static readonly int Color16 = Quests.BaseQuestGump.C32216(0xB22222);
+        public static readonly int Color16 = Engines.Quests.BaseQuestGump.C32216(0xB22222);
 
         public BattleStatsGump(PlayerMobile pm, VvVBattle battle)
             : base(50, 50)
@@ -24,13 +29,13 @@ namespace Server.Engines.VvV
             AddBackground(0, 0, 500, 500, 9380);
 
             AddHtmlLocalized(0, 40, 500, 20, 1154645, "#1154945", Color16, false, false); // The Battle between Vice and Virtue has ended!
-            AddHtml(40, 65, 420, 20, string.Format("<basefont color=#B22222>{0} [{1}] has won the battle!", leader.Guild.Name, leader.Guild.Abbreviation), false, false);
+            AddHtml(40, 65, 420, 20, String.Format("<basefont color=#B22222>{0} [{1}] has won the battle!", leader.Guild.Name, leader.Guild.Abbreviation), false, false);
 
             int y = 90;
 
             if (leader.Guild.Alliance != null)
             {
-                AddHtml(40, y, 420, 20, string.Format("<basefont color=#B22222>The {0} Alliance has won the battle!", leader.Guild.Alliance.Name), false, false);
+                AddHtml(40, y, 420, 20, String.Format("<basefont color=#B22222>The {0} Alliance has won the battle!", leader.Guild.Alliance.Name), false, false);
                 y += 25;
             }
 
@@ -74,6 +79,7 @@ namespace Server.Engines.VvV
             y += 25;
 
             AddHtmlLocalized(40, y, 420, 20, 1154956, team.Disarmed.ToString("N0", CultureInfo.GetCultureInfo("en-US")), Color16, false, false);
+            y += 25;
         }
     }
 }

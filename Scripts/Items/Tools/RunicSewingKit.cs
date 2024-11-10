@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
@@ -8,16 +9,16 @@ namespace Server.Items
         public RunicSewingKit(CraftResource resource)
             : base(resource, 0xF9D)
         {
-            Weight = 2.0;
-            Hue = CraftResources.GetHue(resource);
+            this.Weight = 2.0;
+            this.Hue = CraftResources.GetHue(resource);
         }
 
         [Constructable]
         public RunicSewingKit(CraftResource resource, int uses)
             : base(resource, uses, 0xF9D)
         {
-            Weight = 2.0;
-            Hue = CraftResources.GetHue(resource);
+            this.Weight = 2.0;
+            this.Hue = CraftResources.GetHue(resource);
         }
 
         public RunicSewingKit(Serial serial)
@@ -25,29 +26,52 @@ namespace Server.Items
         {
         }
 
-        public override CraftSystem CraftSystem => DefTailoring.CraftSystem;
+        public override CraftSystem CraftSystem
+        {
+            get
+            {
+                return DefTailoring.CraftSystem;
+            }
+        }
         public override void AddNameProperty(ObjectPropertyList list)
         {
             string v = " ";
 
-            if (!CraftResources.IsStandard(Resource))
+            if (!CraftResources.IsStandard(this.Resource))
             {
-                int num = CraftResources.GetLocalizationNumber(Resource);
+                int num = CraftResources.GetLocalizationNumber(this.Resource);
 
                 if (num > 0)
-                    v = string.Format("#{0}", num);
+                    v = String.Format("#{0}", num);
                 else
-                    v = CraftResources.GetName(Resource);
+                    v = CraftResources.GetName(this.Resource);
             }
 
             list.Add(1061119, v); // ~1_LEATHER_TYPE~ runic sewing kit
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            string v = " ";
+
+            if (!CraftResources.IsStandard(this.Resource))
+            {
+                int num = CraftResources.GetLocalizationNumber(this.Resource);
+
+                if (num > 0)
+                    v = String.Format("#{0}", num);
+                else
+                    v = CraftResources.GetName(this.Resource);
+            }
+
+            this.LabelTo(from, 1061119, v); // ~1_LEATHER_TYPE~ runic sewing kit
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -56,8 +80,8 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            if (ItemID == 0x13E4 || ItemID == 0x13E3)
-                ItemID = 0xF9D;
+            if (this.ItemID == 0x13E4 || this.ItemID == 0x13E3)
+                this.ItemID = 0xF9D;
         }
     }
 }

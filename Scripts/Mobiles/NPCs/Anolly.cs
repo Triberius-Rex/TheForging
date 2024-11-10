@@ -1,35 +1,65 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
     public class StopHarpingOnMeQuest : BaseQuest
-    {
+    { 
         public StopHarpingOnMeQuest()
             : base()
-        {
+        { 
             AddObjective(new ObtainObjective(typeof(LapHarp), "lap harp", 20, 0xEB2));
-
+			
             AddReward(new BaseReward(typeof(CarpentersCraftsmanSatchel), 1074282));
         }
 
         /* Stop Harping on Me */
-        public override object Title => 1073881;
+        public override object Title
+        {
+            get
+            {
+                return 1073881;
+            }
+        }
         /* Humans artistry can be a remarkable thing. For instance, I have heard of a wonderful 
         instrument which creates the most melodious of music. A lap harp. I would be ever so 
         grateful if I could examine one in person. */
-        public override object Description => 1074071;
+        public override object Description
+        {
+            get
+            {
+                return 1074071;
+            }
+        }
         /* I will patiently await your reconsideration. */
-        public override object Refuse => 1073921;
+        public override object Refuse
+        {
+            get
+            {
+                return 1073921;
+            }
+        }
         /* I will be in your debt if you bring me lap harp. */
-        public override object Uncomplete => 1073927;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1073927;
+            }
+        }
         /* My thanks for your service. Now, I will show you something of elven carpentry. */
-        public override object Complete => 1073969;
+        public override object Complete
+        {
+            get
+            {
+                return 1073969;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -41,31 +71,61 @@ namespace Server.Engines.Quests
     }
 
     public class TheFarEyeQuest : BaseQuest
-    {
+    { 
         public TheFarEyeQuest()
             : base()
-        {
+        { 
             AddObjective(new ObtainObjective(typeof(Spyglass), "spyglasses", 20, 0x14F5));
-
+			
             AddReward(new BaseReward(typeof(TinkersCraftsmanSatchel), 1074282));
         }
 
         /* The Far Eye */
-        public override object Title => 1073908;
+        public override object Title
+        {
+            get
+            {
+                return 1073908;
+            }
+        }
         /* The wonders of human invention! Turning sand and metal into a far-seeing eye! This is 
         something I must experience for myself. Bring me some of these spyglasses friend human. */
-        public override object Description => 1074098;
+        public override object Description
+        {
+            get
+            {
+                return 1074098;
+            }
+        }
         /* I will patiently await your reconsideration. */
-        public override object Refuse => 1073921;
+        public override object Refuse
+        {
+            get
+            {
+                return 1073921;
+            }
+        }
         /* I will be in your debt if you bring me spyglasses. */
-        public override object Uncomplete => 1073954;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1073954;
+            }
+        }
         /* Enjoy my thanks for your service. */
-        public override object Complete => 1073978;
+        public override object Complete
+        {
+            get
+            {
+                return 1073978;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -77,11 +137,11 @@ namespace Server.Engines.Quests
     }
 
     public class Anolly : MondainQuester
-    {
+    { 
         [Constructable]
         public Anolly()
             : base("Anolly", "the bark weaver")
-        {
+        { 
             SetSkill(SkillName.Meditation, 60.0, 83.0);
             SetSkill(SkillName.Focus, 60.0, 83.0);
         }
@@ -91,19 +151,25 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(StopHarpingOnMeQuest),
                     typeof(TheFarEyeQuest),
                     typeof(NothingFancyQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
             InitStats(100, 100, 25);
-
+			
             Female = false;
             Race = Race.Elf;
-
+			
             Hue = 0x8835;
             HairItemID = 0x2FC0;
             HairHue = 0x325;
@@ -111,17 +177,17 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new Sandals(), 0x901, 1);
-            SetWearable(new FullApron(), 0x1BB, 1);
-            SetWearable(new ShortPants(), 0x3B2, 1);
-            SetWearable(new SmithHammer(), dropChance: 1);
+            AddItem(new Sandals(0x901));
+            AddItem(new FullApron(0x1BB));
+            AddItem(new ShortPants(0x3B2));
+            AddItem(new SmithHammer());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

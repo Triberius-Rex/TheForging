@@ -1,3 +1,4 @@
+using System;
 using Server.Spells.First;
 
 namespace Server.Items
@@ -6,7 +7,7 @@ namespace Server.Items
     {
         [Constructable]
         public MagicArrowWand()
-            : base(WandEffect.MagicArrow, 5, 109)
+            : base(WandEffect.MagicArrow, 5, Core.ML ? 109 : 30)
         {
         }
 
@@ -19,7 +20,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -31,7 +32,7 @@ namespace Server.Items
 
         public override void OnWandUse(Mobile from)
         {
-            Cast(new MagicArrowSpell(from, this));
+            this.Cast(new MagicArrowSpell(from, this));
         }
     }
 }

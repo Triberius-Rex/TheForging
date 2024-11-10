@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,7 +10,7 @@ namespace Server.Mobiles
         public Waiter()
             : base("the waiter")
         {
-            SetSkill(SkillName.Discordance, 36.0, 68.0);
+            this.SetSkill(SkillName.Discordance, 36.0, 68.0);
         }
 
         public Waiter(Serial serial)
@@ -18,24 +18,30 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBWaiter());
+            this.m_SBInfos.Add(new SBWaiter());
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-			SetWearable(new HalfApron(), dropChance: 1);
+            this.AddItem(new Server.Items.HalfApron());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class SealedNotesForJamal : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public SealedNotesForJamal()
             : base(0xEF9)
         {
-            LootType = LootType.Blessed;
-            Weight = 5;
+            this.LootType = LootType.Blessed;
+            this.Weight = 5;
         }
 
         public SealedNotesForJamal(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074998;// sealed notes for Jamal
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074998;
+            }
+        }// sealed notes for Jamal
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

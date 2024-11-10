@@ -1,11 +1,13 @@
-using Server.Engines.Distillation;
+using Server;
+using System;
 using Server.Multis;
+using Server.Engines.Distillation;
 
 namespace Server.Items
 {
     public class DistilleryEastAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new DistilleryEastAddonDeed();
+        public override BaseAddonDeed Deed { get { return new DistilleryEastAddonDeed(); } }
 
         [Constructable]
         public DistilleryEastAddon()
@@ -31,7 +33,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -44,8 +46,8 @@ namespace Server.Items
 
     public class DistilleryEastAddonDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new DistilleryEastAddon();
-        public override int LabelNumber => 1150664;  // distillery (east)
+        public override BaseAddon Addon { get { return new DistilleryEastAddon(); } }
+        public override int LabelNumber { get { return 1150664; } } // distillery (east)
 
         [Constructable]
         public DistilleryEastAddonDeed()
@@ -74,7 +76,7 @@ namespace Server.Items
 
     public class DistillerySouthAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new DistillerySouthAddonDeed();
+        public override BaseAddonDeed Deed { get { return new DistillerySouthAddonDeed(); } }
 
         [Constructable]
         public DistillerySouthAddon()
@@ -100,7 +102,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -113,8 +115,8 @@ namespace Server.Items
 
     public class DistillerySouthAddonDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new DistillerySouthAddon();
-        public override int LabelNumber => 1150663;  // distillery (south)
+        public override BaseAddon Addon { get { return new DistillerySouthAddon(); } }
+        public override int LabelNumber { get { return 1150663; } } // distillery (south)
 
         [Constructable]
         public DistillerySouthAddonDeed()

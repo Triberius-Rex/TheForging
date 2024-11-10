@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -41,6 +42,11 @@ namespace Server.Mobiles
             Fame = 22000;
             Karma = -22000;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
 
@@ -49,29 +55,56 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Hides => 40;
-        public override int Meat => 19;
-        public override int TreasureMapLevel => 5;
+        public override int Hides
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 19;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.UltraRich, 3);
-            AddLoot(LootPack.ArcanistScrolls, 0, 1);
-            AddLoot(LootPack.LootItem<HydraScale>());
-            AddLoot(LootPack.LootItem<ParrotItem>(20.0));
-            AddLoot(LootPack.LootItem<ThorvaldsMedallion>(5.0));
+            AddLoot(LootPack.AosUltraRich, 3);
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);		
+			
+            c.DropItem(new HydraScale());				
+			
+            if (Utility.RandomDouble() < 0.2)				
+                c.DropItem(new ParrotItem());
+				
+            if (Utility.RandomDouble() < 0.05)				
+                c.DropItem(new ThorvaldsMedallion());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

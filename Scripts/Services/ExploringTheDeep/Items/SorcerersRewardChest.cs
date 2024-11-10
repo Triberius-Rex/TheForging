@@ -1,24 +1,25 @@
-﻿using Server.Mobiles;
-using Server.Network;
+﻿using System;
+using Server.Mobiles;
 using Server.Targeting;
+using Server.Network;
 
 namespace Server.Items
 {
     public class SorcerersRewardChest : Item
     {
-        public override int LabelNumber => 1023712;  // strong box
-
+        public override int LabelNumber { get { return 1023712; } } // strong box
+        
         [Constructable]
         public SorcerersRewardChest() : base(0x9AA)
         {
-            Movable = false;
-            Hue = 1912;
+            this.Movable = false;
+            this.Hue = 1912;
         }
 
         public override void OnDoubleClick(Mobile from)
         {
             from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154226); // *It's an unassuming strong box. You examine the lock more closely and determine there is no way to pick it. You'll need to find a key.*
-
+            
             base.OnDoubleClick(from);
         }
 
@@ -29,7 +30,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -41,7 +42,7 @@ namespace Server.Items
 
     public class StrongboxKey : BaseDecayingItem
     {
-        public override int LabelNumber => 1154227;  // Strongbox Key        
+        public override int LabelNumber { get { return 1154227; } } // Strongbox Key        
 
         [Constructable]
         public StrongboxKey() : base(0x410A)
@@ -52,8 +53,8 @@ namespace Server.Items
             LootType = LootType.Blessed;
         }
 
-        public override int Lifespan => 3600;
-        public override bool UseSeconds => false;
+        public override int Lifespan { get { return 3600; } }
+        public override bool UseSeconds { get { return false; } }
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -71,7 +72,7 @@ namespace Server.Items
             if (!(from is PlayerMobile))
                 return;
 
-            if (!IsChildOf(from.Backpack))
+            if (!this.IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(1054107); // This item must be in your backpack.
                 return;
@@ -84,7 +85,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -116,7 +117,7 @@ namespace Server.Items
                     from.BankBox.DropItem(item);
 
                 m_From.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154228); // *You insert the key into the mechanism and turn it. To your delight the lock opens with a click and you remove the contents*
-
+                
                 m_Key.Delete();
             }
             else

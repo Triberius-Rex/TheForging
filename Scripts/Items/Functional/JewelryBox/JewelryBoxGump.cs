@@ -1,27 +1,28 @@
+using System;
+using System.Collections.Generic;
 using Server.Gumps;
 using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class JewelryBoxGump : Gump
     {
-        private readonly Mobile m_From;
-        private readonly JewelryBox m_Box;
-        private readonly List<Item> m_List;
+        private Mobile m_From;
+        private JewelryBox m_Box;
+        private List<Item> m_List;
 
-        private readonly int m_Page;
+        private int m_Page;
 
         private const int LabelColor = 0x7FFF;
-
+        
         public bool CheckFilter(Item item)
         {
             JewelryBoxFilter f = m_Box.Filter;
 
             if (f.IsDefault)
                 return true;
-
+            
             if (f.Ring && item is BaseRing)
             {
                 return true;
@@ -70,7 +71,7 @@ namespace Server.Items
 
             for (int i = index; i >= 0 && i < list.Count; ++i)
             {
-                Item recipe = list[i];
+                var recipe = list[i];
 
                 if (CheckFilter(recipe))
                 {
@@ -89,7 +90,7 @@ namespace Server.Items
 
             return count;
         }
-
+        
         public JewelryBoxGump(Mobile from, JewelryBox box)
             : this(from, box, 0)
         {
@@ -113,23 +114,23 @@ namespace Server.Items
 
                 m_List.Add(item);
             }
-
+            
             int index = GetIndexForPage(page);
             int count = GetCountForIndex(index);
             int pageCount = GetPageCount(m_List.Count);
             int currentpage = pageCount > 0 ? (page + 1) : 0;
 
-            int tableIndex = 0;
-
+            int tableIndex = 0;                    
+            
             for (int i = index; i < (index + count) && i >= 0 && i < m_List.Count; ++i)
             {
-                Item item = m_List[i];
+                var item = m_List[i];
 
                 if (!CheckFilter(item))
                     continue;
 
                 ++tableIndex;
-            }
+            }           
 
             AddPage(0);
 
@@ -137,11 +138,11 @@ namespace Server.Items
             AddHtmlLocalized(40, 2, 500, 20, 1114513, "#1157694", 0x7FF0, false, false); // <DIV ALIGN=CENTER>~1_TOKEN~</DIV>   
 
             AddHtmlLocalized(50, 30, 100, 20, 1157695, 0x7FF0, false, false); // Select Filter:
-
-            AddHtmlLocalized(41, 350, 123, 20, 1157698, string.Format("{0}@{1}", m_List.Count, m_Box.DefaultMaxItems), 0x7FF0, false, false); // Items: ~1_NUM~ of ~2_MAX~
-            AddHtmlLocalized(212, 350, 123, 20, 1153561, string.Format("{0}@{1}", currentpage, pageCount), 0x7FF0, false, false); // Page ~1_CUR~ of ~2_MAX~
+            
+            AddHtmlLocalized(41, 350, 123, 20, 1157698, String.Format("{0}@{1}", m_List.Count, m_Box.DefaultMaxItems), 0x7FF0, false, false); // Items: ~1_NUM~ of ~2_MAX~
+            AddHtmlLocalized(212, 350, 123, 20, 1153561, String.Format("{0}@{1}", currentpage, pageCount), 0x7FF0, false, false); // Page ~1_CUR~ of ~2_MAX~
             AddHtmlLocalized(416, 350, 100, 20, 1153562, 0x7FF0, false, false); // <DIV ALIGN="CENTER">PAGE</DIV>
-
+            
             JewelryBoxFilter f = box.Filter;
 
             AddHtmlLocalized(200, 30, 90, 20, 1154607, f.Ring ? 0x421F : LabelColor, false, false); // Ring
@@ -160,7 +161,9 @@ namespace Server.Items
             AddButton(285, 55, 0xFA5, 0xFA7, 116, GumpButtonType.Reply, 0);
 
             AddHtmlLocalized(450, 55, 90, 20, 1062229, f.IsDefault ? 0x421F : LabelColor, false, false); // All
-            AddButton(410, 55, 0xFA5, 0xFA7, 132, GumpButtonType.Reply, 0);
+            AddButton(410, 55, 0xFA5, 0xFA7, 132, GumpButtonType.Reply, 0);            
+
+            tableIndex = 0;
 
             AddButton(356, 353, 0x15E3, 0x15E7, 11, GumpButtonType.Reply, 0); // First page
             AddButton(376, 350, 0xFAE, 0xFB0, 1, GumpButtonType.Reply, 0); // Previous page
@@ -183,17 +186,17 @@ namespace Server.Items
                 x++;
 
                 AddECHandleInput();
-                AddButton(50 + xoffset, 90 + yoffset, 0x92F, 0x92F, item.Serial, GumpButtonType.Reply, 0);
+                AddButton(50 + xoffset, 90 + yoffset, 0x92F, 0x92F, item.Serial, GumpButtonType.Reply, 0);                
                 AddItemProperty(item.Serial);
                 AddItem(57 + xoffset, 108 + yoffset, item.ItemID, item.Hue);
-                AddECHandleInput();
+                AddECHandleInput();                
             }
         }
 
         private class InternalTarget : Target
         {
-            private readonly JewelryBox m_Box;
-            private readonly int m_Page;
+            private JewelryBox m_Box;
+            private int m_Page;
 
             public InternalTarget(Mobile from, JewelryBox box, int page)
                 : base(-1, false, TargetFlags.None)
@@ -238,7 +241,7 @@ namespace Server.Items
                             if (m_Box.IsFull)
                             {
                                 from.SendLocalizedMessage(1157723); // The jewelry box is full.
-                                break;
+                                break;                                
                             }
                             else
                             {
@@ -406,15 +409,11 @@ namespace Server.Items
                 default:
                     {
                         Item item = m_Box.Items.Find(x => x.Serial == index);
-
-                        if (item != null)
-                        {
-                            m_From.AddToBackpack(item);
-                            m_From.SendGump(new JewelryBoxGump(m_From, m_Box));
-                        }
+                        m_From.AddToBackpack(item);
+                        m_From.SendGump(new JewelryBoxGump(m_From, m_Box));
 
                         break;
-                    }
+                    }                        
             }
         }
     }

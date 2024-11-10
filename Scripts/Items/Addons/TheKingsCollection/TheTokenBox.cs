@@ -1,11 +1,13 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x4D0C, 0x4D0D)]
     public class TheTokenBox : BaseContainer
     {
-        public override int LabelNumber => 1154209;  // The King's Collection
+        public override int LabelNumber { get { return 1154209; } } // The King's Collection
 
-        public override int DefaultGumpID => 0x4D0C;
+        public override int DefaultGumpID { get { return 0x4D0C; } }
 
         [Constructable]
         public TheTokenBox()
@@ -44,7 +46,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

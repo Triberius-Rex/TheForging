@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Misc
 {
@@ -8,7 +8,7 @@ namespace Server.Misc
         public FoodDecayTimer()
             : base(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5))
         {
-            Priority = TimerPriority.OneMinute;
+            this.Priority = TimerPriority.OneMinute;
         }
 
         public static void Initialize()
@@ -39,7 +39,7 @@ namespace Server.Misc
 
         protected override void OnTick()
         {
-            FoodDecay();
+            FoodDecay();			
         }
     }
 }

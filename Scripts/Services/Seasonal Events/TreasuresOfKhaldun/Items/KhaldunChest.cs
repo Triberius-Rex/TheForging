@@ -7,11 +7,12 @@ namespace Server.Items
     {
         private Timer m_Timer;
 
-        public bool CheckWhenHidden => true;
+        public override int DefaultGumpID { get { return 0x49; } }
+        public bool CheckWhenHidden { get { return true; } }
 
         [Constructable]
         public KhaldunChest()
-            : base(Utility.RandomList(0xE3C, 0xE3D, 0xE3E, 0xE3F, 0xE40, 0xE41, 0xE42, 0xE43))
+            : base(Utility.RandomList(0xE3C, 0xE3E, 0x9a9))
         {
             Movable = false;
             Locked = true;
@@ -24,16 +25,19 @@ namespace Server.Items
             LockLevel = 90;
             RequiredSkill = 90;
             MaxLockLevel = 100;
-
+            
             TrapType = TrapType.PoisonTrap;
             TrapPower = 100;
+            Timer.DelayCall(TimeSpan.FromSeconds(1), Fill);
         }
 
         public virtual void Fill()
         {
+            Reset();
+
             List<Item> contains = new List<Item>(Items);
 
-            foreach (Item i in contains)
+            foreach (var i in contains)
             {
                 i.Delete();
             }
@@ -54,13 +58,12 @@ namespace Server.Items
                     case 0:
                         item = new Bandage(Utility.Random(10, 30)); break;
                     case 1:
-                        item = new SmokeBomb(Utility.Random(3, 6));
+                        item = new SmokeBomb();
+                        item.Amount = Utility.Random(3, 6);
                         break;
                     case 2:
-                        item = new InvisibilityPotion
-                        {
-                            Amount = Utility.Random(1, 3)
-                        };
+                        item = new InvisibilityPotion();
+                        item.Amount = Utility.Random(1, 3);
                         break;
                     case 3:
                         item = new Lockpick(Utility.Random(1, 10)); break;
@@ -110,23 +113,21 @@ namespace Server.Items
                     DropItem(item);
                 }
             }
+        }
 
-            if (0.01 > Utility.RandomDouble())
-            {
-                switch (Utility.Random(4))
-                {
-                    case 0:
-                        item = new RelicOfHydros(); break;
-                    case 1:
-                        item = new RelicOfLithos(); break;
-                    case 2:
-                        item = new RelicOfPyros(); break;
-                    case 3:
-                        item = new RelicOfStratos(); break;
-                }
+        public void Reset()
+        {
+            EndTimer();
 
-                DropItem(item);
-            }
+            Visible = false;
+            Locked = true;
+
+            RequiredSkill = 90;
+            LockLevel = RequiredSkill - Utility.Random(1, 10);
+            MaxLockLevel = RequiredSkill;
+
+            TrapType = TrapType.MagicTrap;
+            TrapPower = 100;
         }
 
         public virtual bool CheckReveal(Mobile m)
@@ -154,25 +155,23 @@ namespace Server.Items
 
         public override void LockPick(Mobile from)
         {
-            Fill();
+            TryDelayedLock();
 
             base.LockPick(from);
-
-            DelayedDelete();
         }
 
         public KhaldunChest(Serial serial) : base(serial)
         {
-        }
+        }        
 
-        public void DelayedDelete()
+        public void TryDelayedLock()
         {
             if (Locked || (m_Timer != null && m_Timer.Running))
                 return;
 
             EndTimer();
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(5), Delete);
+            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(Utility.RandomMinMax(10, 15)), Fill);
         }
 
         public void EndTimer()
@@ -184,28 +183,20 @@ namespace Server.Items
             }
         }
 
-        public override void Delete()
-        {
-            if (Spawner != null)
-            {
-                Spawner.Remove(this);
-            }
-
-            base.Delete();
-        }
-
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
+
+            TryDelayedLock();
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
-            Delete();
+            TryDelayedLock();
         }
     }
 }

@@ -1,14 +1,15 @@
+﻿using Server;
+using System;
 using Server.Accounting;
 using Server.Mobiles;
-using Server.Network;
-using System;
 using System.Globalization;
+using Server.Network;
 
 namespace Server.Gumps
 {
     public class BankerGump : Gump
     {
-        private readonly int TextColor = 0x000F;
+        private int TextColor = 0x000F;
 
         public PlayerMobile User { get; set; }
 
@@ -20,8 +21,8 @@ namespace Server.Gumps
         }
 
         public void AddGumpLayout()
-        {
-            AddBackground(0, 0, 420, 344, 9300);
+		{
+			AddBackground(0, 0, 420, 344, 9300);
 
             AddHtmlLocalized(0, 10, 420, 16, 1113302, "#1156076", 1, false, false); // Bank Actions
 
@@ -45,35 +46,35 @@ namespace Server.Gumps
             AddHtmlLocalized(270, 35, 90, 16, 1114514, "Help", 0, false, false);
             AddButton(370, 35, 4014, 4015, 7, GumpButtonType.Reply, 0);
 
-            AddHtmlLocalized(60, 150, 360, 16, 1156064, TextColor, false, false); // Deposit Gold into Character Transfer Account
+			AddHtmlLocalized(60, 150, 360, 16, 1156064, TextColor, false, false); // Deposit Gold into Character Transfer Account
             AddButton(20, 150, 4005, 4006, 1, GumpButtonType.Reply, 0);
-            AddTooltip(1156070); // Transfers gold from the bank to the character transfer account; capped at 1 billion gold. Any currency that 
-                                 // a players wishes to transfer to another shard must be placed in character transfer account. Upon transferring 
-                                 // the currency will be added to player's account on the shard.
-
-            AddHtmlLocalized(60, 180, 300, 16, 1156065, TextColor, false, false); // Deposit Platinum into Character Transfer Account
+			AddTooltip(1156070); // Transfers gold from the bank to the character transfer account; capped at 1 billion gold. Any currency that 
+								 // a players wishes to transfer to another shard must be placed in character transfer account. Upon transferring 
+								 // the currency will be added to player's account on the shard.
+			
+			AddHtmlLocalized(60, 180, 300, 16, 1156065, TextColor, false, false); // Deposit Platinum into Character Transfer Account
             AddButton(20, 180, 4005, 4006, 2, GumpButtonType.Reply, 0);
-            AddTooltip(1156071); // Transfers platinum from the bank to the character transfer account; capped at 2 billion platinum. Any currency 
-                                 // that a players wishes to transfer to another shard must be placed in character transfer account. Upon transferring 
-                                 // the currency will be added to player's account on the shard. 
-
-            AddHtmlLocalized(60, 210, 300, 16, 1156066, TextColor, false, false); // Withdraw Gold from Character Transfer Account
+			AddTooltip(1156071); // Transfers platinum from the bank to the character transfer account; capped at 2 billion platinum. Any currency 
+								 // that a players wishes to transfer to another shard must be placed in character transfer account. Upon transferring 
+								 // the currency will be added to player's account on the shard. 
+			
+			AddHtmlLocalized(60, 210, 300, 16, 1156066, TextColor, false, false); // Withdraw Gold from Character Transfer Account
             AddButton(20, 210, 4005, 4006, 3, GumpButtonType.Reply, 0);
-            AddTooltip(1156072); // Transfers gold from the character transfer account to the bank; capped at 1 billion gold.
-
-            AddHtmlLocalized(60, 240, 300, 16, 1156067, TextColor, false, false); // Withdraw Platinum from Character Transfer Account
+			AddTooltip(1156072); // Transfers gold from the character transfer account to the bank; capped at 1 billion gold.
+			
+			AddHtmlLocalized(60, 240, 300, 16, 1156067, TextColor, false, false); // Withdraw Platinum from Character Transfer Account
             AddButton(20, 240, 4005, 4006, 4, GumpButtonType.Reply, 0);
-            AddTooltip(1156073); // Transfers platinum from the character transfer account to the bank; capped at 2 billion platinum. Really? Who the fuck has this much?
-
-            AddHtmlLocalized(60, 270, 300, 16, 1156068, TextColor, false, false); // Deposit Gold into Secure Account
+			AddTooltip(1156073); // Transfers platinum from the character transfer account to the bank; capped at 2 billion platinum. Really? Who the fuck has this much?
+			
+			AddHtmlLocalized(60, 270, 300, 16, 1156068, TextColor, false, false); // Deposit Gold into Secure Account
             AddButton(20, 270, 4005, 4006, 5, GumpButtonType.Reply, 0);
-            AddTooltip(1156074); // Transfers gold from the bank to the player's secure account; capped at 100,000,000 gold. Only funds added 
-                                 // to the secure account can be added to the wall safe account.
-
-            AddHtmlLocalized(60, 300, 300, 16, 1156069, TextColor, false, false); // Withdraw Gold from Secure Account
+			AddTooltip(1156074); // Transfers gold from the bank to the player's secure account; capped at 100,000,000 gold. Only funds added 
+								 // to the secure account can be added to the wall safe account.
+			
+			AddHtmlLocalized(60, 300, 300, 16, 1156069, TextColor, false, false); // Withdraw Gold from Secure Account
             AddButton(20, 300, 4005, 4006, 6, GumpButtonType.Reply, 0);
-            AddTooltip(1156075); // Transfers gold from the secure account to the bank; capped at 100,0,000 gold.
-        }
+			AddTooltip(1156075); // Transfers gold from the secure account to the bank; capped at 100,0,000 gold.
+		}
 
         public override void OnResponse(NetState state, RelayInfo info)
         {
@@ -91,7 +92,7 @@ namespace Server.Gumps
                     break;
                 case 5:
                     User.SendLocalizedMessage(1155865); // Enter amount to deposit:
-                    User.BeginPrompt(
+                    User.BeginPrompt<Account>(
                     (from, text, account) =>
                     {
                         int v = 0;
@@ -100,14 +101,17 @@ namespace Server.Gumps
                         {
                             int canHold = Account.MaxSecureAmount - account.GetSecureAccountAmount(from);
 
-                            if (text != null && !string.IsNullOrEmpty(text))
+                            if (text != null && !String.IsNullOrEmpty(text))
                             {
                                 v = Utility.ToInt32(text);
 
                                 if (v <= 0 || v > canHold || v > Banker.GetBalance(from))
                                     from.SendLocalizedMessage(1155867); // The amount entered is invalid. Verify that there are sufficient funds to complete this transaction.
-                                else
+                                else if (account != null)
                                 {
+                                    if (v > canHold)
+                                        v = canHold;
+
                                     Banker.Withdraw(from, v, true);
                                     account.DepositToSecure(from, v);
 
@@ -135,21 +139,24 @@ namespace Server.Gumps
 
                         if (ac != null)
                         {
-                            if (text != null && !string.IsNullOrEmpty(text))
+                            if (text != null && !String.IsNullOrEmpty(text))
                             {
                                 v = Utility.ToInt32(text);
 
-                                if (v <= 0 || v > acct.GetSecureAccountAmount(from))
-                                    from.SendLocalizedMessage(1155867); // The amount entered is invalid. Verify that there are sufficient funds to complete this transaction.
-                                else
+                                if (ac != null)
                                 {
-                                    Banker.Deposit(from, v, true);
-                                    ac.WithdrawFromSecure(from, v);
+                                    if (v <= 0 || v > acct.GetSecureAccountAmount(from))
+                                        from.SendLocalizedMessage(1155867); // The amount entered is invalid. Verify that there are sufficient funds to complete this transaction.
+                                    else
+                                    {
+                                        Banker.Deposit(from, v, true);
+                                        ac.WithdrawFromSecure(from, v);
 
-                                    from.SendLocalizedMessage(1153188); // Transaction successful:
+                                        from.SendLocalizedMessage(1153188); // Transaction successful:
+                                    }
+
+                                    Timer.DelayCall(TimeSpan.FromSeconds(2), SendGump);
                                 }
-
-                                Timer.DelayCall(TimeSpan.FromSeconds(2), SendGump);
                             }
                             else
                                 from.SendLocalizedMessage(1155867); // The amount entered is invalid. Verify that there are sufficient funds to complete this transaction.
@@ -162,7 +169,7 @@ namespace Server.Gumps
                     }, acct);
                     break;
                 case 7:
-                    User.CloseGump(typeof(NewCurrencyHelpGump));
+					User.CloseGump(typeof (NewCurrencyHelpGump));
                     User.SendGump(new NewCurrencyHelpGump());
                     Refresh();
                     break;
@@ -183,7 +190,7 @@ namespace Server.Gumps
                 AddGumpLayout();
             }
 
-            User.CloseGump(GetType());
+            User.CloseGump(this.GetType());
             User.SendGump(this, false);
         }
     }

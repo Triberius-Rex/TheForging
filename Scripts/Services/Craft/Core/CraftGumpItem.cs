@@ -1,19 +1,13 @@
+using System;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
 using Server.Network;
-using System;
 
 namespace Server.Engines.Craft
 {
     public class CraftGumpItem : Gump
     {
-        #region Statics
-        private static readonly Type typeofBlankScroll = typeof(BlankScroll);
-        private static readonly Type typeofSpellScroll = typeof(SpellScroll); 
-        #endregion
-
-        #region Variables
         private readonly Mobile m_From;
         private readonly CraftSystem m_CraftSystem;
         private readonly CraftItem m_CraftItem;
@@ -27,11 +21,7 @@ namespace Server.Engines.Craft
 
         private const int GreyLabelColor = 0x3DEF;
 
-        private bool m_ShowExceptionalChance;
-        private int m_OtherCount; 
-        #endregion
-
-        #region Constructor
+        private int m_OtherCount;
 
         public CraftGumpItem(Mobile from, CraftSystem craftSystem, CraftItem craftItem, ITool tool)
             : base(40, 40)
@@ -80,11 +70,13 @@ namespace Server.Engines.Craft
                 AddHtmlLocalized(445, 390, 150, 18, 1044151, LabelColor, false, false); // MAKE NOW
             }
 
+            #region Stygian Abyss
             AddButton(265, 387, 4005, 4007, 2, GumpButtonType.Reply, 0);
             AddHtmlLocalized(300, 390, 150, 18, 1112623, LabelColor, false, false); //MAKE NUMBER
 
             AddButton(135, 387, 4005, 4007, 3, GumpButtonType.Reply, 0);
             AddHtmlLocalized(170, 390, 150, 18, 1112624, LabelColor, false, false); //MAKE MAX
+            #endregion
 
             AddButton(15, 387, 4014, 4016, 0, GumpButtonType.Reply, 0);
             AddHtmlLocalized(50, 390, 150, 18, 1044150, LabelColor, false, false); // BACK
@@ -101,13 +93,198 @@ namespace Server.Engines.Craft
             DrawSkill();
             DrawResource();
 
+            /*
+            if( craftItem.RequiresSE )
+            AddHtmlLocalized( 170, 302 + (m_OtherCount++ * 20), 310, 18, 1063363, LabelColor, false, false ); //* Requires the "Samurai Empire" expansion
+            * */
+
+            if (craftItem.RequiredExpansion != Expansion.None)
+            {
+                bool supportsEx = (from.NetState != null && from.NetState.SupportsExpansion(craftItem.RequiredExpansion));
+                TextDefinition.AddHtmlText(this, 170, 302 + (m_OtherCount++ * 20), 310, 18, RequiredExpansionMessage(craftItem.RequiredExpansion), false, false, supportsEx ? LabelColor : RedLabelColor, supportsEx ? LabelHue : RedLabelHue);
+            }
+
+            if (craftItem.RequiredThemePack != ThemePack.None)
+            {
+                TextDefinition.AddHtmlText(this, 170, 302 + (m_OtherCount++ * 20), 310, 18, RequiredThemePackMessage(craftItem.RequiredThemePack), false, false, LabelColor, LabelHue);
+            }
+
             if (needsRecipe)
                 AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 310, 18, 1073620, RedLabelColor, false, false); // You have not learned this recipe.
         }
 
-        #endregion
+        private TextDefinition RequiredExpansionMessage(Expansion expansion)
+        {
+            switch( expansion )
+            {
+                case Expansion.SE:
+                    return 1063363; // * Requires the "Samurai Empire" expansion
+                case Expansion.ML:
+                    return 1072651; // * Requires the "Mondain's Legacy" expansion
+                case Expansion.SA:
+                    return 1094732; // * Requires the "Stygian Abyss" expansion
+                case Expansion.HS:
+                    return 1116296; // * Requires the "High Seas" booster
+                case Expansion.TOL:
+                    return 1155876; // * Requires the "Time of Legends" expansion.
+                default:
+                    return String.Format("* Requires the \"{0}\" expansion", ExpansionInfo.GetInfo(expansion).Name);
+            }
+        }
 
-        #region Overrides
+        private TextDefinition RequiredThemePackMessage(ThemePack pack)
+        {
+            switch (pack)
+            {
+                case ThemePack.Kings:
+                    return 1154195; // *Requires the "King's Collection" theme pack
+                case ThemePack.Rustic:
+                    return 1150651; // * Requires the "Rustic" theme pack
+                case ThemePack.Gothic:
+                    return 1150650; // * Requires the "Gothic" theme pack
+                default:
+                    return String.Format("Requires the \"{0}\" theme pack.", null);
+            }
+        }
+
+        private bool m_ShowExceptionalChance;
+
+        public void DrawItem()
+        {
+            Type type = m_CraftItem.ItemType;
+            int id = m_CraftItem.DisplayID;
+            if (id == 0) id = CraftItem.ItemIDOf(type);
+            Rectangle2D b = ItemBounds.Table[id];
+            AddItem(90 - b.Width / 2 - b.X, 110 - b.Height / 2 - b.Y, id, m_CraftItem.ItemHue);
+
+            if (m_CraftItem.IsMarkable(type))
+            {
+                AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 310, 18, 1044059, LabelColor, false, false); // This item may hold its maker's mark
+                m_ShowExceptionalChance = true;
+            }
+            else if (typeof(IQuality).IsAssignableFrom(m_CraftItem.ItemType))
+            {
+                m_ShowExceptionalChance = true;
+            }
+        }
+
+        public void DrawSkill()
+        {
+            for (int i = 0; i < m_CraftItem.Skills.Count; i++)
+            {
+                CraftSkill skill = m_CraftItem.Skills.GetAt(i);
+                double minSkill = skill.MinSkill, maxSkill = skill.MaxSkill;
+
+                if (minSkill < 0)
+                    minSkill = 0;
+
+                AddHtmlLocalized(170, 132 + (i * 20), 200, 18, AosSkillBonuses.GetLabel(skill.SkillToMake), LabelColor, false, false);
+                AddLabel(430, 132 + (i * 20), LabelHue, String.Format("{0:F1}", minSkill));
+            }
+
+            CraftSubResCol res = (m_CraftItem.UseSubRes2 ? m_CraftSystem.CraftSubRes2 : m_CraftSystem.CraftSubRes);
+            int resIndex = -1;
+
+            CraftContext context = m_CraftSystem.GetContext(m_From);
+
+            if (context != null)
+                resIndex = (m_CraftItem.UseSubRes2 ? context.LastResourceIndex2 : context.LastResourceIndex);
+
+            bool allRequiredSkills = true;
+            double chance = m_CraftItem.GetSuccessChance(m_From, resIndex > -1 ? res.GetAt(resIndex).ItemType : null, m_CraftSystem, false, ref allRequiredSkills);
+            double excepChance = m_CraftItem.GetExceptionalChance(m_CraftSystem, chance, m_From);
+
+            if (chance < 0.0)
+                chance = 0.0;
+            else if (chance > 1.0)
+                chance = 1.0;
+
+            AddHtmlLocalized(170, 80, 250, 18, 1044057, LabelColor, false, false); // Success Chance:
+            AddLabel(430, 80, LabelHue, String.Format("{0:F1}%", chance * 100));
+
+            if (m_ShowExceptionalChance)
+            {
+                if (excepChance < 0.0)
+                    excepChance = 0.0;
+                else if (excepChance > 1.0)
+                    excepChance = 1.0;
+
+                AddHtmlLocalized(170, 100, 250, 18, 1044058, 32767, false, false); // Exceptional Chance:
+                AddLabel(430, 100, LabelHue, String.Format("{0:F1}%", excepChance * 100));
+            }
+        }
+
+        private static readonly Type typeofBlankScroll = typeof(BlankScroll);
+        private static readonly Type typeofSpellScroll = typeof(SpellScroll);
+
+        public void DrawResource()
+        {
+            bool retainedColor = false;
+
+            CraftContext context = m_CraftSystem.GetContext(m_From);
+
+            CraftSubResCol res = (m_CraftItem.UseSubRes2 ? m_CraftSystem.CraftSubRes2 : m_CraftSystem.CraftSubRes);
+            int resIndex = -1;
+
+            if (context != null)
+                resIndex = (m_CraftItem.UseSubRes2 ? context.LastResourceIndex2 : context.LastResourceIndex);
+
+            bool cropScroll = (m_CraftItem.Resources.Count > 1) &&
+                              m_CraftItem.Resources.GetAt(m_CraftItem.Resources.Count - 1).ItemType == typeofBlankScroll &&
+                              typeofSpellScroll.IsAssignableFrom(m_CraftItem.ItemType);
+
+            for (int i = 0; i < m_CraftItem.Resources.Count - (cropScroll ? 1 : 0) && i < 4; i++)
+            {
+                Type type;
+                string nameString;
+                int nameNumber;
+
+                CraftRes craftResource = m_CraftItem.Resources.GetAt(i);
+
+                type = craftResource.ItemType;
+                nameString = craftResource.NameString;
+                nameNumber = craftResource.NameNumber;
+				
+                // Resource Mutation
+                if (type == res.ResType && resIndex > -1)
+                {
+                    CraftSubRes subResource = res.GetAt(resIndex);
+
+                    type = subResource.ItemType;
+
+                    nameString = subResource.NameString;
+                    nameNumber = subResource.GenericNameNumber;
+
+                    if (nameNumber <= 0)
+                        nameNumber = subResource.NameNumber;
+                }
+                // ******************
+
+                if (!retainedColor && m_CraftItem.RetainsColorFrom(m_CraftSystem, type))
+                {
+                    retainedColor = true;
+                    AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 310, 18, 1044152, LabelColor, false, false); // * The item retains the color of this material
+                    AddLabel(500, 219 + (i * 20), LabelHue, "*");
+                }
+
+                if (nameNumber > 0)
+                    AddHtmlLocalized(170, 219 + (i * 20), 310, 18, nameNumber, LabelColor, false, false);
+                else
+                    AddLabel(170, 219 + (i * 20), LabelHue, nameString);
+
+                AddLabel(430, 219 + (i * 20), LabelHue, craftResource.Amount.ToString());
+            }
+
+            if (m_CraftItem.NameNumber == 1041267) // runebook
+            {
+                AddHtmlLocalized(170, 219 + (m_CraftItem.Resources.Count * 20), 310, 18, 1044447, LabelColor, false, false);
+                AddLabel(430, 219 + (m_CraftItem.Resources.Count * 20), LabelHue, "1");
+            }
+
+            if (cropScroll)
+                AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 360, 18, 1044379, LabelColor, false, false); // Inscribing scrolls also requires a blank scroll and mana.
+        }
+
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             switch (info.ButtonID)
@@ -125,7 +302,7 @@ namespace Server.Engines.Craft
                             m_CraftItem.TryCraft(m_From, m_CraftItem, m_Tool);
                             return;
                         }
-
+                        
                         int num = m_CraftSystem.CanCraft(m_From, m_Tool, m_CraftItem.ItemType);
 
                         if (num > 0)
@@ -161,151 +338,5 @@ namespace Server.Engines.Craft
                     break;
             }
         }
-        #endregion
-
-        #region Methods
-        public void DrawItem()
-        {
-            Type type = m_CraftItem.ItemType;
-            int id = m_CraftItem.DisplayID;
-            if (id == 0) id = CraftItem.ItemIDOf(type);
-            Rectangle2D b = ItemBounds.Table[id];
-            AddItem(90 - b.Width / 2 - b.X, 110 - b.Height / 2 - b.Y, id, m_CraftItem.ItemHue);
-
-            if (m_CraftItem.IsMarkable(type))
-            {
-                AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 310, 18, 1044059, LabelColor, false, false); // This item may hold its maker's mark
-                m_ShowExceptionalChance = true;
-            }
-            else if (typeof(IQuality).IsAssignableFrom(m_CraftItem.ItemType))
-            {
-                m_ShowExceptionalChance = true;
-            }
-        }
-
-        public void DrawSkill()
-        {
-            for (int i = 0; i < m_CraftItem.Skills.Count; i++)
-            {
-                CraftSkill skill = m_CraftItem.Skills.GetAt(i);
-                double minSkill = skill.MinSkill, maxSkill = skill.MaxSkill;
-
-                if (minSkill < 0)
-                    minSkill = 0;
-
-                AddHtmlLocalized(170, 132 + (i * 20), 200, 18, AosSkillBonuses.GetLabel(skill.SkillToMake), LabelColor, false, false);
-                AddLabel(430, 132 + (i * 20), LabelHue, string.Format("{0:F1}", minSkill));
-            }
-
-            CraftSubResCol res = (m_CraftItem.UseSubRes2 ? m_CraftSystem.CraftSubRes2 : m_CraftSystem.CraftSubRes);
-            int resIndex = -1;
-
-            CraftContext context = m_CraftSystem.GetContext(m_From);
-
-            if (context != null)
-                resIndex = (m_CraftItem.UseSubRes2 ? context.LastResourceIndex2 : context.LastResourceIndex);
-
-            bool allRequiredSkills = true;
-            double chance = m_CraftItem.GetSuccessChance(m_From, resIndex > -1 ? res.GetAt(resIndex).ItemType : null, m_CraftSystem, false, ref allRequiredSkills);
-            double excepChance = m_CraftItem.GetExceptionalChance(m_CraftSystem, chance, m_From);
-
-            if (chance < 0.0)
-                chance = 0.0;
-            else if (chance > 1.0)
-                chance = 1.0;
-
-            AddHtmlLocalized(170, 80, 250, 18, 1044057, LabelColor, false, false); // Success Chance:
-            AddLabel(430, 80, LabelHue, string.Format("{0:F1}%", chance * 100));
-
-            if (m_ShowExceptionalChance)
-            {
-                if (excepChance < 0.0)
-                    excepChance = 0.0;
-                else if (excepChance > 1.0)
-                    excepChance = 1.0;
-
-                AddHtmlLocalized(170, 100, 250, 18, 1044058, 32767, false, false); // Exceptional Chance:
-                AddLabel(430, 100, LabelHue, string.Format("{0:F1}%", excepChance * 100));
-            }
-        }
-
-        public void DrawResource()
-        {
-            bool retainedColor = false;
-
-            CraftContext context = m_CraftSystem.GetContext(m_From);
-
-            CraftSubResCol res = (m_CraftItem.UseSubRes2 ? m_CraftSystem.CraftSubRes2 : m_CraftSystem.CraftSubRes);
-            int resIndex = -1;
-
-            if (context != null)
-                resIndex = (m_CraftItem.UseSubRes2 ? context.LastResourceIndex2 : context.LastResourceIndex);
-
-            bool cropScroll = (m_CraftItem.Resources.Count > 1) &&
-                              m_CraftItem.Resources.GetAt(m_CraftItem.Resources.Count - 1).ItemType == typeofBlankScroll &&
-                              typeofSpellScroll.IsAssignableFrom(m_CraftItem.ItemType);
-
-            bool anvilOfArtifactCraft = m_CraftItem.IsAnvilOfArtifactValid(m_From, m_CraftSystem);
-
-            for (int i = 0; i < m_CraftItem.Resources.Count - (cropScroll ? 1 : 0) && i < 4; i++)
-            {
-                Type type;
-                string nameString;
-                int nameNumber;
-
-                CraftRes craftResource = m_CraftItem.Resources.GetAt(i);
-
-                type = craftResource.ItemType;
-                nameString = craftResource.NameString;
-                nameNumber = craftResource.NameNumber;
-
-                // Resource Mutation
-                if (type == res.ResType && resIndex > -1)
-                {
-                    CraftSubRes subResource = res.GetAt(resIndex);
-
-                    type = subResource.ItemType;
-
-                    nameString = subResource.NameString;
-                    nameNumber = subResource.GenericNameNumber;
-
-                    if (nameNumber <= 0)
-                        nameNumber = subResource.NameNumber;
-                }
-                // ******************
-
-                if (!retainedColor && m_CraftItem.RetainsColorFrom(m_CraftSystem, type))
-                {
-                    retainedColor = true;
-                    AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 310, 18, 1044152, LabelColor, false, false); // * The item retains the color of this material
-                    AddLabel(500, 219 + (i * 20), LabelHue, "*");
-                }
-
-                if (nameNumber > 0)
-                    AddHtmlLocalized(170, 219 + (i * 20), 310, 18, nameNumber, LabelColor, false, false);
-                else
-                    AddLabel(170, 219 + (i * 20), LabelHue, nameString);
-
-                var amount = craftResource.Amount;
-
-                if (anvilOfArtifactCraft)
-                {
-                    amount *= 10;
-                }
-
-                AddLabel(430, 219 + (i * 20), LabelHue, amount.ToString());
-            }
-
-            if (m_CraftItem.NameNumber == 1041267) // runebook
-            {
-                AddHtmlLocalized(170, 219 + (m_CraftItem.Resources.Count * 20), 310, 18, 1044447, LabelColor, false, false);
-                AddLabel(430, 219 + (m_CraftItem.Resources.Count * 20), LabelHue, "1");
-            }
-
-            if (cropScroll)
-                AddHtmlLocalized(170, 302 + (m_OtherCount++ * 20), 360, 18, 1044379, LabelColor, false, false); // Inscribing scrolls also requires a blank scroll and mana.
-        } 
-        #endregion
-
     }
 }

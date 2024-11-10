@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class SmallEmptyPot : Item
@@ -6,7 +8,7 @@ namespace Server.Items
         public SmallEmptyPot()
             : base(0x11C6)
         {
-            Weight = 100;
+            this.Weight = 100;
         }
 
         public SmallEmptyPot(Serial serial)
@@ -18,7 +20,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -35,7 +37,7 @@ namespace Server.Items
         public LargeEmptyPot()
             : base(0x11C7)
         {
-            Weight = 6;
+            this.Weight = 6;
         }
 
         public LargeEmptyPot(Serial serial)
@@ -47,7 +49,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

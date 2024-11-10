@@ -1,17 +1,21 @@
+using Server;
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class AloronsGorget : TigerPeltCollar
     {
-        public override int LabelNumber => 1156243;  // Aloron's Armor
+        public override int LabelNumber { get { return 1156243; } } // Aloron's Armor
 
-        public override SetItem SetID => SetItem.Aloron;
-        public override int Pieces => 4;
+        public override SetItem SetID { get { return SetItem.Aloron; } }
+        public override int Pieces { get { return 4; } }
 
-        public override int BasePhysicalResistance => 7;
-        public override int BaseFireResistance => 7;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 7;
-        public override int BaseEnergyResistance => 7;
+        public override int BasePhysicalResistance { get { return 7; } }
+        public override int BaseFireResistance { get { return 7; } }
+        public override int BaseColdResistance { get { return 6; } }
+        public override int BasePoisonResistance { get { return 7; } }
+        public override int BaseEnergyResistance { get { return 7; } }
 
         [Constructable]
         public AloronsGorget()
@@ -48,7 +52,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

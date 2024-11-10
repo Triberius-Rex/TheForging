@@ -1,12 +1,13 @@
-using Server.Mobiles;
-using Server.Targeting;
 using System;
+using Server;
+using Server.Targeting;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class ScaleCollar : Item
     {
-        public override int LabelNumber => 1112480;  //a scale collar
+        public override int LabelNumber { get { return 1112480; } } //a scale collar
 
         private Timer m_Timer;
 
@@ -53,20 +54,15 @@ namespace Server.Items
 
         public void OnTick(BaseCreature lizard, Mobile owner)
         {
-            if (lizard != null)
+            if (lizard != null && lizard.Controlled)
             {
-                if (lizard.Controlled)
-                {
-                    lizard.Frozen = false;
+                lizard.Frozen = false;
 
-                    m_Timer.Stop();
-                    m_Timer = null;
-                }
-                else
-                {
-                    lizard.FixedEffect(0x376A, 1, 32);
-                }
+                m_Timer.Stop();
+                m_Timer = null;
             }
+            else
+                lizard.FixedEffect(0x376A, 1, 32);
         }
 
         public void EndTimer(BaseCreature lizard, Mobile owner)
@@ -85,7 +81,7 @@ namespace Server.Items
 
         private class InternalTarget : Target
         {
-            private readonly ScaleCollar m_Collar;
+            private ScaleCollar m_Collar;
 
             public InternalTarget(ScaleCollar collar) : base(-1, false, TargetFlags.None)
             {
@@ -94,17 +90,17 @@ namespace Server.Items
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Collar != null)
+                if(m_Collar != null)
                     m_Collar.OnTarget(from, targeted);
             }
         }
 
         private class InternalTimer : Timer
         {
-            private readonly ScaleCollar m_Collar;
-            private readonly BattleChickenLizard m_Lizard;
-            private readonly DateTime m_EndTime;
-            private readonly Mobile m_Owner;
+            private ScaleCollar m_Collar;
+            private BattleChickenLizard m_Lizard;
+            private DateTime m_EndTime;
+            private Mobile m_Owner;
 
             public InternalTimer(ScaleCollar collar, BattleChickenLizard lizard, Mobile owner) : base(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1))
             {
@@ -133,7 +129,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,15 +1,17 @@
+using System;
+
 namespace Server.Items
 {
     public class SeahorseStatuette : MonsterStatuette
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public SeahorseStatuette()
             : base(MonsterStatuetteType.Seahorse)
         {
-            LootType = LootType.Regular;
+            this.LootType = LootType.Regular;
 
-            Hue = Utility.RandomList(0, 0x482, 0x489, 0x495, 0x4F2);
+            this.Hue = Utility.RandomList(0, 0x482, 0x489, 0x495, 0x4F2);
         }
 
         public SeahorseStatuette(Serial serial)
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

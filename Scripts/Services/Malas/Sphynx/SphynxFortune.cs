@@ -1,3 +1,4 @@
+using Server;
 using Server.Network;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Server.Engines.SphynxFortune
         public Mobile Mobile { get; set; }
         public DateTime Date { get; set; }
         public EnumType Type { get; set; }
-        public EnumTypeValue TypeValue { get; set; }
+        public EnumTypeValue TypeValue { get; set; }   
         public int Value { get; set; }
     }
 
@@ -35,9 +36,9 @@ namespace Server.Engines.SphynxFortune
     }
 
     public class SphynxFortune
-    {
+	{
         public static string FilePath = Path.Combine("Saves/Misc/SphynxFortune", "Persistence.bin");
-        private static readonly List<SphynxFortuneArray> Fountains = new List<SphynxFortuneArray>();
+        private static List<SphynxFortuneArray> Fountains = new List<SphynxFortuneArray>();
         private static Timer m_Timer;
 
         public static void Configure()
@@ -52,7 +53,7 @@ namespace Server.Engines.SphynxFortune
 
             switch (Utility.Random(20))
             {
-                case 0:
+               case 0:
                     {
                         Fountains.Add(new SphynxFortuneArray { Mobile = from, Date = DateTime.UtcNow, Type = EnumType.ResistanceType, TypeValue = EnumTypeValue.Physical, Value = Utility.RandomMinMax(1, 10) });
                         cliloc = 1060886; // Your endurance shall protect you from your enemies blows.
@@ -171,7 +172,7 @@ namespace Server.Engines.SphynxFortune
                         Fountains.Add(new SphynxFortuneArray { Mobile = from, Date = DateTime.UtcNow, Type = EnumType.AosAttribute, TypeValue = EnumTypeValue.RegenMana, Value = Utility.RandomMinMax(-1, -3) });
                         cliloc = 1060910; // Your connection with the ether is weak, take heed.
                         break;
-                    }
+                    }                 
             }
 
             m.PrivateOverheadMessage(MessageType.Regular, 0x3B2, cliloc, from.NetState);
@@ -191,9 +192,9 @@ namespace Server.Engines.SphynxFortune
         {
             return Fountains.Where(x => x.Mobile == from && (x.Type == EnumType.AosAttribute) && Enum.GetName(typeof(AosAttribute), type) == x.TypeValue.ToString()).Sum(y => y.Value);
         }
-
-        public static void DefragTables()
-        {
+				
+		public static void DefragTables()
+		{
             Fountains.ForEach(x =>
             {
                 if (DateTime.UtcNow > x.Date + TimeSpan.FromHours(24))
@@ -209,7 +210,7 @@ namespace Server.Engines.SphynxFortune
             if (m_Timer != null && m_Timer.Running)
                 return;
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), DefragTables);
+            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new TimerCallback(DefragTables));
             m_Timer.Start();
         }
 
@@ -219,7 +220,7 @@ namespace Server.Engines.SphynxFortune
                 FilePath,
                 writer =>
                 {
-                    writer.Write(0);
+                    writer.Write((int)0);
 
                     writer.Write(Fountains.Count);
 
@@ -260,5 +261,5 @@ namespace Server.Engines.SphynxFortune
 
             StartTimer();
         }
-    }
+	}
 }

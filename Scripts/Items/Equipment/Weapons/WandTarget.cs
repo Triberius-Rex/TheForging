@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Targeting
@@ -8,12 +9,12 @@ namespace Server.Targeting
         public WandTarget(BaseWand item)
             : base(6, false, TargetFlags.None)
         {
-            m_Item = item;
+            this.m_Item = item;
         }
 
         protected override void OnTarget(Mobile from, object targeted)
         {
-            m_Item.DoWandTarget(from, targeted);
+            this.m_Item.DoWandTarget(from, targeted);
         }
 
         private static int GetOffset(Mobile caster)

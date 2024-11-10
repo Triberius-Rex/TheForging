@@ -16,8 +16,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ElvenSpinningwheelEastDeed();
-        public bool Spinning => m_Timer != null;
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ElvenSpinningwheelEastDeed();
+            }
+        }
+        public bool Spinning
+        {
+            get
+            {
+                return m_Timer != null;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -34,7 +46,7 @@ namespace Server.Items
 
         public override void OnComponentLoaded(AddonComponent c)
         {
-            switch (c.ItemID)
+            switch ( c.ItemID )
             {
                 case 0x2E3C:
                     ++c.ItemID;
@@ -49,7 +61,7 @@ namespace Server.Items
 
             foreach (AddonComponent c in Components)
             {
-                switch (c.ItemID)
+                switch ( c.ItemID )
                 {
                     case 0x2E3D:
                         --c.ItemID;
@@ -67,7 +79,7 @@ namespace Server.Items
 
             foreach (AddonComponent c in Components)
             {
-                switch (c.ItemID)
+                switch ( c.ItemID )
                 {
                     case 0x2E3C:
                         ++c.ItemID;
@@ -114,8 +126,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ElvenSpinningwheelEastAddon();
-        public override int LabelNumber => 1073393;// elven spinning wheel (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ElvenSpinningwheelEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073393;
+            }
+        }// elven spinning wheel (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

@@ -1,3 +1,7 @@
+using System;
+using Server;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a drake corpse")]
@@ -38,9 +42,25 @@ namespace Server.Mobiles
             Fame = 12000;
             Karma = -12000;
 
+            VirtualArmor = 60;
+
             Tamable = true;
             ControlSlots = 3;
             MinTameSkill = 96.0;
+
+            PackReg(3);
+
+            for (int i = 0; i <= 1; i++)
+            {
+                Item item;
+
+                if (Utility.RandomBool())
+                    item = Loot.RandomScroll(0, Loot.NecromancyScrollTypes.Length, SpellbookType.Necromancer);
+                else
+                    item = Loot.RandomScroll(0, Loot.RegularScrollTypes.Length, SpellbookType.Regular);
+
+                PackItem(item);
+            }
 
             SetSpecialAbility(SpecialAbility.DragonBreath);
             SetAreaEffect(AreaEffect.AuraDamage);
@@ -49,26 +69,16 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 3);
-            AddLoot(LootPack.MageryRegs, 3);
-
-            if (Utility.RandomBool())
-            {
-                AddLoot(LootPack.NecroScrolls, 2);
-            }
-            else
-            {
-                AddLoot(LootPack.MageryScrolls, 2);
-            }
         }
 
-        public override bool CanAngerOnTame => true;
-        public override bool ReacquireOnMovement => !Controlled;
-        public override int TreasureMapLevel => 3;
-        public override int Meat => 10;
-        public override int Hides => 22;
-        public override HideType HideType => HideType.Horned;
-        public override int DragonBlood => 8;
-        public override FoodType FavoriteFood => FoodType.Fish;
+        public override bool CanAngerOnTame { get { return true; } }
+        public override bool ReacquireOnMovement { get { return !Controlled; } }
+		public override int TreasureMapLevel { get { return 3; } }
+        public override int Meat { get { return 10; } }
+        public override int Hides { get { return 22; } }
+        public override HideType HideType { get { return HideType.Horned; } }
+        public override int DragonBlood { get { return 8; } }
+        public override FoodType FavoriteFood { get { return FoodType.Fish; } }
 
         public virtual void AuraEffect(Mobile m)
         {
@@ -85,7 +95,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

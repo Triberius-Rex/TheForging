@@ -1,3 +1,6 @@
+using Server;
+using System;
+using Server.Items;
 using Server.Gumps;
 using Server.Mobiles;
 
@@ -5,9 +8,9 @@ namespace Server.Engines.ArenaSystem
 {
     public class ArenaExitBanner : Item
     {
-        public override bool ForceShowProperties => true;
-        public override int LabelNumber => 1116111;  // Arena Exit Banner
-        public override bool HandlesOnMovement => true;
+        public override bool ForceShowProperties { get { return true; } }
+        public override int LabelNumber { get { return 1116111; } } // Arena Exit Banner
+        public override bool HandlesOnMovement { get { return true; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public PVPArena Arena { get; set; }
@@ -43,7 +46,7 @@ namespace Server.Engines.ArenaSystem
             }
             else if (Arena != null)
             {
-                ArenaDuel duel = Arena.CurrentDuel;
+                var duel = Arena.CurrentDuel;
 
                 if (duel != null && duel.InPreFight)
                 {
@@ -71,7 +74,7 @@ namespace Server.Engines.ArenaSystem
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

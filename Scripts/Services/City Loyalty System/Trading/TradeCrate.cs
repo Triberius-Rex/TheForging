@@ -1,63 +1,65 @@
-using Server.ContextMenus;
-using Server.Gumps;
-using Server.Items;
-using Server.Network;
 using System;
 using System.Collections.Generic;
+
+using Server;
+using Server.ContextMenus;
+using Server.Items;
+using Server.Gumps;
 using System.Linq;
+using Server.Network;
+using Server.Engines.SeasonalEvents;
 
 namespace Server.Engines.CityLoyalty
 {
-    public class TradeOrderCrate : Container
-    {
-        public override int LabelNumber => CityTradeSystem.KrampusEncounterActive ? 1123594 : base.LabelNumber;
-
+	public class TradeOrderCrate : Container
+	{
+        public override int LabelNumber { get { return CityTradeSystem.KrampusEncounterActive ? 1123594 : base.LabelNumber; } }
+        
         [CommandProperty(AccessLevel.GameMaster)]
-        public TradeEntry Entry { get; set; }
+		public TradeEntry Entry { get; set; }
+		
+		[CommandProperty(AccessLevel.GameMaster)]
+		public Mobile Owner { get; set; }
+		
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool Fulfilled
+		{
+			get
+			{
+				if(Entry == null)
+					return false;
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Mobile Owner { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool Fulfilled
-        {
-            get
-            {
-                if (Entry == null)
-                    return false;
-
-                foreach (TradeEntry.TradeDetails details in Entry.Details)
+                foreach (var details in Entry.Details)
                 {
-                    if (details.Count(this) < details.Amount)
+                    if (GetAmount(details.ItemType) < details.Amount)
                         return false;
                 }
 
                 return true;
-            }
-        }
+			}
+		}
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime Expires { get; set; }
 
-        public bool Expired => Expires < DateTime.UtcNow;
+        public bool Expired { get { return Expires < DateTime.UtcNow; } }
 
-        public override int DefaultMaxWeight => 1000;
+        public override int DefaultMaxWeight { get { return 1000; } }
 
         public TradeOrderCrate(Mobile from, TradeEntry entry)
             : base(GetID())
-        {
+		{
             Owner = from;
-            Entry = entry;
-
-            Weight = 10.0;
+			Entry = entry;
 
             if (CityTradeSystem.KrampusEncounterActive)
-            {                
+            {
+                Weight = 10.0;
                 Hue = Utility.Random(100);
             }
 
             Expires = DateTime.UtcNow + TimeSpan.FromHours(CityTradeSystem.CrateDuration);
-        }
+		}
 
         private static int GetID()
         {
@@ -73,7 +75,7 @@ namespace Server.Engines.CityLoyalty
         {
             get
             {
-                switch (ItemID)
+                switch(ItemID)
                 {
                     default:
                         return base.DefaultGumpID;
@@ -90,13 +92,13 @@ namespace Server.Engines.CityLoyalty
             }
         }
 
-        public override bool DisplaysContent => false;
+        public override bool DisplaysContent { get { return false; } }
 
         public override void GetProperties(ObjectPropertyList list)
-        {
-            base.GetProperties(list);
+		{
+			base.GetProperties(list);
 
-            list.Add(1151737, string.Format("#{0}", CityLoyaltySystem.CityLocalization(Entry.Destination))); // Destination City: ~1_city~
+            list.Add(1151737, String.Format("#{0}", CityLoyaltySystem.CityLocalization(Entry.Destination))); // Destination City: ~1_city~
             list.Add(1076255); // NO-TRADE
 
             int weight = Items.Sum(x => x.Amount);
@@ -109,10 +111,10 @@ namespace Server.Engines.CityLoyalty
             {
                 for (int i = 0; i < Entry.Details.Count; i++)
                 {
-                    if (Utility.ToInt32(Entry.Details[i].Name) > 0)
-                        list.Add(1116453 + i, string.Format("#{0}\t{1}\t{2}", Entry.Details[i].Name, Entry.Details[i].Count(this), Entry.Details[i].Amount)); // ~1_val~: ~2_val~/~3_val~
+                    if(Utility.ToInt32(Entry.Details[i].Name) > 0)
+                        list.Add(1116453 + i, String.Format("#{0}\t{1}\t{2}", Entry.Details[i].Name, GetAmount(Entry.Details[i].ItemType), Entry.Details[i].Amount)); // ~1_val~: ~2_val~/~3_val~
                     else
-                        list.Add(1116453 + i, string.Format("{0}\t{1}\t{2}", Entry.Details[i].Name, Entry.Details[i].Count(this), Entry.Details[i].Amount)); // ~1_val~: ~2_val~/~3_val~
+                        list.Add(1116453 + i, String.Format("{0}\t{1}\t{2}", Entry.Details[i].Name, GetAmount(Entry.Details[i].ItemType), Entry.Details[i].Amount)); // ~1_val~: ~2_val~/~3_val~
                 }
             }
 
@@ -121,7 +123,7 @@ namespace Server.Engines.CityLoyalty
                 int hours = (int)Math.Max(1, (Expires - DateTime.UtcNow).TotalHours);
                 list.Add(1153090, hours.ToString()); // Lifespan: ~1_val~ hours
             }
-        }
+		}
 
         public override void Delete()
         {
@@ -129,146 +131,119 @@ namespace Server.Engines.CityLoyalty
 
             base.Delete();
         }
-
-        public override bool TryDropItem(Mobile from, Item item, bool message)
-        {
-            if (Entry == null)
-                return false;
-
-            if (TryAddItem(from, item, message))
-                return base.TryDropItem(from, item, message);
-
-            return false;
-        }
-
-        public bool TryAddItem(Mobile from, Item item, bool message = true)
-        {
+		
+		public override bool TryDropItem(Mobile from, Item item, bool message)
+		{
+			if(Entry == null)
+				return false;
+				
+			if(TryAddItem(from, item, message))
+				return base.TryDropItem(from, item, message);
+				
+			return false;
+		}
+		
+		public bool TryAddItem(Mobile from, Item item, bool message = true)
+		{
             bool canAdd = false;
 
-            foreach (TradeEntry.TradeDetails details in Entry.Details)
+            foreach (var details in Entry.Details)
             {
-                if(details.Match(item.GetType()))
+                if (item.GetType() == details.ItemType)
                 {
-                    int hasAmount = details.Count(this);
+                    int hasAmount = GetAmount(item.GetType());
 
                     if (hasAmount + item.Amount > details.Amount)
                     {
                         if (message)
-                        {
                             from.SendLocalizedMessage(1151726); // You are trying to add too many of this item to the trade order. Only add the required quantity
-                        }
-
+                        
                         break;
                     }
-
-                    canAdd = true;
-                    break;
+                    else
+                    {
+                        canAdd = true;
+                        break;
+                    }
                 }
             }
 
             if (!canAdd && message)
-            {
                 from.SendLocalizedMessage(1151725); // This trade order does not require this item.
-            }
 
             return canAdd;
-        }
+		}
 
         public override int GetTotal(TotalType type)
         {
-            int total = base.GetTotal(type);
-
             if (type == TotalType.Weight)
-                total -= total * 75 / 100;
-
-            return total;
-        }
-
-        public override void UpdateTotal(Item sender, TotalType type, int delta)
-        {
-            InvalidateProperties();
-
-            base.UpdateTotal(sender, type, delta);
-        }
-
-        public override void AddItem(Item item)
-        {
-            base.AddItem(item);
-
-            InvalidateWeight();
-        }
-
-        public override void RemoveItem(Item item)
-        {
-            base.RemoveItem(item);
-
-            InvalidateWeight();
-        }
-
-        public void InvalidateWeight()
-        {
-            if (RootParent is Mobile m)
             {
-                m.UpdateTotals();
-            }
-        }
+                int weight = base.GetTotal(type);
 
-        public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
-        {
-            base.GetContextMenuEntries(from, list);
-
-            if (IsChildOf(from.Backpack))
-            {
-                list.Add(new FillFromPackEntry(this, from));
-                list.Add(new CancelOrderEntry(this, from));
-            }
-        }
-
-        private class FillFromPackEntry : ContextMenuEntry
-        {
-            public TradeOrderCrate Crate { get; }
-            public Mobile Player { get; }
-
-            public FillFromPackEntry(TradeOrderCrate crate, Mobile player) : base(1154908, 3) // Fill from pack
-            {
-                Crate = crate;
-                Player = player;
+                if (weight > 0)
+                    return (int)Math.Max(1, (base.GetTotal(type) * .25));
             }
 
-            public override void OnClick()
-            {
-                if (Crate.IsChildOf(Player.Backpack) && !Crate.Deleted && Crate.Entry != null)
-                {
+            return base.GetTotal(type);
+        }
+		
+		public override void GetContextMenuEntries( Mobile from, List<ContextMenuEntry> list )
+		{
+			base.GetContextMenuEntries(from, list);
+			
+			if(IsChildOf(from.Backpack))
+			{
+				list.Add(new FillFromPackEntry(this, from));
+				list.Add(new CancelOrderEntry(this, from));
+			}
+		}
+		
+		private class FillFromPackEntry : ContextMenuEntry
+		{
+			public TradeOrderCrate Crate { get; private set; }
+			public Mobile Player { get; private set; }
+			
+			public FillFromPackEntry(TradeOrderCrate crate, Mobile player) : base(1154908, 3) // Fill from pack
+			{
+				Crate = crate; 
+				Player = player;
+			}
+			
+			public override void OnClick()
+			{
+				if(Crate.IsChildOf(Player.Backpack) && !Crate.Deleted && Crate.Entry != null)
+				{
                     foreach (TradeEntry.TradeDetails detail in Crate.Entry.Details)
                     {
-                        var list = new List<Item>(Player.Backpack.Items);
+                        Item[] items = Player.Backpack.FindItemsByType(detail.ItemType);
 
-                        foreach (var item in list.Where(i => i.Amount == 1 && Crate.TryAddItem(Player, i, false)))
+                        foreach (Item item in items)
                         {
-                            Crate.DropItem(item);
+                            if (item.Amount == 1 && Crate.TryAddItem(Player, item, false))
+                                Crate.DropItem(item);
                         }
                     }
-                }
-            }
-        }
-
-        private class CancelOrderEntry : ContextMenuEntry
-        {
-            public TradeOrderCrate Crate { get; }
-            public Mobile Player { get; }
-
-            public CancelOrderEntry(TradeOrderCrate crate, Mobile player) : base(1151727, 3) // cancel trade order
-            {
-                Crate = crate;
-                Player = player;
-            }
-
-            public override void OnClick()
-            {
+				}
+			}
+		}
+		
+		private class CancelOrderEntry : ContextMenuEntry
+		{
+			public TradeOrderCrate Crate { get; private set; }
+			public Mobile Player { get; private set; }
+			
+			public CancelOrderEntry(TradeOrderCrate crate, Mobile player) : base(1151727, 3) // cancel trade order
+			{
+				Crate = crate; 
+				Player = player;
+			}
+			
+			public override void OnClick()
+			{
                 Player.CloseGump(typeof(CancelTradeOrderGump));
                 Player.SendGump(new CancelTradeOrderGump(Crate, Player));
-            }
-        }
+			}
+		}
 
         public override bool OnDroppedOnto(Mobile from, Item target)
         {
@@ -284,14 +259,14 @@ namespace Server.Engines.CityLoyalty
             from.SendLocalizedMessage(1076254); // That item cannot be dropped.
             return false;
         }
-
+ 
         public override bool OnDragDropInto(Mobile from, Item item, Point3D p)
         {
             from.SendLocalizedMessage(1076254); // That item cannot be dropped.
             return false;
         }
-
-        public override bool OnDroppedToWorld(Mobile from, Point3D point)
+		
+		public override bool OnDroppedToWorld(Mobile from, Point3D point)
         {
             from.SendLocalizedMessage(1076254); // That item cannot be dropped.
             return false;
@@ -302,38 +277,38 @@ namespace Server.Engines.CityLoyalty
             from.SendLocalizedMessage(1076256); // That item cannot be traded.
             return false;
         }
-
-        public TradeOrderCrate(Serial serial) : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
+		
+		public TradeOrderCrate(Serial serial) : base(serial)
+		{
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
 
             writer.Write(Owner);
             writer.Write(Expires);
 
             Entry.Serialize(writer);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            reader.ReadInt();
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int v = reader.ReadInt();
 
             Owner = reader.ReadMobile();
             Expires = reader.ReadDateTime();
 
             Entry = new TradeEntry(reader);
-        }
-    }
+		}
+	}
 
     public class CancelTradeOrderGump : Gump
     {
-        public TradeOrderCrate Crate { get; }
-        public Mobile Player { get; }
+        public TradeOrderCrate Crate { get; private set; }
+        public Mobile Player { get; private set; }
 
         public CancelTradeOrderGump(TradeOrderCrate crate, Mobile player)
             : base(100, 100)

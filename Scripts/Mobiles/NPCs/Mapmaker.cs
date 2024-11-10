@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Mobiles
@@ -9,7 +10,7 @@ namespace Server.Mobiles
         public Mapmaker()
             : base("the mapmaker")
         {
-            SetSkill(SkillName.Cartography, 90.0, 100.0);
+            this.SetSkill(SkillName.Cartography, 90.0, 100.0);
         }
 
         public Mapmaker(Serial serial)
@@ -17,17 +18,23 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBMapmaker());
+            this.m_SBInfos.Add(new SBMapmaker());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

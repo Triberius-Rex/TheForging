@@ -43,107 +43,107 @@ namespace Server.Spells
 
         public SpellInfo(string name, string mantra, int action, int leftHandEffect, int rightHandEffect, bool allowTown, params Type[] regs)
         {
-            m_Name = name;
-            m_Mantra = mantra;
-            m_Action = action;
-            m_Reagents = regs;
-            m_AllowTown = allowTown;
+            this.m_Name = name;
+            this.m_Mantra = mantra;
+            this.m_Action = action;
+            this.m_Reagents = regs;
+            this.m_AllowTown = allowTown;
 
-            m_LeftHandEffect = leftHandEffect;
-            m_RightHandEffect = rightHandEffect;
+            this.m_LeftHandEffect = leftHandEffect;
+            this.m_RightHandEffect = rightHandEffect;
 
-            m_Amounts = new int[regs.Length];
+            this.m_Amounts = new int[regs.Length];
 
             for (int i = 0; i < regs.Length; ++i)
-                m_Amounts[i] = 1;
+                this.m_Amounts[i] = 1;
         }
 
         public int Action
         {
             get
             {
-                return m_Action;
+                return this.m_Action;
             }
             set
             {
-                m_Action = value;
+                this.m_Action = value;
             }
         }
         public bool AllowTown
         {
             get
             {
-                return m_AllowTown;
+                return this.m_AllowTown;
             }
             set
             {
-                m_AllowTown = value;
+                this.m_AllowTown = value;
             }
         }
         public int[] Amounts
         {
             get
             {
-                return m_Amounts;
+                return this.m_Amounts;
             }
             set
             {
-                m_Amounts = value;
+                this.m_Amounts = value;
             }
         }
         public string Mantra
         {
             get
             {
-                return m_Mantra;
+                return this.m_Mantra;
             }
             set
             {
-                m_Mantra = value;
+                this.m_Mantra = value;
             }
         }
         public string Name
         {
             get
             {
-                return m_Name;
+                return this.m_Name;
             }
             set
             {
-                m_Name = value;
+                this.m_Name = value;
             }
         }
         public Type[] Reagents
         {
             get
             {
-                return m_Reagents;
+                return this.m_Reagents;
             }
             set
             {
-                m_Reagents = value;
+                this.m_Reagents = value;
             }
         }
         public int LeftHandEffect
         {
             get
             {
-                return m_LeftHandEffect;
+                return this.m_LeftHandEffect;
             }
             set
             {
-                m_LeftHandEffect = value;
+                this.m_LeftHandEffect = value;
             }
         }
         public int RightHandEffect
         {
             get
             {
-                return m_RightHandEffect;
+                return this.m_RightHandEffect;
             }
             set
             {
-                m_RightHandEffect = value;
+                this.m_RightHandEffect = value;
             }
         }
     }

@@ -1,16 +1,16 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Olla : MondainQuester
     {
         [Constructable]
         public Olla()
             : base("Olla", "the metal weaver")
-        {
-            SetSkill(SkillName.Meditation, 60.0, 83.0);
-            SetSkill(SkillName.Focus, 60.0, 83.0);
+        { 
+            this.SetSkill(SkillName.Meditation, 60.0, 83.0);
+            this.SetSkill(SkillName.Focus, 60.0, 83.0);
         }
 
         public Olla(Serial serial)
@@ -18,39 +18,45 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(CutsBothWaysQuest),
                     typeof(DragonProtectionQuest),
                     typeof(NothingFancyQuest),
                     typeof(TheBulwarkQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = true;
-            Race = Race.Elf;
-
-            Hue = 0x824E;
-            HairItemID = 0x2FCE;
-            HairHue = 0x8F;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = true;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x824E;
+            this.HairItemID = 0x2FCE;
+            this.HairHue = 0x8F;
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new ElvenBoots(), dropChance: 1);
-            SetWearable(new LongPants(), 0x3B3, 1);
-            SetWearable(new ElvenShirt(), dropChance: 1);
-            SetWearable(new SmithHammer(), dropChance: 1);
-			SetWearable(new FullApron(), 0x1BB, 1);
+            this.AddItem(new ElvenBoots());
+            this.AddItem(new LongPants(0x3B3));
+            this.AddItem(new ElvenShirt());
+            this.AddItem(new SmithHammer());
+            this.AddItem(new FullApron(0x1BB));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

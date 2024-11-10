@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items
@@ -14,9 +15,9 @@ namespace Server.Items
         public Cotton(int amount)
             : base(0xDF9)
         {
-            Stackable = true;
-            Weight = 4.0;
-            Amount = amount;
+            this.Stackable = true;
+            this.Weight = 4.0;
+            this.Amount = amount;
         }
 
         public Cotton(Serial serial)
@@ -24,15 +25,13 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
         public static void OnSpun(ISpinningWheel wheel, Mobile from, int hue)
         {
-            Item item = new SpoolOfThread(6)
-            {
-                Hue = hue
-            };
+            Item item = new SpoolOfThread(6);
+            item.Hue = hue;
 
             from.AddToBackpack(item);
             from.SendLocalizedMessage(1010577); // You put the spools of thread in your backpack.
@@ -42,7 +41,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -54,17 +53,17 @@ namespace Server.Items
 
         public bool Dye(Mobile from, DyeTub sender)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return false;
 
-            Hue = sender.DyedHue;
+            this.Hue = sender.DyedHue;
 
             return true;
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(502655); // What spinning wheel do you wish to spin this on?
                 from.Target = new PickWheelTarget(this);
@@ -81,12 +80,12 @@ namespace Server.Items
             public PickWheelTarget(Cotton cotton)
                 : base(3, false, TargetFlags.None)
             {
-                m_Cotton = cotton;
+                this.m_Cotton = cotton;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Cotton.Deleted)
+                if (this.m_Cotton.Deleted)
                     return;
 
                 ISpinningWheel wheel = targeted as ISpinningWheel;
@@ -98,7 +97,7 @@ namespace Server.Items
                 {
                     Item item = (Item)wheel;
 
-                    if (!m_Cotton.IsChildOf(from.Backpack))
+                    if (!this.m_Cotton.IsChildOf(from.Backpack))
                     {
                         from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
                     }
@@ -108,8 +107,8 @@ namespace Server.Items
                     }
                     else
                     {
-                        m_Cotton.Consume();
-                        wheel.BeginSpin(OnSpun, from, m_Cotton.Hue);
+                        this.m_Cotton.Consume();
+                        wheel.BeginSpin(new SpinCallback(Cotton.OnSpun), from, this.m_Cotton.Hue);
                     }
                 }
                 else

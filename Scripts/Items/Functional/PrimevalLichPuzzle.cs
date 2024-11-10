@@ -1,7 +1,7 @@
-using Server.Commands;
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Commands;
+using Server.Items;
 
 //
 // This implements the Primeval Lich Lever Puzzle for SA.  
@@ -64,9 +64,9 @@ namespace Server.Engines.CannedEvil
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_Code);
+            writer.Write((byte)m_Code);
             writer.Write(m_Controller);
         }
 
@@ -93,7 +93,7 @@ namespace Server.Engines.CannedEvil
         private static readonly Point3D controlLoc = new Point3D(6999, 977, -15);
 
         // puzzle lever data
-        private static readonly int[][] leverdata =
+        private static readonly int[][] leverdata = 
         { // 3D coord, hue for levers
             new int[] { 6981, 977, -15, 1204 }, // red
             new int[] { 6984, 977, -15, 1150 }, // white
@@ -121,7 +121,7 @@ namespace Server.Engines.CannedEvil
         public PrimevalLichPuzzle(Mobile m)
             : base(0x1BC3)
         {
-            if (null == m || null != m_Instance)
+            if(null == m || null != m_Instance)
             {
                 Delete();
                 //Probably not needed, OnAfterDelete sets it null anyway
@@ -157,11 +157,29 @@ namespace Server.Engines.CannedEvil
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Mobile Successful => m_Successful;
+        public Mobile Successful
+        {
+            get
+            {
+                return m_Successful;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public long Key => m_Key;
+        public long Key
+        {
+            get
+            {
+                return m_Key;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Active => (!Deleted && null != m_Altar && m_Altar.Active);
+        public bool Active
+        {
+            get
+            {
+                return(!Deleted && null != m_Altar && m_Altar.Active);
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public ChampionSpawn ChampionAltar
         {
@@ -174,21 +192,27 @@ namespace Server.Engines.CannedEvil
                 m_Altar = value;
             }
         }
-        public override string DefaultName => "puzzle control";
+        public override string DefaultName
+        {
+            get
+            {
+                return "puzzle control";
+            }
+        }
         public static void Initialize()
         {
-            CommandSystem.Register("GenLichPuzzle", AccessLevel.Administrator, GenLichPuzzle_OnCommand);
-            CommandSystem.Register("DeleteLichPuzzle", AccessLevel.Administrator, DeleteLichPuzzle_OnCommand);
-        }
+			CommandSystem.Register("GenLichPuzzle", AccessLevel.Administrator, new CommandEventHandler(GenLichPuzzle_OnCommand));
+			CommandSystem.Register("DeleteLichPuzzle", AccessLevel.Administrator, new CommandEventHandler(DeleteLichPuzzle_OnCommand));
+		}
 
-        [Usage("DeleteLichPuzzle")]
+		[Usage("DeleteLichPuzzle")]
         [Description("Deletes the Primeval Lich lever puzzle.")]
-        public static void DeleteLichPuzzle_OnCommand(CommandEventArgs e)
-        {
-            WeakEntityCollection.Delete("primevallich");
-        }
+		public static void DeleteLichPuzzle_OnCommand(CommandEventArgs e)
+		{
+			WeakEntityCollection.Delete("primevallich");
+		}
 
-        [Usage("GenLichPuzzle")]
+		[Usage("GenLichPuzzle")]
         [Description("Generates the Primeval Lich lever puzzle.")]
         public static void GenLichPuzzle_OnCommand(CommandEventArgs e)
         {
@@ -281,7 +305,7 @@ namespace Server.Engines.CannedEvil
             // stop and restart the lever reset timer
             if (null != l_Timer)
                 l_Timer.Stop();
-            l_Timer = Timer.DelayCall(TimeSpan.FromSeconds(30.0), ResetLevers);
+            l_Timer = Timer.DelayCall(TimeSpan.FromSeconds(30.0), new TimerCallback(ResetLevers));
 
             // if this is the last key, check for correct solution and give messages/rewards
             if (6 == m_NextKey++)
@@ -302,12 +326,12 @@ namespace Server.Engines.CannedEvil
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_Instance);
-            writer.Write(m_Altar);
-            writer.Write(m_Key);
-            writer.Write(m_Successful);
+            writer.Write((PrimevalLichPuzzle)m_Instance);
+            writer.Write((ChampionSpawn)m_Altar);
+            writer.Write((long)m_Key);
+            writer.Write((Mobile)m_Successful);
             writer.WriteItemList(m_Levers, true);
         }
 
@@ -317,7 +341,7 @@ namespace Server.Engines.CannedEvil
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     m_Instance = reader.ReadItem() as PrimevalLichPuzzle;
@@ -471,7 +495,7 @@ namespace Server.Engines.CannedEvil
 
             Item item = null;
 
-            switch (Utility.Random(1))
+            switch ( Utility.Random(1) )
             {
                 case 0:
                     item = ScrollOfTranscendence.CreateRandom(10, 10);

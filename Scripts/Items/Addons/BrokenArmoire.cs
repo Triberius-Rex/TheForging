@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0xC12, 0xC13)]
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076262;// Broken Armoire
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076262;
+            }
+        }// Broken Armoire
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -35,7 +43,7 @@ namespace Server.Items
         public BrokenArmoireAddon()
             : base()
         {
-            AddComponent(new BrokenArmoireComponent(), 0, 0, 0);
+            this.AddComponent(new BrokenArmoireComponent(), 0, 0, 0);
         }
 
         public BrokenArmoireAddon(Serial serial)
@@ -43,7 +51,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new BrokenArmoireDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new BrokenArmoireDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -65,7 +79,7 @@ namespace Server.Items
         public BrokenArmoireDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public BrokenArmoireDeed(Serial serial)
@@ -73,8 +87,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new BrokenArmoireAddon();
-        public override int LabelNumber => 1076262;// Broken Armoire
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new BrokenArmoireAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076262;
+            }
+        }// Broken Armoire
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

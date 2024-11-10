@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -9,7 +10,7 @@ namespace Server.Mobiles
         public EnslavedGoblinMage()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "enslaved goblin mage";
+            Name = "Enslaved Goblin Mage";
             Body = 334;
             BaseSoundID = 0x600;
 
@@ -38,6 +39,49 @@ namespace Server.Mobiles
 
             Fame = 1500;
             Karma = -1500;
+
+            VirtualArmor = 28;
+
+            // Loot - 30-40gold, magicitem,gem,goblin blood, essence control
+            switch ( Utility.Random(20) )
+            {
+                case 0:
+                    PackItem(new Scimitar());
+                    break;
+                case 1:
+                    PackItem(new Katana());
+                    break;
+                case 2:
+                    PackItem(new WarMace());
+                    break;
+                case 3:
+                    PackItem(new WarHammer());
+                    break;
+                case 4:
+                    PackItem(new Kryss());
+                    break;
+                case 5:
+                    PackItem(new Pitchfork());
+                    break;
+            }
+
+            PackItem(new ThighBoots());
+
+            switch ( Utility.Random(3) )
+            {
+                case 0:
+                    PackItem(new Ribs());
+                    break;
+                case 1:
+                    PackItem(new Shaft());
+                    break;
+                case 2:
+                    PackItem(new Candle());
+                    break;
+            }
+
+            if (0.2 > Utility.RandomDouble())
+                this.PackItem(new BolaBall());
         }
 
         public EnslavedGoblinMage(Serial serial)
@@ -51,20 +95,20 @@ namespace Server.Mobiles
         public override int GetHurtSound() { return 0x5FF; }
         public override int GetDeathSound() { return 0x5FE; }
 
-        public override bool CanRummageCorpses => true;
-        public override int TreasureMapLevel => 1;
-        public override int Meat => 1;
+        public override bool CanRummageCorpses { get { return true; } }
+        public override int TreasureMapLevel { get { return 1; } }
+        public override int Meat { get { return 1; } }
+        public override OppositionGroup OppositionGroup { get { return OppositionGroup.SavagesAndOrcs; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<BolaBall>(20.0));
+            this.AddLoot(LootPack.Meager);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

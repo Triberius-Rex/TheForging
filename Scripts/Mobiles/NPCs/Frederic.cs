@@ -1,13 +1,13 @@
 using System;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Frederic : MondainQuester
     {
         [Constructable]
         public Frederic()
             : base("The Ghost of Frederic Smithson")
-        {
+        { 
         }
 
         public Frederic(Serial serial)
@@ -15,22 +15,28 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => null;
+        public override Type[] Quests
+        {
+            get
+            {
+                return null;
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Body = 0x1A;
-            Hue = 0x455;
-            CantWalk = true;
-            Frozen = true;
+            this.InitStats(100, 100, 25);
+			
+            this.Body = 0x1A;
+            this.Hue = 0x455;
+            this.CantWalk = true;
+            this.Frozen = true;
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

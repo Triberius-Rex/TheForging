@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 
@@ -18,33 +19,33 @@ namespace Server.Engines.Quests.Collector
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Hue = 0x83ED;
+            this.Hue = 0x83ED;
 
-            Female = false;
-            Body = 0x190;
-            Name = "Elwood McCarrin";
+            this.Female = false;
+            this.Body = 0x190;
+            this.Name = "Elwood McCarrin";
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new FancyShirt(), dropChance: 1);
-            SetWearable(new LongPants(), 0x544, 1);
-            SetWearable(new Shoes(), 0x454, 1);
-            SetWearable(new JesterHat(), 0x4D2, 1);
-            SetWearable(new FullApron(), 0x4D2, 1);
+            this.AddItem(new FancyShirt());
+            this.AddItem(new LongPants(0x544));
+            this.AddItem(new Shoes(0x454));
+            this.AddItem(new JesterHat(0x4D2));
+            this.AddItem(new FullApron(0x4D2));
 
-            HairItemID = 0x203D; // Pony Tail
-            HairHue = 0x47D;
+            this.HairItemID = 0x203D; // Pony Tail
+            this.HairHue = 0x47D;
 
-            FacialHairItemID = 0x2040; // Goatee
-            FacialHairHue = 0x47D;
+            this.FacialHairItemID = 0x2040; // Goatee
+            this.FacialHairHue = 0x47D;
         }
 
         public override void OnTalk(PlayerMobile player, bool contextMenu)
         {
-            Direction = GetDirectionTo(player);
+            this.Direction = this.GetDirectionTo(player);
 
             QuestSystem qs = player.Quest;
 
@@ -118,7 +119,7 @@ namespace Server.Engines.Quests.Collector
                                 {
                                     obj.Complete();
 
-                                    if (GiveReward(player))
+                                    if (this.GiveReward(player))
                                     {
                                         qs.AddConversation(new EndConversation());
                                     }
@@ -133,7 +134,7 @@ namespace Server.Engines.Quests.Collector
 
                                     if (obj != null && !obj.Completed)
                                     {
-                                        if (GiveReward(player))
+                                        if (this.GiveReward(player))
                                         {
                                             obj.Complete();
                                             qs.AddConversation(new EndConversation());
@@ -174,7 +175,16 @@ namespace Server.Engines.Quests.Collector
             {
                 BaseWeapon weapon = Loot.RandomWeapon();
 
-                BaseRunicTool.ApplyAttributesTo(weapon, 2, 20, 30);
+                if (Core.AOS)
+                {
+                    BaseRunicTool.ApplyAttributesTo(weapon, 2, 20, 30);
+                }
+                else
+                {
+                    weapon.DamageLevel = (WeaponDamageLevel)BaseCreature.RandomMinMaxScaled(2, 3);
+                    weapon.AccuracyLevel = (WeaponAccuracyLevel)BaseCreature.RandomMinMaxScaled(2, 3);
+                    weapon.DurabilityLevel = (WeaponDurabilityLevel)BaseCreature.RandomMinMaxScaled(2, 3);
+                }
 
                 bag.DropItem(weapon);
             }
@@ -182,12 +192,23 @@ namespace Server.Engines.Quests.Collector
             {
                 Item item;
 
-                item = Loot.RandomArmorOrShieldOrJewelry();
+                if (Core.AOS)
+                {
+                    item = Loot.RandomArmorOrShieldOrJewelry();
 
-                if (item is BaseArmor)
-                    BaseRunicTool.ApplyAttributesTo((BaseArmor)item, 2, 20, 30);
-                else if (item is BaseJewel)
-                    BaseRunicTool.ApplyAttributesTo((BaseJewel)item, 2, 20, 30);
+                    if (item is BaseArmor)
+                        BaseRunicTool.ApplyAttributesTo((BaseArmor)item, 2, 20, 30);
+                    else if (item is BaseJewel)
+                        BaseRunicTool.ApplyAttributesTo((BaseJewel)item, 2, 20, 30);
+                }
+                else
+                {
+                    BaseArmor armor = Loot.RandomArmorOrShield();
+                    item = armor;
+
+                    armor.ProtectionLevel = (ArmorProtectionLevel)BaseCreature.RandomMinMaxScaled(2, 3);
+                    armor.Durability = (ArmorDurabilityLevel)BaseCreature.RandomMinMaxScaled(2, 3);
+                }
 
                 bag.DropItem(item);
             }
@@ -209,7 +230,7 @@ namespace Server.Engines.Quests.Collector
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

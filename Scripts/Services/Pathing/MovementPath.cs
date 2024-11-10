@@ -1,9 +1,9 @@
+using System;
 using Server.Commands;
 using Server.PathAlgorithms;
 using Server.PathAlgorithms.FastAStar;
 using Server.PathAlgorithms.SlowAStar;
 using Server.Targeting;
-using System;
 
 namespace Server
 {
@@ -15,7 +15,7 @@ namespace Server
         private readonly Point3D m_Goal;
         private readonly Direction[] m_Directions;
 
-        public MovementPath(Mobile m, Point3D goal)
+        public MovementPath(Mobile m, Point3D goal) 
             : this(m, goal, m.Map)
         {
         }
@@ -24,9 +24,9 @@ namespace Server
         {
             Point3D start = new Point3D(p);
 
-            m_Map = map;
-            m_Start = start;
-            m_Goal = goal;
+            this.m_Map = map;
+            this.m_Start = start;
+            this.m_Goal = goal;
 
             if (map == null || map == Map.Internal)
                 return;
@@ -46,12 +46,12 @@ namespace Server
                 }
 
                 if (alg != null && alg.CheckCondition(p, map, start, goal))
-                    m_Directions = alg.Find(p, map, start, goal);
+                    this.m_Directions = alg.Find(p, map, start, goal);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Warning: {0}: Pathing error from {1} to {2}", e.GetType().Name, start, goal);
-                Diagnostics.ExceptionLogging.LogException(e);
+                Console.WriteLine(e.StackTrace);
             }
         }
 
@@ -66,19 +66,49 @@ namespace Server
                 m_OverrideAlgorithm = value;
             }
         }
-        public Map Map => m_Map;
-        public Point3D Start => m_Start;
-        public Point3D Goal => m_Goal;
-        public Direction[] Directions => m_Directions;
-        public bool Success => (m_Directions != null && m_Directions.Length > 0);
+        public Map Map
+        {
+            get
+            {
+                return this.m_Map;
+            }
+        }
+        public Point3D Start
+        {
+            get
+            {
+                return this.m_Start;
+            }
+        }
+        public Point3D Goal
+        {
+            get
+            {
+                return this.m_Goal;
+            }
+        }
+        public Direction[] Directions
+        {
+            get
+            {
+                return this.m_Directions;
+            }
+        }
+        public bool Success
+        {
+            get
+            {
+                return (this.m_Directions != null && this.m_Directions.Length > 0);
+            }
+        }
         public static void Initialize()
         {
-            CommandSystem.Register("Path", AccessLevel.GameMaster, Path_OnCommand);
+            CommandSystem.Register("Path", AccessLevel.GameMaster, new CommandEventHandler(Path_OnCommand));
         }
 
         public static void Path_OnCommand(CommandEventArgs e)
         {
-            e.Mobile.BeginTarget(-1, true, TargetFlags.None, Path_OnTarget);
+            e.Mobile.BeginTarget(-1, true, TargetFlags.None, new TargetCallback(Path_OnTarget));
             e.Mobile.SendMessage("Target a location and a path will be drawn there.");
         }
 
@@ -128,9 +158,8 @@ namespace Server
                 from.NetState.BlockAllPackets = false;
                 from.ProcessDelta();
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
             }
         }
 

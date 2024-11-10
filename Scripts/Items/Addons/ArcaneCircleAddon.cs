@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ArcaneCircleAddon : BaseAddon
@@ -5,15 +7,15 @@ namespace Server.Items
         [Constructable]
         public ArcaneCircleAddon()
         {
-            AddComponent(new AddonComponent(0x3083), -1, -1, 0);
-            AddComponent(new AddonComponent(0x3080), -1, 0, 0);
-            AddComponent(new AddonComponent(0x3082), 0, -1, 0);
-            AddComponent(new AddonComponent(0x3081), 1, -1, 0);
-            AddComponent(new AddonComponent(0x307D), -1, 1, 0);
-            AddComponent(new AddonComponent(0x307F), 0, 0, 0);
-            AddComponent(new AddonComponent(0x307E), 1, 0, 0);
-            AddComponent(new AddonComponent(0x307C), 0, 1, 0);
-            AddComponent(new AddonComponent(0x307B), 1, 1, 0);
+            this.AddComponent(new AddonComponent(0x3083), -1, -1, 0);
+            this.AddComponent(new AddonComponent(0x3080), -1, 0, 0);
+            this.AddComponent(new AddonComponent(0x3082), 0, -1, 0);
+            this.AddComponent(new AddonComponent(0x3081), 1, -1, 0);
+            this.AddComponent(new AddonComponent(0x307D), -1, 1, 0);
+            this.AddComponent(new AddonComponent(0x307F), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x307E), 1, 0, 0);
+            this.AddComponent(new AddonComponent(0x307C), 0, 1, 0);
+            this.AddComponent(new AddonComponent(0x307B), 1, 1, 0);
         }
 
         public ArcaneCircleAddon(Serial serial)
@@ -21,7 +23,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ArcaneCircleDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ArcaneCircleDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -41,12 +49,12 @@ namespace Server.Items
 
         public void Validate()
         {
-            foreach (AddonComponent c in Components)
+            foreach (AddonComponent c in this.Components)
             {
                 if (c.ItemID == 0x3083)
                 {
                     c.Offset = new Point3D(-1, -1, 0);
-                    c.MoveToWorld(new Point3D(X + c.Offset.X, Y + c.Offset.Y, Z + c.Offset.Z), Map);
+                    c.MoveToWorld(new Point3D(this.X + c.Offset.X, this.Y + c.Offset.Y, this.Z + c.Offset.Z), this.Map);
                 }
             }
         }
@@ -64,8 +72,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ArcaneCircleAddon();
-        public override int LabelNumber => 1072703;// arcane circle
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ArcaneCircleAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072703;
+            }
+        }// arcane circle
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

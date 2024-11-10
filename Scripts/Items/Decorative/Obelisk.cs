@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Obelisk : Item
@@ -6,7 +8,7 @@ namespace Server.Items
         public Obelisk()
             : base(0x1184)
         {
-            Movable = false;
+            this.Movable = false;
         }
 
         public Obelisk(Serial serial)
@@ -14,12 +16,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1016474;// an obelisk
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1016474;
+            }
+        }// an obelisk
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

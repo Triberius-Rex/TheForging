@@ -1,36 +1,60 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
-using System;
 
 namespace Server.Engines.Quests
 {
     public class OverpopulationQuest : BaseQuest
-    {
+    { 
         public OverpopulationQuest()
             : base()
-        {
-            AddObjective(new SlayObjective(typeof(Hind), "hinds", 10));
-
-            AddReward(new BaseReward(typeof(SmallTrinketBag), 1072268));
+        { 
+            this.AddObjective(new SlayObjective(typeof(Hind), "hinds", 10));
+			
+            this.AddReward(new BaseReward(typeof(SmallTrinketBag), 1072268));
         }
 
         /* Overpopulation */
-        public override object Title => 1072252;
+        public override object Title
+        {
+            get
+            {
+                return 1072252;
+            }
+        }
         /* I just can't bear it any longer.  Sure, it's my job to thin the deer out so 
         they don't overeat the area and starve themselves come winter time.  Sure, I 
         know we killed off the predators that would do this naturally so now we have 
         to make up for it.  But they're so graceful and innocent.  I just can't do it.  
         Will you? */
-        public override object Description => 1072267;
+        public override object Description
+        {
+            get
+            {
+                return 1072267;
+            }
+        }
         /* Well, okay. But if you decide you are up for it after all, c'mon back and see me. */
-        public override object Refuse => 1072270;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072270;
+            }
+        }
         /* You're not quite done yet.  Get back to work! */
-        public override object Uncomplete => 1072271;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072271;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -42,31 +66,55 @@ namespace Server.Engines.Quests
     }
 
     public class WildBoarCullQuest : BaseQuest
-    {
+    { 
         public WildBoarCullQuest()
             : base()
-        {
-            AddObjective(new SlayObjective(typeof(Boar), "boars", 10));
-
-            AddReward(new BaseReward(typeof(SmallTrinketBag), 1072268));
+        { 
+            this.AddObjective(new SlayObjective(typeof(Boar), "boars", 10));
+			
+            this.AddReward(new BaseReward(typeof(SmallTrinketBag), 1072268));
         }
 
         /* Wild Boar Cull */
-        public override object Title => 1072245;
+        public override object Title
+        {
+            get
+            {
+                return 1072245;
+            }
+        }
         /* A pity really.  With the balance of nature awry, we have no choice but to accept 
         the responsibility of making it all right.  It's all a part of the circle of life, 
         after all. So, yes, the boars are running rampant. There are far too many in the 
         region.  Will you shoulder your obligations as a higher life form? */
-        public override object Description => 1072260;
+        public override object Description
+        {
+            get
+            {
+                return 1072260;
+            }
+        }
         /* Well, okay. But if you decide you are up for it after all, c'mon back and see me. */
-        public override object Refuse => 1072270;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072270;
+            }
+        }
         /* You're not quite done yet.  Get back to work! */
-        public override object Uncomplete => 1072271;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072271;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -78,30 +126,54 @@ namespace Server.Engines.Quests
     }
 
     public class NewLeadershipQuest : BaseQuest
-    {
+    { 
         public NewLeadershipQuest()
             : base()
-        {
-            AddObjective(new SlayObjective(typeof(SerpentsFangHighExecutioner), "serpent's fang high executioner", 1, "TheCitadel"));
-            AddObjective(new SlayObjective(typeof(TigersClawThief), "tiger's claw thief", 1, "TheCitadel"));
-            AddObjective(new SlayObjective(typeof(DragonsFlameGrandMage), "dragon's flame mage", 1, "TheCitadel"));
-
-            AddReward(new BaseReward(typeof(RewardBox), 1072584));
+        { 
+            this.AddObjective(new SlayObjective(typeof(SerpentsFangHighExecutioner), "serpent's fang high executioner", 1, "TheCitadel"));
+            this.AddObjective(new SlayObjective(typeof(TigersClawThief), "tiger's claw thief", 1, "TheCitadel"));
+            this.AddObjective(new SlayObjective(typeof(DragonsFlameGrandMage), "dragon's flame mage", 1, "TheCitadel"));
+			
+            this.AddReward(new BaseReward(typeof(RewardBox), 1072584));
         }
 
         /* New Leadership */
-        public override object Title => 1072905;
+        public override object Title
+        {
+            get
+            {
+                return 1072905;
+            }
+        }
         /* I have a task for you ... adventurer.  Will you risk all to win great renown?  The 
         Black Order is organized into three sects, each with their own speciality.  The Dragon's 
         Flame serves the will of the Grand Mage, the Tiger's Claw answers to the Master Thief, 
         and the Serpent's Fang kills at the direction of the High Executioner.  Slay all three 
         and you will strike the order a devastating blow! */
-        public override object Description => 1072963;
+        public override object Description
+        {
+            get
+            {
+                return 1072963;
+            }
+        }
         /* I do not fault your decision. */
-        public override object Refuse => 1072973;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072973;
+            }
+        }
         /* Once you gain entrance into The Citadel, you will need to move cautiously to find 
         the sect leaders. */
-        public override object Uncomplete => 1072974;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072974;
+            }
+        }
         public override bool CanOffer()
         {
             return MondainsLegacy.Citadel;
@@ -111,7 +183,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -123,26 +195,50 @@ namespace Server.Engines.Quests
     }
 
     public class ExAssassinsQuest : BaseQuest
-    {
+    { 
         public ExAssassinsQuest()
             : base()
-        {
-            AddObjective(new InternalObjective());
-
-            AddReward(new BaseReward(typeof(TreasureBag), 1072583));
+        { 
+            this.AddObjective(new InternalObjective());
+			
+            this.AddReward(new BaseReward(typeof(TreasureBag), 1072583));
         }
 
         /* Ex-Assassins */
-        public override object Title => 1072917;
+        public override object Title
+        {
+            get
+            {
+                return 1072917;
+            }
+        }
         /* The Serpent's Fang sect members have gone too far! Express to them my displeasure by slaying 
         ten of them. But remember, I do not condone war on women, so I will only accept the deaths of 
         men, human and elf. */
-        public override object Description => 1072969;
+        public override object Description
+        {
+            get
+            {
+                return 1072969;
+            }
+        }
         /* As you wish. */
-        public override object Refuse => 1072979;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072979;
+            }
+        }
         /* The Black Order's fortress home is well hidden.  Legend has it that a humble fishing village 
         disguises the magical portal. */
-        public override object Uncomplete => 1072980;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072980;
+            }
+        }
         public override bool CanOffer()
         {
             return MondainsLegacy.Citadel;
@@ -152,7 +248,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -173,34 +269,58 @@ namespace Server.Engines.Quests
             {
                 if (mob.Female)
                     return false;
-
+					
                 return base.IsObjective(mob);
             }
         }
     }
 
     public class ExtinguishingTheFlameQuest : BaseQuest
-    {
+    { 
         public ExtinguishingTheFlameQuest()
             : base()
-        {
-            AddObjective(new InternalObjective());
-
-            AddReward(new BaseReward(typeof(TreasureBag), 1072583));
+        { 
+            this.AddObjective(new InternalObjective());
+			
+            this.AddReward(new BaseReward(typeof(TreasureBag), 1072583));
         }
 
         /* Extinguishing the Flame */
-        public override object Title => 1072911;
+        public override object Title
+        {
+            get
+            {
+                return 1072911;
+            }
+        }
         /* The Dragon's Flame sect members have gone too far! Express to them my displeasure by slaying ten 
         of them. But remember, I do not condone war on women, so I will only accept the deaths of men, 
         human or elf.  Either race will do, I care not for the shape of their ears. Yes, this action will 
         properly make clear my disapproval and has a pleasing harmony. */
-        public override object Description => 1072966;
+        public override object Description
+        {
+            get
+            {
+                return 1072966;
+            }
+        }
         /* As you wish. */
-        public override object Refuse => 1072979;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072979;
+            }
+        }
         /* The Black Order's fortress home is well hidden.  Legend has it that a humble fishing village 
         disguises the magical portal. */
-        public override object Uncomplete => 1072980;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072980;
+            }
+        }
         public override bool CanOffer()
         {
             return MondainsLegacy.Citadel;
@@ -210,7 +330,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -231,33 +351,57 @@ namespace Server.Engines.Quests
             {
                 if (mob.Female)
                     return false;
-
+					
                 return base.IsObjective(mob);
             }
         }
     }
 
     public class DeathToTheNinjaQuest : BaseQuest
-    {
+    { 
         public DeathToTheNinjaQuest()
             : base()
-        {
-            AddObjective(new SlayObjective(typeof(EliteNinja), "elite ninjas", 10, "TheCitadel"));
-
-            AddReward(new BaseReward(typeof(TreasureBag), 1072583));
+        { 
+            this.AddObjective(new SlayObjective(typeof(EliteNinja), "elite ninjas", 10, "TheCitadel"));
+			
+            this.AddReward(new BaseReward(typeof(TreasureBag), 1072583));
         }
 
         /* Death to the Ninja! */
-        public override object Title => 1072913;
+        public override object Title
+        {
+            get
+            {
+                return 1072913;
+            }
+        }
         /* I wish to make a statement of censure against the elite ninjas of the Black Order.  Deliver, in 
         the strongest manner, my disdain.  But do not make war on women, even those that take arms against 
         you.  It is not ... fitting. */
-        public override object Description => 1072967;
+        public override object Description
+        {
+            get
+            {
+                return 1072967;
+            }
+        }
         /* As you wish. */
-        public override object Refuse => 1072979;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072979;
+            }
+        }
         /* The Black Order's fortress home is well hidden.  Legend has it that a humble fishing village 
         disguises the magical portal. */
-        public override object Uncomplete => 1072980;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072980;
+            }
+        }
         public override bool CanOffer()
         {
             return MondainsLegacy.Citadel;
@@ -267,7 +411,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -279,26 +423,50 @@ namespace Server.Engines.Quests
     }
 
     public class CrimeAndPunishmentQuest : BaseQuest
-    {
+    { 
         public CrimeAndPunishmentQuest()
             : base()
-        {
-            AddObjective(new InternalObjective());
-
-            AddReward(new BaseReward(typeof(TreasureBag), 1072583));
+        { 
+            this.AddObjective(new InternalObjective());
+			
+            this.AddReward(new BaseReward(typeof(TreasureBag), 1072583));
         }
 
         /* Crime and Punishment */
-        public override object Title => 1072914;
+        public override object Title
+        {
+            get
+            {
+                return 1072914;
+            }
+        }
         /* The Tiger's Claw sect members have gone too far! Express to them my displeasure by slaying 
         ten of them. But remember, I do not condone war on women, so I will only accept the deaths of 
         men, human and elf. */
-        public override object Description => 1072968;
+        public override object Description
+        {
+            get
+            {
+                return 1072968;
+            }
+        }
         /* As you wish. */
-        public override object Refuse => 1072979;
+        public override object Refuse
+        {
+            get
+            {
+                return 1072979;
+            }
+        }
         /* The Black Order's fortress home is well hidden.  Legend has it that a humble fishing village 
         disguises the magical portal. */
-        public override object Uncomplete => 1072980;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1072980;
+            }
+        }
         public override bool CanOffer()
         {
             return MondainsLegacy.Citadel;
@@ -308,7 +476,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -329,20 +497,20 @@ namespace Server.Engines.Quests
             {
                 if (mob.Female)
                     return false;
-
+					
                 return base.IsObjective(mob);
             }
         }
     }
 
     public class Acob : MondainQuester
-    {
+    { 
         [Constructable]
         public Acob()
             : base("Elder Acob", "the wise")
-        {
-            SetSkill(SkillName.Meditation, 60.0, 83.0);
-            SetSkill(SkillName.Focus, 60.0, 83.0);
+        { 
+            this.SetSkill(SkillName.Meditation, 60.0, 83.0);
+            this.SetSkill(SkillName.Focus, 60.0, 83.0);
         }
 
         public Acob(Serial serial)
@@ -350,7 +518,11 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(OverpopulationQuest),
                     typeof(WildBoarCullQuest),
@@ -360,31 +532,33 @@ namespace Server.Engines.Quests
                     typeof(DeathToTheNinjaQuest),
                     typeof(CrimeAndPunishmentQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            Race = Race.Elf;
-
-            Hue = 0x8389;
-            HairItemID = 0x2FCF;
-            HairHue = 0x389;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x8389;
+            this.HairItemID = 0x2FCF;
+            this.HairHue = 0x389;
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-			SetWearable(new ElvenBoots(), 0x73D, 1);
-			SetWearable(new HidePants(), dropChance: 1);
-			SetWearable(new ElvenShirt(), 0x71, 1);
+            this.AddItem(new Backpack());
+            this.AddItem(new ElvenBoots(0x73D));
+            this.AddItem(new HidePants());
+            this.AddItem(new ElvenShirt(0x71));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

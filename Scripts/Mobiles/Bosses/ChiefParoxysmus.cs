@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -29,14 +29,16 @@ namespace Server.Mobiles
             SetResistance(ResistanceType.Cold, 50, 60);
             SetResistance(ResistanceType.Poison, 55, 65);
             SetResistance(ResistanceType.Energy, 50, 60);
-
+			
             SetSkill(SkillName.Wrestling, 120.0);
             SetSkill(SkillName.Tactics, 120.0);
             SetSkill(SkillName.MagicResist, 120.0);
             SetSkill(SkillName.Anatomy, 120.0);
             SetSkill(SkillName.Poisoning, 120.0);
 
-            Timer.DelayCall(TimeSpan.FromSeconds(1), SpawnBulbous);  //BulbousPutrification
+            PackResources(8);
+            PackTalismans(5);
+            Timer.DelayCall(TimeSpan.FromSeconds(1), new TimerCallback(SpawnBulbous));  //BulbousPutrification
 
             Fame = 25000;
             Karma = -25000;
@@ -49,20 +51,56 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool GivesMLMinorArtifact => true;
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss, 8);
-            AddLoot(LootPack.PeerlessResource, 8);
-            AddLoot(LootPack.Talisman, 5);
-            AddLoot(LootPack.LootItem<LardOfParoxysmus>());
-            AddLoot(LootPack.RandomLootItem(new[] { typeof(ParoxysmusDinner), typeof(ParoxysmusCorrodedStein), typeof(StringOfPartsOfParoxysmusVictims) }));
-            AddLoot(LootPack.LootItem<ParrotItem>(60.0));
-            AddLoot(LootPack.LootItem<SweatOfParoxysmus>(50.0));
-            AddLoot(LootPack.LootItem<ParoxysmusSwampDragonStatuette>(5.0));
-            AddLoot(LootPack.LootItem<ScepterOfTheChief>(5.0));
+            AddLoot(LootPack.AosSuperBoss, 8);
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);		
+			
+            c.DropItem(new LardOfParoxysmus());
+			
+            switch ( Utility.Random(3) )
+            {
+                case 0:
+                    c.DropItem(new ParoxysmusDinner());
+                    break;
+                case 1:
+                    c.DropItem(new ParoxysmusCorrodedStein());
+                    break;
+                case 2:
+                    c.DropItem(new StringOfPartsOfParoxysmusVictims());
+                    break;
+            }
+
+            if (Utility.RandomDouble() < 0.6)				
+                c.DropItem(new ParrotItem());
+			
+            if (Utility.RandomBool())
+                c.DropItem(new SweatOfParoxysmus());
+				
+            if (Utility.RandomDouble() < 0.05)
+                c.DropItem(new ParoxysmusSwampDragonStatuette());
+				
+            if (Utility.RandomDouble() < 0.05)
+                c.DropItem(new ScepterOfTheChief());
         }
 
         public override int GetDeathSound()
@@ -93,29 +131,27 @@ namespace Server.Mobiles
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
             base.OnDamage(amount, from, willKill);
-
+			
             // eats pet or summons
             if (from is BaseCreature)
             {
                 BaseCreature creature = (BaseCreature)from;
-
+				
                 if (creature.Controlled || creature.Summoned)
                 {
-                    if (Hits < HitsMax)
-                        Hits = HitsMax;
-
-                    creature.Kill();
-
+                    Heal(creature.Hits);					
+                    creature.Kill();				
+					
                     Effects.PlaySound(Location, Map, 0x574);
                 }
             }
-
+			
             // teleports player near
             if (from is PlayerMobile && !InRange(from.Location, 1))
             {
                 Combatant = from;
-
-                from.MoveToWorld(GetSpawnPosition(1), Map);
+				
+                from.MoveToWorld(GetSpawnPosition(1), Map);				
                 from.FixedParticles(0x376A, 9, 32, 0x13AF, EffectLayer.Waist);
                 from.PlaySound(0x1FE);
             }
@@ -124,13 +160,15 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+			
+            int version = reader.ReadInt();
         }
 
         public virtual void SpawnBulbous()

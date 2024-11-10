@@ -1,24 +1,35 @@
+using System;
 using Server.Items;
 
-namespace Server.Mobiles
-{
-    [CorpseName("an evil mage corpse")]
-    public class EvilMage : BaseCreature
-    {
-        [Constructable]
+namespace Server.Mobiles 
+{ 
+    [CorpseName("an evil mage corpse")] 
+    public class EvilMage : BaseCreature 
+    { 
+        [Constructable] 
         public EvilMage()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
-        {
+        { 
             Name = NameList.RandomName("evil mage");
             Title = "the evil mage";
 
-            Robe robe = new Robe(Utility.RandomNeutralHue());
-            Sandals sandals = new Sandals();
+            var robe = new Robe(Utility.RandomNeutralHue());
+            var sandals = new Sandals();
 
-            Body = 124;
+            if (!Core.UOTD)
+            {
+                Body = Race.Human.MaleBody;
 
-            PackItem(robe);
-            PackItem(sandals);
+                AddItem(robe);
+                AddItem(sandals);
+            }
+            else
+            {
+                Body = 124;
+
+                PackItem(robe);
+                PackItem(sandals);
+            }
 
             SetStr(81, 105);
             SetDex(91, 115);
@@ -43,6 +54,19 @@ namespace Server.Mobiles
 
             Fame = 2500;
             Karma = -2500;
+
+            VirtualArmor = 16;
+            PackReg(6);
+
+            if (Core.AOS)
+            {
+                switch (Utility.Random(18))
+                {
+                    case 0: PackItem(new BloodOathScroll()); break;
+                    case 1: PackItem(new CurseWeaponScroll()); break;
+                    case 2: PackItem(new StrangleScroll()); break;
+                }
+            }
         }
 
         public override int GetDeathSound()
@@ -60,23 +84,44 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanRummageCorpses => true;
-        public override bool AlwaysMurderer => true;
-        public override int Meat => 1;
-        public override int TreasureMapLevel => 1;
-
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return Core.AOS ? 1 : 0;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Average);
             AddLoot(LootPack.MedScrolls);
-            AddLoot(LootPack.MageryRegs, 6);
-            AddLoot(LootPack.RandomLootItem(new[] { typeof(BloodOathScroll), typeof(CurseWeaponScroll), typeof(StrangleScroll) }, 16.6, 1, false, true));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

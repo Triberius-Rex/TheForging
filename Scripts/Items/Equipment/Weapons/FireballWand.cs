@@ -1,3 +1,4 @@
+using System;
 using Server.Spells.Third;
 
 namespace Server.Items
@@ -6,7 +7,7 @@ namespace Server.Items
     {
         [Constructable]
         public FireballWand()
-            : base(WandEffect.Fireball, 5, 109)
+            : base(WandEffect.Fireball, 5, Core.ML ? 109 : 15)
         {
         }
 
@@ -19,7 +20,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -31,7 +32,7 @@ namespace Server.Items
 
         public override void OnWandUse(Mobile from)
         {
-            Cast(new FireballSpell(from, this));
+            this.Cast(new FireballSpell(from, this));
         }
     }
 }

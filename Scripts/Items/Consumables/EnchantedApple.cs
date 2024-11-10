@@ -1,8 +1,8 @@
+using System;
 using Server.Spells.First;
 using Server.Spells.Fourth;
-using Server.Spells.Mysticism;
 using Server.Spells.Necromancy;
-using System;
+using Server.Spells.Mysticism;
 
 namespace Server.Items
 {
@@ -14,7 +14,7 @@ namespace Server.Items
         {
             Weight = 1.0;
             Hue = 0x488;
-            Stackable = true;
+	        Stackable = true;
         }
 
         public EnchantedApple(Serial serial)
@@ -22,9 +22,27 @@ namespace Server.Items
         {
         }
 
-        public override MagicalFood FoodID => MagicalFood.EnchantedApple;
-        public override TimeSpan Cooldown => TimeSpan.FromSeconds(30);
-        public override int EatMessage => 1074846;// A tasty bite of the enchanted apple lifts all curses from your soul.
+        public override MagicalFood FoodID
+        {
+            get
+            {
+                return MagicalFood.EnchantedApple;
+            }
+        }
+        public override TimeSpan Cooldown
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(30);
+            }
+        }
+        public override int EatMessage
+        {
+            get
+            {
+                return 1074846;
+            }
+        }// A tasty bite of the enchanted apple lifts all curses from your soul.
 
         public override bool Eat(Mobile from)
         {
@@ -44,12 +62,50 @@ namespace Server.Items
                     IEntity mto = new Entity(Serial.Zero, new Point3D(from.X, from.Y, from.Z + 50), from.Map);
                     Effects.SendMovingParticles(mfrom, mto, 0x2255, 1, 0, false, false, 13, 3, 9501, 1, 0, EffectLayer.Head, 0x100);
 
-                    int power = CleansingWindsSpell.RemoveCurses(from);
-                    power = Math.Min(power, 15);
+                    if (Core.TOL)
+                    {
+                        int power = CleansingWindsSpell.RemoveCurses(from);
+                        power = Math.Min(power, 15);
+
+                        from.SendLocalizedMessage(EatMessage);
+
+                        StartInfluence(from, FoodID, Duration, TimeSpan.FromSeconds(30 + power));
+                        Consume();
+
+                        return true;
+                    }
+                    else if (Core.SA)
+                    {
+                        int totalCurses = GetTotalCurses(from);
+
+                        if (totalCurses > 2 && totalCurses > Utility.Random(10))
+                        {
+                            from.SendLocalizedMessage(1150174); // The apple was not strong enough to purify you.
+
+                            Consume();
+
+                            return false;
+                        }
+                    }
+
+                    EvilOmenSpell.TryEndEffect(from);
+                    StrangleSpell.RemoveCurse(from);
+                    CorpseSkinSpell.RemoveCurse(from);
+                    WeakenSpell.RemoveEffects(from);
+                    FeeblemindSpell.RemoveEffects(from);
+                    ClumsySpell.RemoveEffects(from);
+                    CurseSpell.RemoveEffect(from);
+                    MortalStrike.EndWound(from);
+                    BloodOathSpell.RemoveCurse(from);
+                    MindRotSpell.ClearMindRotScalar(from);
+                    SpellPlagueSpell.RemoveFromList(from);
+                    SleepSpell.EndSleep(from);
+
+                    BuffInfo.RemoveBuff(from, BuffIcon.MassCurse);
 
                     from.SendLocalizedMessage(EatMessage);
 
-                    StartInfluence(from, FoodID, Duration, TimeSpan.FromSeconds(30 + power));
+                    StartInfluence(from, FoodID, Duration, Cooldown);
                     Consume();
 
                     return true;
@@ -125,7 +181,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

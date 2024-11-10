@@ -10,17 +10,35 @@ namespace Server.Spells.Bushido
             -1,
             9002);
 
-        private static readonly Dictionary<Mobile, Timer> m_Table = new Dictionary<Mobile, Timer>();
-        private static readonly Dictionary<Mobile, Timer> m_RegenTable = new Dictionary<Mobile, Timer>();
+        private static Dictionary<Mobile, Timer> m_Table = new Dictionary<Mobile, Timer>();
+        private static Dictionary<Mobile, Timer> m_RegenTable = new Dictionary<Mobile, Timer>();
 
         public Confidence(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.25);
-        public override double RequiredSkill => 25.0;
-        public override int RequiredMana => 10;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 25.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
 
         public static bool IsConfident(Mobile m)
         {
@@ -41,12 +59,12 @@ namespace Server.Spells.Bushido
             t.Start();
 
             double bushido = m.Skills[SkillName.Bushido].Value;
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Confidence, 1060596, 1153809, TimeSpan.FromSeconds(4), m, string.Format("{0}\t{1}\t{2}", ((int)(bushido / 12)).ToString(), ((int)(bushido / 5)).ToString(), "100"))); // Successful parry will heal for 1-~1_HEAL~ hit points and refresh for 1-~2_STAM~ stamina points.<br>+~3_HP~ hit point regeneration (4 second duration).
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Confidence, 1060596, 1153809, TimeSpan.FromSeconds(4), m, String.Format("{0}\t{1}\t{2}", ((int)(bushido / 12)).ToString(), ((int)(bushido / 5)).ToString(), "100"))); // Successful parry will heal for 1-~1_HEAL~ hit points and refresh for 1-~2_STAM~ stamina points.<br>+~3_HP~ hit point regeneration (4 second duration).
 
             int anticipateHitBonus = SkillMasteries.MasteryInfo.AnticipateHitBonus(m);
 
             if (anticipateHitBonus > 0)
-                BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.AnticipateHit, 1155905, 1156057, TimeSpan.FromSeconds(4), m, string.Format("{0}\t{1}", anticipateHitBonus.ToString(), "75"))); // ~1_CHANCE~% chance to reduce Confidence heal by ~2_REDUCE~% when hit. 
+                BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.AnticipateHit, 1155905, 1156057, TimeSpan.FromSeconds(4), m, String.Format("{0}\t{1}", anticipateHitBonus.ToString(), "75"))); // ~1_CHANCE~% chance to reduce Confidence heal by ~2_REDUCE~% when hit. 
         }
 
         public static void EndConfidence(Mobile m)
@@ -150,7 +168,7 @@ namespace Server.Spells.Bushido
 
         private class RegenTimer : Timer
         {
-            private readonly Mobile m_Mobile;
+            private Mobile m_Mobile;
             private int m_Ticks;
             private int m_Hits;
 

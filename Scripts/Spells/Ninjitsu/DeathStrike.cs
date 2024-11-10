@@ -1,34 +1,47 @@
-#region
-
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using Server.Items;
-using Server.Mobiles;
-
-#endregion
+using Server.SkillHandlers;
 
 namespace Server.Spells.Ninjitsu
 {
     public class DeathStrike : NinjaMove
     {
-        public static readonly TimeSpan DamageDelay = TimeSpan.FromSeconds(3.0);
-        private static Dictionary<Mobile, DeathStrikeInfo> m_Table = new Dictionary<Mobile, DeathStrikeInfo>();
+        private static readonly Hashtable m_Table = new Hashtable();
+        public DeathStrike()
+        {
+        }
 
-        public override int BaseMana => 30;
-        public override double RequiredSkill => 85.0;
-        public override TextDefinition AbilityMessage => new TextDefinition(1063091);// You prepare to hit your opponent with a Death Strike.
-
+        public override int BaseMana
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 85.0;
+            }
+        }
+        public override TextDefinition AbilityMessage
+        {
+            get
+            {
+                return new TextDefinition(1063091);
+            }
+        }// You prepare to hit your opponent with a Death Strike.
         public static void AddStep(Mobile m)
         {
-            if (!m_Table.ContainsKey(m))
+            DeathStrikeInfo info = m_Table[m] as DeathStrikeInfo;
+
+            if (info == null)
                 return;
 
-            DeathStrikeInfo info = m_Table[m];
-
-            if (++info._Steps >= 5)
-            {
-                ProcessDeathStrike(info);
-            }
+            if (++info.m_Steps >= 5)
+                ProcessDeathStrike(m);
         }
 
         public override double GetDamageScalar(Mobile attacker, Mobile defender)
@@ -38,14 +51,22 @@ namespace Server.Spells.Ninjitsu
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, true))
-            {
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, true))
                 return;
-            }
 
-            ClearCurrentMove(attacker);            
+            ClearCurrentMove(attacker);
 
-            if (!attacker.CheckSkill(MoveSkill, RequiredSkill - 12.5, RequiredSkill + 37.5))
+            double ninjitsu = attacker.Skills[SkillName.Ninjitsu].Value;
+
+            double chance;
+            bool isRanged = attacker.Weapon is BaseRanged;
+
+            if (ninjitsu < 100) //This formula is an approximation from OSI data.  TODO: find correct formula
+                chance = 30 + (ninjitsu - 85) * 2.2;
+            else
+                chance = 63 + (ninjitsu - 100) * 1.1;
+
+            if ((chance / 100) < Utility.RandomDouble())
             {
                 attacker.SendLocalizedMessage(1070779); // You missed your opponent with a Death Strike.
                 return;
@@ -53,16 +74,19 @@ namespace Server.Spells.Ninjitsu
 
             DeathStrikeInfo info;
 
-            if (m_Table.ContainsKey(defender))
+            int damageBonus = 0;
+
+            if (m_Table.Contains(defender))
             {
                 defender.SendLocalizedMessage(1063092); // Your opponent lands another Death Strike!
 
-                info = m_Table[defender];
+                info = (DeathStrikeInfo)m_Table[defender];
 
-                if (info._Timer != null)
-                {
-                    info._Timer.Stop();
-                }
+                if (info.m_Steps > 0)
+                    damageBonus = attacker.Skills[SkillName.Ninjitsu].Fixed / 150;
+
+                if (info.m_Timer != null)
+                    info.m_Timer.Stop();
 
                 m_Table.Remove(defender);
             }
@@ -76,70 +100,89 @@ namespace Server.Spells.Ninjitsu
             defender.FixedParticles(0x374A, 1, 17, 0x26BC, EffectLayer.Waist);
             attacker.PlaySound(attacker.Female ? 0x50D : 0x50E);
 
-            var ninjitsu = attacker.Skills[SkillName.Ninjitsu].Base;
-            var hiding = attacker.Skills[SkillName.Hiding].Base;
-            var stealth = attacker.Skills[SkillName.Stealth].Base;
-
-            var avarage = (hiding + stealth) / 100;
-
-            var scalar = ninjitsu / 9;
-
-            var basedamage = ninjitsu / 5.7;
-
-            var _totaldamage = (int)(basedamage + (avarage * scalar));
-
-            if (_totaldamage > 50 && attacker is PlayerMobile && defender is PlayerMobile)
-                _totaldamage = 50;
-
-            info = new DeathStrikeInfo(defender, attacker, _totaldamage, attacker.Weapon is BaseRanged);
-            info._Timer = Timer.DelayCall(DamageDelay, () => ProcessDeathStrike(info));
+            info = new DeathStrikeInfo(defender, attacker, damageBonus, isRanged);
+            info.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerStateCallback(ProcessDeathStrike), defender);
 
             m_Table[defender] = info;
+            
+            BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.DeathStrike, 1075645, TimeSpan.FromSeconds(5.0), defender, String.Format("{0}", damageBonus)));
 
-            BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.DeathStrike, 1075645, DamageDelay, defender, string.Format("{0}", _totaldamage)));
+            this.CheckGain(attacker);
         }
 
-        private static void ProcessDeathStrike(DeathStrikeInfo info)
+        private static void ProcessDeathStrike(object state)
         {
-            var damage = info._Damage;
+            Mobile defender = (Mobile)state;
 
-            if (info._isRanged)
-                damage /= 2;
+            DeathStrikeInfo info = m_Table[defender] as DeathStrikeInfo;
 
-            if (info._Steps < 5)
-                damage /= 3;            
+            if (info == null)	//sanity
+                return;
 
-            AOS.Damage(info._Target, info._Attacker, damage, 0, 0, 0, 0, 0, 0, 100); // Damage is direct.
+            int maxDamage, damage = 0;
 
-            if (info._Timer != null)
+            double ninjitsu = info.m_Attacker.Skills[SkillName.Ninjitsu].Value;
+            double stalkingBonus = Tracking.GetStalkingBonus(info.m_Attacker, info.m_Target);
+
+            if (Core.ML)
             {
-                info._Timer.Stop();
+                double scalar = (info.m_Attacker.Skills[SkillName.Hiding].Value + info.m_Attacker.Skills[SkillName.Stealth].Value) / 220;
+
+                if (scalar > 1)
+                    scalar = 1;
+
+                // New formula doesn't apply DamageBonus anymore, caps must be, directly, 60/30.
+                if (info.m_Steps >= 5)
+                    damage = (int)Math.Floor(Math.Min(60, (ninjitsu / 3) * (0.3 + 0.7 * scalar) + stalkingBonus));
+                else
+                    damage = (int)Math.Floor(Math.Min(30, (ninjitsu / 9) * (0.3 + 0.7 * scalar) + stalkingBonus));
+
+                if (info.m_isRanged)
+                    damage /= 2;
+            }
+            else
+            {
+                int divisor = (info.m_Steps >= 5) ? 30 : 80;
+                double baseDamage = ninjitsu / divisor * 10;
+
+                maxDamage = (info.m_Steps >= 5) ? 62 : 22; // DamageBonus is 8 at most. That brings the cap up to 70/30.
+                damage = Math.Max(0, Math.Min(maxDamage, (int)(baseDamage + stalkingBonus))) + info.m_DamageBonus;
             }
 
-            m_Table.Remove(info._Target);
+            if (Core.ML)
+                AOS.Damage(info.m_Target, info.m_Attacker, damage, 0, 0, 0, 0, 0, 0, 100); // Damage is direct.
+            else
+                AOS.Damage(info.m_Target, info.m_Attacker, damage, true, 100, 0, 0, 0, 0); // Damage is physical.
+
+            if (info.m_Timer != null)
+                info.m_Timer.Stop();
+
+            m_Table.Remove(info.m_Target);
         }
 
         private class DeathStrikeInfo
         {
-            public readonly Mobile _Target;
-            public readonly Mobile _Attacker;
-            public readonly int _Damage;
-            public readonly bool _isRanged;
-            public int _Steps;
-            public Timer _Timer;
-
+            public readonly Mobile m_Target;
+            public readonly Mobile m_Attacker;
+            public readonly int m_DamageBonus;
+            public readonly bool m_isRanged;
+            public int m_Steps;
+            public Timer m_Timer;
             public DeathStrikeInfo(Mobile target, Mobile attacker, int damageBonus, bool isRanged)
             {
-                _Target = target;
-                _Attacker = attacker;
-                _Damage = damageBonus;
-                _isRanged = isRanged;
+                this.m_Target = target;
+                this.m_Attacker = attacker;
+                this.m_DamageBonus = damageBonus;
+                this.m_isRanged = isRanged;
             }
         }
 
         public static void Initialize()
         {
-            EventSink.Movement += EventSink_Movement;
+            if (Core.SE)
+            {
+                EventSink.Movement += new MovementEventHandler(EventSink_Movement);
+            }
         }
 
         public static void EventSink_Movement(MovementEventArgs e)

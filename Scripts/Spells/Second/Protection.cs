@@ -19,8 +19,20 @@ namespace Server.Spells.Second
         {
         }
 
-        public static Hashtable Registry => m_Registry;
-        public override SpellCircle Circle => SpellCircle.Second;
+        public static Hashtable Registry
+        {
+            get
+            {
+                return m_Registry;
+            }
+        }
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Second;
+            }
+        }
         public static void Toggle(Mobile caster, Mobile target, bool archprotection)
         {
             /* Players under the protection spell effect can no longer have their spells "disrupted" when hit.
@@ -52,7 +64,7 @@ namespace Server.Spells.Second
 
                 int physloss = -15 + (int)(caster.Skills[SkillName.Inscribe].Value / 20);
                 int resistloss = -35 + (int)(caster.Skills[SkillName.Inscribe].Value / 20);
-                string args = string.Format("{0}\t{1}", physloss, resistloss);
+                string args = String.Format("{0}\t{1}", physloss, resistloss);
                 BuffInfo.AddBuff(target, new BuffInfo(archprotection ? BuffIcon.ArchProtection : BuffIcon.Protection, archprotection ? 1075816 : 1075814, 1075815, args.ToString()));
             }
             else
@@ -90,15 +102,68 @@ namespace Server.Spells.Second
 
         public override bool CheckCast()
         {
+            if (Core.AOS)
+                return true;
+
+            if (m_Registry.ContainsKey(this.Caster))
+            {
+                this.Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
+                return false;
+            }
+            else if (!this.Caster.CanBeginAction(typeof(DefensiveSpell)))
+            {
+                this.Caster.SendLocalizedMessage(1005385); // The spell will not adhere to you at this time.
+                return false;
+            }
+
             return true;
         }
 
         public override void OnCast()
         {
-            if (CheckSequence())
-                Toggle(Caster, Caster, false);
+            if (Core.AOS)
+            {
+                if (this.CheckSequence())
+                    Toggle(this.Caster, this.Caster, false);
 
-            FinishSequence();
+                this.FinishSequence();
+            }
+            else
+            {
+                if (m_Registry.ContainsKey(this.Caster))
+                {
+                    this.Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
+                }
+                else if (!this.Caster.CanBeginAction(typeof(DefensiveSpell)))
+                {
+                    this.Caster.SendLocalizedMessage(1005385); // The spell will not adhere to you at this time.
+                }
+                else if (this.CheckSequence())
+                {
+                    if (this.Caster.BeginAction(typeof(DefensiveSpell)))
+                    {
+                        double value = (int)(this.Caster.Skills[SkillName.EvalInt].Value + this.Caster.Skills[SkillName.Meditation].Value + this.Caster.Skills[SkillName.Inscribe].Value);
+                        value /= 4;
+
+                        if (value < 0)
+                            value = 0;
+                        else if (value > 75)
+                            value = 75.0;
+
+                        Registry.Add(this.Caster, value);
+                        new InternalTimer(this.Caster).Start();
+
+                        this.Caster.FixedParticles(0x375A, 9, 20, 5016, EffectLayer.Waist);
+                        this.Caster.PlaySound(0x1ED);
+                    }
+                    else
+                    {
+                        this.Caster.SendLocalizedMessage(1005385); // The spell will not adhere to you at this time.
+                    }
+                }
+
+                this.FinishSequence();
+            }
         }
 
         #region SA
@@ -120,14 +185,15 @@ namespace Server.Spells.Second
                 else if (val > 240)
                     val = 240;
 
-                m_Caster = caster;
-                Delay = TimeSpan.FromSeconds(val);
-                Priority = TimerPriority.OneSecond;
+                this.m_Caster = caster;
+                this.Delay = TimeSpan.FromSeconds(val);
+                this.Priority = TimerPriority.OneSecond;
             }
 
             protected override void OnTick()
             {
-                Registry.Remove(m_Caster);
+                ProtectionSpell.Registry.Remove(this.m_Caster);
+                DefensiveSpell.Nullify(this.m_Caster);
             }
         }
     }

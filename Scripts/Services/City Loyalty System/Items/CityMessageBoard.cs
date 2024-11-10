@@ -1,17 +1,24 @@
+using System;
+using Server;
+using Server.Mobiles;
+using System.Collections.Generic;
 using Server.Engines.CityLoyalty;
+using System.Linq;
+using Server.Prompts;
+using Server.ContextMenus;
 
 namespace Server.Items
 {
     public class CityMessageBoard : BasePlayerBB
-    {
+	{
         public City City { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public CityLoyaltySystem CitySystem { get { return CityLoyaltySystem.GetCityInstance(City); } set { } }
 
-        public override int LabelNumber => 1027774;  // bulletin board
-        public override bool Public => true;
-        public override bool ForceShowProperties => true;
+        public override int LabelNumber { get { return 1027774; } } // bulletin board
+        public override bool Public { get { return true; } }
+        public override bool ForceShowProperties { get { return true; } }
 
         [Constructable]
         public CityMessageBoard(City city, int id) : base(id)
@@ -20,9 +27,9 @@ namespace Server.Items
             City = city;
         }
 
-        public override bool CanPostGreeting(Multis.BaseHouse house, Mobile m)
+        public override bool CanPostGreeting(Server.Multis.BaseHouse house, Mobile m)
         {
-            CityLoyaltySystem sys = CitySystem;
+            var sys = CitySystem;
 
             return sys != null && (m.AccessLevel >= AccessLevel.GameMaster || sys.Governor == m);
         }
@@ -34,13 +41,13 @@ namespace Server.Items
 
             if (CitySystem.IsCitizen(from, true))
             {
-                if (from.InRange(Location, 3))
+                if (from.InRange(this.Location, 3))
                 {
                     from.SendGump(new PlayerBBGump(from, null, this, 0));
                 }
                 else
                 {
-                    from.PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 1019045, from.NetState);
+                    from.PrivateOverheadMessage(Server.Network.MessageType.Regular, 0x3B2, 1019045, from.NetState);
                 }
             }
             else
@@ -156,22 +163,22 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
 
             writer.Write((int)City);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
 
             City = (City)reader.ReadInt();
             CitySystem.Board = this;
-        }
-    }
+		}
+	}
 }

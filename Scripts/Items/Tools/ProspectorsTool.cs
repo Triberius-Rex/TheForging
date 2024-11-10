@@ -1,12 +1,12 @@
+using System;
 using Server.Engines.Harvest;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
     public class ProspectorsTool : BaseBashing
     {
-        public override int LabelNumber => 1049065;  // prospector's tool
+        public override int LabelNumber { get { return 1049065; } } // prospector's tool
 
         [Constructable]
         public ProspectorsTool()
@@ -20,16 +20,21 @@ namespace Server.Items
         public ProspectorsTool(Serial serial)
             : base(serial)
         {
-        }
+        }        
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.CrushingBlow;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.ShadowStrike;
-        public override int StrengthReq => 40;
-        public override int MinDamage => 13;
-        public override int MaxDamage => 15;
-        public override float Speed => 3.25f;
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 60;
+        public override WeaponAbility PrimaryAbility { get { return WeaponAbility.CrushingBlow; } }
+        public override WeaponAbility SecondaryAbility { get { return WeaponAbility.ShadowStrike; } }
+        public override int AosStrengthReq { get { return 40; } }
+        public override int AosMinDamage { get { return 13; } }
+        public override int AosMaxDamage { get { return 15; } }
+        public override int AosSpeed { get { return 33; } }
+        public override float MlSpeed { get { return 3.25f; } }
+        public override int OldStrengthReq { get { return 10; } }
+        public override int OldMinDamage { get { return 6; } }
+        public override int OldMaxDamage { get { return 8; } }
+        public override int OldSpeed { get { return 33; } }
+        public override int InitMinHits { get { return 31; } }
+        public override int InitMaxHits { get { return 60; } }
 
         public override void OnDoubleClick(Mobile from)
         {
@@ -116,7 +121,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+            writer.Write((int)2); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -124,7 +129,7 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2:
                     break;

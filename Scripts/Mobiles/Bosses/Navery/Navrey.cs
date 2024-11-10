@@ -1,7 +1,7 @@
-using Server.Engines.Quests;
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Quests;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -13,12 +13,12 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public bool UsedPillars { get; set; }
 
-        private static readonly Type[] m_Artifact =
+        private static readonly Type[] m_Artifact = new Type[]
         {
             typeof(NightEyes),
             typeof(Tangle1)
-        };
-
+        };		
+        
         [Constructable]
         public Navrey(NavreysController spawner)
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
@@ -59,6 +59,13 @@ namespace Server.Mobiles
             Fame = 24000;
             Karma = -24000;
 
+            VirtualArmor = 90;
+
+            for (int i = 0; i < Utility.RandomMinMax(1, 3); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.MysticismScrollTypes.Length, SpellbookType.Mystic));
+            }
+
             SetSpecialAbility(SpecialAbility.Webbing);
         }
 
@@ -66,18 +73,18 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
-
-        public override double TeleportChance => 0;
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Parasitic;
-        public override Poison HitPoison => Poison.Lethal;
-        public override int Meat => 1;
+ 
+        public override double TeleportChance { get { return 0; } }
+	    public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Parasitic; } }
+        public override Poison HitPoison { get { return Poison.Lethal; } }
+        public override int Meat { get { return 1; } }
 
         public static void DistributeRandomArtifact(BaseCreature bc, Type[] typelist)
         {
             int random = Utility.Random(typelist.Length);
             Item item = Loot.Construct(typelist[random]);
-            DistributeArtifact(bc.RandomPlayerWithLootingRights(), item);
+            DistributeArtifact(DemonKnight.FindRandomPlayer(bc), item);
         }
 
         public static void DistributeArtifact(Mobile to, Item artifact)
@@ -102,8 +109,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss, 3);
-            AddLoot(LootPack.MysticScrolls, 1, 3);
+            AddLoot(LootPack.AosSuperBoss, 3);
         }
 
         public override void OnDeath(Container c)
@@ -162,9 +168,9 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
-            writer.Write(m_Spawner);
+            writer.Write((Item)m_Spawner);
         }
 
         public override void Deserialize(GenericReader reader)

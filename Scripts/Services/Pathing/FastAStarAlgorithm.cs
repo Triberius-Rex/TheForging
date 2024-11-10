@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Server.Mobiles;
 using CalcMoves = Server.Movement.Movement;
 using MoveImpl = Server.Movement.MovementImpl;
 
@@ -30,9 +32,9 @@ namespace Server.PathAlgorithms.FastAStar
         private Point3D m_Goal;
         public int Heuristic(int x, int y, int z)
         {
-            x -= m_Goal.X - m_xOffset;
-            y -= m_Goal.Y - m_yOffset;
-            z -= m_Goal.Z;
+            x -= this.m_Goal.X - m_xOffset;
+            y -= this.m_Goal.Y - m_yOffset;
+            z -= this.m_Goal.Z;
 
             x *= 11;
             y *= 11;
@@ -52,18 +54,18 @@ namespace Server.PathAlgorithms.FastAStar
 
             m_Touched.SetAll(false);
 
-            m_Goal = goal;
+            this.m_Goal = goal;
 
             m_xOffset = (start.X + goal.X - AreaSize) / 2;
             m_yOffset = (start.Y + goal.Y - AreaSize) / 2;
 
-            int fromNode = GetIndex(start.X, start.Y, start.Z);
-            int destNode = GetIndex(goal.X, goal.Y, goal.Z);
+            int fromNode = this.GetIndex(start.X, start.Y, start.Z);
+            int destNode = this.GetIndex(goal.X, goal.Y, goal.Z);
 
             m_OpenList = fromNode;
 
             m_Nodes[m_OpenList].cost = 0;
-            m_Nodes[m_OpenList].total = Heuristic(start.X - m_xOffset, start.Y - m_yOffset, start.Z);
+            m_Nodes[m_OpenList].total = this.Heuristic(start.X - m_xOffset, start.Y - m_yOffset, start.Z);
             m_Nodes[m_OpenList].parent = -1;
             m_Nodes[m_OpenList].next = -1;
             m_Nodes[m_OpenList].prev = -1;
@@ -72,6 +74,8 @@ namespace Server.PathAlgorithms.FastAStar
             m_OnOpen[m_OpenList] = true;
             m_Touched[m_OpenList] = true;
 
+            BaseCreature bc = p as BaseCreature;
+
             int pathCount, parent;
             int backtrack = 0, depth = 0;
 
@@ -79,16 +83,24 @@ namespace Server.PathAlgorithms.FastAStar
 
             while (m_OpenList != -1)
             {
-                int bestNode = FindBest(m_OpenList);
+                int bestNode = this.FindBest(m_OpenList);
 
                 if (++depth > MaxDepth)
                     break;
 
+                if (bc != null)
+                {
+                    MoveImpl.AlwaysIgnoreDoors = bc.CanOpenDoors;
+                    MoveImpl.IgnoreMovableImpassables = bc.CanMoveOverObstacles;
+                }
+
                 MoveImpl.Goal = goal;
 
                 int[] vals = m_Successors;
-                int count = GetSuccessors(bestNode, p, map);
+                int count = this.GetSuccessors(bestNode, p, map);
 
+                MoveImpl.AlwaysIgnoreDoors = false;
+                MoveImpl.IgnoreMovableImpassables = false;
                 MoveImpl.Goal = Point3D.Zero;
 
                 if (count == 0)
@@ -103,7 +115,7 @@ namespace Server.PathAlgorithms.FastAStar
                     if (!wasTouched)
                     {
                         int newCost = m_Nodes[bestNode].cost + 1;
-                        int newTotal = newCost + Heuristic(newNode % AreaSize, (newNode / AreaSize) % AreaSize, m_Nodes[newNode].z);
+                        int newTotal = newCost + this.Heuristic(newNode % AreaSize, (newNode / AreaSize) % AreaSize, m_Nodes[newNode].z);
 
                         if (!wasTouched || m_Nodes[newNode].total > newTotal)
                         {
@@ -113,7 +125,7 @@ namespace Server.PathAlgorithms.FastAStar
 
                             if (!wasTouched || !m_OnOpen[newNode])
                             {
-                                AddToChain(newNode);
+                                this.AddToChain(newNode);
 
                                 if (newNode == destNode)
                                 {
@@ -122,7 +134,7 @@ namespace Server.PathAlgorithms.FastAStar
 
                                     while (parent != -1)
                                     {
-                                        path[pathCount++] = GetDirection(parent % AreaSize, (parent / AreaSize) % AreaSize, newNode % AreaSize, (newNode / AreaSize) % AreaSize);
+                                        path[pathCount++] = this.GetDirection(parent % AreaSize, (parent / AreaSize) % AreaSize, newNode % AreaSize, (newNode / AreaSize) % AreaSize);
                                         newNode = parent;
                                         parent = m_Nodes[newNode].parent;
 
@@ -160,7 +172,7 @@ namespace Server.PathAlgorithms.FastAStar
 
             for (int i = 0; i < 8; ++i)
             {
-                switch (i)
+                switch ( i )
                 {
                     default:
                     case 0:
@@ -205,7 +217,7 @@ namespace Server.PathAlgorithms.FastAStar
 
                 if (CalcMoves.CheckMovement(pnt, map, p3D, (Direction)i, out z))
                 {
-                    int idx = GetIndex(x + m_xOffset, y + m_yOffset, z);
+                    int idx = this.GetIndex(x + m_xOffset, y + m_yOffset, z);
 
                     if (idx >= 0 && idx < NodeCount)
                     {
@@ -247,7 +259,7 @@ namespace Server.PathAlgorithms.FastAStar
             if (node < 0 || node >= NodeCount)
                 return;
 
-            RemoveFromChain(node);
+            this.RemoveFromChain(node);
 
             if (m_OpenList != -1)
                 m_Nodes[m_OpenList].prev = node;
@@ -287,7 +299,7 @@ namespace Server.PathAlgorithms.FastAStar
                 node = m_Nodes[node].next;
             }
 
-            RemoveFromChain(leastNode);
+            this.RemoveFromChain(leastNode);
 
             m_Touched[leastNode] = true;
             m_OnOpen[leastNode] = false;

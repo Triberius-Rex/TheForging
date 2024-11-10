@@ -1,9 +1,12 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class PlantTapestryEastAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new PlantTapestryEastDeed();
-        public override bool RetainDeedHue => true;
+        public override BaseAddonDeed Deed { get { return new PlantTapestryEastDeed(); } }
+        public override bool RetainDeedHue { get { return true; } }
 
         [Constructable]
         public PlantTapestryEastAddon()
@@ -20,7 +23,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -32,8 +35,8 @@ namespace Server.Items
 
     public class PlantTapestryEastDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new PlantTapestryEastAddon();
-        public override int LabelNumber => 1154147;  // Plant Tapestry (East)
+        public override BaseAddon Addon { get { return new PlantTapestryEastAddon(); } }
+        public override int LabelNumber { get { return 1154147; } } // Plant Tapestry (East)
 
         [Constructable]
         public PlantTapestryEastDeed()
@@ -48,7 +51,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

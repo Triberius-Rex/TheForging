@@ -1,14 +1,14 @@
-using Server.Engines.BulkOrders;
+using System;
 using Server.Items;
 using Server.Mobiles;
-using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Engines.Quests
 {
     public class Zosilem : MondainQuester, ITierQuester
     {
-        public TierQuestInfo TierInfo => TierQuestInfo.Zosilem;
+        public TierQuestInfo TierInfo { get { return TierQuestInfo.Zosilem; } }
 
         [Constructable]
         public Zosilem()
@@ -23,10 +23,13 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[] { };
+        public override Type[] Quests
+        {
+            get { return new Type[] { }; }
+        }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Alchemy;
+        public override BODType BODType { get { return BODType.Alchemy; } }
 
         public override bool IsValidBulkOrder(Item item)
         {
@@ -46,9 +49,9 @@ namespace Server.Engines.Quests
 
         #endregion
 
-        public override bool IsActiveVendor => true;
+        public override bool IsActiveVendor { get { return true; } }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
 
         public override void InitSBInfo()
         {
@@ -69,13 +72,13 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new FemaleGargishClothLegs(), 0x736, 1);
-            SetWearable(new FemaleGargishClothKilt(), 0x73D, 1);
-            SetWearable(new FemaleGargishClothChest(), 0x38B, 1);
-			SetWearable(new FemaleGargishClothArms(), 0x711, 1);
+            AddItem(new FemaleGargishClothLegs(0x736));
+            AddItem(new FemaleGargishClothKilt(0x73D));
+            AddItem(new FemaleGargishClothChest(0x38B));
+            AddItem(new FemaleGargishClothArms(0x711));
         }
 
-        private static readonly Type[][] m_PileTypes = new Type[][]
+        private static Type[][] m_PileTypes = new Type[][]
             {
                 new Type[] {typeof(DullCopperIngot),  typeof(PileofInspectedDullCopperIngots) },
                 new Type[] {typeof(ShadowIronIngot),  typeof(PileofInspectedShadowIronIngots) },
@@ -86,7 +89,7 @@ namespace Server.Engines.Quests
                 new Type[] {typeof(ValoriteIngot),    typeof(PileofInspectedValoriteIngots) }
             };
 
-        private static readonly object[][] m_KegTypes = new object[][]
+        private static object[][] m_KegTypes = new object[][]
             {
                 new object[] {PotionEffect.RefreshTotal,  typeof(InspectedKegofTotalRefreshment) },
                 new object[] {PotionEffect.PoisonGreater, typeof(InspectedKegofGreaterPoison) }
@@ -165,14 +168,7 @@ namespace Server.Engines.Quests
             }
             else
             {
-                if (item is Gold)
-                {
-                    base.CheckGold(from, item);
-                }
-                else
-                {
-                    SayTo(from, 1113035); // Oooh, shiney. I have no use for this, though.
-                }
+                SayTo(from, 1113035); // Oooh, shiney. I have no use for this, though.
             }
 
             if (success)
@@ -189,7 +185,7 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

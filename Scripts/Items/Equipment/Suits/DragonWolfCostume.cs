@@ -1,8 +1,11 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class DragonWolfCostume : BaseCostume
     {
-        public override string CreatureName => "dragon wolf";
+        public override string CreatureName { get { return "dragon wolf"; } }
 
         [Constructable]
         public DragonWolfCostume() : base()
@@ -10,7 +13,13 @@ namespace Server.Items
             CostumeBody = 719;
         }
 
-        public override string DefaultName => "a dragon wolf costume";
+        public override string DefaultName
+        {
+            get
+            {
+                return "a dragon wolf costume";
+            }
+        }
 
         public DragonWolfCostume(Serial serial) : base(serial)
         {
@@ -19,7 +28,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

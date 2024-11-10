@@ -1,14 +1,12 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("a travesty's corpse")]
     public class Travesty : BasePeerless
     {
-        public override double WeaponAbilityChance => IsBodyMod ? base.WeaponAbilityChance : 0.1;
-
         public override WeaponAbility GetWeaponAbility()
         {
             if (Weapon == null)
@@ -28,10 +26,9 @@ namespace Server.Mobiles
         private bool _CanPeace;
         private bool _CanProvoke;
 
-        public override bool CanDiscord => _CanDiscord;
-        public override bool CanPeace => _CanPeace;
-        public override bool CanProvoke => _CanProvoke;
-        public override bool AlwaysAttackable => true;
+        public override bool CanDiscord { get { return _CanDiscord; } }
+        public override bool CanPeace { get { return _CanPeace; } }
+        public override bool CanProvoke { get { return _CanProvoke; } }
 
         [Constructable]
         public Travesty()
@@ -86,38 +83,67 @@ namespace Server.Mobiles
 
             Fame = 30000;
             Karma = -30000;
+
+            VirtualArmor = 50;
+            PackTalismans(5);
+            PackResources(8);
+
+            for (int i = 0; i < Utility.RandomMinMax(1, 6); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
         }
 
-        public override bool ShowFameTitle => false;
-
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.SuperBoss, 8);
-            AddLoot(LootPack.ArcanistScrolls, Utility.RandomMinMax(1, 6));
-            AddLoot(LootPack.PeerlessResource, 8);
-            AddLoot(LootPack.Talisman, 5);
-            AddLoot(LootPack.LootItem<EyeOfTheTravesty>());
-            AddLoot(LootPack.LootItem<OrdersFromMinax>());
-
-            AddLoot(LootPack.RandomLootItem(new[] { typeof(TravestysSushiPreparations), typeof(TravestysFineTeakwoodTray), typeof(TravestysCollectionOfShells) }));
-
-            AddLoot(LootPack.LootItem<ParrotItem>(60.0));
-            AddLoot(LootPack.LootItem<TragicRemainsOfTravesty>(10.0));
-            AddLoot(LootPack.LootItem<ImprisonedDog>(5.0));
-            AddLoot(LootPack.LootItem<MarkOfTravesty>(5.0));
-            AddLoot(LootPack.LootItem<MalekisHonor>(2.5));
-        }
+        public override bool ShowFameTitle { get { return false; } }
 
         public Travesty(Serial serial)
             : base(serial)
         {
         }
 
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            c.DropItem(new EyeOfTheTravesty());
+            c.DropItem(new OrdersFromMinax());
+
+            switch (Utility.Random(3))
+            {
+                case 0:
+                    c.DropItem(new TravestysSushiPreparations());
+                    break;
+                case 1:
+                    c.DropItem(new TravestysFineTeakwoodTray());
+                    break;
+                case 2:
+                    c.DropItem(new TravestysCollectionOfShells());
+                    break;
+            }
+
+            if (Utility.RandomDouble() < 0.6)
+                c.DropItem(new ParrotItem());
+
+            if (Utility.RandomDouble() < 0.1)
+                c.DropItem(new TragicRemainsOfTravesty());
+
+            if (Utility.RandomDouble() < 0.05)
+                c.DropItem(new ImprisonedDog());
+
+            if (Utility.RandomDouble() < 0.05)
+                c.DropItem(new MarkOfTravesty());
+
+            if (Utility.RandomDouble() < 0.025)
+            {
+                c.DropItem(new MalekisHonor());
+            }
+        }
+
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
             if (0.1 > Utility.RandomDouble() && m_NextMirrorImage < DateTime.UtcNow)
             {
-                new Spells.Ninjitsu.MirrorImage(this, null).Cast();
+                new Server.Spells.Ninjitsu.MirrorImage(this, null).Cast();
 
                 m_NextMirrorImage = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(20, 45));
             }
@@ -130,20 +156,21 @@ namespace Server.Mobiles
             base.OnDamage(amount, from, willKill);
         }
 
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.AosSuperBoss, 8);
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
-        }
-
-        public override void ClearHands()
-        {
         }
 
         public void ChangeBody()
@@ -189,22 +216,23 @@ namespace Server.Mobiles
                 {
                     if (FindItemOnLayer(item.Layer) == null)
                     {
-                        if (item is BaseWeapon)
+                        if (item is BaseRanged)
                         {
-                            var crItem = Engines.Craft.CraftItem.GetCraftItem(item.GetType(), true);
+                            Item i = FindItemOnLayer(Layer.TwoHanded);
 
-                            if (crItem != null)
-                            {
-								SetWearable(Loot.Construct(crItem.ItemType));
-                            }
-                            else
-                            {
-								SetWearable(new ClonedItem(item));
-                            }
+                            if (i != null)
+                                i.Delete();
+
+                            i = FindItemOnLayer(Layer.OneHanded);
+
+                            if (i != null)
+                                i.Delete();
+
+                            AddItem(Loot.Construct(item.GetType()));
                         }
                         else
                         {
-							SetWearable(new ClonedItem(item));
+                            AddItem(new ClonedItem(item));
                         }
                     }
                 }
@@ -265,16 +293,16 @@ namespace Server.Mobiles
             if (m_Timer != null)
                 m_Timer.Stop();
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1.0), RestoreBody);
+            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1.0), new TimerCallback(RestoreBody));
         }
 
         public void DeleteItems()
         {
-            ColUtility.SafeDelete(Items, item => item is ClonedItem || item is BaseWeapon);
+            ColUtility.SafeDelete(Items, item => item is ClonedItem || item is BaseRanged);
 
             if (Backpack != null)
             {
-                ColUtility.SafeDelete(Backpack.Items, item => item is ClonedItem || item is BaseWeapon);
+                ColUtility.SafeDelete(Backpack.Items, item => item is ClonedItem || item is BaseRanged);
             }
         }
 
@@ -322,8 +350,8 @@ namespace Server.Mobiles
         }
 
         #region Spawn Helpers
-        public override bool CanSpawnHelpers => true;
-        public override int MaxHelpersWaves => 1;
+        public override bool CanSpawnHelpers { get { return true; } }
+        public override int MaxHelpersWaves { get { return 1; } }
 
         public override bool CanSpawnWave()
         {
@@ -344,7 +372,7 @@ namespace Server.Mobiles
 
             if (Map != null && Map != Map.Internal && Region.IsPartOf("TheCitadel"))
             {
-                Point3D loc = _WarpLocs[Utility.Random(_WarpLocs.Length)];
+                var loc = _WarpLocs[Utility.Random(_WarpLocs.Length)];
                 MoveToWorld(loc, Map);
             }
         }
@@ -358,7 +386,7 @@ namespace Server.Mobiles
 
         #endregion
 
-        private readonly Point3D[] _WarpLocs =
+        private Point3D[] _WarpLocs =
         {
             new Point3D(71, 1939, 0),
             new Point3D(71, 1955, 0),
@@ -399,7 +427,7 @@ namespace Server.Mobiles
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)

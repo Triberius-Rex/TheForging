@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class ShipLadder : Item
     {
@@ -9,10 +11,10 @@
         public ShipLadder(Point3D point, Map map, int id)
             : base(0x08A6)
         {
-            ItemID = id;
-            m_PointDest = point;
-            m_Map = map;
-            Movable = false;
+            this.ItemID = id;
+            this.m_PointDest = point;
+            this.m_Map = map;
+            this.Movable = false;          
         }
 
         public ShipLadder(Serial serial)
@@ -22,9 +24,9 @@
 
         public override void OnDoubleClickDead(Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
-                Mobiles.BaseCreature.TeleportPets(from, m_PointDest, from.Map);
+                Server.Mobiles.BaseCreature.TeleportPets(from, m_PointDest, from.Map);
                 from.MoveToWorld(m_PointDest, m_Map);
             }
         }
@@ -34,9 +36,9 @@
             if (!from.Alive)
                 return;
 
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
-                Mobiles.BaseCreature.TeleportPets(from, m_PointDest, from.Map);
+                Server.Mobiles.BaseCreature.TeleportPets(from, m_PointDest, from.Map);
                 from.MoveToWorld(m_PointDest, m_Map);
             }
         }
@@ -44,7 +46,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_PointDest);
             writer.Write(m_Map);

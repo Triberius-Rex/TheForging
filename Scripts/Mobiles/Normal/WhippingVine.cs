@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -9,43 +10,50 @@ namespace Server.Mobiles
         public WhippingVine()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "a whipping vine";
-            Body = 8;
-            Hue = 0x851;
-            BaseSoundID = 352;
+            this.Name = "a whipping vine";
+            this.Body = 8;
+            this.Hue = 0x851;
+            this.BaseSoundID = 352;
 
-            SetStr(251, 300);
-            SetDex(76, 100);
-            SetInt(26, 40);
+            this.SetStr(251, 300);
+            this.SetDex(76, 100);
+            this.SetInt(26, 40);
 
-            SetMana(0);
+            this.SetMana(0);
 
-            SetDamage(7, 25);
+            this.SetDamage(7, 25);
 
-            SetDamageType(ResistanceType.Physical, 70);
-            SetDamageType(ResistanceType.Poison, 30);
+            this.SetDamageType(ResistanceType.Physical, 70);
+            this.SetDamageType(ResistanceType.Poison, 30);
 
-            SetResistance(ResistanceType.Physical, 75, 85);
-            SetResistance(ResistanceType.Fire, 15, 25);
-            SetResistance(ResistanceType.Cold, 15, 25);
-            SetResistance(ResistanceType.Poison, 75, 85);
-            SetResistance(ResistanceType.Energy, 35, 45);
+            this.SetResistance(ResistanceType.Physical, 75, 85);
+            this.SetResistance(ResistanceType.Fire, 15, 25);
+            this.SetResistance(ResistanceType.Cold, 15, 25);
+            this.SetResistance(ResistanceType.Poison, 75, 85);
+            this.SetResistance(ResistanceType.Energy, 35, 45);
 
-            SetSkill(SkillName.MagicResist, 70.0);
-            SetSkill(SkillName.Tactics, 70.0);
-            SetSkill(SkillName.Wrestling, 70.0);
+            this.SetSkill(SkillName.MagicResist, 70.0);
+            this.SetSkill(SkillName.Tactics, 70.0);
+            this.SetSkill(SkillName.Wrestling, 70.0);
 
-            Fame = 1000;
-            Karma = -1000;
-        }
+            this.Fame = 1000;
+            this.Karma = -1000;
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.MageryRegs, 3);
-            AddLoot(LootPack.LootItem<DecorativeVines>(10.0));
-            AddLoot(LootPack.LootItem<FertileDirt>(1, 10, false, true));
-            AddLoot(LootPack.LootItem<Vines>());
-            AddLoot(LootPack.LootItem<ExecutionersCap>(20.0));
+            this.VirtualArmor = 45;
+
+            this.PackReg(3);
+            this.PackItem(new FertileDirt(Utility.RandomMinMax(1, 10)));
+
+            if (0.2 >= Utility.RandomDouble())
+                this.PackItem(new ExecutionersCap());
+
+            PackItem(new Vines());  //this is correct
+            PackItem(new FertileDirt(Utility.RandomMinMax(1, 10)));
+
+            if (Utility.RandomDouble() < 0.10)
+            {
+                PackItem(new DecorativeVines());
+            }
         }
 
         public WhippingVine(Serial serial)
@@ -53,11 +61,24 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.AOS;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

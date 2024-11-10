@@ -1,13 +1,16 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.UOStore
 {
     public class StoreEntry
     {
+        private static int m_GlobalIndex = 0;
+        public int Index { get; private set; }
         public Type ItemType { get; private set; }
         public TextDefinition[] Name { get; private set; }
         public int Tooltip { get; private set; }
+        public string TooltipText { get; private set; }
         public int GumpID { get; private set; }
         public int ItemID { get; private set; }
         public int Hue { get; private set; }
@@ -15,10 +18,14 @@ namespace Server.Engines.UOStore
         public StoreCategory Category { get; private set; }
         public Func<Mobile, StoreEntry, Item> Constructor { get; private set; }
 
-        public int Cost => (int)Math.Ceiling(Price * Configuration.CostMultiplier);
+        public int Cost { get { return (int)Math.Ceiling(Price * Configuration.CostMultiplier); } }
 
         public StoreEntry(Type itemType, TextDefinition name, int tooltip, int itemID, int gumpID, int hue, int cost, StoreCategory cat, Func<Mobile, StoreEntry, Item> constructor = null)
             : this(itemType, new[] { name }, tooltip, itemID, gumpID, hue, cost, cat, constructor)
+        { }
+
+        public StoreEntry(Type itemType, TextDefinition name, string tooltipText, int itemID, int gumpID, int hue, int cost, StoreCategory cat, Func<Mobile, StoreEntry, Item> constructor = null)
+            : this(itemType, new[] { name }, tooltipText, itemID, gumpID, hue, cost, cat, constructor)
         { }
 
         public StoreEntry(Type itemType, TextDefinition[] name, int tooltip, int itemID, int gumpID, int hue, int cost, StoreCategory cat, Func<Mobile, StoreEntry, Item> constructor = null)
@@ -26,12 +33,20 @@ namespace Server.Engines.UOStore
             ItemType = itemType;
             Name = name;
             Tooltip = tooltip;
+            TooltipText = null;
             ItemID = itemID;
             GumpID = gumpID;
             Hue = hue;
             Price = cost;
             Category = cat;
             Constructor = constructor;
+            Index = m_GlobalIndex++;
+        }
+
+        public StoreEntry(Type itemType, TextDefinition[] name, string tooltipText, int itemID, int gumpID, int hue, int cost, StoreCategory cat, Func<Mobile, StoreEntry, Item> constructor = null)
+            : this(itemType, name, 0, itemID, gumpID, hue, cost, cat, constructor)
+        {
+            TooltipText = tooltipText;
         }
 
         public bool Construct(Mobile m, bool test = false)
@@ -69,7 +84,7 @@ namespace Server.Engines.UOStore
                 }
                 else if (item.LabelNumber > 0 || item.Name != null)
                 {
-                    string name = item.LabelNumber > 0 ? ("#" + item.LabelNumber) : item.Name;
+                    var name = item.LabelNumber > 0 ? ("#" + item.LabelNumber) : item.Name;
 
                     // Your purchase of ~1_ITEM~ has been placed in your backpack.
                     m.SendLocalizedMessage(1156844, name);
@@ -88,8 +103,8 @@ namespace Server.Engines.UOStore
                 return true;
             }
 
-            Utility.WriteConsoleColor(ConsoleColor.Red, string.Format("[Ultima Store Warning]: {0} failed to construct.", ItemType.Name));
-
+            Utility.WriteConsoleColor(ConsoleColor.Red, String.Format("[Ultima Store Warning]: {0} failed to construct.", ItemType.Name));
+            
             return false;
         }
     }

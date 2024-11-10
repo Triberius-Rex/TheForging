@@ -1,3 +1,6 @@
+using System;
+using Server.Gumps;
+
 namespace Server.Items
 {
     public class CrystalBrazierAddon : BaseAddon
@@ -13,12 +16,12 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new CrystalBrazierDeed();
+        public override BaseAddonDeed Deed { get { return new CrystalBrazierDeed(); } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -30,12 +33,12 @@ namespace Server.Items
 
     public class CrystalBrazierDeed : BaseAddonDeed
     {
-        public override int LabelNumber => 1076667;  // Crystal Brazier
+        public override int LabelNumber { get { return 1076667; } } // Crystal Brazier
 
-        public override bool ExcludeDeedHue => true;
+        public override bool ExcludeDeedHue { get { return true; } }
 
-        public override BaseAddon Addon => new CrystalBrazierAddon();
-
+        public override BaseAddon Addon { get { return new CrystalBrazierAddon(); } }
+        
         [Constructable]
         public CrystalBrazierDeed()
             : base()
@@ -52,7 +55,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

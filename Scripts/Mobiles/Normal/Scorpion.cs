@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -39,9 +40,13 @@ namespace Server.Mobiles
             Fame = 2000;
             Karma = -2000;
 
+            VirtualArmor = 28;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 47.1;
+
+            PackItem(new LesserPoisonPotion());
         }
 
         public Scorpion(Serial serial)
@@ -49,27 +54,61 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Arachnid;
-        public override Poison PoisonImmune => Poison.Greater;
-        public override Poison HitPoison => (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly);
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Arachnid;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Greater;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly);
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<LesserPoisonPotion>(true));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0 && (AbilityProfile == null || AbilityProfile.MagicalAbility == MagicalAbility.None))
+            {
+                SetMagicalAbility(MagicalAbility.Poisoning);
+            }
         }
     }
 }

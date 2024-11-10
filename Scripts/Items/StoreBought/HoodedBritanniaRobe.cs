@@ -1,8 +1,11 @@
+using System;
+using Server.Gumps;
+
 namespace Server.Items
 {
     public class HoodedBritanniaRobe : BaseOuterTorso
     {
-        public override int LabelNumber => 1125155;  // Hooded Britannia Robe
+        public override int LabelNumber { get { return 1125155; } } // Hooded Britannia Robe
 
         [Constructable]
         public HoodedBritanniaRobe(int id)
@@ -20,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class TravestysSushiPreparations : Item
@@ -13,12 +15,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1075093;// Travesty's Sushi Preparations
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1075093;
+            }
+        }// Travesty's Sushi Preparations
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

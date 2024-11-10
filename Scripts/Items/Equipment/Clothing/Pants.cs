@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     #region Reward Clothing
     public class LibraryFriendSkirt : Kilt
     {
-        public override int LabelNumber => 1073352; // Friends of the Library Kilt
+        public override int LabelNumber { get { return 1073352; } }// Friends of the Library Kilt
 
         [Constructable]
         public LibraryFriendSkirt()
@@ -21,11 +23,11 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+      
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -37,7 +39,7 @@ namespace Server.Items
 
     public class LibraryFriendPants : LongPants
     {
-        public override int LabelNumber => 1073349; // Friends of the Library Pants
+        public override int LabelNumber { get { return 1073349; } }// Friends of the Library Pants
 
         [Constructable]
         public LibraryFriendPants()
@@ -55,11 +57,11 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -71,7 +73,7 @@ namespace Server.Items
 
     public class MalabellesDress : Skirt
     {
-        public override int LabelNumber => 1073251; // Malabelle's Dress - Museum of Vesper Replica
+        public override int LabelNumber { get { return 1073251; } }// Malabelle's Dress - Museum of Vesper Replica
 
         [Constructable]
         public MalabellesDress()
@@ -94,7 +96,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -127,7 +129,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -138,7 +140,7 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x152e, 0x152f)]
+    [FlipableAttribute(0x152e, 0x152f)]
     public class ShortPants : BasePants
     {
         [Constructable]
@@ -151,7 +153,7 @@ namespace Server.Items
         public ShortPants(int hue)
             : base(0x152E, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public ShortPants(Serial serial)
@@ -163,7 +165,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -174,7 +176,7 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x1539, 0x153a)]
+    [FlipableAttribute(0x1539, 0x153a)]
     public class LongPants : BasePants
     {
         [Constructable]
@@ -187,7 +189,7 @@ namespace Server.Items
         public LongPants(int hue)
             : base(0x1539, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public LongPants(Serial serial)
@@ -199,7 +201,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -223,7 +225,7 @@ namespace Server.Items
         public TattsukeHakama(int hue)
             : base(0x279B, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public TattsukeHakama(Serial serial)
@@ -235,7 +237,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -246,9 +248,17 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x2FC3, 0x3179)]
+    [FlipableAttribute(0x2FC3, 0x3179)]
     public class ElvenPants : BasePants
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Elf;
+            }
+        }
+
         [Constructable]
         public ElvenPants()
             : this(0)
@@ -259,7 +269,7 @@ namespace Server.Items
         public ElvenPants(int hue)
             : base(0x2FC3, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public ElvenPants(Serial serial)
@@ -284,6 +294,21 @@ namespace Server.Items
 
     public class GargishClothLegs : BaseClothing
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public GargishClothLegs()
             : this(0)
@@ -294,7 +319,7 @@ namespace Server.Items
         public GargishClothLegs(int hue)
             : base(0x040A, Layer.Pants, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public override void OnAdded(object parent)
@@ -304,9 +329,9 @@ namespace Server.Items
             if (parent is Mobile)
             {
                 if (((Mobile)parent).Female)
-                    ItemID = 0x0409;
+                    this.ItemID = 0x0409;
                 else
-                    ItemID = 0x040A;
+                    this.ItemID = 0x040A;
             }
         }
 
@@ -318,7 +343,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -330,6 +355,21 @@ namespace Server.Items
 
     public class FemaleGargishClothLegs : BaseClothing
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public FemaleGargishClothLegs()
             : this(0)
@@ -340,7 +380,7 @@ namespace Server.Items
         public FemaleGargishClothLegs(int hue)
             : base(0x0409, Layer.Pants, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public FemaleGargishClothLegs(Serial serial)
@@ -351,7 +391,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -363,6 +403,21 @@ namespace Server.Items
 
     public class MaleGargishClothLegs : BaseClothing
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public MaleGargishClothLegs()
             : this(0)
@@ -373,7 +428,7 @@ namespace Server.Items
         public MaleGargishClothLegs(int hue)
             : base(0x040A, Layer.Pants, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public MaleGargishClothLegs(Serial serial)
@@ -384,7 +439,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

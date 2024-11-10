@@ -1,6 +1,7 @@
-using Server.Items;
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Engines.TreasuresOfKotlCity
 {
@@ -8,7 +9,7 @@ namespace Server.Engines.TreasuresOfKotlCity
     {
         private Timer m_Timer;
 
-        public bool CheckWhenHidden => true;
+        public bool CheckWhenHidden { get { return true; } }
 
         [Constructable]
         public KotlRegalChest()
@@ -21,11 +22,11 @@ namespace Server.Engines.TreasuresOfKotlCity
             LiftOverride = true;
 
             RequiredSkill = 90;
-            LockLevel = RequiredSkill - Utility.Random(1, 10);
+            LockLevel =  RequiredSkill - Utility.Random(1, 10);
             MaxLockLevel = RequiredSkill;
             TrapType = TrapType.MagicTrap;
             TrapPower = 100;
-
+            
             Timer.DelayCall(TimeSpan.FromSeconds(1), Fill);
         }
 
@@ -33,16 +34,16 @@ namespace Server.Engines.TreasuresOfKotlCity
         {
             Reset();
 
-            List<Item> contains = new List<Item>(Items);
+            List<Item> contains = new List<Item>(this.Items);
 
-            foreach (Item item in contains)
+            foreach (var item in contains)
             {
                 item.Delete();
             }
 
             ColUtility.Free(contains);
 
-            for (int i = 0; i < Utility.RandomMinMax(6, 12); i++)
+            for(int i = 0; i < Utility.RandomMinMax(6, 12); i++)
                 DropItem(Loot.RandomGem());
 
             DropItem(new Gold(Utility.RandomMinMax(800, 1100)));
@@ -62,7 +63,7 @@ namespace Server.Engines.TreasuresOfKotlCity
                 DropItem(new InoperativeAutomatonHead());
             }
 
-            if (0.1 > Utility.RandomDouble() && Points.PointsSystem.TreasuresOfKotlCity.Enabled)
+            if (0.1 > Utility.RandomDouble() && Server.Engines.Points.PointsSystem.TreasuresOfKotlCity.Enabled)
             {
                 Item item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(LootPackEntry.IsInTokuno(this), LootPackEntry.IsMondain(this), LootPackEntry.IsStygian(this));
 
@@ -72,7 +73,7 @@ namespace Server.Engines.TreasuresOfKotlCity
 
                     TreasureMapChest.GetRandomItemStat(out min, out max, 1.0);
 
-                    RunicReforging.GenerateRandomItem(item, null, Utility.RandomMinMax(min, max), 0, ReforgedPrefix.None, ReforgedSuffix.Kotl, Map);
+                    RunicReforging.GenerateRandomItem(item, null, Utility.RandomMinMax(min, max), 0, ReforgedPrefix.None, ReforgedSuffix.Kotl, this.Map);
 
                     DropItem(item);
                 }
@@ -98,18 +99,18 @@ namespace Server.Engines.TreasuresOfKotlCity
                 DropItem(item);
             }
         }
-
+        
         public void Reset()
         {
             EndTimer();
-
+        
             Visible = false;
             Locked = true;
-
+            
             RequiredSkill = 90;
-            LockLevel = RequiredSkill - Utility.Random(1, 10);
+            LockLevel =  RequiredSkill - Utility.Random(1, 10);
             MaxLockLevel = RequiredSkill;
-
+            
             TrapType = TrapType.MagicTrap;
             TrapPower = 100;
         }
@@ -126,7 +127,7 @@ namespace Server.Engines.TreasuresOfKotlCity
 
         public virtual bool CheckPassiveDetect(Mobile m)
         {
-            if (m.InRange(Location, 4))
+            if (m.InRange(this.Location, 4))
             {
                 int skill = (int)m.Skills[SkillName.DetectHidden].Value;
 
@@ -148,20 +149,20 @@ namespace Server.Engines.TreasuresOfKotlCity
             : base(serial)
         {
         }
-
+        
         public void TryDelayedLock()
         {
-            if (Locked || (m_Timer != null && m_Timer.Running))
+            if(Locked || (m_Timer != null && m_Timer.Running))
                 return;
-
+            
             EndTimer();
-
+            
             m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(Utility.RandomMinMax(10, 15)), Fill);
         }
-
+        
         public void EndTimer()
         {
-            if (m_Timer != null)
+            if(m_Timer != null)
             {
                 m_Timer.Stop();
                 m_Timer = null;
@@ -172,7 +173,7 @@ namespace Server.Engines.TreasuresOfKotlCity
         {
             base.Serialize(writer);
             writer.Write(0); // Version
-
+            
             TryDelayedLock();
         }
 

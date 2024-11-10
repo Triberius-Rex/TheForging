@@ -1,13 +1,16 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x4204, 0x4208)]
+    // Based off a HeaterShield
+    [FlipableAttribute(0x4204, 0x4208)]
     public class LargePlateShield : BaseShield
     {
         [Constructable]
         public LargePlateShield()
             : base(0x4204)
         {
-            Weight = 8.0;
+
         }
 
         public LargePlateShield(Serial serial)
@@ -15,15 +18,83 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 1;
-        public override int BaseColdResistance => 0;
-        public override int BasePoisonResistance => 0;
-        public override int BaseEnergyResistance => 0;
-        public override int InitMinHits => 50;
-        public override int InitMaxHits => 65;
-        public override int StrReq => 90;
-
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 50;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 65;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 90;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 23;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -33,7 +104,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);//version
+            writer.Write((int)0);//version
         }
     }
 }

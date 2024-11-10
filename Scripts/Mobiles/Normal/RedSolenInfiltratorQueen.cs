@@ -1,48 +1,48 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    [CorpseName("a solen infiltrator corpse")]
+    [CorpseName("a solen infiltrator corpse")] // TODO: Corpse name?
     public class RedSolenInfiltratorQueen : BaseCreature, IRedSolen
     {
         [Constructable]
         public RedSolenInfiltratorQueen()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "a red solen infiltrator";
-            Body = 783;
-            BaseSoundID = 959;
+            this.Name = "a red solen infiltrator";
+            this.Body = 783;
+            this.BaseSoundID = 959;
 
-            SetStr(326, 350);
-            SetDex(141, 165);
-            SetInt(96, 120);
+            this.SetStr(326, 350);
+            this.SetDex(141, 165);
+            this.SetInt(96, 120);
 
-            SetHits(151, 162);
+            this.SetHits(151, 162);
 
-            SetDamage(10, 15);
+            this.SetDamage(10, 15);
 
-            SetDamageType(ResistanceType.Physical, 70);
-            SetDamageType(ResistanceType.Poison, 30);
+            this.SetDamageType(ResistanceType.Physical, 70);
+            this.SetDamageType(ResistanceType.Poison, 30);
 
-            SetResistance(ResistanceType.Physical, 30, 40);
-            SetResistance(ResistanceType.Fire, 30, 35);
-            SetResistance(ResistanceType.Cold, 25, 35);
-            SetResistance(ResistanceType.Poison, 35, 40);
-            SetResistance(ResistanceType.Energy, 25, 30);
+            this.SetResistance(ResistanceType.Physical, 30, 40);
+            this.SetResistance(ResistanceType.Fire, 30, 35);
+            this.SetResistance(ResistanceType.Cold, 25, 35);
+            this.SetResistance(ResistanceType.Poison, 35, 40);
+            this.SetResistance(ResistanceType.Energy, 25, 30);
 
-            SetSkill(SkillName.MagicResist, 90.0);
-            SetSkill(SkillName.Tactics, 90.0);
-            SetSkill(SkillName.Wrestling, 90.0);
+            this.SetSkill(SkillName.MagicResist, 90.0);
+            this.SetSkill(SkillName.Tactics, 90.0);
+            this.SetSkill(SkillName.Wrestling, 90.0);
 
-            Fame = 6500;
-            Karma = -6500;
-        }
+            this.Fame = 6500;
+            this.Karma = -6500;
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.Rich);
-            AddLoot(LootPack.LootItem<ZoogiFungus>(0.05 > Utility.RandomDouble() ? 16 : 4));
-            AddLoot(LootPack.LootItemCallback(SolenHelper.PackPicnicBasket, 1.0, 1, false, false));
+            this.VirtualArmor = 50;
+
+            SolenHelper.PackPicnicBasket(this);
+
+            this.PackItem(new ZoogiFungus((0.05 < Utility.RandomDouble()) ? 4 : 16));
         }
 
         public RedSolenInfiltratorQueen(Serial serial)
@@ -75,6 +75,11 @@ namespace Server.Mobiles
             return 0x25B;
         }
 
+        public override void GenerateLoot()
+        {
+            this.AddLoot(LootPack.Rich);
+        }
+
         public override bool IsEnemy(Mobile m)
         {
             if (SolenHelper.CheckRedFriendship(m))
@@ -93,7 +98,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

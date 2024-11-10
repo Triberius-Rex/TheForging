@@ -1,13 +1,13 @@
 
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
     public class KodarsRescueQuest : BaseQuest
     {
-        public override bool DoneOnce => true;
+        public override bool DoneOnce { get { return true; } }
 
         public KodarsRescueQuest()
             : base()
@@ -18,29 +18,29 @@ namespace Server.Engines.Quests
         }
 
         /* Kodar's Rescue */
-        public override object Title => 1073066;
+        public override object Title { get { return 1073066; } }
 
         /* Please, please I beg of you ... help out of here. I was trying to find one of my sheep 
            that went missing and I fell down this hole.  Then these ... *hysterical weeping*.  
            Please, get me out of here!
         */
-        public override object Description => 1074704;
+        public override object Description { get { return 1074704; } }
 
         /* Please!  PLEASE!  Don't let me die here. */
-        public override object Refuse => 1074705;
+        public override object Refuse { get { return 1074705; } }
 
         /* *whimper* Please ... hurry.  I am a good climber and could get out the way you came in, 
            if you can just get me there.
         */
-        public override object Uncomplete => 1074706;
+        public override object Uncomplete { get { return 1074706; } }
 
         /* You've saved my life!  Oh thank you!  I can't repay you for your kindness but please, take */
-        public override object Complete => 1074707;
+        public override object Complete { get { return 1074707; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -54,13 +54,14 @@ namespace Server.Engines.Quests
     {
         public static void Initialize()
         {
-            Spawn();
+            if (Core.ML)
+                Spawn();
         }
 
-        public static Point3D HomeLocation => new Point3D(6311, 449, -50);
-        public static int HomeRange => 5;
+        public static Point3D HomeLocation { get { return new Point3D(6311, 449, -50); } }
+        public static int HomeRange { get { return 5; } }
 
-        public override Type[] Quests => new Type[] { typeof(KodarsRescueQuest) };
+        public override Type[] Quests { get { return new Type[] { typeof(KodarsRescueQuest) }; } }
 
         public static List<Kodar> FelInstances { get; set; }
         public static List<Kodar> TramInstances { get; set; }
@@ -82,7 +83,7 @@ namespace Server.Engines.Quests
         {
             Say(1074202); // It’s you!   I’m saved, you are just in time.
         }
-
+        
         public override void OnDelete()
         {
             if (Map == Map.Felucca && FelInstances != null && FelInstances.Contains(this))
@@ -97,10 +98,11 @@ namespace Server.Engines.Quests
                 TramInstances = null;
             }
 
-            Timer.DelayCall(TimeSpan.FromSeconds(3), delegate
-            {
-                Spawn();
-            });
+            Timer.DelayCall(TimeSpan.FromSeconds(3), new TimerCallback(
+                delegate
+                {
+                    Spawn();
+                }));
 
             base.OnDelete();
         }
@@ -109,11 +111,9 @@ namespace Server.Engines.Quests
         {
             if (FelInstances == null)
             {
-                Kodar creature = new Kodar
-                {
-                    Home = HomeLocation,
-                    RangeHome = HomeRange
-                };
+                Kodar creature = new Kodar();
+                creature.Home = HomeLocation;
+                creature.RangeHome = HomeRange;
                 creature.MoveToWorld(HomeLocation, Map.Felucca);
 
                 FelInstances = new List<Kodar>();
@@ -122,11 +122,9 @@ namespace Server.Engines.Quests
 
             if (TramInstances == null)
             {
-                Kodar creature = new Kodar
-                {
-                    Home = HomeLocation,
-                    RangeHome = HomeRange
-                };
+                Kodar creature = new Kodar();
+                creature.Home = HomeLocation;
+                creature.RangeHome = HomeRange;
                 creature.MoveToWorld(HomeLocation, Map.Trammel);
 
                 TramInstances = new List<Kodar>();
@@ -158,7 +156,7 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

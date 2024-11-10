@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -11,33 +11,38 @@ namespace Server.Mobiles
         [Constructable]
         public LadyJennifyr()
         {
-            Name = "Lady Jennifyr";
-            Hue = 0x76D;
+            this.Name = "Lady Jennifyr";
+            this.Hue = 0x76D;
 
-            SetStr(208, 309);
-            SetDex(91, 118);
-            SetInt(44, 101);
+            this.SetStr(208, 309);
+            this.SetDex(91, 118);
+            this.SetInt(44, 101);
 
-            SetHits(1113, 1285);
+            this.SetHits(1113, 1285);
 
-            SetDamage(15, 25);
+            this.SetDamage(15, 25);
 
-            SetDamageType(ResistanceType.Physical, 40);
-            SetDamageType(ResistanceType.Cold, 60);
+            this.SetDamageType(ResistanceType.Physical, 40);
+            this.SetDamageType(ResistanceType.Cold, 60);
 
-            SetResistance(ResistanceType.Physical, 56, 65);
-            SetResistance(ResistanceType.Fire, 41, 49);
-            SetResistance(ResistanceType.Cold, 71, 80);
-            SetResistance(ResistanceType.Poison, 41, 50);
-            SetResistance(ResistanceType.Energy, 50, 58);
+            this.SetResistance(ResistanceType.Physical, 56, 65);
+            this.SetResistance(ResistanceType.Fire, 41, 49);
+            this.SetResistance(ResistanceType.Cold, 71, 80);
+            this.SetResistance(ResistanceType.Poison, 41, 50);
+            this.SetResistance(ResistanceType.Energy, 50, 58);
 
-            SetSkill(SkillName.Wrestling, 127.9, 137.1);
-            SetSkill(SkillName.Tactics, 128.4, 141.9);
-            SetSkill(SkillName.MagicResist, 102.1, 119.5);
-            SetSkill(SkillName.Anatomy, 129.0, 137.5);
+            this.SetSkill(SkillName.Wrestling, 127.9, 137.1);
+            this.SetSkill(SkillName.Tactics, 128.4, 141.9);
+            this.SetSkill(SkillName.MagicResist, 102.1, 119.5);
+            this.SetSkill(SkillName.Anatomy, 129.0, 137.5);
 
-            Fame = 18000;
-            Karma = -18000;
+            this.Fame = 18000;
+            this.Karma = -18000;
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                this.PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
         }
 
         public LadyJennifyr(Serial serial)
@@ -45,14 +50,29 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanBeParagon => false;
+		public override bool CanBeParagon { get { return false; } }
 
+        public override void OnDeath( Container c )
+        {
+            base.OnDeath( c );
+
+            if ( Utility.RandomDouble() < 0.15 )
+            c.DropItem( new DisintegratingThesisNotes() );
+
+            if ( Utility.RandomDouble() < 0.1 )
+            c.DropItem( new ParrotItem() );
+        }
+     
+        /*public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }*/
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.UltraRich, 3);
-            AddLoot(LootPack.ArcanistScrolls);
-            AddLoot(LootPack.LootItem<DisintegratingThesisNotes>(15.0));
-            AddLoot(LootPack.Parrot);
+            this.AddLoot(LootPack.UltraRich, 3);
         }
 
         public override void OnGaveMeleeAttack(Mobile defender)
@@ -82,7 +102,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -99,23 +119,23 @@ namespace Server.Mobiles
             public ExpireTimer(Mobile m, ResistanceMod mod)
                 : base(TimeSpan.FromSeconds(10))
             {
-                m_Mobile = m;
-                m_Mod = mod;
-                Priority = TimerPriority.OneSecond;
+                this.m_Mobile = m;
+                this.m_Mod = mod;
+                this.Priority = TimerPriority.TwoFiftyMS;
             }
 
             public void DoExpire()
             {
-                m_Mobile.RemoveResistanceMod(m_Mod);
+                this.m_Mobile.RemoveResistanceMod(this.m_Mod);
 
-                Stop();
-                m_Table.Remove(m_Mobile);
+                this.Stop();
+                m_Table.Remove(this.m_Mobile);
             }
 
             protected override void OnTick()
             {
-                m_Mobile.SendLocalizedMessage(1070834); // Your resistance to fire attacks has returned.
-                DoExpire();
+                this.m_Mobile.SendLocalizedMessage(1070834); // Your resistance to fire attacks has returned.
+                this.DoExpire();
             }
         }
     }

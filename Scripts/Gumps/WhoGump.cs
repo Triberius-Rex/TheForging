@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Commands;
 using Server.Mobiles;
 using Server.Network;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Gumps
 {
@@ -49,7 +49,7 @@ namespace Server.Gumps
         private readonly List<Mobile> m_Mobiles;
         private int m_Page;
 
-        public bool EC => m_Owner != null && m_Owner.NetState != null && m_Owner.NetState.IsEnhancedClient;
+        public bool EC { get { return m_Owner != null && m_Owner.NetState != null && m_Owner.NetState.IsEnhancedClient; } }
 
         public WhoGump(Mobile owner, string filter)
             : this(owner, BuildList(owner, filter), 0)
@@ -61,16 +61,16 @@ namespace Server.Gumps
         {
             owner.CloseGump(typeof(WhoGump));
 
-            m_Owner = owner;
-            m_Mobiles = list;
+            this.m_Owner = owner;
+            this.m_Mobiles = list;
 
-            Initialize(page);
+            this.Initialize(page);
         }
 
         public static void Initialize()
         {
-            CommandSystem.Register("Who", AccessLevel.Counselor, WhoList_OnCommand);
-            CommandSystem.Register("WhoList", AccessLevel.Counselor, WhoList_OnCommand);
+            CommandSystem.Register("Who", AccessLevel.Counselor, new CommandEventHandler(WhoList_OnCommand));
+            CommandSystem.Register("WhoList", AccessLevel.Counselor, new CommandEventHandler(WhoList_OnCommand));
         }
 
         public static List<Mobile> BuildList(Mobile owner, string filter)
@@ -78,9 +78,7 @@ namespace Server.Gumps
             if (filter != null && (filter = filter.Trim()).Length == 0)
                 filter = null;
             else
-            {
-                filter = filter?.ToLower();
-            }
+                filter = filter.ToLower();
 
             List<Mobile> list = new List<Mobile>();
             List<NetState> states = NetState.Instances;
@@ -105,9 +103,9 @@ namespace Server.Gumps
 
         public void Initialize(int page)
         {
-            m_Page = page;
+            this.m_Page = page;
 
-            int count = m_Mobiles.Count - (page * EntryCount);
+            int count = this.m_Mobiles.Count - (page * EntryCount);
 
             if (count < 0)
                 count = 0;
@@ -116,10 +114,10 @@ namespace Server.Gumps
 
             int totalHeight = OffsetSize + ((EntryHeight + OffsetSize) * (count + 1));
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddBackground(0, 0, BackWidth, BorderSize + totalHeight + BorderSize, BackGumpID);
-            AddImageTiled(BorderSize, BorderSize, TotalWidth - (OldStyle ? SetWidth + OffsetSize : 0), totalHeight, OffsetGumpID);
+            this.AddBackground(0, 0, BackWidth, BorderSize + totalHeight + BorderSize, BackGumpID);
+            this.AddImageTiled(BorderSize, BorderSize, TotalWidth - (OldStyle ? SetWidth + OffsetSize : 0), totalHeight, OffsetGumpID);
 
             int x = BorderSize + OffsetSize;
             int y = BorderSize + OffsetSize;
@@ -127,55 +125,55 @@ namespace Server.Gumps
             int emptyWidth = TotalWidth - PrevWidth - NextWidth - (OffsetSize * 4) - (OldStyle ? SetWidth + OffsetSize : 0);
 
             if (!OldStyle)
-                AddImageTiled(x - (OldStyle ? OffsetSize : 0), y, emptyWidth + (OldStyle ? OffsetSize * 2 : 0), EntryHeight, EntryGumpID);
+                this.AddImageTiled(x - (OldStyle ? OffsetSize : 0), y, emptyWidth + (OldStyle ? OffsetSize * 2 : 0), EntryHeight, EntryGumpID);
 
-            AddLabel(x + TextOffsetX, y, TextHue, string.Format("Page {0} of {1} ({2})", page + 1, (m_Mobiles.Count + EntryCount - 1) / EntryCount, m_Mobiles.Count));
+            this.AddLabel(x + TextOffsetX, y, TextHue, String.Format("Page {0} of {1} ({2})", page + 1, (this.m_Mobiles.Count + EntryCount - 1) / EntryCount, this.m_Mobiles.Count));
 
             x += emptyWidth + OffsetSize;
 
             if (OldStyle)
-                AddImageTiled(x, y, TotalWidth - (OffsetSize * 3) - SetWidth, EntryHeight, HeaderGumpID);
+                this.AddImageTiled(x, y, TotalWidth - (OffsetSize * 3) - SetWidth, EntryHeight, HeaderGumpID);
             else
-                AddImageTiled(x, y, PrevWidth, EntryHeight, HeaderGumpID);
+                this.AddImageTiled(x, y, PrevWidth, EntryHeight, HeaderGumpID);
 
             if (page > 0)
             {
-                AddButton(x + PrevOffsetX, y + PrevOffsetY, PrevButtonID1, PrevButtonID2, 1, GumpButtonType.Reply, 0);
+                this.AddButton(x + PrevOffsetX, y + PrevOffsetY, PrevButtonID1, PrevButtonID2, 1, GumpButtonType.Reply, 0);
 
                 if (PrevLabel)
-                    AddLabel(x + PrevLabelOffsetX, y + PrevLabelOffsetY, TextHue, "Previous");
+                    this.AddLabel(x + PrevLabelOffsetX, y + PrevLabelOffsetY, TextHue, "Previous");
             }
 
             x += PrevWidth + OffsetSize;
 
             if (!OldStyle)
-                AddImageTiled(x, y, NextWidth, EntryHeight, HeaderGumpID);
+                this.AddImageTiled(x, y, NextWidth, EntryHeight, HeaderGumpID);
 
-            if ((page + 1) * EntryCount < m_Mobiles.Count)
+            if ((page + 1) * EntryCount < this.m_Mobiles.Count)
             {
-                AddButton(x + NextOffsetX, y + NextOffsetY, NextButtonID1, NextButtonID2, 2, GumpButtonType.Reply, 1);
+                this.AddButton(x + NextOffsetX, y + NextOffsetY, NextButtonID1, NextButtonID2, 2, GumpButtonType.Reply, 1);
 
                 if (NextLabel)
-                    AddLabel(x + NextLabelOffsetX, y + NextLabelOffsetY, TextHue, "Next");
+                    this.AddLabel(x + NextLabelOffsetX, y + NextLabelOffsetY, TextHue, "Next");
             }
 
-            for (int i = 0, index = page * EntryCount; i < EntryCount && index < m_Mobiles.Count; ++i, ++index)
+            for (int i = 0, index = page * EntryCount; i < EntryCount && index < this.m_Mobiles.Count; ++i, ++index)
             {
                 x = BorderSize + OffsetSize;
                 y += EntryHeight + OffsetSize;
 
-                Mobile m = m_Mobiles[index];
+                Mobile m = this.m_Mobiles[index];
 
-                AddImageTiled(x, y, EntryWidth, EntryHeight, EntryGumpID);
-                AddLabelCropped(x + TextOffsetX, y, EntryWidth - TextOffsetX, EntryHeight, GetHueFor(m), m.Deleted ? "(deleted)" : m.Name);
+                this.AddImageTiled(x, y, EntryWidth, EntryHeight, EntryGumpID);
+                this.AddLabelCropped(x + TextOffsetX, y, EntryWidth - TextOffsetX, EntryHeight, GetHueFor(m), m.Deleted ? "(deleted)" : m.Name);
 
                 x += EntryWidth + OffsetSize;
 
                 if (SetGumpID != 0)
-                    AddImageTiled(x, y, SetWidth, EntryHeight, SetGumpID);
+                    this.AddImageTiled(x, y, SetWidth, EntryHeight, SetGumpID);
 
                 if (m.NetState != null && !m.Deleted)
-                    AddButton(x + SetOffsetX, y + SetOffsetY, SetButtonID1, SetButtonID2, i + 3, GumpButtonType.Reply, 0);
+                    this.AddButton(x + SetOffsetX, y + SetOffsetY, SetButtonID1, SetButtonID2, i + 3, GumpButtonType.Reply, 0);
             }
         }
 
@@ -183,7 +181,7 @@ namespace Server.Gumps
         {
             Mobile from = state.Mobile;
 
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case 0: // Closed
                     {
@@ -191,44 +189,44 @@ namespace Server.Gumps
                     }
                 case 1: // Previous
                     {
-                        if (m_Page > 0)
-                            from.SendGump(new WhoGump(from, m_Mobiles, m_Page - 1));
+                        if (this.m_Page > 0)
+                            from.SendGump(new WhoGump(from, this.m_Mobiles, this.m_Page - 1));
 
                         break;
                     }
                 case 2: // Next
                     {
-                        if ((m_Page + 1) * EntryCount < m_Mobiles.Count)
-                            from.SendGump(new WhoGump(from, m_Mobiles, m_Page + 1));
+                        if ((this.m_Page + 1) * EntryCount < this.m_Mobiles.Count)
+                            from.SendGump(new WhoGump(from, this.m_Mobiles, this.m_Page + 1));
 
                         break;
                     }
                 default:
                     {
-                        int index = (m_Page * EntryCount) + (info.ButtonID - 3);
+                        int index = (this.m_Page * EntryCount) + (info.ButtonID - 3);
 
-                        if (index >= 0 && index < m_Mobiles.Count)
+                        if (index >= 0 && index < this.m_Mobiles.Count)
                         {
-                            Mobile m = m_Mobiles[index];
+                            Mobile m = this.m_Mobiles[index];
 
                             if (m.Deleted)
                             {
                                 from.SendMessage("That player has deleted their character.");
-                                from.SendGump(new WhoGump(from, m_Mobiles, m_Page));
+                                from.SendGump(new WhoGump(from, this.m_Mobiles, this.m_Page));
                             }
                             else if (m.NetState == null)
                             {
                                 from.SendMessage("That player is no longer online.");
-                                from.SendGump(new WhoGump(from, m_Mobiles, m_Page));
+                                from.SendGump(new WhoGump(from, this.m_Mobiles, this.m_Page));
                             }
-                            else if (m == from || !m.Hidden || from.AccessLevel >= m.AccessLevel || (m is PlayerMobile && ((PlayerMobile)m).VisibilityList.Contains(from)))
+                            else if (m == from || !m.Hidden || from.AccessLevel >= m.AccessLevel || (m is PlayerMobile && ((PlayerMobile)m).VisibilityList.Contains(from))) 
                             {
                                 from.SendGump(new ClientGump(from, m.NetState));
                             }
                             else
                             {
                                 from.SendMessage("You cannot see them.");
-                                from.SendGump(new WhoGump(from, m_Mobiles, m_Page));
+                                from.SendGump(new WhoGump(from, this.m_Mobiles, this.m_Page));
                             }
                         }
 
@@ -247,19 +245,19 @@ namespace Server.Gumps
 
         private int GetHueFor(Mobile m)
         {
-            switch (m.AccessLevel)
+            switch ( m.AccessLevel )
             {
                 case AccessLevel.Owner:
                 case AccessLevel.CoOwner:
                 case AccessLevel.Developer:
-                case AccessLevel.Administrator:
-                    return EC ? 0x51D : 0x516;
-                case AccessLevel.Seer:
-                    return EC ? 0x142 : 0x144;
-                case AccessLevel.GameMaster:
-                    return EC ? 0x11 : 0x21;
-                case AccessLevel.Decorator:
-                    return 0x2;
+                case AccessLevel.Administrator: 
+					return EC ? 0x51D : 0x516;
+                case AccessLevel.Seer: 
+					return EC ? 0x142 : 0x144;
+                case AccessLevel.GameMaster: 
+					return EC ? 0x11 : 0x21;
+                case AccessLevel.Decorator: 
+					return 0x2;
                 case AccessLevel.VIP:
                 case AccessLevel.Player:
                 default:
@@ -277,6 +275,9 @@ namespace Server.Gumps
         private class InternalComparer : IComparer<Mobile>
         {
             public static readonly IComparer<Mobile> Instance = new InternalComparer();
+            public InternalComparer()
+            {
+            }
 
             public int Compare(Mobile x, Mobile y)
             {

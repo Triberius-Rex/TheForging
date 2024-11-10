@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -38,6 +39,7 @@ namespace Server.Mobiles
             Fame = 1500;
             Karma = -1500;
 
+            VirtualArmor = 19;
             SetWeaponAbility(WeaponAbility.MortalStrike);
         }
 
@@ -46,7 +48,13 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool BleedImmune => true;
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -56,7 +64,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

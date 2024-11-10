@@ -1,8 +1,10 @@
-using Server.Gumps;
-using Server.Mobiles;
-using Server.SkillHandlers;
 using System;
 using System.Collections.Generic;
+
+using Server;
+using Server.SkillHandlers;
+using Server.Gumps;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -16,7 +18,7 @@ namespace Server.Items
 
     public class SliderTrapTrainingKit : Item, ISliderKit, IRemoveTrapTrainingKit
     {
-        public override int LabelNumber => 1159016;  // Slider Trap Training Kit
+        public override int LabelNumber { get { return 1159016; } } // Slider Trap Training Kit
 
         private int _Style;
 
@@ -71,9 +73,9 @@ namespace Server.Items
                 Order[i] = 0;
             }
 
-            int randomIndex = Utility.Random(Order.Length);
-            int startID = 0x9CEE + (_Style * 9); // start at 1+ because the upper left picture is alwasy omitted
-            List<int> list = new List<int>();
+            var randomIndex = Utility.Random(Order.Length);
+            var startID = 0x9CEE + (_Style * 9); // start at 1+ because the upper left picture is alwasy omitted
+            var list = new List<int>();
 
             for (int i = 0; i < 8; i++)
             {
@@ -84,37 +86,37 @@ namespace Server.Items
             {
                 if (i != randomIndex)
                 {
-                    int add = list[Utility.Random(list.Count)];
+                    var add = list[Utility.Random(list.Count)];
                     Order[i] = add;
                     list.Remove(add);
                 }
             }
-
-            int invCount = 0;
-            for (int i = 0; i < Order.Length - 1; i++)
-            {
-                for (int j = i + 1; j < Order.Length; j++)
-                {
-                    if (Order[j] != 0 && Order[i] != 0 && Order[i] > Order[j])
-                        invCount++;
-                }
-            }
-
-            if (invCount % 2 == 1)
-            {
-                if (randomIndex > 2)
-                {
-                    int temp = Order[0];
-                    Order[0] = Order[1];
-                    Order[1] = temp;
-                }
-                else
-                {
-                    int temp = Order[Order.Length - 1];
-                    Order[Order.Length - 1] = Order[Order.Length - 2];
-                    Order[Order.Length - 2] = temp;
-                }
-            }
+			
+			int invCount = 0;
+			for (int i = 0; i < Order.Length - 1; i++)
+			{
+				for (int j = i + 1; j < Order.Length; j++)
+				{
+					if (Order[j] != 0 && Order[i] != 0 && Order[i] > Order[j])
+						invCount++;
+				}
+			}
+			
+			if (invCount % 2 == 1)
+			{
+				if (randomIndex > 2)
+				{
+					var temp = Order[0];
+					Order[0] = Order[1];
+					Order[1] = temp;
+				}
+				else
+				{
+					var temp = Order[Order.Length-1];
+					Order[Order.Length-1] = Order[Order.Length-2];
+					Order[Order.Length-2] = temp;
+				}
+			}
         }
 
         public override void OnDoubleClick(Mobile m)
@@ -148,8 +150,8 @@ namespace Server.Items
 
         private void TestOrder()
         {
-            int startID = 0x9CEE + (_Style * 9); // start at 1+ because the upper left picture is alwasy omitted
-            List<int> list = new List<int>();
+            var startID = 0x9CEE + (_Style * 9); // start at 1+ because the upper left picture is alwasy omitted
+            var list = new List<int>();
 
             for (int i = 0; i < 8; i++)
             {
@@ -207,7 +209,7 @@ namespace Server.Items
     public class SliderTrapGump : BaseGump
     {
         public ISliderKit Kit { get; set; }
-        public int[] Order => Kit.Order;
+        public int[] Order { get { return Kit.Order; } }
 
         public SliderTrapGump(PlayerMobile pm, ISliderKit kit)
             : base(pm, 100, 100)
@@ -224,13 +226,13 @@ namespace Server.Items
 
             for (int i = 0; i < Order.Length; i++)
             {
-                int order = Order[i];
+                var order = Order[i];
 
                 if (order == 0)
                     continue;
 
-                int x = i % 3 == 0 ? 15 : i % 3 == 1 ? 95 : 175;
-                int y = i <= 2 ? 20 : i <= 5 ? 153 : 286;
+                var x = i % 3 == 0 ? 15 : i % 3 == 1 ? 95 : 175;
+                var y = i <= 2 ? 20 : i <= 5 ? 153 : 286;
 
                 AddButton(x, y, order, order, i + 1, GumpButtonType.Reply, 0);
             }
@@ -240,14 +242,14 @@ namespace Server.Items
         {
             if (!Kit.Deleted && info.ButtonID >= 1 && info.ButtonID <= 9)
             {
-                int pick = info.ButtonID - 1;
-                int empty = Array.IndexOf(Order, 0);
+                var pick = info.ButtonID - 1;
+                var empty = Array.IndexOf(Order, 0);
 
                 if (ValidMove(pick, empty))
                 {
                     User.SendSound(0x42);
 
-                    int id = Order[pick];
+                    var id = Order[pick];
                     Order[pick] = 0;
                     Order[empty] = id;
 
@@ -288,7 +290,7 @@ namespace Server.Items
 
         private bool CheckSolution(Mobile m)
         {
-            int start = 0x9CEE + (Kit.Style * 9);
+            var start = 0x9CEE + (Kit.Style * 9);
 
             return Order[0] == 0 &&
                 Order[1] == start &&

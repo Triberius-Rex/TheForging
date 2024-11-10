@@ -10,18 +10,42 @@ namespace Server.Items
     {
         public static Dictionary<Mobile, Timer> _Table = new Dictionary<Mobile, Timer>();
 
+        public ArmorPierce()
+        {
+        }
+
         public override SkillName GetSecondarySkill(Mobile from)
         {
             return from.Skills[SkillName.Ninjitsu].Base > from.Skills[SkillName.Bushido].Base ? SkillName.Ninjitsu : SkillName.Bushido;
         }
 
-        public override int BaseMana => 30;
+        public override int BaseMana
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
-        public override double DamageScalar => 1.0;
+        public override double DamageScalar
+        {
+            get
+            {
+                return Core.HS ? 1.0 : 1.5;
+            }
+        }
+
+        public override bool RequiresSE
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, true))
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, true))
                 return;
 
             ClearCurrentAbility(attacker);
@@ -31,16 +55,19 @@ namespace Server.Items
             defender.SendLocalizedMessage(1153764); // Your armor has been pierced!
             defender.SendLocalizedMessage(1063351); // Your attacker pierced your armor!            
 
-            if (_Table.ContainsKey(defender))
+            if (Core.HS)
             {
-                if (attacker.Weapon is BaseRanged)
-                    return;
+                if (_Table.ContainsKey(defender))
+                {
+                    if (attacker.Weapon is BaseRanged)
+                        return;
 
-                _Table[defender].Stop();
+                    _Table[defender].Stop();
+                }
+
+                BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.ArmorPierce, 1028860, 1154367, TimeSpan.FromSeconds(3), defender, "10"));
+                _Table[defender] = Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(3), RemoveEffects, defender);
             }
-
-            BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.ArmorPierce, 1028860, 1154367, TimeSpan.FromSeconds(3), defender, "10"));
-            _Table[defender] = Timer.DelayCall(TimeSpan.FromSeconds(3), RemoveEffects, defender);
 
             defender.PlaySound(0x28E);
             defender.FixedParticles(0x3728, 1, 26, 0x26D6, 0, 0, EffectLayer.Waist);
@@ -57,9 +84,9 @@ namespace Server.Items
 
         public static bool IsUnderEffects(Mobile m)
         {
-            if (m == null)
+            if(m == null)
                 return false;
-
+                
             return _Table.ContainsKey(m);
         }
     }

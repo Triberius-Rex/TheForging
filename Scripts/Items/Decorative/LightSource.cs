@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class LightSource : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public LightSource()
             : base(0x1647)
         {
-            Layer = Layer.TwoHanded;
-            Movable = false;
+            this.Layer = Layer.TwoHanded;
+            this.Movable = false;
         }
 
         public LightSource(Serial serial)
@@ -18,7 +20,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,10 +1,13 @@
+using Server.ContextMenus;
 using Server.Engines.Points;
+using Server.Mobiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Items
 {
-    [Flipable(0xE41, 0xE40)]
+    [FlipableAttribute(0xE41, 0xE40)]
     public class TrashChest : BaseTrash
     {
         [Constructable]
@@ -20,13 +23,25 @@ namespace Server.Items
         {
         }
 
-        public override int DefaultMaxWeight => 0;// A value of 0 signals unlimited weight
-        public override bool IsDecoContainer => false;
+        public override int DefaultMaxWeight
+        {
+            get
+            {
+                return 0;
+            }
+        }// A value of 0 signals unlimited weight
+        public override bool IsDecoContainer
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -91,20 +106,22 @@ namespace Server.Items
 
                     ConfirmCleanupItem(items[i]);
 
-                    if (.01 > Utility.RandomDouble())
+                    #region SA
+                    if (Core.SA && .01 > Utility.RandomDouble())
                         TrashBarrel.DropToCavernOfDiscarded(items[i]);
                     else
                         items[i].Delete();
+                    #endregion
                 }
 
                 if (m_Cleanup.Any(x => x.mobiles != null))
                 {
-                    foreach (Mobile m in m_Cleanup.Select(x => x.mobiles).Distinct())
+                    foreach (var m in m_Cleanup.Select(x => x.mobiles).Distinct())
                     {
                         if (m_Cleanup.Find(x => x.mobiles == m && x.confirm) != null)
                         {
                             double point = m_Cleanup.Where(x => x.mobiles == m && x.confirm).Sum(x => x.points);
-                            m.SendLocalizedMessage(1151280, string.Format("{0}\t{1}", point.ToString(), m_Cleanup.Count(r => r.mobiles == m))); // You have received approximately ~1_VALUE~points for turning in ~2_COUNT~items for Clean Up Britannia.
+                            m.SendLocalizedMessage(1151280, String.Format("{0}\t{1}", point.ToString(), m_Cleanup.Count(r => r.mobiles == m))); // You have received approximately ~1_VALUE~points for turning in ~2_COUNT~items for Clean Up Britannia.
                             PointsSystem.CleanUpBritannia.AwardPoints(m, point);
                         }
                     }

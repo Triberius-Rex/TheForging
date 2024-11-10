@@ -1,13 +1,15 @@
-using Server.Mobiles;
-using Server.Targeting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using Server.Targeting;
+using Server.Mobiles;
 
 namespace Server.Spells.Seventh
 {
     public class ChainLightningSpell : MagerySpell
     {
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
         private static readonly SpellInfo m_Info = new SpellInfo(
             "Chain Lightning", "Vas Ort Grav",
@@ -23,8 +25,20 @@ namespace Server.Spells.Seventh
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Seventh;
-        public override bool DelayedDamage => true;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Seventh;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -43,20 +57,34 @@ namespace Server.Spells.Seventh
                 if (p is Item)
                     p = ((Item)p).GetWorldLocation();
 
-                System.Collections.Generic.List<IDamageable> targets = AcquireIndirectTargets(p, 2).ToList();
-                int count = Math.Max(1, targets.Count);
+                var targets = AcquireIndirectTargets(p, 2).ToList();
+                var count = Math.Max(1, targets.Count);
 
-                foreach (IDamageable dam in targets)
+                foreach (var dam in targets)
                 {
-                    IDamageable id = dam;
-                    Mobile m = id as Mobile;
-                    double damage = GetNewAosDamage(51, 1, 5, id is PlayerMobile, id);
+                    var id = dam;
+                    var m = id as Mobile;
+                    double damage;
 
-                    if (count > 2)
+                    if (Core.AOS)
+                        damage = GetNewAosDamage(51, 1, 5, id is PlayerMobile, id);
+                    else
+                        damage = Utility.Random(27, 22);
+
+                    if (Core.AOS && count > 2)
                         damage = (damage * 2) / count;
+                    else if (!Core.AOS)
+                        damage /= count;
+
+                    if (!Core.AOS && m != null && CheckResisted(m))
+                    {
+                        damage *= 0.5;
+
+                        m.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                    }
 
                     Mobile source = Caster;
-                    SpellHelper.CheckReflect(this, ref source, ref id);
+                    SpellHelper.CheckReflect((int)Circle, ref source, ref id, SpellDamageType);
 
                     if (m != null)
                     {
@@ -79,7 +107,7 @@ namespace Server.Spells.Seventh
         {
             private readonly ChainLightningSpell m_Owner;
             public InternalTarget(ChainLightningSpell owner)
-                : base(10, true, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

@@ -9,53 +9,77 @@ namespace Server.Mobiles
         public ForgottenServant()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            SpeechHue = Utility.RandomDyedHue();
-            Title = "Forgotten Servant";
-            Hue = 768;
+            this.SpeechHue = Utility.RandomDyedHue();
+            this.Title = "Forgotten Servant";
+            this.Hue = 768;
 
-            if (Female = Utility.RandomBool())
+            if (this.Female = Utility.RandomBool())
             {
-                Body = 0x191;
-                Name = NameList.RandomName("female");
-				SetWearable(new Skirt(), Utility.RandomNeutralHue(), 1);
+                this.Body = 0x191;
+                this.Name = NameList.RandomName("female");
+                this.AddItem(new Skirt(Utility.RandomNeutralHue()));
             }
             else
             {
-                Body = 0x190;
-                Name = NameList.RandomName("male");
-				SetWearable(new ShortPants(), Utility.RandomNeutralHue(), 1);
+                this.Body = 0x190;
+                this.Name = NameList.RandomName("male");
+                this.AddItem(new ShortPants(Utility.RandomNeutralHue()));
             }
 
-            SetStr(147, 215);
-            SetDex(91, 115);
-            SetInt(61, 85);
+            this.SetStr(147, 215);
+            this.SetDex(91, 115);
+            this.SetInt(61, 85);
 
-            SetHits(95, 123);
+            this.SetHits(95, 123);
 
-            SetDamage(4, 14);
+            this.SetDamage(4, 14);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 25, 35);
-            SetResistance(ResistanceType.Fire, 30, 40);
-            SetResistance(ResistanceType.Cold, 20, 30);
-            SetResistance(ResistanceType.Poison, 30, 40);
-            SetResistance(ResistanceType.Energy, 30, 40);
+            this.SetResistance(ResistanceType.Physical, 25, 35);
+            this.SetResistance(ResistanceType.Fire, 30, 40);
+            this.SetResistance(ResistanceType.Cold, 20, 30);
+            this.SetResistance(ResistanceType.Poison, 30, 40);
+            this.SetResistance(ResistanceType.Energy, 30, 40);
 
-            SetSkill(SkillName.MagicResist, 70.1, 85.0);
-            SetSkill(SkillName.Swords, 60.1, 85.0);
-            SetSkill(SkillName.Tactics, 75.1, 90.0);
-            SetSkill(SkillName.Wrestling, 60.1, 85.0);
+            this.SetSkill(SkillName.MagicResist, 70.1, 85.0);
+            this.SetSkill(SkillName.Swords, 60.1, 85.0);
+            this.SetSkill(SkillName.Tactics, 75.1, 90.0);
+            this.SetSkill(SkillName.Wrestling, 60.1, 85.0);
 
-            Fame = 2500;
-            Karma = -2500;
+            this.Fame = 2500;
+            this.Karma = -2500;
 
-			SetWearable(new Boots(), Utility.RandomNeutralHue(), 1);
-			SetWearable(new FancyShirt(), dropChance: 1);
-			SetWearable(new Bandana(), dropChance: 1);
-			SetWearable((Item)Activator.CreateInstance(Utility.RandomList(_WeaponsList)), dropChance: 1);
+            this.AddItem(new Boots(Utility.RandomNeutralHue()));
+            this.AddItem(new FancyShirt());
+            this.AddItem(new Bandana());
 
-			Utility.AssignRandomHair(this);
+            switch ( Utility.Random(7))
+            {
+                case 0:
+                    this.AddItem(new Longsword());
+                    break;
+                case 1:
+                    this.AddItem(new Cutlass());
+                    break;
+                case 2:
+                    this.AddItem(new Broadsword());
+                    break;
+                case 3:
+                    this.AddItem(new Axe());
+                    break;
+                case 4:
+                    this.AddItem(new Club());
+                    break;
+                case 5:
+                    this.AddItem(new Dagger());
+                    break;
+                case 6:
+                    this.AddItem(new Spear());
+                    break;
+            }
+
+            Utility.AssignRandomHair(this);
         }
 
         public ForgottenServant(Serial serial)
@@ -63,24 +87,31 @@ namespace Server.Mobiles
         {
         }
 
-		private static readonly Type[] _WeaponsList =
-		{
-			typeof(Longsword), typeof(Cutlass), typeof(Broadsword), typeof(Axe), typeof(Club), typeof(Dagger), typeof(Spear)
-		};
-
-		public override bool ClickTitle => false;
-        public override bool AlwaysMurderer => true;
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Average);
+            this.AddLoot(LootPack.Average);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 
 namespace Server.Regions
@@ -15,23 +16,29 @@ namespace Server.Regions
             Map entrMap = map;
             ReadMap(entrEl, "map", ref entrMap, false);
 
-            if (ReadPoint3D(entrEl, entrMap, ref m_EntranceLocation, false))
-                m_EntranceMap = entrMap;
+            if (ReadPoint3D(entrEl, entrMap, ref this.m_EntranceLocation, false))
+                this.m_EntranceMap = entrMap;
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public override bool YoungProtected => false;
+        public override bool YoungProtected
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Point3D EntranceLocation
         {
             get
             {
-                return m_EntranceLocation;
+                return this.m_EntranceLocation;
             }
             set
             {
-                m_EntranceLocation = value;
+                this.m_EntranceLocation = value;
             }
         }
 
@@ -40,11 +47,11 @@ namespace Server.Regions
         {
             get
             {
-                return m_EntranceMap;
+                return this.m_EntranceMap;
             }
             set
             {
-                m_EntranceMap = value;
+                this.m_EntranceMap = value;
             }
         }
 

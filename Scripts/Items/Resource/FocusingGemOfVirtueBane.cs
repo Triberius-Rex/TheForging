@@ -1,11 +1,11 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Items
 {
     public class FocusingGemOfVirtueBane : Item
     {
-        public override int LabelNumber => 1150004;  // Focusing Gem of Virtue Bane
+        public override int LabelNumber { get { return 1150004; } } // Focusing Gem of Virtue Bane
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime Cooldown { get; private set; }
@@ -37,7 +37,7 @@ namespace Server.Items
             {
                 if (messagecheck)
                 {
-                    from.BeginTarget(2, false, TargetFlags.None, OnTarget);
+                    from.BeginTarget(2, false, TargetFlags.None, new TargetCallback(OnTarget));
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace Server.Items
                 }
 
                 if (item is BaseWeapon)
-                {
+                {                    
                     BaseWeapon weapon = (BaseWeapon)obj;
 
                     if (weapon.ExtendedWeaponAttributes.Focus == 0)
@@ -91,7 +91,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -99,6 +99,6 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
         }
-    }
+    }    
 }
 

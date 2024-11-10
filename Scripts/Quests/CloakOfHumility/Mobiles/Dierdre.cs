@@ -1,11 +1,12 @@
-using Server.Engines.Quests;
+using System;
 using Server.Items;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
     public class Dierdre : HumilityQuestMobile
     {
-        public override int Greeting => 1075744;
+        public override int Greeting { get { return 1075744; } }
 
         [Constructable]
         public Dierdre()
@@ -20,30 +21,30 @@ namespace Server.Mobiles
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Female = true;
-            Race = Race.Human;
-            Body = 0x191;
+            this.Female = true;
+            this.Race = Race.Human;
+            this.Body = 0x191;
 
-            Hue = Race.RandomSkinHue();
-            HairItemID = Race.RandomHair(true);
-            HairHue = Race.RandomHairHue();
+            this.Hue = Race.RandomSkinHue();
+            this.HairItemID = Race.RandomHair(true);
+            this.HairHue = Race.RandomHairHue();
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new Sandals(), dropChance: 1);
-            SetWearable(new FancyShirt(), dropChance: 1);
-			SetWearable(new PlainDress(), dropChance: 1);
+            this.AddItem(new Backpack());
+            this.AddItem(new Sandals());
+            this.AddItem(new FancyShirt());
+            this.AddItem(new PlainDress());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

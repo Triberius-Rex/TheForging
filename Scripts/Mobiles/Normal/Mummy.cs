@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -36,6 +37,14 @@ namespace Server.Mobiles
 
             Fame = 4000;
             Karma = -4000;
+
+            VirtualArmor = 50;
+
+            if (Core.ML && Utility.RandomDouble() < .33)
+                PackItem(Engines.Plants.Seed.RandomPeculiarSeed(3));
+
+            PackItem(new Garlic(5));
+            PackItem(new Bandage(10));
         }
 
         public Mummy(Serial serial)
@@ -43,26 +52,48 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel => 1;
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lesser;
+		public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lesser;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Undead;
+        public override TribeType Tribe { get { return TribeType.Undead; } }
 
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Rich);
-            AddLoot(LootPack.Gems);
-            AddLoot(LootPack.Potions);
-            AddLoot(LootPack.LootItem<Bandage>(100.0, 10, false, true));
-            AddLoot(LootPack.LootItem<Garlic>(100.0, 5, false, true));
-            AddLoot(LootPack.PeculiarSeed3);
+            this.AddLoot(LootPack.Rich);
+            this.AddLoot(LootPack.Gems);
+            this.AddLoot(LootPack.Potions);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

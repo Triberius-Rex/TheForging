@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class MeltedWax : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public MeltedWax()
             : base(0x122A)
         {
-            Movable = false;
-            Hue = 0x835;
+            this.Movable = false;
+            this.Hue = 0x835;
         }
 
         public MeltedWax(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1016492;// melted wax
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1016492;
+            }
+        }// melted wax
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

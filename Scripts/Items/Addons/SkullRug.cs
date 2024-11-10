@@ -1,14 +1,15 @@
+using System;
+using Server;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
-using System;
 
 namespace Server.Items
 {
     [TypeAlias("Server.Items.SkullRugEastAddon", "Server.Items.SkullRugSouthAddon")]
     public class SkullRugAddon : BaseAddon, IRewardItem
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         private bool m_IsRewardItem;
         private int m_ResourceCount;
@@ -44,7 +45,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextResourceCount { get; set; }
 
-        private static readonly int[,] _EastLarge = new int[,]
+        private static int[,] _EastLarge = new int[,]
         {
               {14495, -1, -3, 0}, {14494, 0, -3, 0}, {14493, 1, -3, 0}// 1	2	3	
 			, {14496, 2, -3, 0}, {14486, 0, -1, 0}, {14487, -1, -1, 0}// 4	5	6	
@@ -58,7 +59,7 @@ namespace Server.Items
 			, {14482, 0, 0, 0}// 28	
 		};
 
-        private static readonly int[,] _SouthLarge =
+        private static int[,] _SouthLarge =
         {
               {14456, 0, 2, 0}, {14455, 0, -1, 0}, {14441, -3, 2, 0}// 1	2	3	
 			, {14451, -1, -1, 0}, {14466, 3, 0, 0}, {14442, -3, 1, 0}// 4	5	6	
@@ -72,7 +73,7 @@ namespace Server.Items
 			, {14443, -3, 0, 0}// 28	
 		};
 
-        private static readonly int[,] _EastSmall =
+        private static int[,] _EastSmall =
         {
               {18198, 1, 2, 0},   {18199, 0, 2, 0},  {18200, -1, 2, 0}  // 1	2	3	
 			, {18209, 1, 1, 0},   {18210, 0, 1, 0},  {18211, -1, 1, 0}  // 4	5	6	
@@ -81,7 +82,7 @@ namespace Server.Items
 			, {18238, -1, 0, 0},  {18236, 1, 0, 0},  {18237, 0, 0, 0}   // 13	14	15	
 		};
 
-        private static readonly int[,] _SouthSmall =
+        private static int[,] _SouthSmall =
         {
               {18197, 1, 1, 0},   {18196, -2, 1, 0}, {18195, -1, 1, 0}  // 1	2	3	
 			, {18194, 2, 1, 0},   {18193, 0, 1, 0},  {18192, 1, 0, 0}   // 4	5	6	
@@ -94,10 +95,8 @@ namespace Server.Items
         {
             get
             {
-                SkullRugAddonDeed deed = new SkullRugAddonDeed(RugType, m_ResourceCount, NextResourceCount)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                SkullRugAddonDeed deed = new SkullRugAddonDeed(RugType, m_ResourceCount, NextResourceCount);
+                deed.IsRewardItem = m_IsRewardItem;
 
                 return deed;
             }
@@ -186,7 +185,7 @@ namespace Server.Items
 
         private class InternalAddonComponent : AddonComponent
         {
-            public override int LabelNumber => 1150120;  // Skull Rug
+            public override int LabelNumber { get { return 1150120; } } // Skull Rug
 
             public InternalAddonComponent(int id)
                 : base(id)
@@ -247,7 +246,7 @@ namespace Server.Items
 
             writer.Write(m_ResourceCount);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
             writer.Write(NextResourceCount);
             writer.Write((int)RugType);
         }
@@ -285,10 +284,8 @@ namespace Server.Items
         {
             get
             {
-                SkullRugAddon addon = new SkullRugAddon(RugType, m_ResourceCount, NextResourceCount)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                SkullRugAddon addon = new SkullRugAddon(RugType, m_ResourceCount, NextResourceCount);
+                addon.IsRewardItem = m_IsRewardItem;
 
                 return addon;
             }
@@ -411,7 +408,7 @@ namespace Server.Items
 
             writer.Write(m_ResourceCount);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
             writer.Write(NextResourceCount);
             writer.Write((int)RugType);
         }

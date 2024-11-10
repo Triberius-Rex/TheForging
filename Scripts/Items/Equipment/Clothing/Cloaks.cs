@@ -1,5 +1,6 @@
-using Server.Engines.Craft;
+using System;
 using Server.Engines.VeteranRewards;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
@@ -24,12 +25,14 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }
@@ -67,7 +70,13 @@ namespace Server.Items
         public int TempHue { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsArcane => (m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0);
+        public bool IsArcane
+        {
+            get
+            {
+                return (m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0);
+            }
+        }
 
         public void Update()
         {
@@ -98,6 +107,7 @@ namespace Server.Items
             else if (ItemID == 0x1530)
                 ItemID = 0x1515;
         }
+
         #endregion
 
         [Constructable]
@@ -121,14 +131,14 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             if (IsArcane)
             {
                 writer.Write(true);
                 writer.Write(TempHue);
-                writer.Write(m_CurArcaneCharges);
-                writer.Write(m_MaxArcaneCharges);
+                writer.Write((int)m_CurArcaneCharges);
+                writer.Write((int)m_MaxArcaneCharges);
             }
             else
             {
@@ -141,7 +151,7 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2:
                     {
@@ -201,7 +211,29 @@ namespace Server.Items
             }
         }
 
-        public override int BasePhysicalResistance => 3;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+
+        public override void OnAdded(object parent)
+        {
+            base.OnAdded(parent);
+
+            if (parent is Mobile)
+                ((Mobile)parent).VirtualArmorMod += 2;
+        }
+
+        public override void OnRemoved(object parent)
+        {
+            base.OnRemoved(parent);
+
+            if (parent is Mobile)
+                ((Mobile)parent).VirtualArmorMod -= 2;
+        }
 
         public override bool Dye(Mobile from, DyeTub sender)
         {
@@ -213,7 +245,7 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            if (IsRewardItem)
+            if (Core.ML && IsRewardItem)
                 list.Add(RewardSystem.GetRewardYearLabel(this, new object[] { Hue, m_LabelNumber })); // X Year Veteran Reward
         }
 
@@ -255,18 +287,20 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
 
-            writer.Write(m_LabelNumber);
-            writer.Write(IsRewardItem);
+            writer.Write((int)0); // version
+
+            writer.Write((int)m_LabelNumber);
+            writer.Write((bool)IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
@@ -275,6 +309,9 @@ namespace Server.Items
                         break;
                     }
             }
+
+            if (Parent is Mobile)
+                ((Mobile)Parent).VirtualArmorMod += 2;
         }
     }
 
@@ -302,17 +339,19 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }
 
-    [Flipable(0x45A4, 0x45A5)]
+    [FlipableAttribute(0x45A4, 0x45A5)]
     public class GargishClothWingArmor : BaseClothing
     {
         [Constructable]
@@ -328,7 +367,9 @@ namespace Server.Items
             Weight = 2.0;
         }
 
-        public override int StrReq => 10;
+        public override int AosStrReq { get { return 10; } }
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+        public override bool CanBeWornByGargoyles { get { return true; } }        
 
         public GargishClothWingArmor(Serial serial)
             : base(serial)
@@ -338,7 +379,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -351,6 +392,21 @@ namespace Server.Items
     [Flipable(0x4002, 0x4003)]
     public class GargishFancyRobe : BaseClothing
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public GargishFancyRobe()
             : this(0)
@@ -372,12 +428,14 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }
@@ -385,6 +443,21 @@ namespace Server.Items
     [Flipable(0x4000, 0x4001)]
     public class GargishRobe : BaseClothing
     {
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         [Constructable]
         public GargishRobe()
             : this(0)
@@ -406,12 +479,14 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

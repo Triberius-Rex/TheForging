@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,12 +10,12 @@ namespace Server.Mobiles
         public Mystic()
             : base("the mystic")
         {
-            SetSkill(SkillName.EvalInt, 65.0, 88.0);
-            SetSkill(SkillName.Inscribe, 60.0, 83.0);
-            SetSkill(SkillName.Mysticism, 64.0, 100.0);
-            SetSkill(SkillName.Meditation, 60.0, 83.0);
-            SetSkill(SkillName.MagicResist, 65.0, 88.0);
-            SetSkill(SkillName.Wrestling, 36.0, 68.0);
+            this.SetSkill(SkillName.EvalInt, 65.0, 88.0);
+            this.SetSkill(SkillName.Inscribe, 60.0, 83.0);
+            this.SetSkill(SkillName.Mysticism, 64.0, 100.0);
+            this.SetSkill(SkillName.Meditation, 60.0, 83.0);
+            this.SetSkill(SkillName.MagicResist, 65.0, 88.0);
+            this.SetSkill(SkillName.Wrestling, 36.0, 68.0);
         }
 
         public Mystic(Serial serial)
@@ -23,25 +23,37 @@ namespace Server.Mobiles
         {
         }
 
-        public override VendorShoeType ShoeType => Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override VendorShoeType ShoeType
+        {
+            get
+            {
+                return Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBMystic());
+            this.m_SBInfos.Add(new SBMystic());
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-			SetWearable(new Robe(), Utility.RandomBlueHue(), 1);
+            this.AddItem(new Server.Items.Robe(Utility.RandomBlueHue()));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

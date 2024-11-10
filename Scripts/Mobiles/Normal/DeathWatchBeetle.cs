@@ -1,13 +1,15 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("a deathwatchbeetle corpse")]
+    [TypeAlias("Server.Mobiles.DeathWatchBeetle")]
     public class DeathwatchBeetle : BaseCreature
     {
         [Constructable]
         public DeathwatchBeetle()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Melee, Core.ML ? FightMode.Aggressor : FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a deathwatch beetle";
             Body = 242;
@@ -37,6 +39,31 @@ namespace Server.Mobiles
             Fame = 1400;
             Karma = -1400;
 
+            switch ( Utility.Random(12) )
+            {
+                case 0:
+                    PackItem(new LeatherGorget());
+                    break;
+                case 1:
+                    PackItem(new LeatherGloves());
+                    break;
+                case 2:
+                    PackItem(new LeatherArms());
+                    break;
+                case 3:
+                    PackItem(new LeatherLegs());
+                    break;
+                case 4:
+                    PackItem(new LeatherCap());
+                    break;
+                case 5:
+                    PackItem(new LeatherChest());
+                    break;
+            }
+
+            if (Utility.RandomDouble() < .5)
+                PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
+
             Tamable = true;
             MinTameSkill = 41.1;
             ControlSlots = 1;
@@ -46,18 +73,17 @@ namespace Server.Mobiles
         }
 
         public DeathwatchBeetle(Serial serial)
-           : base(serial)
+            : base(serial)
         {
         }
 
-        public override void GenerateLoot()
+        public override int Hides
         {
-            AddLoot(LootPack.LowScrolls, 1);
-            AddLoot(LootPack.Potions, 1);
-            AddLoot(LootPack.BonsaiSeed);
+            get
+            {
+                return 8;
+            }
         }
-
-        public override int Hides => 8;
 
         public override int GetAngerSound()
         {
@@ -84,16 +110,27 @@ namespace Server.Mobiles
             return 0x4F0;
         }
 
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.LowScrolls, 1);
+            AddLoot(LootPack.Potions, 1);
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
+
+            if (version == 0)
+            {
+                SetWeaponAbility(WeaponAbility.CrushingBlow);
+            }
         }
     }
 }

@@ -1,14 +1,14 @@
-using Server.Engines.Craft;
-using Server.Network;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
+using Server.Network;
 
 namespace Server.Items
 {
     #region Reward Clothing
     public class ZooMemberBonnet : Bonnet
     {
-        public override int LabelNumber => 1073221; // Britannia Royal Zoo Member
+        public override int LabelNumber { get { return 1073221; } }// Britannia Royal Zoo Member
 
         [Constructable]
         public ZooMemberBonnet()
@@ -30,7 +30,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -42,7 +42,7 @@ namespace Server.Items
 
     public class ZooMemberFloppyHat : FloppyHat
     {
-        public override int LabelNumber => 1073221; // Britannia Royal Zoo Member
+        public override int LabelNumber { get { return 1073221; } }// Britannia Royal Zoo Member
 
         [Constructable]
         public ZooMemberFloppyHat()
@@ -64,7 +64,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -76,7 +76,7 @@ namespace Server.Items
 
     public class LibraryFriendFeatheredHat : FeatheredHat
     {
-        public override int LabelNumber => 1073347; // Friends of the Library Feathered Hat
+        public override int LabelNumber { get { return 1073347; } }// Friends of the Library Feathered Hat
 
         [Constructable]
         public LibraryFriendFeatheredHat()
@@ -94,11 +94,11 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+       
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -110,16 +110,64 @@ namespace Server.Items
 
     public class JesterHatOfChuckles : JesterHat
     {
-        public override int LabelNumber => 1073256;// Jester Hat of Chuckles - Museum of Vesper Replica
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073256;
+            }
+        }// Jester Hat of Chuckles - Museum of Vesper Replica
 
-        public override int BasePhysicalResistance => 12;
-        public override int BaseFireResistance => 12;
-        public override int BaseColdResistance => 12;
-        public override int BasePoisonResistance => 12;
-        public override int BaseEnergyResistance => 12;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 12;
+            }
+        }
 
-        public override int InitMinHits => 100;
-        public override int InitMaxHits => 100;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
 
         [Constructable]
         public JesterHatOfChuckles()
@@ -143,7 +191,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -156,16 +204,64 @@ namespace Server.Items
 
     public class NystulsWizardsHat : WizardsHat
     {
-        public override int LabelNumber => 1073255;// Nystul's Wizard's Hat - Museum of Vesper Replica
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073255;
+            }
+        }// Nystul's Wizard's Hat - Museum of Vesper Replica
 
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 25;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 25;
+            }
+        }
 
-        public override int InitMinHits => 100;
-        public override int InitMaxHits => 100;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
 
         [Constructable]
         public NystulsWizardsHat()
@@ -189,7 +285,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -202,16 +298,64 @@ namespace Server.Items
 
     public class GypsyHeaddress : SkullCap
     {
-        public override int LabelNumber => 1073254;// Gypsy Headdress - Museum of Vesper Replica
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073254;
+            }
+        }// Gypsy Headdress - Museum of Vesper Replica
 
-        public override int BasePhysicalResistance => 15;
-        public override int BaseFireResistance => 20;
-        public override int BaseColdResistance => 20;
-        public override int BasePoisonResistance => 15;
-        public override int BaseEnergyResistance => 15;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 15;
+            }
+        }
 
-        public override int InitMinHits => 100;
-        public override int InitMaxHits => 100;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
 
         [Constructable]
         public GypsyHeaddress()
@@ -234,7 +378,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -281,7 +425,8 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+
+            writer.Write((int)2); // version
 
             writer.Write(m_IsShipwreckedItem);
         }
@@ -289,9 +434,10 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2: goto case 1;
                 case 1:
@@ -329,7 +475,7 @@ namespace Server.Items
 
             if (Quality == ItemQuality.Exceptional)
             {
-                DistributeBonuses(from, tool is BaseRunicTool ? 6 : 15);
+                DistributeBonuses(from, (tool is BaseRunicTool ? 6 : (Core.SE ? 15 : 14)));
             }
 
             return base.OnCraft(quality, makersMark, from, craftSystem, typeRes, tool, craftItem, resHue);
@@ -339,14 +485,56 @@ namespace Server.Items
     [Flipable(0x2798, 0x27E3)]
     public class Kasa : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public Kasa()
@@ -368,27 +556,71 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     [Flipable(0x278F, 0x27DA)]
     public class ClothNinjaHood : BaseHat
     {
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 9;
-        public override int BaseEnergyResistance => 9;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public ClothNinjaHood()
@@ -410,27 +642,71 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     [Flipable(0x2306, 0x2305)]
     public class FlowerGarland : BaseHat
     {
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 9;
-        public override int BaseEnergyResistance => 9;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public FlowerGarland()
@@ -442,7 +718,7 @@ namespace Server.Items
         public FlowerGarland(int hue)
             : base(0x2306, hue)
         {
-
+            
         }
 
         public FlowerGarland(Serial serial)
@@ -453,26 +729,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class FloppyHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public FloppyHat()
@@ -484,7 +804,7 @@ namespace Server.Items
         public FloppyHat(int hue)
             : base(0x1713, hue)
         {
-
+            
         }
 
         public FloppyHat(Serial serial)
@@ -495,26 +815,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class WideBrimHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public WideBrimHat()
@@ -526,7 +890,7 @@ namespace Server.Items
         public WideBrimHat(int hue)
             : base(0x1714, hue)
         {
-
+            
         }
 
         public WideBrimHat(Serial serial)
@@ -537,26 +901,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class Cap : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public Cap()
@@ -568,7 +976,7 @@ namespace Server.Items
         public Cap(int hue)
             : base(0x1715, hue)
         {
-
+            
         }
 
         public Cap(Serial serial)
@@ -579,26 +987,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class SkullCap : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 8;
-        public override int BaseEnergyResistance => 8;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
 
-        public override int InitMinHits => 14;
-        public override int InitMaxHits => 28;
+        public override int InitMinHits
+        {
+            get
+            {
+                return (Core.ML ? 14 : 7);
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return (Core.ML ? 28 : 12);
+            }
+        }
 
         [Constructable]
         public SkullCap()
@@ -610,7 +1062,7 @@ namespace Server.Items
         public SkullCap(int hue)
             : base(0x1544, hue)
         {
-
+            
         }
 
         public SkullCap(Serial serial)
@@ -621,26 +1073,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class Bandana : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 8;
-        public override int BaseEnergyResistance => 8;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public Bandana()
@@ -652,7 +1148,7 @@ namespace Server.Items
         public Bandana(int hue)
             : base(0x1540, hue)
         {
-
+            
         }
 
         public Bandana(Serial serial)
@@ -663,28 +1159,72 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class BearMask : BaseHat, IRepairable
     {
-        public CraftSystem RepairSystem => DefTailoring.CraftSystem;
+        public CraftSystem RepairSystem { get { return DefTailoring.CraftSystem; } }
 
-        public override int BasePhysicalResistance => 5;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 8;
-        public override int BasePoisonResistance => 4;
-        public override int BaseEnergyResistance => 4;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public BearMask()
@@ -712,28 +1252,72 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class DeerMask : BaseHat, IRepairable
     {
-        public CraftSystem RepairSystem => DefTailoring.CraftSystem;
+        public CraftSystem RepairSystem { get { return DefTailoring.CraftSystem; } }
 
-        public override int BasePhysicalResistance => 2;
-        public override int BaseFireResistance => 6;
-        public override int BaseColdResistance => 8;
-        public override int BasePoisonResistance => 1;
-        public override int BaseEnergyResistance => 7;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public DeerMask()
@@ -761,28 +1345,72 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class HornedTribalMask : BaseHat, IRepairable
     {
-        public CraftSystem RepairSystem => DefTailoring.CraftSystem;
+        public CraftSystem RepairSystem { get { return DefTailoring.CraftSystem; } }
 
-        public override int BasePhysicalResistance => 6;
-        public override int BaseFireResistance => 9;
-        public override int BaseColdResistance => 0;
-        public override int BasePoisonResistance => 4;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public HornedTribalMask()
@@ -810,28 +1438,72 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class TribalMask : BaseHat, IRepairable
     {
-        public CraftSystem RepairSystem => DefTailoring.CraftSystem;
+        public CraftSystem RepairSystem { get { return DefTailoring.CraftSystem; } }
 
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 0;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public TribalMask()
@@ -843,7 +1515,7 @@ namespace Server.Items
         public TribalMask(int hue)
             : base(0x154B, hue)
         {
-
+            
         }
 
         public override bool Dye(Mobile from, DyeTub sender)
@@ -860,26 +1532,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class TallStrawHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public TallStrawHat()
@@ -891,7 +1607,7 @@ namespace Server.Items
         public TallStrawHat(int hue)
             : base(0x1716, hue)
         {
-
+            
         }
 
         public TallStrawHat(Serial serial)
@@ -902,26 +1618,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class StrawHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public StrawHat()
@@ -933,7 +1693,7 @@ namespace Server.Items
         public StrawHat(int hue)
             : base(0x1717, hue)
         {
-
+            
         }
 
         public StrawHat(Serial serial)
@@ -944,26 +1704,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class OrcishKinMask : BaseHat
     {
-        public override int BasePhysicalResistance => 1;
-        public override int BaseFireResistance => 1;
-        public override int BaseColdResistance => 7;
-        public override int BasePoisonResistance => 7;
-        public override int BaseEnergyResistance => 8;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         public override bool Dye(Mobile from, DyeTub sender)
         {
@@ -971,7 +1775,13 @@ namespace Server.Items
             return false;
         }
 
-        public override string DefaultName => "a mask of orcish kin";
+        public override string DefaultName
+        {
+            get
+            {
+                return "a mask of orcish kin";
+            }
+        }
 
         [Constructable]
         public OrcishKinMask()
@@ -1015,28 +1825,75 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
+
+            /*if (Hue != 0x8A4)
+                Hue = 0x8A4;*/
         }
     }
 
     public class OrcMask : BaseHat, IRepairable
     {
-        public CraftSystem RepairSystem => DefTailoring.CraftSystem;
+        public CraftSystem RepairSystem { get { return DefTailoring.CraftSystem; } }
 
-        public override int BasePhysicalResistance => 1;
-        public override int BaseFireResistance => 1;
-        public override int BaseColdResistance => 7;
-        public override int BasePoisonResistance => 7;
-        public override int BaseEnergyResistance => 8;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         public override bool Dye(Mobile from, DyeTub sender)
         {
@@ -1044,7 +1901,13 @@ namespace Server.Items
             return false;
         }
 
-        public override int LabelNumber => 1025147; // orc mask
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1025147; // orc mask
+            }
+        }
 
         [Constructable]
         public OrcMask()
@@ -1060,26 +1923,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class SavageMask : BaseHat
     {
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 0;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         public static int GetRandomHue()
         {
@@ -1117,26 +2024,73 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
+
+            /*if (Hue != 0 && (Hue < 2101 || Hue > 2130))
+                Hue = GetRandomHue();*/
         }
     }
 
     public class WizardsHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public WizardsHat()
@@ -1158,32 +2112,100 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class MagicWizardsHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
-        public override int LabelNumber => 1041072;// a magical wizard's hat
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041072;
+            }
+        }// a magical wizard's hat
 
-        public override int BaseStrBonus => -5;
-        public override int BaseDexBonus => -5;
-        public override int BaseIntBonus => +5;
+        public override int BaseStrBonus
+        {
+            get
+            {
+                return -5;
+            }
+        }
+        public override int BaseDexBonus
+        {
+            get
+            {
+                return -5;
+            }
+        }
+        public override int BaseIntBonus
+        {
+            get
+            {
+                return +5;
+            }
+        }
 
         [Constructable]
         public MagicWizardsHat()
@@ -1205,26 +2227,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class Bonnet : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public Bonnet()
@@ -1246,26 +2312,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class FeatheredHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public FeatheredHat()
@@ -1287,26 +2397,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class TricorneHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public TricorneHat()
@@ -1328,26 +2482,70 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class JesterHat : BaseHat
     {
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
         [Constructable]
         public JesterHat()
@@ -1369,28 +2567,30 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 
     public class ChefsToque : BaseHat
     {
-        public override int LabelNumber => 1109618;  // Chef's Toque
+        public override int LabelNumber { get { return 1109618; } } // Chef's Toque
 
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int BasePhysicalResistance { get { return 0; } }
+        public override int BaseFireResistance { get { return 5; } }
+        public override int BaseColdResistance { get { return 9; } }
+        public override int BasePoisonResistance { get { return 5; } }
+        public override int BaseEnergyResistance { get { return 5; } }
 
-        public override int InitMinHits => 20;
-        public override int InitMaxHits => 30;
+        public override int InitMinHits { get { return 20; } }
+        public override int InitMaxHits { get { return 30; } }
 
         [Constructable]
         public ChefsToque()
@@ -1412,13 +2612,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
-    }    
+    }
 }

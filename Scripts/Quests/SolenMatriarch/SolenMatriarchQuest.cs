@@ -1,16 +1,34 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
-using System;
 
 namespace Server.Engines.Quests.Matriarch
 {
     public class SolenMatriarchQuest : QuestSystem
     {
+        private static readonly Type[] m_TypeReferenceTable = new Type[]
+        {
+            typeof(Matriarch.DontOfferConversation),
+            typeof(Matriarch.AcceptConversation),
+            typeof(Matriarch.DuringKillInfiltratorsConversation),
+            typeof(Matriarch.GatherWaterConversation),
+            typeof(Matriarch.DuringWaterGatheringConversation),
+            typeof(Matriarch.ProcessFungiConversation),
+            typeof(Matriarch.DuringFungiProcessConversation),
+            typeof(Matriarch.FullBackpackConversation),
+            typeof(Matriarch.EndConversation),
+            typeof(Matriarch.KillInfiltratorsObjective),
+            typeof(Matriarch.ReturnAfterKillsObjective),
+            typeof(Matriarch.GatherWaterObjective),
+            typeof(Matriarch.ReturnAfterWaterObjective),
+            typeof(Matriarch.ProcessFungiObjective),
+            typeof(Matriarch.GetRewardObjective)
+        };
         private bool m_RedSolen;
         public SolenMatriarchQuest(PlayerMobile from, bool redSolen)
             : base(from)
         {
-            m_RedSolen = redSolen;
+            this.m_RedSolen = redSolen;
         }
 
         // Serialization
@@ -18,14 +36,26 @@ namespace Server.Engines.Quests.Matriarch
         {
         }
 
-        public override object Name =>
+        public override Type[] TypeReferenceTable
+        {
+            get
+            {
+                return m_TypeReferenceTable;
+            }
+        }
+        public override object Name
+        {
+            get
+            {
                 // Solen Matriarch Quest
-                1054147;
+                return 1054147;
+            }
+        }
         public override object OfferMessage
         {
             get
             {
-                if (IsFriend(From, RedSolen))
+                if (IsFriend(this.From, this.RedSolen))
                 {
                     /* <I>The Solen Matriarch smiles happily as you greet her.</I><BR><BR>
                     * 
@@ -76,10 +106,34 @@ namespace Server.Engines.Quests.Matriarch
                 }
             }
         }
-        public override TimeSpan RestartDelay => TimeSpan.Zero;
-        public override bool IsTutorial => false;
-        public override int Picture => 0x15C9;
-        public bool RedSolen => m_RedSolen;
+        public override TimeSpan RestartDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
+        public override bool IsTutorial
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override int Picture
+        {
+            get
+            {
+                return 0x15C9;
+            }
+        }
+        public bool RedSolen
+        {
+            get
+            {
+                return this.m_RedSolen;
+            }
+        }
         public static bool IsFriend(PlayerMobile player, bool redSolen)
         {
             if (redSolen)
@@ -108,21 +162,21 @@ namespace Server.Engines.Quests.Matriarch
         {
             int version = reader.ReadEncodedInt();
 
-            m_RedSolen = reader.ReadBool();
+            this.m_RedSolen = reader.ReadBool();
         }
 
         public override void ChildSerialize(GenericWriter writer)
         {
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
 
-            writer.Write(m_RedSolen);
+            writer.Write((bool)this.m_RedSolen);
         }
 
         public override void Accept()
         {
             base.Accept();
 
-            AddConversation(new AcceptConversation());
+            this.AddConversation(new AcceptConversation());
         }
     }
 }

@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a grubber corpse")]
@@ -5,7 +8,7 @@ namespace Server.Mobiles
     {
         [Constructable]
         public Grubber()
-            : base(AIType.AI_Melee, FightMode.None, 10, 1, 0.06, 0.1)
+            : base(AIType.AI_Animal, FightMode.None, 10, 1, 0.06, 0.1)
         {
             Name = "a grubber";
             Body = 270;
@@ -28,6 +31,22 @@ namespace Server.Mobiles
 
             Fame = 1000;
             Karma = 0;
+
+            VirtualArmor = 4;
+        }
+
+        public override IDamageable Combatant
+        {
+            get { return base.Combatant; }
+            set
+            {
+                base.Combatant = value;
+
+                if (0.10 > Utility.RandomDouble())
+                    StopFlee();
+                else if (!CheckFlee())
+                    BeginFlee(TimeSpan.FromSeconds(10));
+            }
         }
 
         public Grubber(Serial serial)
@@ -35,27 +54,8 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override int Hides => 1;
-        public override double FleeChance => 1.0;
-        public override double BreakFleeChance => 0.05;
-
-        public override bool CheckFlee()
-        {
-            return true;
-        }
-
-        public override bool CheckBreakFlee()
-        {
-            return false;
-        }
-
-        public override bool BreakFlee()
-        {
-            NextFleeCheck = Core.TickCount + 1500;
-
-            return true;
-        }
+        public override int Meat { get { return 1; } }
+        public override int Hides { get { return 1; } }
 
         public override int GetAttackSound()
         {
@@ -75,12 +75,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

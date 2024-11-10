@@ -1,16 +1,22 @@
+using System;
+using Server;
+using Server.Gumps;
+using Server.Mobiles;
+using Server.Items;
+
 namespace Server.Engines.NewMagincia
 {
     public class MaginciaPlotStone : Item
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         private MaginciaHousingPlot m_Plot;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public MaginciaHousingPlot Plot
-        {
-            get { return m_Plot; }
-            set { m_Plot = value; }
+        public MaginciaHousingPlot Plot 
+        { 
+            get { return m_Plot; } 
+            set { m_Plot = value; } 
         }
 
         [Constructable]
@@ -31,7 +37,7 @@ namespace Server.Engines.NewMagincia
             if (system == null || !system.Enabled || m_Plot == null)
                 return;
 
-            if (from.InRange(Location, 4))
+            if (from.InRange(this.Location, 4))
             {
                 if (m_Plot.LottoOngoing)
                 {
@@ -62,7 +68,7 @@ namespace Server.Engines.NewMagincia
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

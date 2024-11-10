@@ -1,4 +1,6 @@
+using System;
 using Server.Accounting;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -20,8 +22,8 @@ namespace Server.Items
         public Gold(int amount)
             : base(0xEED)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public Gold(Serial serial)
@@ -29,13 +31,18 @@ namespace Server.Items
         {
         }
 
-        public override double DefaultWeight => 0.02 / 3;
-
+        public override double DefaultWeight
+        {
+            get
+            {
+                return (Core.ML ? (0.02 / 3) : 0.02);
+            }
+        }
         public override int GetDropSound()
         {
-            if (Amount <= 1)
+            if (this.Amount <= 1)
                 return 0x2E4;
-            else if (Amount <= 5)
+            else if (this.Amount <= 5)
                 return 0x2E5;
             else
                 return 0x2E6;
@@ -44,74 +51,84 @@ namespace Server.Items
 #if NEWPARENT
 		public override void OnAdded(IEntity parent)
 #else
-        public override void OnAdded(object parent)
+		public override void OnAdded(object parent)
 #endif
-        {
-            base.OnAdded(parent);
+		{
+			base.OnAdded(parent);
 
-            if (!AccountGold.Enabled)
-            {
-                return;
-            }
+			if (!AccountGold.Enabled)
+			{
+				return;
+			}
 
-            Mobile owner = null;
-            SecureTradeInfo tradeInfo = null;
+			Mobile owner = null;
+			SecureTradeInfo tradeInfo = null;
 
-            Container root = parent as Container;
+			Container root = parent as Container;
 
-            while (root != null && root.Parent is Container)
-            {
-                root = (Container)root.Parent;
-            }
+			while (root != null && root.Parent is Container)
+			{
+				root = (Container)root.Parent;
+			}
 
-            parent = root ?? parent;
+			parent = root ?? parent;
 
-            if (parent is SecureTradeContainer && AccountGold.ConvertOnTrade)
-            {
-                SecureTradeContainer trade = (SecureTradeContainer)parent;
+			if (parent is SecureTradeContainer && AccountGold.ConvertOnTrade)
+			{
+				var trade = (SecureTradeContainer)parent;
 
-                if (trade.Trade.From.Container == trade)
-                {
-                    tradeInfo = trade.Trade.From;
-                    owner = tradeInfo.Mobile;
-                }
-                else if (trade.Trade.To.Container == trade)
-                {
-                    tradeInfo = trade.Trade.To;
-                    owner = tradeInfo.Mobile;
-                }
-            }
-            else if (parent is BankBox && AccountGold.ConvertOnBank)
-            {
-                owner = ((BankBox)parent).Owner;
-            }
+				if (trade.Trade.From.Container == trade)
+				{
+					tradeInfo = trade.Trade.From;
+					owner = tradeInfo.Mobile;
+				}
+				else if (trade.Trade.To.Container == trade)
+				{
+					tradeInfo = trade.Trade.To;
+					owner = tradeInfo.Mobile;
+				}
+			}
+			else if (parent is BankBox && AccountGold.ConvertOnBank)
+			{
+				owner = ((BankBox)parent).Owner;
+			}
 
-            if (owner == null || owner.Account == null || !owner.Account.DepositGold(Amount))
-            {
-                return;
-            }
+			if (owner == null || owner.Account == null || !owner.Account.DepositGold(Amount))
+			{
+				return;
+			}
 
-            if (tradeInfo != null)
-            {
-                if (tradeInfo.VirtualCheck != null)
-                {
-                    tradeInfo.VirtualCheck.UpdateTrade(tradeInfo.Mobile);
-                }
-            }
+			if (tradeInfo != null)
+			{
+				if (owner.NetState != null && !owner.NetState.NewSecureTrading)
+				{
+					var total = Amount / Math.Max(1.0, Account.CurrencyThreshold);
+					var plat = (int)Math.Truncate(total);
+					var gold = (int)((total - plat) * Account.CurrencyThreshold);
 
-            owner.SendLocalizedMessage(1042763, Amount.ToString("#,0"));
+					tradeInfo.Plat += plat;
+					tradeInfo.Gold += gold;
+				}
 
-            Delete();
+				if (tradeInfo.VirtualCheck != null)
+				{
+					tradeInfo.VirtualCheck.UpdateTrade(tradeInfo.Mobile);
+				}
+			}
 
-            ((Container)parent).UpdateTotals();
-        }
+			owner.SendLocalizedMessage(1042763, Amount.ToString("#,0"));
 
-        public override int GetTotal(TotalType type)
+			Delete();
+
+			((Container)parent).UpdateTotals();
+		}
+
+	    public override int GetTotal(TotalType type)
         {
             int baseTotal = base.GetTotal(type);
 
             if (type == TotalType.Gold)
-                baseTotal += Amount;
+                baseTotal += this.Amount;
 
             return baseTotal;
         }
@@ -119,20 +136,22 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
 
         protected override void OnAmountChange(int oldValue)
         {
-            int newValue = Amount;
+            int newValue = this.Amount;
 
-            UpdateTotal(this, TotalType.Gold, newValue - oldValue);
+            this.UpdateTotal(this, TotalType.Gold, newValue - oldValue);
         }
     }
 }

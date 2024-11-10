@@ -1,4 +1,6 @@
 using System;
+using Server;
+using Server.Targeting;
 
 namespace Server.Spells.Mysticism
 {
@@ -11,12 +13,12 @@ namespace Server.Spells.Mysticism
 
         public abstract SpellCircle Circle { get; }
 
-        private static readonly int[] m_ManaTable = new int[] { 4, 6, 9, 11, 14, 20, 40, 50 };
+        private static int[] m_ManaTable = new int[] { 4, 6, 9, 11, 14, 20, 40, 50 };
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromMilliseconds(((4 + (int)Circle) * CastDelaySecondsPerTick) * 1000);
-        public override double CastDelayFastScalar => 1.0;
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromMilliseconds(((4 + (int)Circle) * CastDelaySecondsPerTick) * 1000); } }
+        public override double CastDelayFastScalar { get { return 1.0; } }
 
-        public double ChanceOffset => Caster is Mobiles.PlayerMobile ? 20.0 : 30.0;
+        public double ChanceOffset { get { return Caster is Server.Mobiles.PlayerMobile ? 20.0 : 30.0; } }
         private const double ChanceLength = 100.0 / 7.0;
 
         public override void GetCastSkills(out double min, out double max)
@@ -32,7 +34,7 @@ namespace Server.Spells.Mysticism
             max = avg + ChanceOffset;
         }
 
-        public override SkillName CastSkill => SkillName.Mysticism;
+        public override SkillName CastSkill { get { return SkillName.Mysticism; } }
 
         public override SkillName DamageSkill
         {
@@ -46,13 +48,13 @@ namespace Server.Spells.Mysticism
 
         public override void SendCastEffect()
         {
-            if (Caster.Player)
+            if(Caster.Player)
                 Caster.FixedEffect(0x37C4, 87, (int)(GetCastDelay().TotalSeconds * 28), 0x66C, 3);
         }
 
         public override int GetMana()
         {
-            if (this is HailStormSpell)
+            if (Core.TOL && this is HailStormSpell)
                 return 50;
 
             return m_ManaTable[(int)Circle];

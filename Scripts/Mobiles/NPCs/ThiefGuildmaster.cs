@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -9,15 +9,15 @@ namespace Server.Mobiles
         public ThiefGuildmaster()
             : base("thief")
         {
-            SetSkill(SkillName.DetectHidden, 75.0, 98.0);
-            SetSkill(SkillName.Hiding, 65.0, 88.0);
-            SetSkill(SkillName.Lockpicking, 85.0, 100.0);
-            SetSkill(SkillName.Snooping, 90.0, 100.0);
-            SetSkill(SkillName.Poisoning, 60.0, 83.0);
-            SetSkill(SkillName.Stealing, 90.0, 100.0);
-            SetSkill(SkillName.Fencing, 75.0, 98.0);
-            SetSkill(SkillName.Stealth, 85.0, 100.0);
-            SetSkill(SkillName.RemoveTrap, 85.0, 100.0);
+            this.SetSkill(SkillName.DetectHidden, 75.0, 98.0);
+            this.SetSkill(SkillName.Hiding, 65.0, 88.0);
+            this.SetSkill(SkillName.Lockpicking, 85.0, 100.0);
+            this.SetSkill(SkillName.Snooping, 90.0, 100.0);
+            this.SetSkill(SkillName.Poisoning, 60.0, 83.0);
+            this.SetSkill(SkillName.Stealing, 90.0, 100.0);
+            this.SetSkill(SkillName.Fencing, 75.0, 98.0);
+            this.SetSkill(SkillName.Stealth, 85.0, 100.0);
+            this.SetSkill(SkillName.RemoveTrap, 85.0, 100.0);
         }
 
         public ThiefGuildmaster(Serial serial)
@@ -25,34 +25,52 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.ThievesGuild;
-        public override TimeSpan JoinAge => Siege.SiegeShard ? TimeSpan.FromDays(0.0) : TimeSpan.FromDays(7.0);
-        public override TimeSpan JoinGameAge => Siege.SiegeShard ? TimeSpan.FromDays(0.0) : TimeSpan.FromDays(2.0);
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.ThievesGuild;
+            }
+        }
+        public override TimeSpan JoinAge
+        {
+            get
+            {
+                return Siege.SiegeShard ? TimeSpan.FromDays(0.0) : TimeSpan.FromDays(7.0);
+            }
+        }
+        public override TimeSpan JoinGameAge
+        {
+            get
+            {
+                return Siege.SiegeShard ? TimeSpan.FromDays(0.0) : TimeSpan.FromDays(2.0);
+            }
+        }
         public override void InitOutfit()
         {
             base.InitOutfit();
 
             if (Utility.RandomBool())
-				SetWearable(new Kryss(), dropChance: 1);
+                this.AddItem(new Server.Items.Kryss());
             else
-				SetWearable(new Dagger(), dropChance: 1);
+                this.AddItem(new Server.Items.Dagger());
         }
 
         public override bool CheckCustomReqs(PlayerMobile pm)
         {
             if (pm.Young && !Siege.SiegeShard)
             {
-                SayTo(pm, 502089); // You cannot be a member of the Thieves' Guild while you are Young.
+                this.SayTo(pm, 502089); // You cannot be a member of the Thieves' Guild while you are Young.
                 return false;
             }
             else if (pm.Kills > 0)
             {
-                SayTo(pm, 501050); // This guild is for cunning thieves, not oafish cutthroats.
+                this.SayTo(pm, 501050); // This guild is for cunning thieves, not oafish cutthroats.
                 return false;
             }
             else if (pm.Skills[SkillName.Stealing].Base < 60.0 && !Siege.SiegeShard)
             {
-                SayTo(pm, 501051); // You must be at least a journeyman pickpocket to join this elite organization.
+                this.SayTo(pm, 501051); // You must be at least a journeyman pickpocket to join this elite organization.
                 return false;
             }
 
@@ -61,12 +79,12 @@ namespace Server.Mobiles
 
         public override void SayWelcomeTo(Mobile m)
         {
-            SayTo(m, 1008053); // Welcome to the guild! Stay to the shadows, friend.
+            this.SayTo(m, 1008053); // Welcome to the guild! Stay to the shadows, friend.
         }
 
         public override bool HandlesOnSpeech(Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
                 return true;
 
             return base.HandlesOnSpeech(from);
@@ -76,14 +94,14 @@ namespace Server.Mobiles
         {
             Mobile from = e.Mobile;
 
-            if (!e.Handled && from is PlayerMobile && from.InRange(Location, 2) && e.HasKeyword(0x1F)) // *disguise*
+            if (!e.Handled && from is PlayerMobile && from.InRange(this.Location, 2) && e.HasKeyword(0x1F)) // *disguise*
             {
                 PlayerMobile pm = (PlayerMobile)from;
 
                 if (pm.NpcGuild == NpcGuild.ThievesGuild)
-                    SayTo(from, 501839); // That particular item costs 700 gold pieces.
+                    this.SayTo(from, 501839); // That particular item costs 700 gold pieces.
                 else
-                    SayTo(from, 501838); // I don't know what you're talking about.
+                    this.SayTo(from, 501838); // I don't know what you're talking about.
 
                 e.Handled = true;
             }
@@ -113,7 +131,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

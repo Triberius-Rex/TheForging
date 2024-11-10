@@ -1,5 +1,8 @@
-using Server.Gumps;
+using Server;
+using System;
 using Server.Items;
+using Server.Mobiles;
+using Server.Gumps;
 using Server.Network;
 using Server.Targeting;
 
@@ -7,8 +10,8 @@ namespace Server.Engines.Plants
 {
     public class FertileDirtGump : Gump
     {
-        private readonly Seed m_Seed;
-        private readonly object m_AttachTo;
+        private Seed m_Seed;
+        private object m_AttachTo;
 
         private const int LabelColor = 0x7FFF;
         private const int FontColor = 0xFFFFFF;
@@ -60,7 +63,7 @@ namespace Server.Engines.Plants
 
             if (comp != null && m_Seed != null)
             {
-                GardenBedPlantItem dirt = new GardenBedPlantItem(fertile);
+                RaisedGardenPlantItem dirt = new RaisedGardenPlantItem(fertile);
                 dirt.MoveToWorld(new Point3D(comp.X, comp.Y, comp.Z + 5), comp.Map);
                 dirt.Component = comp;
                 comp.Plant = dirt;

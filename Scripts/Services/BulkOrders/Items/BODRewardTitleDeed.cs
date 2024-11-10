@@ -1,9 +1,12 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class BODRewardTitleDeed : BaseRewardTitleDeed
     {
-        public override int LabelNumber => 1155604;  // A Deed for a Reward Title
-        public override TextDefinition Title => _Title;
+        public override int LabelNumber { get { return 1155604; } } // A Deed for a Reward Title
+        public override TextDefinition Title { get { return _Title; } }
 
         private TextDefinition _Title;
 
@@ -28,7 +31,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             TextDefinition.Serialize(writer, _Title);
         }

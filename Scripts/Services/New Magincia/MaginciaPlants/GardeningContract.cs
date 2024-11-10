@@ -1,13 +1,13 @@
-using Server.Engines.Plants;
-using Server.Targeting;
 using System;
+using Server.Targeting;
+using Server.Engines.Plants;
 
 namespace Server.Items
 {
     public class GardeningContract : Item
     {
-        public override int LabelNumber => 1155764;  // Gardening Contract
-
+        public override int LabelNumber { get { return 1155764; } } // Gardening Contract
+        
         [Constructable]
         public GardeningContract()
             : base(0x14F0)
@@ -76,7 +76,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version 
+            writer.Write((int)0); // version 
         }
 
         public override void Deserialize(GenericReader reader)

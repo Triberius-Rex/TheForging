@@ -1,15 +1,16 @@
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Mysticism
 {
     public class NetherCycloneSpell : MysticSpell
     {
-        public override SpellCircle Circle => SpellCircle.Eighth;
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override SpellCircle Circle { get { return SpellCircle.Eighth; } }
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Nether Cyclone", "Grav Hur",
                 230,
                 9022,
@@ -54,7 +55,7 @@ namespace Server.Spells.Mysticism
                             IPoint3D pnt = new Point3D(x, y, p.Z);
                             SpellHelper.GetSurfaceTop(ref pnt);
 
-                            Timer.DelayCall(TimeSpan.FromMilliseconds(Utility.RandomMinMax(100, 300)), point =>
+                            Timer.DelayCall<Point3D>(TimeSpan.FromMilliseconds(Utility.RandomMinMax(100, 300)), point =>
                             {
                                 Effects.SendLocationEffect(point, map, 0x375A, 8, 11, 0x49A, 0);
                             },
@@ -62,27 +63,20 @@ namespace Server.Spells.Mysticism
                         }
                     }
 
-                    foreach (IDamageable d in AcquireIndirectTargets(p, 3))
+                    foreach(var d in AcquireIndirectTargets(p, 3))
                     {
-                        var m = d as Mobile;
+                        Server.Effects.SendTargetParticles(d, 0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255, 0);
 
-                        if (m != null && m.Hidden)
-                        {
-                            continue;
-                        }
-
-                        Effects.SendTargetParticles(d, 0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255, 0);
-
-                        double damage = GetNewAosDamage(50, 1, 5, d);
-
-                        Caster.DoHarmful(d);
+                        double damage = (((Caster.Skills[CastSkill].Value + (Caster.Skills[DamageSkill].Value / 2)) * .66) + Utility.RandomMinMax(1, 6));
 
                         SpellHelper.Damage(this, d, damage, 0, 0, 0, 0, 0, 100, 0);
 
-                        if (m != null)
+                        if (d is Mobile)
                         {
-                            double stamSap = Utility.RandomMinMax(damage / 10, damage / 2);
-                            double manaSap = Utility.RandomMinMax(damage / 10, damage / 2);
+                            Mobile m = d as Mobile;
+
+                            double stamSap = (damage / 3);
+                            double manaSap = (damage / 3);
                             double mod = m.Skills[SkillName.MagicResist].Value - ((Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value) / 2);
 
                             if (mod > 0)
@@ -100,8 +94,8 @@ namespace Server.Spells.Mysticism
                             {
                                 if (m.Alive)
                                 {
-                                    m.Stam = Math.Min(m.StamMax, m.Stam + (int)stamSap);
-                                    m.Mana = Math.Min(m.ManaMax, m.Mana + (int)manaSap);
+                                    m.Stam += (int)stamSap;
+                                    m.Mana += (int)manaSap;
                                 }
                             });
                         }
@@ -136,7 +130,7 @@ namespace Server.Spells.Mysticism
 
                 if (!from.CanSee(o))
                     from.SendLocalizedMessage(500237); // Target can not be seen.
-                else if (o is IPoint3D)
+                else if(o is IPoint3D)
                 {
                     SpellHelper.Turn(from, o);
                     Owner.OnTarget((IPoint3D)o);

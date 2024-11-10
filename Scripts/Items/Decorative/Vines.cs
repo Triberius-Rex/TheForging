@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Vines : Item
@@ -15,8 +17,8 @@ namespace Server.Items
             if (v < 0 || v > 7)
                 v = 0;
 
-            ItemID += v;
-            Weight = 1.0;
+            this.ItemID += v;
+            this.Weight = 1.0;
         }
 
         public Vines(Serial serial)
@@ -24,13 +26,18 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

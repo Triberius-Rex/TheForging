@@ -1,11 +1,14 @@
-using Server.Mobiles;
+using System;
 using System.Linq;
+
+using Server;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class EtherealSoulbinder : Item
     {
-        public override int LabelNumber => 1159167;  // ethereal soulbinder
+        public override int LabelNumber { get { return 1159167; } } // ethereal soulbinder
 
         public double MaxSoulPoint { get; set; } = 100;
 
@@ -14,21 +17,18 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public double SoulPoint
         {
-            get { return m_SoulPoint; }
+            get
+            {
+                return m_SoulPoint;
+            }
             set
             {
                 if (value < 0)
-                {
-                    m_SoulPoint = 0;
-                }
+                    value = 0;
                 else if (value > MaxSoulPoint)
-                {
-                    m_SoulPoint = MaxSoulPoint;
-                }
-                else
-                {
-                    m_SoulPoint = value;
-                }
+                    value = MaxSoulPoint;
+
+                m_SoulPoint += value;
 
                 SetHue();
                 InvalidateProperties();
@@ -93,11 +93,11 @@ namespace Server.Items
                 list.Add(1159178, string.Format("#{0}", desc)); // Contains a ~1_TYPE~ Soul
             }
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_SoulPoint);
         }
@@ -105,7 +105,7 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
             m_SoulPoint = reader.ReadDouble();
         }
@@ -117,23 +117,16 @@ namespace Server.Items
 
         public static void CreatureDeath(CreatureDeathEventArgs e)
         {
-            Mobile killer = e.Killer;
+            var bc = e.Creature as BaseCreature;
+            var killer = e.Killer;
 
-            if (killer is BaseCreature kbc && kbc.Controlled && kbc.ControlMaster != null)
+            if (bc != null && bc.IsSoulbound && killer is PlayerMobile && killer.Backpack != null)
             {
-                killer = kbc.ControlMaster;
-            }
-
-            if (e.Creature is BaseCreature bc && bc.IsSoulBound && killer is PlayerMobile && killer.Backpack != null)
-            {
-                EtherealSoulbinder es = killer.Backpack.FindItemsByType<EtherealSoulbinder>().OrderByDescending(x => x.SoulPoint < x.MaxSoulPoint).FirstOrDefault();
+                EtherealSoulbinder es = killer.Backpack.FindItemsByType<EtherealSoulbinder>().Where(x => x.SoulPoint < x.MaxSoulPoint).FirstOrDefault();
 
                 if (es != null)
                 {
-                    var hm = bc.HitsMax;
-                    var scaler = hm > 1000 ? 1000 : 100;
-
-                    es.SoulPoint += (double)(hm / scaler) * PotionOfGloriousFortune.GetBonus(killer, PotionEventType.Soulbinder);
+                    es.SoulPoint += bc.HitsMax / 1000;
                 }
             }
         }

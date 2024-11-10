@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class AnimatedLegsoftheInsaneTinker : PlateLegs
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public AnimatedLegsoftheInsaneTinker()
             : base()
@@ -19,16 +21,58 @@ namespace Server.Items
             : base(serial)
         {
         }
+        
+        public override int LabelNumber { get{return 1113760;} }// Animated Legs of the Insane Tinker
 
-        public override int LabelNumber => 1113760; // Animated Legs of the Insane Tinker
-
-        public override int BasePhysicalResistance => 17;
-        public override int BaseFireResistance => 15;
-        public override int BaseColdResistance => 7;
-        public override int BasePoisonResistance => 15;
-        public override int BaseEnergyResistance => 2;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 17;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -38,7 +82,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); //version
+            writer.Write((int)0); //version
         }
     }
 }

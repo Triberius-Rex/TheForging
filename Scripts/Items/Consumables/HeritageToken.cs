@@ -1,4 +1,5 @@
-﻿using Server.Gumps;
+﻿using System;
+using Server.Gumps;
 
 namespace Server.Items
 {
@@ -17,10 +18,16 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076596;// A Heritage Token
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076596;
+            }
+        }// A Heritage Token
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.CloseGump(typeof(HeritageTokenGump));
                 from.SendGump(new HeritageTokenGump(this, from));
@@ -33,14 +40,14 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(1070998, string.Format("#{0}", 1076595));  // Use this to redeem<br>Your Heritage Items
+            list.Add(1070998, String.Format("#{0}", 1076595));  // Use this to redeem<br>Your Heritage Items
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,12 +1,15 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class ResonantShieldOfVengeance : GargishWoodenShield
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1150357;  // Resonant Shield of Vengeance
+	{
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1150357; } } // Resonant Shield of Vengeance
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         [Constructable]
         public ResonantShieldOfVengeance()
@@ -43,7 +46,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -55,10 +58,10 @@ namespace Server.Items
 
     public class ResonantShieldOfVengeanceHuman : BronzeShield
     {
-        public override int LabelNumber => 1150357;  // Resonant Shield of Vengeance
+        public override int LabelNumber { get { return 1150357; } } // Resonant Shield of Vengeance
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         [Constructable]
         public ResonantShieldOfVengeanceHuman()
@@ -96,7 +99,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

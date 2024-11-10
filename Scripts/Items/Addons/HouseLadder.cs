@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -5,7 +6,7 @@ namespace Server.Items
 {
     public class HouseLadderAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new HouseLadderDeed();
+        public override BaseAddonDeed Deed { get { return new HouseLadderDeed(); } }
 
         [Constructable]
         public HouseLadderAddon(int type)
@@ -15,22 +16,22 @@ namespace Server.Items
             {
                 case 0: // castle south
                     AddComponent(new LocalizedAddonComponent(0x3DB2, 1076791), 0, 0, 0);
-                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 0, 1, 29);
+                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 0, 1, 28);
                     AddComponent(new LocalizedAddonComponent(0x3DB4, 1076791), 0, 2, 20);
                     break;
                 case 1: // castle east
                     AddComponent(new LocalizedAddonComponent(0x3DB3, 1076791), 0, 0, 0);
-                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 1, 0, 29);
+                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 1, 0, 28);
                     AddComponent(new LocalizedAddonComponent(0x3DB5, 1076791), 2, 0, 20);
                     break;
                 case 2: // castle north
                     AddComponent(new LocalizedAddonComponent(0x2FDF, 1076791), 0, 0, 0);
-                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 0, -1, 29);
+                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), 0, -1, 28);
                     AddComponent(new LocalizedAddonComponent(0x3DB6, 1076791), 0, -2, 20);
                     break;
                 case 3: // castle west
                     AddComponent(new LocalizedAddonComponent(0x2FDE, 1076791), 0, 0, 0);
-                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), -1, 0, 29);
+                    AddComponent(new LocalizedAddonComponent(0x3F28, 1076791), -1, 0, 28);
                     AddComponent(new LocalizedAddonComponent(0x3DB7, 1076791), -2, 0, 20);
                     break;
                 case 4: // south
@@ -52,7 +53,7 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -68,7 +69,7 @@ namespace Server.Items
 
     public class HouseLadderDeed : BaseAddonDeed
     {
-        public override int LabelNumber => 1076287;  // Ladder
+        public override int LabelNumber { get { return 1076287; } } // Ladder
         private int m_Type;
 
         [Constructable]
@@ -83,8 +84,8 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new HouseLadderAddon(m_Type);
-
+        public override BaseAddon Addon { get { return new HouseLadderAddon(m_Type); } }
+        
         public override void OnDoubleClick(Mobile from)
         {
             if (IsChildOf(from.Backpack))

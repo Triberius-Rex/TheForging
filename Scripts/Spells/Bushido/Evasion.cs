@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections;
+using Server.Items;
 
 namespace Server.Spells.Bushido
 {
@@ -16,9 +16,27 @@ namespace Server.Spells.Bushido
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.25);
-        public override double RequiredSkill => 60.0;
-        public override int RequiredMana => 10;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 60.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
         public static bool VerifyCast(Mobile Caster, bool messages)
         {
             if (Caster == null) // Sanity
@@ -31,7 +49,7 @@ namespace Server.Spells.Bushido
 
             if (weap != null)
             {
-                if (Caster.Skills[weap.Skill].Base < 50)
+                if (Core.ML && Caster.Skills[weap.Skill].Base < 50)
                 {
                     if (messages)
                     {
@@ -68,29 +86,35 @@ namespace Server.Spells.Bushido
             if (weap == null)
                 weap = defender.FindItemOnLayer(Layer.TwoHanded) as BaseWeapon;
 
-            if (defender.Spell != null && defender.Spell.IsCasting)
+            if (Core.ML)
             {
-                return false;
-            }
-
-            if (weap != null)
-            {
-                if (defender.Skills[weap.Skill].Base < 50)
+                if (defender.Spell != null && defender.Spell.IsCasting)
+                {
+                    return false;
+                }
+				
+                if (weap != null)
+                {
+                    if (defender.Skills[weap.Skill].Base < 50)
+                    {
+                        return false;
+                    }
+                }
+                else if (!(defender.FindItemOnLayer(Layer.TwoHanded) is BaseShield))
                 {
                     return false;
                 }
             }
-            else if (!(defender.FindItemOnLayer(Layer.TwoHanded) is BaseShield))
-            {
-                return false;
-            }
-
+			
             if (IsEvading(defender) && BaseWeapon.CheckParry(defender))
             {
                 defender.Emote("*evades*"); // Yes.  Eew.  Blame OSI.
                 defender.FixedEffect(0x37B9, 10, 16);
 
-                defender.Animate(AnimationType.Block, 0);
+                if (Core.SA)
+                {
+                    defender.Animate(AnimationType.Block, 0);
+                }
 
                 return true;
             }
@@ -112,6 +136,9 @@ namespace Server.Spells.Bushido
             * o 3-6 seconds w/o tactics/anatomy
             * o 6-7 seconds w/ GM+ Bushido and GM tactics/anatomy 
             */
+            if (!Core.ML)
+                return TimeSpan.FromSeconds(8.0);
+
             double seconds = 3;
 
             if (m.Skills.Bushido.Value > 60)
@@ -133,6 +160,9 @@ namespace Server.Spells.Bushido
             * o 16-40% bonus w/o tactics/anatomy
             * o 42-50% bonus w/ GM+ bushido and GM tactics/anatomy
             */
+            if (!Core.ML)
+                return 1.5;
+
             double bonus = 0;
 
             if (m.Skills.Bushido.Value >= 60)
@@ -177,7 +207,7 @@ namespace Server.Spells.Bushido
 
         public override bool CheckCast()
         {
-            if (VerifyCast(Caster, true))
+            if (VerifyCast(this.Caster, true))
                 return base.CheckCast();
 
             return false;
@@ -187,26 +217,26 @@ namespace Server.Spells.Bushido
         {
             base.OnBeginCast();
 
-            Caster.FixedEffect(0x37C4, 10, 7, 4, 3);
+            this.Caster.FixedEffect(0x37C4, 10, 7, 4, 3);
         }
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
-                Caster.SendLocalizedMessage(1063120); // You feel that you might be able to deflect any attack!
-                Caster.FixedParticles(0x376A, 1, 20, 0x7F5, 0x960, 3, EffectLayer.Waist);
-                Caster.PlaySound(0x51B);
+                this.Caster.SendLocalizedMessage(1063120); // You feel that you might be able to deflect any attack!
+                this.Caster.FixedParticles(0x376A, 1, 20, 0x7F5, 0x960, 3, EffectLayer.Waist);
+                this.Caster.PlaySound(0x51B);
 
-                OnCastSuccessful(Caster);
+                this.OnCastSuccessful(this.Caster);
 
-                BeginEvasion(Caster);
+                BeginEvasion(this.Caster);
 
-                Caster.BeginAction(typeof(Evasion));
-                Timer.DelayCall(TimeSpan.FromSeconds(20.0), delegate { Caster.EndAction(typeof(Evasion)); });
+                this.Caster.BeginAction(typeof(Evasion));
+                Timer.DelayCall(TimeSpan.FromSeconds(20.0), delegate { this.Caster.EndAction(typeof(Evasion)); });
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTimer : Timer
@@ -215,14 +245,14 @@ namespace Server.Spells.Bushido
             public InternalTimer(Mobile m, TimeSpan delay)
                 : base(delay)
             {
-                m_Mobile = m;
-                Priority = TimerPriority.TwoFiftyMS;
+                this.m_Mobile = m;
+                this.Priority = TimerPriority.TwoFiftyMS;
             }
 
             protected override void OnTick()
             {
-                EndEvasion(m_Mobile);
-                m_Mobile.SendLocalizedMessage(1063121); // You no longer feel that you could deflect any attack.
+                EndEvasion(this.m_Mobile);
+                this.m_Mobile.SendLocalizedMessage(1063121); // You no longer feel that you could deflect any attack.
             }
         }
     }

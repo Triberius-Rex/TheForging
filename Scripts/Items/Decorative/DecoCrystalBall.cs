@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class DecoCrystalBall : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public DecoCrystalBall()
             : base(0xE2E)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public DecoCrystalBall(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

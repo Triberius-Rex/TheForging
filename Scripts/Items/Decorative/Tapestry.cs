@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Tapestry1N : Item
@@ -7,9 +9,9 @@ namespace Server.Items
         public Tapestry1N()
             : base(0xEAA)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry1N(Serial serial)
@@ -19,31 +21,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X + 1, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X + 1, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -52,7 +54,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -61,9 +63,9 @@ namespace Server.Items
             public InternalItem(Tapestry1N item)
                 : base(0xEAB)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -73,31 +75,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X - 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X - 1, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -106,7 +108,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry1N;
+                this.m_Item = reader.ReadItem() as Tapestry1N;
             }
         }
     }
@@ -118,9 +120,9 @@ namespace Server.Items
         public Tapestry2N()
             : base(0xEAC)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry2N(Serial serial)
@@ -130,31 +132,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X + 1, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X + 1, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -163,7 +165,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -172,9 +174,9 @@ namespace Server.Items
             public InternalItem(Tapestry2N item)
                 : base(0xEAD)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -184,31 +186,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X - 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X - 1, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -217,7 +219,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry2N;
+                this.m_Item = reader.ReadItem() as Tapestry2N;
             }
         }
     }
@@ -229,9 +231,9 @@ namespace Server.Items
         public Tapestry2W()
             : base(0xEAE)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry2W(Serial serial)
@@ -241,31 +243,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y - 1, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X , this.Y - 1 , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -274,7 +276,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -283,9 +285,9 @@ namespace Server.Items
             public InternalItem(Tapestry2W item)
                 : base(0xEAF)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -295,31 +297,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y + 1, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X , this.Y + 1 , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -328,7 +330,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry2W;
+                this.m_Item = reader.ReadItem() as Tapestry2W;
             }
         }
     }
@@ -340,9 +342,9 @@ namespace Server.Items
         public Tapestry3N()
             : base(0xFD6)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry3N(Serial serial)
@@ -352,31 +354,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X - 2, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X - 2, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -385,7 +387,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -394,9 +396,9 @@ namespace Server.Items
             public InternalItem(Tapestry3N item)
                 : base(0xFD5)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -406,31 +408,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X + 2, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X + 2, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -439,7 +441,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry3N;
+                this.m_Item = reader.ReadItem() as Tapestry3N;
             }
         }
     }
@@ -451,9 +453,9 @@ namespace Server.Items
         public Tapestry3W()
             : base(0xFD7)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry3W(Serial serial)
@@ -463,31 +465,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y - 2, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X , this.Y - 2 , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -496,7 +498,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -505,9 +507,9 @@ namespace Server.Items
             public InternalItem(Tapestry3W item)
                 : base(0xFD8)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -517,31 +519,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y + 2, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X , this.Y + 2 , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -550,7 +552,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry3W;
+                this.m_Item = reader.ReadItem() as Tapestry3W;
             }
         }
     }
@@ -562,9 +564,9 @@ namespace Server.Items
         public Tapestry4N()
             : base(0xFDA)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry4N(Serial serial)
@@ -574,31 +576,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X - 1, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X - 1, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -607,7 +609,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -616,9 +618,9 @@ namespace Server.Items
             public InternalItem(Tapestry4N item)
                 : base(0xFD9)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -628,31 +630,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X + 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X + 1, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -661,7 +663,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry4N;
+                this.m_Item = reader.ReadItem() as Tapestry4N;
             }
         }
     }
@@ -673,9 +675,9 @@ namespace Server.Items
         public Tapestry4W()
             : base(0xFDB)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry4W(Serial serial)
@@ -685,31 +687,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y - 1, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X , this.Y - 1, this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -718,7 +720,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -727,9 +729,9 @@ namespace Server.Items
             public InternalItem(Tapestry4W item)
                 : base(0xFDC)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -739,31 +741,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y + 1, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X , this.Y + 1, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -772,7 +774,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry4W;
+                this.m_Item = reader.ReadItem() as Tapestry4W;
             }
         }
     }
@@ -784,9 +786,9 @@ namespace Server.Items
         public Tapestry5N()
             : base(0xFDE)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry5N(Serial serial)
@@ -796,31 +798,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X - 1, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X - 1, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -829,7 +831,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -838,9 +840,9 @@ namespace Server.Items
             public InternalItem(Tapestry5N item)
                 : base(0xFDD)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -850,31 +852,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X + 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X + 1, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -883,7 +885,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry5N;
+                this.m_Item = reader.ReadItem() as Tapestry5N;
             }
         }
     }
@@ -895,9 +897,9 @@ namespace Server.Items
         public Tapestry5W()
             : base(0xFDF)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry5W(Serial serial)
@@ -907,31 +909,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y - 1, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X , this.Y - 1, this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -940,7 +942,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -949,9 +951,9 @@ namespace Server.Items
             public InternalItem(Tapestry5W item)
                 : base(0xFE0)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -961,31 +963,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y + 1, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X , this.Y + 1, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -994,7 +996,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry5W;
+                this.m_Item = reader.ReadItem() as Tapestry5W;
             }
         }
     }
@@ -1006,9 +1008,9 @@ namespace Server.Items
         public Tapestry6N()
             : base(0xFE2)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry6N(Serial serial)
@@ -1018,31 +1020,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X - 1, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X - 1, this.Y , this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -1051,7 +1053,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -1060,9 +1062,9 @@ namespace Server.Items
             public InternalItem(Tapestry6N item)
                 : base(0xFE1)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -1072,31 +1074,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X + 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X + 1, this.Y , this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -1105,7 +1107,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry6N;
+                this.m_Item = reader.ReadItem() as Tapestry6N;
             }
         }
     }
@@ -1117,9 +1119,9 @@ namespace Server.Items
         public Tapestry6W()
             : base(0xFE3)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
+            this.m_Item = new InternalItem(this);
         }
 
         public Tapestry6W(Serial serial)
@@ -1129,31 +1131,31 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y - 1, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X , this.Y - 1, this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
+            writer.Write(this.m_Item);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -1162,7 +1164,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item = reader.ReadItem() as InternalItem;
         }
 
         private class InternalItem : Item
@@ -1171,9 +1173,9 @@ namespace Server.Items
             public InternalItem(Tapestry6W item)
                 : base(0xFE4)
             {
-                Movable = true;
+                this.Movable = true;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -1183,31 +1185,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y + 1, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X , this.Y + 1, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -1216,7 +1218,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as Tapestry6W;
+                this.m_Item = reader.ReadItem() as Tapestry6W;
             }
         }
     }

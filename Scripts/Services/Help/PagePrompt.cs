@@ -1,3 +1,4 @@
+using System;
 using Server.Prompts;
 
 namespace Server.Engines.Help
@@ -7,7 +8,7 @@ namespace Server.Engines.Help
         private readonly PageType m_Type;
         public PagePrompt(PageType type)
         {
-            m_Type = type;
+            this.m_Type = type;
         }
 
         public override void OnCancel(Mobile from)
@@ -21,7 +22,7 @@ namespace Server.Engines.Help
             * Please check your Journal for messages every few minutes.
             */
 
-            PageQueue.Enqueue(new PageEntry(from, text, m_Type));
+            PageQueue.Enqueue(new PageEntry(from, text, this.m_Type));
         }
     }
 }

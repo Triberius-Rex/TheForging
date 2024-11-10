@@ -1,7 +1,7 @@
-using Server.Spells.First;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
+using Server.Targeting;
+using Server.Spells.First;
 
 namespace Server.Spells.Fourth
 {
@@ -22,7 +22,13 @@ namespace Server.Spells.Fourth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fourth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fourth;
+            }
+        }
 
         public static void AddEffect(Mobile m, TimeSpan duration, int strOffset, int dexOffset, int intOffset)
         {
@@ -51,33 +57,33 @@ namespace Server.Spells.Fourth
                 FeeblemindSpell.RemoveEffects(m, false);
             }
 
-            m_UnderEffect[m] = Timer.DelayCall(duration, RemoveEffect, m); //= new CurseTimer(m, duration, strOffset, dexOffset, intOffset);
+            m_UnderEffect[m] = Timer.DelayCall<Mobile>(duration, RemoveEffect, m); //= new CurseTimer(m, duration, strOffset, dexOffset, intOffset);
             m.UpdateResistances();
         }
 
         public static void RemoveEffect(Mobile m)
         {
-            if (!WeakenSpell.IsUnderEffects(m))
+            if(!WeakenSpell.IsUnderEffects(m))
                 m.RemoveStatMod("[Magic] Str Curse");
 
-            if (!ClumsySpell.IsUnderEffects(m))
+            if(!ClumsySpell.IsUnderEffects(m))
                 m.RemoveStatMod("[Magic] Dex Curse");
 
-            if (!FeeblemindSpell.IsUnderEffects(m))
+            if(!FeeblemindSpell.IsUnderEffects(m))
                 m.RemoveStatMod("[Magic] Int Curse");
 
             BuffInfo.RemoveBuff(m, BuffIcon.Curse);
 
-            if (m_UnderEffect.ContainsKey(m))
+            if(m_UnderEffect.ContainsKey(m))
             {
                 Timer t = m_UnderEffect[m];
-
-                if (t != null)
+                
+                if(t != null)
                     t.Stop();
-
+                
                 m_UnderEffect.Remove(m);
             }
-
+            
             m.UpdateResistances();
         }
 
@@ -107,7 +113,7 @@ namespace Server.Spells.Fourth
             int newDex = SpellHelper.GetOffset(caster, m, StatType.Dex, true, true);
             int newInt = SpellHelper.GetOffset(caster, m, StatType.Int, true, true);
 
-            if ((-newStr > oldStr && -newDex > oldDex && -newInt > oldInt) ||
+            if ((-newStr > oldStr && -newDex > oldDex && -newInt > oldInt) || 
                 (newStr == 0 && newDex == 0 && newInt == 0))
             {
                 return false;
@@ -123,12 +129,12 @@ namespace Server.Spells.Fourth
 
             if (masscurse)
             {
-                args = string.Format("{0}\t{0}\t{0}", percentage);
+                args = String.Format("{0}\t{0}\t{0}", percentage);
                 BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.MassCurse, 1075839, length, m, args));
             }
             else
             {
-                args = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}", percentage, percentage, percentage, 10, 10, 10, 10);
+                args = String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}", percentage, percentage, percentage, 10, 10, 10, 10);
                 BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Curse, 1075835, 1075836, length, m, args.ToString()));
             }
 
@@ -145,7 +151,7 @@ namespace Server.Spells.Fourth
             return true;
         }
 
-        public void Target(Mobile m)
+		public void Target(Mobile m)
         {
             if (!Caster.CanSee(m))
             {
@@ -155,7 +161,7 @@ namespace Server.Spells.Fourth
             {
                 SpellHelper.Turn(Caster, m);
 
-                SpellHelper.CheckReflect(this, Caster, ref m);
+                SpellHelper.CheckReflect((int)Circle, Caster, ref m);
 
                 if (DoCurse(Caster, m, false))
                 {
@@ -165,16 +171,16 @@ namespace Server.Spells.Fourth
                 {
                     DoHurtFizzle();
                 }
-            }
+			}
 
-            FinishSequence();
+			FinishSequence();
         }
 
         private class InternalTarget : Target
         {
             private readonly CurseSpell m_Owner;
             public InternalTarget(CurseSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

@@ -1,6 +1,6 @@
+using System;
 using Server.Items;
 using Server.Spells;
-using System;
 
 namespace Server.Mobiles
 {
@@ -60,6 +60,15 @@ namespace Server.Mobiles
 
             Fame = 15000;
             Karma = -15000;
+
+            PackItem(new Arrow(35));
+            PackItem(new Bolt(25));
+            PackGem(2);
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
         }
 
         public Changeling(Serial serial)
@@ -77,25 +86,37 @@ namespace Server.Mobiles
             return base.IsEnemy(m);
         }
 
-        public virtual string DefaultName => "a changeling";
-        public virtual int DefaultHue => 0;
-
-        public override bool UseSmartAI => true;
-
-        public override bool ShowFameTitle => false;
-        public override bool InitialInnocent => (m_MorphedInto != null);
-
-        public override void GenerateLoot()
+        public virtual string DefaultName
         {
-            AddLoot(LootPack.Rich, 3);
-            AddLoot(LootPack.LowScrolls);
-            AddLoot(LootPack.MedScrolls);
-            AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<Arrow>(35));
-            AddLoot(LootPack.LootItem<Bolt>(25));
-            AddLoot(LootPack.ArcanistScrolls);
+            get
+            {
+                return "a changeling";
+            }
+        }
+        public virtual int DefaultHue
+        {
+            get
+            {
+                return 0;
+            }
         }
 
+        public override bool UseSmartAI { get { return true; } }
+
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool InitialInnocent
+        {
+            get
+            {
+                return (m_MorphedInto != null);
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile MorphedInto
         {
@@ -122,6 +143,12 @@ namespace Server.Mobiles
                     Delta(MobileDelta.Noto);
                 }
             }
+        }
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.AosRich, 3);
+            AddLoot(LootPack.LowScrolls);
+            AddLoot(LootPack.MedScrolls);
         }
 
         public override int GetAngerSound()
@@ -206,7 +233,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write((m_MorphedInto != null));
         }
 
@@ -306,7 +333,7 @@ namespace Server.Mobiles
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)

@@ -1,36 +1,37 @@
+using System;
 using Reward = Server.Engines.Quests.BaseReward;
 
 namespace Server.Items
 {
     public class RewardBox : WoodenBox
     {
-        [Constructable]
+        [Constructable]	
         public RewardBox()
             : base()
         {
-            Hue = Reward.StrongboxHue();
-
-            while (Items.Count < Amount)
-            {
-                switch (Utility.Random(4))
+            this.Hue = Reward.StrongboxHue();
+			
+            while (this.Items.Count < this.Amount)
+            { 
+                switch ( Utility.Random(4) )
                 {
                     case 0:
-                        DropItem(Reward.Armor());
+                        this.DropItem(Reward.Armor());
                         break;
                     case 1:
-                        DropItem(Reward.RangedWeapon());
+                        this.DropItem(Reward.RangedWeapon());
                         break;
                     case 2:
-                        DropItem(Reward.Weapon());
+                        this.DropItem(Reward.Weapon());
                         break;
                     case 3:
-                        DropItem(Reward.Jewlery());
-                        break;
+                        this.DropItem(Reward.Jewlery());
+                        break;	
                 }
             }
-
+			
             if (0.25 > Utility.RandomDouble()) // check
-                DropItem(Loot.RandomTalisman());
+                this.DropItem(Loot.RandomTalisman());
         }
 
         public RewardBox(Serial serial)
@@ -38,12 +39,18 @@ namespace Server.Items
         {
         }
 
-        public virtual int ItemAmount => 6;
+        public virtual int ItemAmount
+        {
+            get
+            {
+                return 6;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

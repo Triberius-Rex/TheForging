@@ -1,9 +1,10 @@
-using Server.Commands;
-using Server.Engines.Quests;
+﻿using System;
 using Server.Mobiles;
 using Server.Network;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Engines.Quests;
+using Server.Commands;
 
 namespace Server.Items
 {
@@ -18,7 +19,7 @@ namespace Server.Items
     {
         public static void Initialize()
         {
-            CommandSystem.Register("GenMasterThinker", AccessLevel.Developer, GenMasterThinker_Command);
+            CommandSystem.Register("GenMasterThinker", AccessLevel.Developer, new CommandEventHandler(GenMasterThinker_Command));
         }
 
         [Usage("GenMasterThinker")]
@@ -59,11 +60,11 @@ namespace Server.Items
             public bool Tunic { get; set; }
         }
 
-        private readonly MasterThinkerDecor m_Book, m_Pant, m_Tunic;
+        private MasterThinkerDecor m_Book, m_Pant, m_Tunic;
 
         public static List<MasterThinkerArray> m_Array;
 
-        public List<MasterThinkerArray> Array => m_Array;
+        public List<MasterThinkerArray> Array { get { return m_Array; } }
 
 
         public MasterThinkerContoller()
@@ -93,7 +94,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -115,12 +116,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Type;
+                return this.m_Type;
             }
             set
             {
-                m_Type = value;
-                InvalidateProperties();
+                this.m_Type = value;
+                this.InvalidateProperties();
             }
         }
 
@@ -128,11 +129,11 @@ namespace Server.Items
         public MasterThinkerDecor(int id, int hue, DecorType type, MasterThinkerContoller controller)
             : base()
         {
-            ItemID = id;
-            m_Controller = controller;
-            m_Type = type;
-            Hue = hue;
-            Movable = false;
+            this.ItemID = id;
+            this.m_Controller = controller;
+            this.m_Type = type;
+            this.Hue = hue;
+            this.Movable = false;
         }
 
         public MasterThinkerDecor(Serial serial)
@@ -142,29 +143,29 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (m_Controller != null)
+            if (this.m_Controller != null)
             {
-                if (m_Controller.Array.Where(s => s.Mobile == from).Count() == 0)
+                if (this.m_Controller.Array.Where(s => s.Mobile == from).Count() == 0)
                 {
-                    m_Controller.Array.Add(new MasterThinkerContoller.MasterThinkerArray { Mobile = from, Book = false, Pant = false, Tunic = false });
+                    this.m_Controller.Array.Add(new MasterThinkerContoller.MasterThinkerArray { Mobile = from, Book = false, Pant = false, Tunic = false });
                 }
 
-                if (m_Type == DecorType.Book)
+                if (this.m_Type == DecorType.Book)
                 {
-                    m_Controller.Array.Find(s => s.Mobile == from).Book = true;
+                    this.m_Controller.Array.Find(s => s.Mobile == from).Book = true;
                     from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154222); // *You thumb through the pages of the book, it seems to describe the anatomy of a variety of frost creatures*            
                 }
-                else if (m_Type == DecorType.Pant)
+                else if (this.m_Type == DecorType.Pant)
                 {
-                    m_Controller.Array.Find(s => s.Mobile == from).Pant = true;
+                    this.m_Controller.Array.Find(s => s.Mobile == from).Pant = true;
                     from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154221); // *You carefully examine the garment and take note of it's superior quality. You surmise it would be useful in keeping you warm in a cold environment*
                 }
-                else if (m_Type == DecorType.Tunic)
+                else if (this.m_Type == DecorType.Tunic)
                 {
-                    m_Controller.Array.Find(s => s.Mobile == from).Tunic = true;
+                    this.m_Controller.Array.Find(s => s.Mobile == from).Tunic = true;
                     from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154221); // *You carefully examine the garment and take note of it's superior quality. You surmise it would be useful in keeping you warm in a cold environment*
                 }
-
+                
                 if (ClickCheck(from) == 1)
                 {
                     PlayerMobile pm = from as PlayerMobile;
@@ -172,7 +173,7 @@ namespace Server.Items
                     if (pm.ExploringTheDeepQuest == ExploringTheDeepQuestChain.HeplerPaulsonComplete)
                     {
                         pm.ExploringTheDeepQuest = ExploringTheDeepQuestChain.CusteauPerronHouse;
-                        m_Controller.Array.RemoveAll(s => s.Mobile == from);
+                        this.m_Controller.Array.RemoveAll(s => s.Mobile == from);
                     }
                 }
             }
@@ -180,13 +181,13 @@ namespace Server.Items
 
         public int ClickCheck(Mobile from)
         {
-            return m_Controller.Array.Where(s => s.Mobile == from && s.Pant == true && s.Book == true && s.Tunic == true).Count();
+            return this.m_Controller.Array.Where(s => s.Mobile == from && s.Pant == true && s.Book == true && s.Tunic == true).Count();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_Controller);
             writer.Write((int)m_Type);
@@ -196,9 +197,9 @@ namespace Server.Items
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
-
-            m_Controller = reader.ReadItem() as MasterThinkerContoller;
-            m_Type = (DecorType)reader.ReadInt();
+            
+            this.m_Controller = reader.ReadItem() as MasterThinkerContoller;
+            this.m_Type = (DecorType)reader.ReadInt();
         }
     }
 }

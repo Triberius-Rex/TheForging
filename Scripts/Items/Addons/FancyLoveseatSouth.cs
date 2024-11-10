@@ -1,10 +1,13 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     [Furniture]
     public class FancyLoveseatSouthAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new FancyLoveseatSouthDeed();
-        public override bool RetainDeedHue => true;
+        public override BaseAddonDeed Deed { get { return new FancyLoveseatSouthDeed(); } }
+        public override bool RetainDeedHue { get { return true; } }
 
         [Constructable]
         public FancyLoveseatSouthAddon()
@@ -21,7 +24,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -33,8 +36,8 @@ namespace Server.Items
 
     public class FancyLoveseatSouthDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new FancyLoveseatSouthAddon();
-        public override int LabelNumber => 1154137;  // Fancy Loveseat (South)
+        public override BaseAddon Addon { get { return new FancyLoveseatSouthAddon(); } }
+        public override int LabelNumber { get { return 1154137; } } // Fancy Loveseat (South)
 
         [Constructable]
         public FancyLoveseatSouthDeed()
@@ -49,7 +52,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

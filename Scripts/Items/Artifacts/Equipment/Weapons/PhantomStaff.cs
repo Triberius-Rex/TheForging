@@ -1,9 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class PhantomStaff : WildStaff
-    {
-        public override bool IsArtifact => true;
-
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public PhantomStaff()
         {
@@ -19,7 +20,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072919;// Phantom Staff
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072919;
+            }
+        }// Phantom Staff
         public override void GetDamageTypes(Mobile wielder, out int phys, out int fire, out int cold, out int pois, out int nrgy, out int chaos, out int direct)
         {
             phys = fire = nrgy = chaos = direct = 0;

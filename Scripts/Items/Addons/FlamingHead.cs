@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
@@ -5,7 +6,7 @@ using Server.Network;
 using Server.Targeting;
 
 namespace Server.Items
-{
+{ 
     public class FlamingHead : StoneFaceTrapNoDamage, IAddon, IRewardItem
     {
         private bool m_IsRewardItem;
@@ -19,9 +20,9 @@ namespace Server.Items
         public FlamingHead(StoneFaceTrapType type)
             : base()
         {
-            LootType = LootType.Blessed;
-            Movable = false;
-            Type = type;
+            this.LootType = LootType.Blessed;
+            this.Movable = false;
+            this.Type = type;
         }
 
         public FlamingHead(Serial serial)
@@ -29,20 +30,28 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041266;// Flaming Head
-
-        public override bool ForceShowProperties => true;
-
-        public Item Deed
+        public override int LabelNumber
         {
             get
             {
-                FlamingHeadDeed deed = new FlamingHeadDeed
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                return 1041266;
+            }
+        }// Flaming Head
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
+        public Item Deed
+        { 
+            get
+            { 
+                FlamingHeadDeed deed = new FlamingHeadDeed();
+                deed.IsRewardItem = this.m_IsRewardItem;
 
-                return deed;
+                return deed;	
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -50,19 +59,19 @@ namespace Server.Items
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (Core.ML && this.m_IsRewardItem)
                 list.Add(1076218); // 2nd Year Veteran Reward
         }
 
@@ -73,10 +82,10 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
-                BaseHouse house = BaseHouse.FindHouseAt(this);
-
+                BaseHouse house = BaseHouse.FindHouseAt(this);  
+				
                 if (house != null && house.IsOwner(from))
                 {
                     from.CloseGump(typeof(RewardDemolitionGump));
@@ -94,8 +103,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)this.m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -103,22 +112,22 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
+			
+            this.m_IsRewardItem = reader.ReadBool();
         }
 
         public bool CouldFit(IPoint3D p, Map map)
-        {
-            if (map == null || !map.CanFit(p.X, p.Y, p.Z, ItemData.Height))
+        { 
+            if (map == null || !map.CanFit(p.X, p.Y, p.Z, this.ItemData.Height))
                 return false;
 
-            if (Type == StoneFaceTrapType.NorthWestWall)
+            if (this.Type == StoneFaceTrapType.NorthWestWall)
                 return BaseAddon.IsWall(p.X, p.Y - 1, p.Z, map) && BaseAddon.IsWall(p.X - 1, p.Y, p.Z, map); // north and west wall
-            else if (Type == StoneFaceTrapType.NorthWall)
+            else if (this.Type == StoneFaceTrapType.NorthWall)
                 return BaseAddon.IsWall(p.X, p.Y - 1, p.Z, map); // north wall
-            else if (Type == StoneFaceTrapType.WestWall)
+            else if (this.Type == StoneFaceTrapType.WestWall) 
                 return BaseAddon.IsWall(p.X - 1, p.Y, p.Z, map); // west wall
-
+				
             return false;
         }
     }
@@ -129,9 +138,9 @@ namespace Server.Items
         [Constructable]
         public FlamingHeadDeed()
             : base(0x14F0)
-        {
-            LootType = LootType.Blessed;
-            Weight = 1.0;
+        { 
+            this.LootType = LootType.Blessed;
+            this.Weight = 1.0;
         }
 
         public FlamingHeadDeed(Serial serial)
@@ -139,35 +148,41 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041050;// a flaming head deed
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041050;
+            }
+        }// a flaming head deed
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (this.m_IsRewardItem)
                 list.Add(1076218); // 2nd Year Veteran Reward
         }
 
         public override void OnDoubleClick(Mobile from)
-        {
-            if (m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
+        { 
+            if (this.m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
                 return;
-
-            if (IsChildOf(from.Backpack))
-            {
+		
+            if (this.IsChildOf(from.Backpack))
+            { 
                 BaseHouse house = BaseHouse.FindHouseAt(from);
 
                 if (house != null && house.IsOwner(from))
@@ -187,8 +202,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)this.m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -196,8 +211,8 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
+			
+            this.m_IsRewardItem = reader.ReadBool();
         }
 
         private class InternalTarget : Target
@@ -206,31 +221,31 @@ namespace Server.Items
             public InternalTarget(FlamingHeadDeed head)
                 : base(-1, true, TargetFlags.None)
             {
-                m_Head = head;
+                this.m_Head = head;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Head == null || m_Head.Deleted)
+                if (this.m_Head == null || this.m_Head.Deleted)
                     return;
-
-                if (m_Head.IsChildOf(from.Backpack))
+					
+                if (this.m_Head.IsChildOf(from.Backpack))
                 {
                     BaseHouse house = BaseHouse.FindHouseAt(from);
-
+					
                     if (house != null && house.IsOwner(from))
                     {
                         IPoint3D p = targeted as IPoint3D;
                         Map map = from.Map;
-
+						
                         if (p == null || map == null)
                             return;
-
+							
                         Point3D p3d = new Point3D(p);
                         ItemData id = TileData.ItemTable[0x10F5];
-
+						
                         house = BaseHouse.FindHouseAt(p3d, map, id.Height);
-
+						
                         if (house != null && house.IsOwner(from))
                         {
                             if (map.CanFit(p3d, id.Height))
@@ -239,24 +254,24 @@ namespace Server.Items
                                 bool west = BaseAddon.IsWall(p3d.X - 1, p3d.Y, p3d.Z, map);
 
                                 FlamingHead head = null;
-
+								
                                 if (north && west)
                                     head = new FlamingHead(StoneFaceTrapType.NorthWestWall);
                                 else if (north)
                                     head = new FlamingHead(StoneFaceTrapType.NorthWall);
                                 else if (west)
                                     head = new FlamingHead(StoneFaceTrapType.WestWall);
-
+								
                                 if (north || west)
                                 {
-                                    house.Addons[head] = from;
+                                    house.Addons[head] = from;	
 
-                                    head.IsRewardItem = m_Head.IsRewardItem;
+                                    head.IsRewardItem = this.m_Head.IsRewardItem;
                                     head.MoveToWorld(p3d, map);
 
-                                    m_Head.Delete();
+                                    this.m_Head.Delete();
                                 }
-                                else
+                                else 
                                     from.SendLocalizedMessage(1042266); // The head must be placed next to a wall.
                             }
                             else

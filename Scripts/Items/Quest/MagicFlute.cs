@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 
 namespace Server.Engines.Quests.Hag
@@ -8,7 +9,7 @@ namespace Server.Engines.Quests.Hag
         public MagicFlute()
             : base(0x1421)
         {
-            Hue = 0x8AB;
+            this.Hue = 0x8AB;
         }
 
         public MagicFlute(Serial serial)
@@ -16,12 +17,18 @@ namespace Server.Engines.Quests.Hag
         {
         }
 
-        public override int LabelNumber => 1055051;// magic flute
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1055051;
+            }
+        }// magic flute
         public override void OnDoubleClick(Mobile from)
         {
-            if (!IsChildOf(from.Backpack))
+            if (!this.IsChildOf(from.Backpack))
             {
-                SendLocalizedMessageTo(from, 1042292); // You must have the object in your backpack to use it.
+                this.SendLocalizedMessageTo(from, 1042292); // You must have the object in your backpack to use it.
                 return;
             }
 
@@ -45,7 +52,7 @@ namespace Server.Engines.Quests.Hag
                         }
                         else if (player.InRange(obj.ImpLocation, 4))
                         {
-                            Delete();
+                            this.Delete();
 
                             obj.Complete();
                         }
@@ -62,7 +69,7 @@ namespace Server.Engines.Quests.Hag
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

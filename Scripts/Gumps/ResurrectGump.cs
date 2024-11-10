@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Mobiles;
 using Server.Network;
 using Server.Services.Virtues;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Gumps
 {
@@ -25,7 +25,7 @@ namespace Server.Gumps
         private readonly double m_HitsScalar;
         private readonly ResurrectMessage m_Msg;
 
-        private readonly Action<Mobile> m_Callback;
+        private Action<Mobile> m_Callback;
 
         public ResurrectGump(Mobile owner)
             : this(owner, owner, ResurrectMessage.Generic, false)
@@ -209,7 +209,7 @@ namespace Server.Gumps
                 {
                     VirtueLevel level = VirtueHelper.GetLevel(m_Healer, VirtueName.Compassion);
 
-                    switch (level)
+                    switch( level )
                     {
                         case VirtueLevel.Seeker:
                             from.Hits = AOS.Scale(from.HitsMax, 20);
@@ -254,6 +254,29 @@ namespace Server.Gumps
                     int amount = from.Fame / 10;
 
                     Misc.Titles.AwardFame(from, -amount, true);
+                }
+
+                if (!Core.AOS && from.ShortTermMurders >= 5)
+                {
+                    double loss = (100.0 - (4.0 + (from.ShortTermMurders / 5.0))) / 100.0; // 5 to 15% loss
+
+                    if (loss < 0.85)
+                        loss = 0.85;
+                    else if (loss > 0.95)
+                        loss = 0.95;
+
+                    if (from.RawStr * loss > 10)
+                        from.RawStr = (int)(from.RawStr * loss);
+                    if (from.RawInt * loss > 10)
+                        from.RawInt = (int)(from.RawInt * loss);
+                    if (from.RawDex * loss > 10)
+                        from.RawDex = (int)(from.RawDex * loss);
+
+                    for (int s = 0; s < from.Skills.Length; s++)
+                    {
+                        if (from.Skills[s].Base * loss > 35)
+                            from.Skills[s].Base *= loss;
+                    }
                 }
 
                 if (from.Alive && m_HitsScalar > 0)

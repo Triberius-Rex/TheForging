@@ -1,3 +1,6 @@
+using System;
+using Server.Network;
+
 namespace Server.Mobiles
 {
     [CorpseName("a hare corpse")]
@@ -6,8 +9,8 @@ namespace Server.Mobiles
         public EnragedRabbit(Mobile summoner)
             : base(summoner)
         {
-            Name = "a rabbit";
-            Body = 0xcd;
+            this.Name = "a rabbit";
+            this.Body = 0xcd;
         }
 
         public EnragedRabbit(Serial serial)
@@ -15,25 +18,25 @@ namespace Server.Mobiles
         {
         }
 
-        public override int GetAttackSound()
-        {
-            return 0xC9;
+        public override int GetAttackSound() 
+        { 
+            return 0xC9; 
         }
 
-        public override int GetHurtSound()
-        {
-            return 0xCA;
+        public override int GetHurtSound() 
+        { 
+            return 0xCA; 
         }
 
-        public override int GetDeathSound()
-        {
-            return 0xCB;
+        public override int GetDeathSound() 
+        { 
+            return 0xCB; 
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,8 +52,8 @@ namespace Server.Mobiles
         public EnragedHart(Mobile summoner)
             : base(summoner)
         {
-            Name = "a great hart";
-            Body = 0xea;
+            this.Name = "a great hart";
+            this.Body = 0xea;
         }
 
         public EnragedHart(Serial serial)
@@ -58,25 +61,25 @@ namespace Server.Mobiles
         {
         }
 
-        public override int GetAttackSound()
-        {
-            return 0x82;
+        public override int GetAttackSound() 
+        { 
+            return 0x82; 
         }
 
-        public override int GetHurtSound()
-        {
-            return 0x83;
+        public override int GetHurtSound() 
+        { 
+            return 0x83; 
         }
 
-        public override int GetDeathSound()
-        {
-            return 0x84;
+        public override int GetDeathSound() 
+        { 
+            return 0x84; 
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -92,8 +95,8 @@ namespace Server.Mobiles
         public EnragedHind(Mobile summoner)
             : base(summoner)
         {
-            Name = "a hind";
-            Body = 0xed;
+            this.Name = "a hind";
+            this.Body = 0xed;
         }
 
         public EnragedHind(Serial serial)
@@ -101,25 +104,25 @@ namespace Server.Mobiles
         {
         }
 
-        public override int GetAttackSound()
-        {
-            return 0x82;
+        public override int GetAttackSound() 
+        { 
+            return 0x82; 
         }
 
-        public override int GetHurtSound()
-        {
-            return 0x83;
+        public override int GetHurtSound() 
+        { 
+            return 0x83; 
         }
 
-        public override int GetDeathSound()
-        {
-            return 0x84;
+        public override int GetDeathSound() 
+        { 
+            return 0x84; 
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -135,9 +138,9 @@ namespace Server.Mobiles
         public EnragedBlackBear(Mobile summoner)
             : base(summoner)
         {
-            Name = "a black bear";
-            Body = 0xd3;
-            BaseSoundID = 0xa3;
+            this.Name = "a black bear";
+            this.Body = 0xd3;
+            this.BaseSoundID = 0xa3;
         }
 
         public EnragedBlackBear(Serial serial)
@@ -148,7 +151,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -164,9 +167,9 @@ namespace Server.Mobiles
         public EnragedEagle(Mobile summoner)
             : base(summoner)
         {
-            Name = "an eagle";
-            Body = 0x5;
-            BaseSoundID = 0x2ee;
+            this.Name = "an eagle";
+            this.Body = 0x5;
+            this.BaseSoundID = 0x2ee;
         }
 
         public EnragedEagle(Serial serial)
@@ -177,7 +180,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -192,10 +195,10 @@ namespace Server.Mobiles
         public BaseEnraged(Mobile summoner)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            SetStr(50, 200);
-            SetDex(50, 200);
-            SetHits(50, 200);
-            SetStam(50, 200);
+            this.SetStr(50, 200);
+            this.SetDex(50, 200);
+            this.SetHits(50, 200);
+            this.SetStam(50, 200);
 
             /* 
             On OSI, all stats are random 50-200, but
@@ -203,15 +206,15 @@ namespace Server.Mobiles
             less than stam.
             */
 
-            if (Str < Hits)
-                Str = Hits;
-            if (Dex < Stam)
-                Dex = Stam;
+            if (this.Str < this.Hits)
+                this.Str = this.Hits;
+            if (this.Dex < this.Stam)
+                this.Dex = this.Stam;
 
-            Karma = -1000;
-            Tamable = false;
+            this.Karma = -1000;
+            this.Tamable = false;
 
-            SummonMaster = summoner;
+            this.SummonMaster = summoner;
         }
 
         public BaseEnraged(Serial serial)
@@ -221,20 +224,20 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (SummonMaster == null || SummonMaster.Deleted)
+            if (this.SummonMaster == null || this.SummonMaster.Deleted)
             {
-                Delete();
+                this.Delete();
             }
             /*
             On OSI, without combatant, they behave as if they have been
             given "come" command, ie they wander towards their summoner,
             but never actually "follow".
             */
-            else if (!Combat(this))
+            else if (!this.Combat(this))
             {
-                if (AIObject != null)
+                if (this.AIObject != null)
                 {
-                    AIObject.MoveTo(SummonMaster, false, 5);
+                    this.AIObject.MoveTo(this.SummonMaster, false, 5);
                 }
             }
             /*
@@ -243,22 +246,28 @@ namespace Server.Mobiles
             is a player or controlled/summoned, and the summoner is not already
             engaged in combat.
             */
-            else if (!Combat(SummonMaster))
+            else if (!this.Combat(this.SummonMaster))
             {
                 BaseCreature bc = null;
-                if (Combatant is BaseCreature)
+                if (this.Combatant is BaseCreature)
                 {
-                    bc = (BaseCreature)Combatant;
+                    bc = (BaseCreature)this.Combatant;
                 }
-                if (Combatant is PlayerMobile || (bc != null && (bc.Controlled || bc.SummonMaster != null)))
+                if (this.Combatant is PlayerMobile || (bc != null && (bc.Controlled || bc.SummonMaster != null)))
                 {
-                    SummonMaster.Combatant = Combatant;
+                    this.SummonMaster.Combatant = this.Combatant;
                 }
             }
             else
             {
                 base.OnThink();
             }
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+            this.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1060768, from.NetState); // enraged
         }
 
         public override void AddNameProperties(ObjectPropertyList list)
@@ -270,7 +279,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -284,7 +293,7 @@ namespace Server.Mobiles
             Mobile combatant = mobile.Combatant as Mobile;
 
             if (combatant == null || combatant.Deleted)
-            {
+            { 
                 return false;
             }
             else if (combatant.IsDeadBondedPet || !combatant.Alive)

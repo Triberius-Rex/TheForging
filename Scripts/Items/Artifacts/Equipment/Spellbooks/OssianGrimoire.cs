@@ -1,10 +1,12 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class OssianGrimoire : NecromancerSpellbook
-    {
-        public override int LabelNumber => 1078148; // Ossian Grimoire
-        public override bool IsArtifact => true;
-
+	{
+		public override int LabelNumber { get { return 1078148; } }// Ossian Grimoire
+		public override bool IsArtifact { get { return true; } }
+		
         [Constructable]
         public OssianGrimoire()
         {

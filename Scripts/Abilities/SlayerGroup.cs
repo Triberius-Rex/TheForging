@@ -1,17 +1,21 @@
-using Server.Engines.Shadowguard;
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
+using Server.Engines.Shadowguard;
 
 namespace Server.Items
 {
     public class SlayerGroup
     {
-        private static readonly SlayerEntry[] m_TotalEntries;
-        private static readonly SlayerGroup[] m_Groups;
+        private static SlayerEntry[] m_TotalEntries;
+        private static SlayerGroup[] m_Groups;
         private SlayerGroup[] m_Opposition;
         private SlayerEntry m_Super;
         private SlayerEntry[] m_Entries;
         private Type[] m_FoundOn;
+
+        public SlayerGroup()
+        {
+        }
 
         static SlayerGroup()
         {
@@ -141,8 +145,7 @@ namespace Server.Items
                     typeof(Spellbinder), typeof(AngeredSpirit),
                     typeof(BoneSwordSlinger), typeof(CovetousRevenant),
                     typeof(DiseasedLich), typeof(VileCadaver),
-                    typeof(GrizzledMare), typeof(SkeletalCat),
-					typeof(CursedMetallicKnight), typeof(CursedMetallicMage)
+                    typeof(GrizzledMare), typeof(SkeletalCat)
                 );
 
             undead.Entries = new SlayerEntry[0];
@@ -291,40 +294,42 @@ namespace Server.Items
                     typeof(BloodElemental)
                 };
 
-            abyss.Super = new SlayerEntry
-                (
-                    SlayerName.Exorcism,
-
-                    typeof(DevourerRenowned), typeof(FireDaemonRenowned),
-                    typeof(AbysmalHorror), typeof(AbyssalInfernal),
-                    typeof(ArcaneDaemon), typeof(Balron),
-                    typeof(BoneDemon), typeof(ChaosDaemon),
-                    typeof(Daemon), typeof(SummonedDaemon),
-                    typeof(DemonKnight), typeof(Devourer),
-                    typeof(EnslavedGargoyle), typeof(FanDancer),
-                    typeof(FireGargoyle), typeof(Gargoyle),
-                    typeof(GargoyleDestroyer), typeof(GargoyleEnforcer),
-                    typeof(Gibberling), typeof(HordeMinion),
-                    typeof(FireDaemon), typeof(IceFiend),
-                    typeof(Imp), typeof(Impaler),
-                    typeof(Moloch), typeof(Oni),
-                    typeof(Ravager), typeof(Semidar),
-                    typeof(StoneGargoyle), typeof(Succubus),
-                    typeof(PatchworkSkeleton), typeof(TsukiWolf),
-                    typeof(Szavetra), typeof(CrystalDaemon),
-                    typeof(SlasherOfVeils), typeof(GargoyleShade),
-                    typeof(Putrefier), typeof(ChiefParoxysmus),
-                    typeof(Anzuanord), typeof(Ballem),
-                    typeof(Betballem), typeof(SkeletalLich),
-                    typeof(UsagralemBallem), typeof(EffetePutridGargoyle),
-                    typeof(EffeteUndeadGargoyle), typeof(PitFiend),
-                    typeof(ArchDaemon), typeof(AbyssalAbomination),
-                    typeof(Virtuebane), typeof(LesserOni),
-                    typeof(Lifestealer)
-                );
-
-            abyss.Entries = new SlayerEntry[]
+            if (Core.AOS)
             {
+                abyss.Super = new SlayerEntry
+                    (
+                        SlayerName.Exorcism,
+
+                        typeof(DevourerRenowned), typeof(FireDaemonRenowned),
+                        typeof(AbysmalHorror), typeof(AbyssalInfernal),
+                        typeof(ArcaneDaemon), typeof(Balron),
+                        typeof(BoneDemon), typeof(ChaosDaemon),
+                        typeof(Daemon), typeof(SummonedDaemon),
+                        typeof(DemonKnight), typeof(Devourer),
+                        typeof(EnslavedGargoyle), typeof(FanDancer),
+                        typeof(FireGargoyle), typeof(Gargoyle),
+                        typeof(GargoyleDestroyer), typeof(GargoyleEnforcer),
+                        typeof(Gibberling), typeof(HordeMinion),
+                        typeof(FireDaemon), typeof(IceFiend),
+                        typeof(Imp), typeof(Impaler),
+                        typeof(Moloch), typeof(Oni),
+                        typeof(Ravager), typeof(Semidar),
+                        typeof(StoneGargoyle), typeof(Succubus),
+                        typeof(PatchworkSkeleton), typeof(TsukiWolf),
+                        typeof(Szavetra), typeof(CrystalDaemon),
+                        typeof(SlasherOfVeils), typeof(GargoyleShade),
+                        typeof(Putrefier), typeof(ChiefParoxysmus),
+                        typeof(Anzuanord), typeof(Ballem),
+                        typeof(Betballem), typeof(SkeletalLich),
+                        typeof(UsagralemBallem), typeof(EffetePutridGargoyle),
+                        typeof(EffeteUndeadGargoyle), typeof(PitFiend),
+                        typeof(ArchDaemon), typeof(AbyssalAbomination),
+                        typeof(Virtuebane), typeof(LesserOni),
+                        typeof(Lifestealer)
+                    );
+
+                abyss.Entries = new SlayerEntry[]
+                {
                     // Daemon Dismissal & Balron Damnation have been removed and moved up to super slayer on OSI.
                     new SlayerEntry
                         (
@@ -338,7 +343,61 @@ namespace Server.Items
                             typeof(CovetousDoppleganger),   typeof(CovetousFireDaemon),
                             typeof(GargoyleAssassin),       typeof(LesserOni)
                         ),
-            };
+                };
+            }
+            else
+            {
+                abyss.Super = new SlayerEntry
+                    (
+                        SlayerName.Exorcism,
+
+                        typeof(AbysmalHorror), typeof(Balron),
+                        typeof(BoneDemon), typeof(ChaosDaemon),
+                        typeof(Daemon), typeof(SummonedDaemon),
+                        typeof(DemonKnight), typeof(Devourer),
+                        typeof(Gargoyle), typeof(FireGargoyle),
+                        typeof(Gibberling), typeof(HordeMinion),
+                        typeof(IceFiend), typeof(Imp),
+                        typeof(Impaler), typeof(Ravager),
+                        typeof(StoneGargoyle), typeof(ArcaneDaemon),
+                        typeof(EnslavedGargoyle), typeof(GargoyleDestroyer),
+                        typeof(GargoyleEnforcer), typeof(Moloch)
+                    );
+
+                abyss.Entries = new SlayerEntry[]
+                {
+                    new SlayerEntry
+                        (
+                            SlayerName.DaemonDismissal,
+
+                            typeof(Semidar),        typeof(AbyssalInfernal),
+                            typeof(AbysmalHorror),  typeof(Balron),
+                            typeof(BoneDemon),      typeof(ChaosDaemon),
+                            typeof(Daemon),         typeof(SummonedDaemon),
+                            typeof(DemonKnight),    typeof(Devourer),
+                            typeof(Gibberling),     typeof(HordeMinion),
+                            typeof(IceFiend),       typeof(Imp),
+                            typeof(Impaler),        typeof(Ravager),
+                            typeof(ArcaneDaemon),   typeof(Moloch)
+                        ),
+
+                    new SlayerEntry
+                        (
+                            SlayerName.GargoylesFoe,
+
+                            typeof(FireGargoyle),       typeof(Gargoyle),
+                            typeof(StoneGargoyle),      typeof(EnslavedGargoyle),
+                            typeof(GargoyleDestroyer),  typeof(GargoyleEnforcer)
+                        ),
+
+                    new SlayerEntry
+                        (
+                            SlayerName.BalronDamnation,
+
+                            typeof(Balron)
+                        )
+                };
+            }
 
             arachnid.Opposition = new SlayerGroup[]
                 {
@@ -504,20 +563,20 @@ namespace Server.Items
 
             eodon.Opposition = new SlayerGroup[] { };
             eodon.FoundOn = new Type[] { };
-            eodon.Super =
+            eodon.Super = 
                 new SlayerEntry(
-
-                    SlayerName.Eodon,
-
-                    typeof(Dimetrosaur), typeof(Gallusaurus),
+                    
+                    SlayerName.Eodon, 
+                    
+                    typeof(Dimetrosaur), typeof(Gallusaurus), 
                     typeof(Archaeosaurus), typeof(Najasaurus),
-                    typeof(Saurosaurus), typeof(Allosaurus),
-                    typeof(MyrmidexLarvae), typeof(MyrmidexDrone),
-                    typeof(MyrmidexWarrior), typeof(DragonTurtle),
+                    typeof(Saurosaurus), typeof(Allosaurus), 
+                    typeof(MyrmidexLarvae), typeof(MyrmidexDrone), 
+                    typeof(MyrmidexWarrior), typeof(DragonTurtle), 
                     typeof(DragonTurtleHatchling), typeof(DesertScorpion),
-                    typeof(TribeWarrior), typeof(TribeShaman),
-                    typeof(TribeChieftan), typeof(WildTiger),
-                    typeof(WildBlackTiger), typeof(WildWhiteTiger),
+                    typeof(TribeWarrior), typeof(TribeShaman), 
+                    typeof(TribeChieftan), typeof(WildTiger), 
+                    typeof(WildBlackTiger), typeof(WildWhiteTiger), 
                     typeof(TRex), typeof(SilverbackGorilla));
 
             eodon.Entries = new SlayerEntry[] { };
@@ -531,10 +590,10 @@ namespace Server.Items
             dino.FoundOn = new Type[] { };
             dino.Super =
                 new SlayerEntry(
-
-                    SlayerName.Dinosaur,
-
-                    typeof(Dimetrosaur), typeof(Gallusaurus),
+                    
+                    SlayerName.Dinosaur, 
+                    
+                    typeof(Dimetrosaur), typeof(Gallusaurus), 
                     typeof(Archaeosaurus), typeof(Najasaurus),
                     typeof(Saurosaurus), typeof(Allosaurus),
                     typeof(MyrmidexLarvae), typeof(MyrmidexDrone),
@@ -545,77 +604,87 @@ namespace Server.Items
             myrmidex.Opposition = new SlayerGroup[] { fey };
             myrmidex.FoundOn = new Type[] { };
             myrmidex.Super = new SlayerEntry(
-
+                
                 SlayerName.Myrmidex,
-
-                typeof(MyrmidexLarvae), typeof(MyrmidexDrone),
+                
+                typeof(MyrmidexLarvae), typeof(MyrmidexDrone), 
                 typeof(MyrmidexWarrior));
             myrmidex.Entries = new SlayerEntry[] { };
 
             m_Groups = new SlayerGroup[]
-                {
-                    humanoid,
-                    undead,
-                    elemental,
-                    abyss,
-                    arachnid,
-                    reptilian,
-                    fey,
+				{
+					humanoid,
+					undead,
+					elemental,
+					abyss,
+					arachnid,
+					reptilian,
+					fey,
                     eodon,
                     eodonTribe,
-                    dino,
-                    myrmidex
-                };
+                    dino, 
+                    myrmidex,
+				};
 
             m_TotalEntries = CompileEntries(m_Groups);
         }
 
-        public static SlayerEntry[] TotalEntries => m_TotalEntries;
-
-        public static SlayerGroup[] Groups => m_Groups;
-
+        public static SlayerEntry[] TotalEntries
+        {
+            get
+            {
+                return m_TotalEntries;
+            }
+        }
+        public static SlayerGroup[] Groups
+        {
+            get
+            {
+                return m_Groups;
+            }
+        }
         public SlayerGroup[] Opposition
         {
             get
             {
-                return m_Opposition;
+                return this.m_Opposition;
             }
             set
             {
-                m_Opposition = value;
+                this.m_Opposition = value;
             }
         }
         public SlayerEntry Super
         {
             get
             {
-                return m_Super;
+                return this.m_Super;
             }
             set
             {
-                m_Super = value;
+                this.m_Super = value;
             }
         }
         public SlayerEntry[] Entries
         {
             get
             {
-                return m_Entries;
+                return this.m_Entries;
             }
             set
             {
-                m_Entries = value;
+                this.m_Entries = value;
             }
         }
         public Type[] FoundOn
         {
             get
             {
-                return m_FoundOn;
+                return this.m_FoundOn;
             }
             set
             {
-                m_FoundOn = value;
+                this.m_FoundOn = value;
             }
         }
         public static SlayerEntry GetEntryByName(SlayerName name)
@@ -656,9 +725,9 @@ namespace Server.Items
 
         public bool OppositionSuperSlays(Mobile m)
         {
-            for (int i = 0; i < Opposition.Length; i++)
+            for (int i = 0; i < this.Opposition.Length; i++)
             {
-                if (Opposition[i].Super.Slays(m))
+                if (this.Opposition[i].Super.Slays(m))
                     return true;
             }
 

@@ -1,3 +1,5 @@
+using System;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -7,8 +9,8 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public KotlAutomaton Automaton { get; set; }
 
-        public override int LabelNumber => 1124395;  // Automaton
-        public override bool HandlesOnMovement => Automaton == null;
+        public override int LabelNumber { get { return 1124395; } } // Automaton
+        public override bool HandlesOnMovement { get { return Automaton == null; } }
 
         [Constructable]
         public AutomatonStatue()
@@ -21,9 +23,9 @@ namespace Server.Items
         {
             base.OnMovement(m, lastLocation);
 
-            if (m.Player && m.InRange(Location, 5) && m.AccessLevel == AccessLevel.Player && 0.5 > Utility.RandomDouble())
+            if (m.Player && m.InRange(this.Location, 5) && m.AccessLevel == AccessLevel.Player && 0.5 > Utility.RandomDouble())
             {
-                KotlAutomaton automaton = new KotlAutomaton();
+                var automaton = new KotlAutomaton();
                 automaton.MoveToWorld(Location, Map);
 
                 OnBirth(automaton, this);
@@ -71,7 +73,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             if (Automaton != null)
             {

@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
@@ -5,14 +6,14 @@ using Server.Network;
 using Server.Targeting;
 
 namespace Server.Items
-{
+{ 
     public class Banner : Item, IAddon, IDyable, IRewardItem
     {
         private bool m_IsRewardItem;
         [Constructable]
         public Banner(int itemID)
             : base(itemID)
-        {
+        { 
             LootType = LootType.Blessed;
             Movable = false;
         }
@@ -22,18 +23,21 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
-        public Item Deed
+        public override bool ForceShowProperties
         {
             get
             {
-                BannerDeed deed = new BannerDeed
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                return ObjectPropertyList.Enabled;
+            }
+        }
+        public Item Deed
+        { 
+            get
+            { 
+                BannerDeed deed = new BannerDeed();
+                deed.IsRewardItem = m_IsRewardItem;
 
-                return deed;
+                return deed;	
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -49,12 +53,18 @@ namespace Server.Items
                 InvalidateProperties();
             }
         }
-        public bool FacingSouth => (ItemID & 0x1) == 0;
+        public bool FacingSouth
+        {
+            get
+            {
+                return (ItemID & 0x1) == 0;
+            }
+        }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (Core.ML && m_IsRewardItem)
                 list.Add(1076218); // 2nd Year Veteran Reward
         }
 
@@ -67,8 +77,8 @@ namespace Server.Items
         {
             if (from.InRange(Location, 2))
             {
-                BaseHouse house = BaseHouse.FindHouseAt(this);
-
+                BaseHouse house = BaseHouse.FindHouseAt(this);  
+				
                 if (house != null && house.IsOwner(from))
                 {
                     from.CloseGump(typeof(RewardDemolitionGump));
@@ -86,8 +96,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -95,7 +105,7 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
+			
             m_IsRewardItem = reader.ReadBool();
         }
 
@@ -110,10 +120,10 @@ namespace Server.Items
         }
 
         public bool CouldFit(IPoint3D p, Map map)
-        {
+        { 
             if (map == null || !map.CanFit(p.X, p.Y, p.Z, ItemData.Height))
                 return false;
-
+				
             if (FacingSouth)
                 return BaseAddon.IsWall(p.X, p.Y - 1, p.Z, map); // north wall
             else
@@ -127,7 +137,7 @@ namespace Server.Items
         [Constructable]
         public BannerDeed()
             : base(0x14F0)
-        {
+        { 
             LootType = LootType.Blessed;
             Weight = 1.0;
         }
@@ -137,7 +147,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041007;// a banner deed
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041007;
+            }
+        }// a banner deed
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem
         {
@@ -154,16 +170,16 @@ namespace Server.Items
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
+			
             if (m_IsRewardItem)
                 list.Add(1076218); // 2nd Year Veteran Reward
         }
 
         public override void OnDoubleClick(Mobile from)
-        {
+        { 
             if (m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
                 return;
-
+		
             if (IsChildOf(from.Backpack))
             {
                 BaseHouse house = BaseHouse.FindHouseAt(from);
@@ -185,8 +201,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -194,7 +210,7 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
+			
             m_IsRewardItem = reader.ReadBool();
         }
 
@@ -207,15 +223,15 @@ namespace Server.Items
                 : base(100, 200)
             {
                 m_Banner = banner;
-
+				
                 Closable = true;
                 Disposable = true;
                 Dragable = true;
                 Resizable = false;
-
+				
                 AddPage(0);
 
-                AddBackground(25, 0, 520, 230, 0xA28);
+                AddBackground(25, 0, 520, 230, 0xA28);				
                 AddLabel(70, 12, 0x3E3, "Choose a Banner:");
 
                 int itemID = Start;
@@ -244,10 +260,10 @@ namespace Server.Items
             public override void OnResponse(NetState sender, RelayInfo info)
             {
                 if (m_Banner == null || m_Banner.Deleted)
-                    return;
-
-                Mobile m = sender.Mobile;
-
+                    return;		
+				
+                Mobile m = sender.Mobile;	
+			
                 if (info.ButtonID >= Start && info.ButtonID <= End)
                 {
                     if ((info.ButtonID & 0x1) == 0)
@@ -274,7 +290,7 @@ namespace Server.Items
             {
                 if (m_Banner == null || m_Banner.Deleted)
                     return;
-
+					
                 if (m_Banner.IsChildOf(from.Backpack))
                 {
                     BaseHouse house = BaseHouse.FindHouseAt(from);
@@ -283,22 +299,22 @@ namespace Server.Items
                     {
                         IPoint3D p = targeted as IPoint3D;
                         Map map = from.Map;
-
+						
                         if (p == null || map == null)
                             return;
-
+							
                         Point3D p3d = new Point3D(p);
                         ItemData id = TileData.ItemTable[m_ItemID & TileData.MaxItemValue];
-
+						
                         if (map.CanFit(p3d, id.Height))
                         {
                             house = BaseHouse.FindHouseAt(p3d, map, id.Height);
-
+							
                             if (house != null && house.IsOwner(from))
                             {
                                 bool north = BaseAddon.IsWall(p3d.X, p3d.Y - 1, p3d.Z, map);
                                 bool west = BaseAddon.IsWall(p3d.X - 1, p3d.Y, p3d.Z, map);
-
+															
                                 if (north && west)
                                 {
                                     from.CloseGump(typeof(FacingGump));
@@ -307,12 +323,12 @@ namespace Server.Items
                                 else if (north || west)
                                 {
                                     Banner banner = null;
-
+									
                                     if (north)
                                         banner = new Banner(m_ItemID);
                                     else if (west)
                                         banner = new Banner(m_ItemID + 1);
-
+										
                                     house.Addons[banner] = from;
 
                                     banner.IsRewardItem = m_Banner.IsRewardItem;
@@ -349,7 +365,7 @@ namespace Server.Items
                     m_ItemID = itemID;
                     m_Location = location;
                     m_House = house;
-
+				
                     Closable = true;
                     Disposable = true;
                     Dragable = true;
@@ -375,15 +391,15 @@ namespace Server.Items
                 public override void OnResponse(NetState sender, RelayInfo info)
                 {
                     if (m_Banner == null || m_Banner.Deleted || m_House == null)
-                        return;
-
-                    Banner banner = null;
-
+                        return;		
+					
+                    Banner banner = null;	
+				
                     if (info.ButtonID == (int)Buttons.East)
                         banner = new Banner(m_ItemID + 1);
                     if (info.ButtonID == (int)Buttons.South)
                         banner = new Banner(m_ItemID);
-
+						
                     if (banner != null)
                     {
                         m_House.Addons[banner] = sender.Mobile;

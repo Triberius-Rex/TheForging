@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,16 +15,16 @@ namespace Server.Mobiles
 
     public class BaseVoidCreature : BaseCreature
     {
-        public static int MutateCheck => Utility.RandomMinMax(30, 120);
+        public static int MutateCheck { get { return Utility.RandomMinMax(30, 120); } }
 
-        public static bool RemoveFromSpawners => true;
+        public static bool RemoveFromSpawners { get { return true; } }
 
         private DateTime m_NextMutate;
         private bool m_BuddyMutate;
 
-        public virtual int GroupAmount => 2;
-        public virtual VoidEvolution Evolution => VoidEvolution.None;
-        public virtual int Stage => 0;
+        public virtual int GroupAmount { get { return 2; } }
+        public virtual VoidEvolution Evolution { get { return VoidEvolution.None; } }
+        public virtual int Stage { get { return 0; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool BuddyMutate { get { return m_BuddyMutate; } set { m_BuddyMutate = value; } }
@@ -32,10 +32,10 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextMutate { get { return m_NextMutate; } set { m_NextMutate = value; } }
 
-        public override bool PlayerRangeSensitive => Evolution != VoidEvolution.Killing && Stage < 3;
-        public override bool AlwaysMurderer => true;
+        public override bool PlayerRangeSensitive { get { return Evolution != VoidEvolution.Killing && Stage < 3; } }
+        public override bool AlwaysMurderer { get { return true; } }
 
-        public BaseVoidCreature(AIType aiType, int perception, int range, double passive, double active)
+        public BaseVoidCreature(AIType aiType, FightMode fightMode, int perception, int range, double passive, double active)
             : base(aiType, FightMode.Good, perception, range, passive, active)
         {
             m_NextMutate = DateTime.UtcNow + TimeSpan.FromMinutes(MutateCheck);
@@ -61,13 +61,13 @@ namespace Server.Mobiles
                 return false;
 
             List<BaseVoidCreature> buddies = new List<BaseVoidCreature>();
-            IPooledEnumerable eable = GetMobilesInRange(12);
+            IPooledEnumerable eable = this.GetMobilesInRange(12);
 
             foreach (Mobile m in eable)
             {
                 if (m != this && IsEvolutionType(m) && !m.Deleted && m.Alive && !buddies.Contains((BaseVoidCreature)m))
                 {
-                    if (((BaseVoidCreature)m).BuddyMutate)
+                    if (m is BaseVoidCreature && ((BaseVoidCreature)m).BuddyMutate)
                         buddies.Add((BaseVoidCreature)m);
                 }
             }
@@ -92,13 +92,13 @@ namespace Server.Mobiles
 
         public bool IsEvolutionType(Mobile from)
         {
-            if (Stage == 0 && from.GetType() != GetType())
+            if (Stage == 0 && from.GetType() != this.GetType())
                 return false;
 
             return from is BaseVoidCreature;
         }
 
-        public Type[][] m_EvolutionCycle =
+        public Type[][] m_EvolutionCycle = new Type[][]
         {
             new Type[] { typeof(Betballem),     typeof(Ballem),     typeof(UsagralemBallem) },
             new Type[] { typeof(Anlorzen),      typeof(Anlorlem),   typeof(Anlorvaglem) },
@@ -115,7 +115,7 @@ namespace Server.Mobiles
             VoidEvolution evo = evolution;
 
             if (Stage > 0)
-                evo = Evolution;
+                evo = this.Evolution;
 
             if (0.05 > Utility.RandomDouble())
             {
@@ -132,10 +132,10 @@ namespace Server.Mobiles
             {
                 //TODO: Effents/message?
 
-                bc.MoveToWorld(Location, Map);
+                bc.MoveToWorld(this.Location, this.Map);
 
-                bc.Home = Home;
-                bc.RangeHome = RangeHome;
+                bc.Home = this.Home;
+                bc.RangeHome = this.RangeHome;
 
                 if (0.05 > Utility.RandomDouble())
                     SpawnOrtanords();
@@ -143,7 +143,7 @@ namespace Server.Mobiles
                 if (bc is BaseVoidCreature)
                     ((BaseVoidCreature)bc).BuddyMutate = m_BuddyMutate;
 
-                Delete();
+                this.Delete();
             }
         }
 
@@ -151,24 +151,24 @@ namespace Server.Mobiles
         {
             BaseCreature ortanords = new Ortanord();
 
-            Point3D spawnLoc = Location;
+            Point3D spawnLoc = this.Location;
 
             for (int i = 0; i < 25; i++)
             {
-                int x = Utility.RandomMinMax(X - 5, X + 5);
-                int y = Utility.RandomMinMax(Y - 5, Y + 5);
-                int z = Map.GetAverageZ(x, y);
+                int x = Utility.RandomMinMax(this.X - 5, this.X + 5);
+                int y = Utility.RandomMinMax(this.Y - 5, this.Y + 5);
+                int z = this.Map.GetAverageZ(x, y);
 
                 Point3D p = new Point3D(x, y, z);
 
-                if (Map.CanSpawnMobile(p))
+                if (this.Map.CanSpawnMobile(p))
                 {
                     spawnLoc = p;
                     break;
                 }
             }
 
-            ortanords.MoveToWorld(spawnLoc, Map);
+            ortanords.MoveToWorld(spawnLoc, this.Map);
             ortanords.BoltEffect(0);
         }
 
@@ -208,6 +208,7 @@ namespace Server.Mobiles
                         {
                             if (so.SpawnedObjects[i] == this)
                             {
+                                //so.SpawnedObjects.Remove(spawn);
                                 so.SpawnedObjects[i] = _MutateTo;
 
                                 Spawner = null;
@@ -239,7 +240,7 @@ namespace Server.Mobiles
 
                 foreach (XmlSpawner.SpawnObject obj in spawner.SpawnObjects)
                 {
-                    if (obj == null || obj.TypeName == null)
+                    if(obj == null || obj.TypeName == null)
                         continue;
 
                     Type t = ScriptCompiler.FindTypeByName(obj.TypeName, true);
@@ -259,7 +260,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write(m_NextMutate);
             writer.Write(m_BuddyMutate);

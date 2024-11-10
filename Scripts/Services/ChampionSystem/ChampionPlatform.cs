@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.CannedEvil
 {
@@ -40,10 +40,9 @@ namespace Server.Engines.CannedEvil
 
         public void AddComponent(int id, int x, int y, int z)
         {
-            AddonComponent ac = new AddonComponent(id)
-            {
-                Hue = 0x452
-            };
+            AddonComponent ac = new AddonComponent(id);
+
+            ac.Hue = 0x452;
 
             AddComponent(ac, x, y, z);
         }
@@ -60,7 +59,7 @@ namespace Server.Engines.CannedEvil
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             writer.Write(m_Spawn);
         }
@@ -71,7 +70,7 @@ namespace Server.Engines.CannedEvil
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2:
                 case 1:
@@ -94,7 +93,7 @@ namespace Server.Engines.CannedEvil
 
         private void FixComponents()
         {
-            foreach (AddonComponent comp in Components)
+            foreach (var comp in Components)
             {
                 comp.Hue = 0x452;
 

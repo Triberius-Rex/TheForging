@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Vase : Item
@@ -6,7 +8,7 @@ namespace Server.Items
         public Vase()
             : base(0xB46)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public Vase(Serial serial)
@@ -18,7 +20,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -35,7 +37,7 @@ namespace Server.Items
         public LargeVase()
             : base(0xB45)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public LargeVase(Serial serial)
@@ -47,7 +49,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -64,7 +66,7 @@ namespace Server.Items
         public SmallUrn()
             : base(0x241C)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public SmallUrn(Serial serial)
@@ -76,7 +78,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

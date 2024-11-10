@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
@@ -8,9 +8,9 @@ namespace Server.Engines.Quests
         [Constructable]
         public Broolol()
             : base("Lorekeeper Broolol", "the keeper of tradition")
-        {
-            SetSkill(SkillName.Meditation, 60.0, 83.0);
-            SetSkill(SkillName.Focus, 60.0, 83.0);
+        { 
+            this.SetSkill(SkillName.Meditation, 60.0, 83.0);
+            this.SetSkill(SkillName.Focus, 60.0, 83.0);
         }
 
         public Broolol(Serial serial)
@@ -18,31 +18,37 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[] { typeof(TheAncientWorldQuest) };
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] { typeof(TheAncientWorldQuest) };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            Race = Race.Elf;
-
-            Hue = 0x851D;
-            HairItemID = 0x2FCF;
-            HairHue = 0x323;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x851D;
+            this.HairItemID = 0x2FCF;
+            this.HairHue = 0x323;
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new ElvenBoots(), 0x71B, 1);
-            SetWearable(new MaleElvenRobe(), 0x1C, 1);
-            SetWearable(new WildStaff(), dropChance: 1);
+            this.AddItem(new ElvenBoots(0x71B));
+            this.AddItem(new MaleElvenRobe(0x1C));
+            this.AddItem(new WildStaff());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

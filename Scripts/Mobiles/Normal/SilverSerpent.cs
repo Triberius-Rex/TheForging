@@ -1,8 +1,11 @@
+using System;
+using Server.Factions;
 using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("a silver serpent corpse")]
+    [TypeAlias("Server.Mobiles.Silverserpant")]
     public class SilverSerpent : BaseCreature
     {
         [Constructable]
@@ -39,6 +42,8 @@ namespace Server.Mobiles
 
             Fame = 7000;
             Karma = -7000;
+
+            VirtualArmor = 40;
         }
 
         public SilverSerpent(Serial serial)
@@ -46,10 +51,12 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DeathAdderCharmable => true;
-        public override int Meat => 1;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Poison.Lethal;
+        public override Faction FactionAllegiance { get { return TrueBritannians.Instance; } }
+        public override Ethics.Ethic EthicAllegiance { get { return Ethics.Ethic.Hero; } }
+        public override bool DeathAdderCharmable { get { return true; } }
+        public override int Meat { get { return 1; } }
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+        public override Poison HitPoison { get { return Poison.Lethal; } }
 
         public override void GenerateLoot()
         {
@@ -68,7 +75,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

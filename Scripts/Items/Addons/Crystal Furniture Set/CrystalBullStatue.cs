@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -25,12 +26,12 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new CrystalBullStatueDeed();
+        public override BaseAddonDeed Deed { get { return new CrystalBullStatueDeed(); } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -42,11 +43,11 @@ namespace Server.Items
 
     public class CrystalBullStatueDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1076671;  // Crystal Bull Statue
+        public override int LabelNumber { get { return 1076671; } } // Crystal Bull Statue
 
-        public override bool ExcludeDeedHue => true;
+        public override bool ExcludeDeedHue { get { return true; } }
 
-        public override BaseAddon Addon => new CrystalBullStatueAddon(_Direction);
+        public override BaseAddon Addon { get { return new CrystalBullStatueAddon(_Direction); } }
 
         private DirectionType _Direction;
 
@@ -93,7 +94,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

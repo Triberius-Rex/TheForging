@@ -1,3 +1,8 @@
+using Server;
+using System;
+using Server.Mobiles;
+using Server.Engines.Quests;
+
 // 0x1E06 => South
 // 0x1E03 => West
 // 0x1E04 => North
@@ -24,7 +29,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

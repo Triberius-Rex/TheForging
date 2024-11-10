@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 
 namespace Server.Engines.Quests.Hag
@@ -15,8 +16,8 @@ namespace Server.Engines.Quests.Hag
 
         public override void InitBody()
         {
-            Body = 0x4A;
-            Name = "Zeefzorpul";
+            this.Body = 0x4A;
+            this.Name = "Zeefzorpul";
         }
 
         public override bool CanTalkTo(PlayerMobile to)
@@ -32,7 +33,7 @@ namespace Server.Engines.Quests.Hag
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -41,7 +42,7 @@ namespace Server.Engines.Quests.Hag
 
             int version = reader.ReadInt();
 
-            Delete();
+            this.Delete();
         }
     }
 }

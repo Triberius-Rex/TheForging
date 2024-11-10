@@ -1,22 +1,24 @@
+using System;
+
 namespace Server.Items
 {
     public class StandardOfChaosG : DualPointedSpear
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1113522;  // Standard of Chaos
-
+	{
+		public override bool IsArtifact { get { return true; } }
+		public override int LabelNumber { get { return 1113522; } } // Standard of Chaos
+		
         [Constructable]
         public StandardOfChaosG()
         {
-            Hue = 2209;
-            WeaponAttributes.HitHarm = 30;
-            WeaponAttributes.HitFireball = 20;
+            Hue = 2209;		
+            WeaponAttributes.HitHarm = 30;	
+            WeaponAttributes.HitFireball = 20;	
             WeaponAttributes.HitLightning = 10;
             WeaponAttributes.HitLowerDefend = 40;
             Attributes.WeaponSpeed = 30;
             Attributes.WeaponDamage = -40;
             Attributes.CastSpeed = 1;
-            AosElementDamages.Chaos = 100;
+            AosElementDamages.Chaos = 100;		
         }
 
         public StandardOfChaosG(Serial serial)
@@ -25,14 +27,26 @@ namespace Server.Items
         }
 
         //TODO: DoubleBladedSpear
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

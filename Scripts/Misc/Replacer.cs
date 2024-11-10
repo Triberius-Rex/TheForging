@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server.Items;
+using Server.Mobiles;
 
 namespace Server
 {
@@ -7,13 +8,13 @@ namespace Server
     {
         public static void Replace(Item item1, Item item2)
         {
-            Timer.DelayCall(TimeSpan.FromSeconds(1), (oldItem, newItem) =>
+            Timer.DelayCall<Item, Item>(TimeSpan.FromSeconds(1), (oldItem, newItem) =>
             {
-                object parent = oldItem.Parent;
+                var parent = oldItem.Parent;
 
                 if (parent == null)
                 {
-                    Multis.BaseHouse house = Multis.BaseHouse.FindHouseAt(oldItem);
+                    Server.Multis.BaseHouse house = Server.Multis.BaseHouse.FindHouseAt(oldItem);
 
                     newItem.MoveToWorld(oldItem.Location, oldItem.Map);
 

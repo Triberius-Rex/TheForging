@@ -1,14 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class DreadPirateHat : TricorneHat
-    {
-        public override bool IsArtifact => true;
-		public override int LabelNumber => 1063467;
-        public override int BaseColdResistance => 14;
-        public override int BasePoisonResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
-		
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public DreadPirateHat()
         {
@@ -23,17 +19,69 @@ namespace Server.Items
             : base(serial)
         {
         }
-       
+
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1063467;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 14;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(3);
+
+            writer.Write((int)3);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
+
+            if (version < 3)
+            {
+                this.Resistances.Cold = 0;
+                this.Resistances.Poison = 0;
+            }
+
+            if (version < 1)
+            {
+                this.Attributes.Luck = 0;
+                this.Attributes.AttackChance = 10;
+                this.Attributes.NightSight = 1;
+                this.SkillBonuses.SetValues(0, Utility.RandomCombatSkill(), 10.0);
+                this.SkillBonuses.SetBonus(1, 0);
+            }
         }
     }
 }

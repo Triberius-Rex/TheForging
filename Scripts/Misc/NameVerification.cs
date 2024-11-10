@@ -1,15 +1,16 @@
+using System;
 using Server.Commands;
 
 namespace Server.Misc
 {
     public class NameVerification
     {
-        public static readonly char[] SpaceDashPeriodQuote = new[]
+        public static readonly char[] SpaceDashPeriodQuote = new char[]
         {
             ' ', '-', '.', '\''
         };
         public static readonly char[] Empty = new char[0];
-        private static readonly string[] m_StartDisallowed = new[]
+        private static readonly string[] m_StartDisallowed = new string[]
         {
             "seer",
             "counselor",
@@ -18,7 +19,7 @@ namespace Server.Misc
             "lady",
             "lord"
         };
-        private static readonly string[] m_Disallowed = new[]
+        private static readonly string[] m_Disallowed = new string[]
         {
             "jigaboo",
             "chigaboo",
@@ -96,11 +97,23 @@ namespace Server.Misc
             "osi",
             "origin"
         };
-        public static string[] StartDisallowed => m_StartDisallowed;
-        public static string[] Disallowed => m_Disallowed;
+        public static string[] StartDisallowed
+        {
+            get
+            {
+                return m_StartDisallowed;
+            }
+        }
+        public static string[] Disallowed
+        {
+            get
+            {
+                return m_Disallowed;
+            }
+        }
         public static void Initialize()
         {
-            CommandSystem.Register("ValidateName", AccessLevel.Administrator, ValidateName_OnCommand);
+            CommandSystem.Register("ValidateName", AccessLevel.Administrator, new CommandEventHandler(ValidateName_OnCommand));
         }
 
         [Usage("ValidateName")]

@@ -1,3 +1,4 @@
+﻿using System;
 using Server.Commands;
 using Server.Gumps;
 using Server.Network;
@@ -6,7 +7,7 @@ namespace Server.Items
 {
     public class MadelineHarteScroll : Item
     {
-        public override int LabelNumber => 1023637;  // scroll
+        public override int LabelNumber { get { return 1023637; } } // scroll
 
         [Constructable]
         public MadelineHarteScroll() : base(0x46AF)
@@ -29,7 +30,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
         }
 
@@ -44,7 +45,7 @@ namespace Server.Items
     {
         public static void Initialize()
         {
-            CommandSystem.Register("MadelineHarteScroll", AccessLevel.GameMaster, MadelineHarteGump_OnCommand);
+            CommandSystem.Register("MadelineHarteScroll", AccessLevel.GameMaster, new CommandEventHandler(MadelineHarteGump_OnCommand));
         }
 
         private static void MadelineHarteGump_OnCommand(CommandEventArgs e)
@@ -54,9 +55,9 @@ namespace Server.Items
 
         public MadelineHarteGump(Mobile owner) : base(50, 50)
         {
-            Closable = true;
-            Disposable = true;
-            Dragable = true;
+            this.Closable = true;
+            this.Disposable = true;
+            this.Dragable = true;
 
             AddPage(0);
             AddBackground(6, 11, 390, 324, 9380);

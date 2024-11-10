@@ -1,17 +1,18 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Engines.BulkOrders
 {
     public class LargeAlchemyBOD : LargeBOD
     {
-        public override BODType BODType => BODType.Alchemy;
+        public override BODType BODType { get { return BODType.Alchemy; } }
 
         [Constructable]
         public LargeAlchemyBOD()
         {
             LargeBulkEntry[] entries;
 
-            switch (Utility.Random(5))
+            switch ( Utility.Random(5) )
             {
                 default:
                 case 0:
@@ -33,18 +34,18 @@ namespace Server.Engines.BulkOrders
 
             int amountMax = Utility.RandomList(10, 15, 20, 20);
 
-            Hue = 2505;
-            AmountMax = amountMax;
-            Entries = entries;
+            this.Hue = 2505;
+            this.AmountMax = amountMax;
+            this.Entries = entries;
         }
 
         public LargeAlchemyBOD(int amountMax, bool reqExceptional, BulkMaterialType mat, LargeBulkEntry[] entries)
         {
-            Hue = 2505;
-            AmountMax = amountMax;
-            Entries = entries;
-            RequireExceptional = reqExceptional;
-            Material = mat;
+            this.Hue = 2505;
+            this.AmountMax = amountMax;
+            this.Entries = entries;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
         }
 
         public LargeAlchemyBOD(Serial serial)
@@ -101,7 +102,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

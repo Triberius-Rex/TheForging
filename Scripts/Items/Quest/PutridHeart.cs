@@ -1,10 +1,12 @@
+using Server;
+using System;
 using Server.Engines.Despise;
 
 namespace Server.Items
 {
     public class PutridHeart : Item
     {
-        public override int LabelNumber => 1153424;  // putrid heart
+        public override int LabelNumber { get { return 1153424; } } // putrid heart
 
         [Constructable]
         public PutridHeart()
@@ -23,11 +25,11 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!Deleted && DespiseController.Instance != null)
+            if (!this.Deleted && DespiseController.Instance != null)
             {
                 //DespiseController.Instance.AddDespisePoints(from, this);
-                Engines.Points.PointsSystem.DespiseCrystals.AwardPoints(from, Amount);
-                Delete();
+                Engines.Points.PointsSystem.DespiseCrystals.AwardPoints(from, this.Amount);
+                this.Delete();
             }
         }
 
@@ -39,7 +41,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

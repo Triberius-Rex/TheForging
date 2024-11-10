@@ -22,8 +22,8 @@ namespace Server.Engines.CannedEvil
         DragonTurtle,
         #endregion
         Khaldun,
-        #region horrorofDupre
-        HorrorofDupre
+        #region ForsakenVirtues
+        ForsakenVirtues
         #endregion
     }
 
@@ -177,9 +177,9 @@ namespace Server.Engines.CannedEvil
 				new Type[]{ typeof( CultistAmbusher  ), typeof( ShadowFiend ) },										// Level 3
 				new Type[]{ typeof( KhalAnkurWarriors ) }											                    // Level 4
 			} ),
-            #region Horror of Dupre
-                new ChampionSpawnInfo( "Fallen Knight Dupre", typeof( LordDupre ), new string[]{ "Bane", "Challenger", "Slayer" } , new Type[][]
-				{																											// Horror of Dupre Custom Champ Spawn Does cycele through Randoms in Fel T2A
+            #region ForsakenVirtues
+                new ChampionSpawnInfo( "Forsaken Virutes", typeof( FallenDupre ), new string[]{ "Bane", "Challenger", "Survivor" } , new Type[][]
+				{																											// Forsaken Virtues Custom Champ Spawn Does cycele through Randoms in Fel T2A
 					new Type[]{ typeof( Skeleton ), typeof( Wraith ) },
 					new Type[]{ typeof( Spectre ), typeof( BoneMagi  ) },                       
 					new Type[]{ typeof( UndeadKnight ), typeof( Lich ) },

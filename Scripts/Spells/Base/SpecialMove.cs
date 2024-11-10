@@ -1,22 +1,61 @@
-using Server.Items;
-using Server.Network;
-using Server.Spells.SkillMasteries;
 using System;
 using System.Collections.Generic;
+
+using Server.Items;
+using Server.Network;
+using Server.Spells.Bushido;
+using Server.Spells.Ninjitsu;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells
 {
     public abstract class SpecialMove
     {
-        public virtual int BaseMana => 0;
+        public virtual int BaseMana
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-        public virtual SkillName MoveSkill => SkillName.Bushido;
-        public virtual double RequiredSkill => 0.0;
+        public virtual SkillName MoveSkill
+        {
+            get
+            {
+                return SkillName.Bushido;
+            }
+        }
+        public virtual double RequiredSkill
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
 
-        public virtual TextDefinition AbilityMessage => 0;
+        public virtual TextDefinition AbilityMessage
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-        public virtual bool BlockedByAnimalForm => true;
-        public virtual bool DelayedContext => false;
+        public virtual bool BlockedByAnimalForm
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public virtual bool DelayedContext
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public virtual int GetAccuracyBonus(Mobile attacker)
         {
@@ -77,9 +116,9 @@ namespace Server.Spells
 
         public virtual bool CheckSkills(Mobile m)
         {
-            if (m.Skills[MoveSkill].Value < RequiredSkill)
+            if (m.Skills[this.MoveSkill].Value < this.RequiredSkill)
             {
-                string args = string.Format("{0}\t{1}\t ", RequiredSkill.ToString("F1"), MoveSkill.ToString());
+                string args = String.Format("{0}\t{1}\t ", this.RequiredSkill.ToString("F1"), this.MoveSkill.ToString());
                 m.SendLocalizedMessage(1063013, args); // You need at least ~1_SKILL_REQUIREMENT~ ~2_SKILL_NAME~ skill to use that ability.
                 return false;
             }
@@ -97,12 +136,12 @@ namespace Server.Spells
                 return 0;
             }
 
-            if (!Necromancy.MindRotSpell.GetMindRotScalar(m, ref scalar))
+            if (!Server.Spells.Necromancy.MindRotSpell.GetMindRotScalar(m, ref scalar))
             {
                 scalar = 1.0;
             }
 
-            if (Mysticism.PurgeMagicSpell.IsUnderCurseEffects(m))
+            if (Server.Spells.Mysticism.PurgeMagicSpell.IsUnderCurseEffects(m))
             {
                 scalar += .5;
             }
@@ -116,7 +155,7 @@ namespace Server.Spells
 
             int total = (int)(mana * scalar);
 
-            if (m.Skills[MoveSkill].Value < 50.0 && GetContext(m) != null)
+            if (m.Skills[this.MoveSkill].Value < 50.0 && GetContext(m) != null)
                 total *= 2;
 
             return total;
@@ -124,7 +163,7 @@ namespace Server.Spells
 
         public virtual bool CheckMana(Mobile from, bool consume)
         {
-            int mana = ScaleMana(from, BaseMana);
+            int mana = this.ScaleMana(from, this.BaseMana);
 
             if (from.Mana < mana)
             {
@@ -134,8 +173,8 @@ namespace Server.Spells
 
             if (consume)
             {
-                if (!DelayedContext)
-                    SetContext(from);
+                if (!this.DelayedContext)
+                    this.SetContext(from);
 
                 from.Mana -= mana;
             }
@@ -147,12 +186,12 @@ namespace Server.Spells
         {
             if (GetContext(from) == null)
             {
-                if (DelayedContext || from.Skills[MoveSkill].Value < 50.0)
+                if (this.DelayedContext || from.Skills[this.MoveSkill].Value < 50.0)
                 {
                     Timer timer = new SpecialMoveTimer(from);
                     timer.Start();
 
-                    AddContext(from, new SpecialMoveContext(timer, GetType()));
+                    AddContext(from, new SpecialMoveContext(timer, this.GetType()));
                 }
             }
         }
@@ -174,21 +213,27 @@ namespace Server.Spells
                 return false;
             }
 
-            return CheckSkills(from) && CheckMana(from, false);
+            return this.CheckSkills(from) && this.CheckMana(from, false);
         }
 
         public virtual void CheckGain(Mobile m)
         {
-            m.CheckSkill(MoveSkill, RequiredSkill, RequiredSkill + 37.5);
+            m.CheckSkill(this.MoveSkill, this.RequiredSkill, this.RequiredSkill + 37.5);
         }
 
         private static readonly Dictionary<Mobile, SpecialMove> m_Table = new Dictionary<Mobile, SpecialMove>();
 
-        public static Dictionary<Mobile, SpecialMove> Table => m_Table;
+        public static Dictionary<Mobile, SpecialMove> Table
+        {
+            get
+            {
+                return m_Table;
+            }
+        }
 
         public static void ClearAllMoves(Mobile m)
         {
-            foreach (KeyValuePair<int, SpecialMove> kvp in SpellRegistry.SpecialMoves)
+            foreach (KeyValuePair<Int32, SpecialMove> kvp in SpellRegistry.SpecialMoves)
             {
                 int moveID = kvp.Key;
 
@@ -197,12 +242,24 @@ namespace Server.Spells
             }
         }
 
-        public virtual bool ValidatesDuringHit => true;
+        public virtual bool ValidatesDuringHit
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public static SpecialMove GetCurrentMove(Mobile m)
         {
             if (m == null)
                 return null;
+
+            if (!Core.SE)
+            {
+                ClearCurrentMove(m);
+                return null;
+            }
 
             SpecialMove move = null;
             m_Table.TryGetValue(m, out move);
@@ -218,6 +275,12 @@ namespace Server.Spells
 
         public static bool SetCurrentMove(Mobile m, SpecialMove move)
         {
+            if (!Core.SE)
+            {
+                ClearCurrentMove(m);
+                return false;
+            }
+
             if (move != null && !move.Validate(m))
             {
                 ClearCurrentMove(m);
@@ -270,6 +333,10 @@ namespace Server.Spells
             m_Table.Remove(m);
         }
 
+        public SpecialMove()
+        {
+        }
+
         private static readonly Dictionary<Mobile, SpecialMoveContext> m_PlayersTable = new Dictionary<Mobile, SpecialMoveContext>();
 
         private static void AddContext(Mobile m, SpecialMoveContext context)
@@ -312,14 +379,14 @@ namespace Server.Spells
             public SpecialMoveTimer(Mobile from)
                 : base(TimeSpan.FromSeconds(3.0))
             {
-                m_Mobile = from;
+                this.m_Mobile = from;
 
-                Priority = TimerPriority.TwentyFiveMS;
+                this.Priority = TimerPriority.TwentyFiveMS;
             }
 
             protected override void OnTick()
             {
-                RemoveContext(m_Mobile);
+                RemoveContext(this.m_Mobile);
             }
         }
 
@@ -328,13 +395,25 @@ namespace Server.Spells
             private readonly Timer m_Timer;
             private readonly Type m_Type;
 
-            public Timer Timer => m_Timer;
-            public Type Type => m_Type;
+            public Timer Timer
+            {
+                get
+                {
+                    return this.m_Timer;
+                }
+            }
+            public Type Type
+            {
+                get
+                {
+                    return this.m_Type;
+                }
+            }
 
             public SpecialMoveContext(Timer timer, Type type)
             {
-                m_Timer = timer;
-                m_Type = type;
+                this.m_Timer = timer;
+                this.m_Type = type;
             }
         }
     }

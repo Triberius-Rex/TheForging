@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Mobiles
 {
@@ -12,7 +14,7 @@ namespace Server.Mobiles
         Casting = 5,
         Misc = 6,
         HitEffects = 7,
-        SkillBonusGear = 8
+        SkillBonusGear = 8,
     }
 
     public abstract class Property
@@ -20,14 +22,14 @@ namespace Server.Mobiles
         public abstract int LabelNumber { get; }
         public abstract Catalog Catalog { get; }
         public virtual int Order { get; } = 1000;
-        public virtual int Cap { get; set; }
+        public virtual int Cap { get; set; } = 0;
         public virtual int Description { get; set; }
 
-        public virtual bool IsBoolen => false;
-        public virtual bool IsMagical => false;
-        public virtual bool AlwaysVisible => false;
+        public virtual bool IsBoolen { get { return false; } }
+        public virtual bool BoolenValue { get { return false; } }
+        public virtual bool AlwaysVisible { get { return false; } }
 
-        public virtual bool IsSpriteGraph => false;
+        public virtual bool IsSpriteGraph { get { return false; } }
         public virtual int SpriteH { get; set; }
         public virtual int SpriteW { get; set; }
 
@@ -45,9 +47,9 @@ namespace Server.Mobiles
 
     public class LabelDefinition
     {
-        public int TitleLabel { get; }
-        public Catalog Catalog { get; }
-        public int ColumnLeftCount { get; }
+        public int TitleLabel { get; set; }
+        public Catalog Catalog { get; set; }
+        public int ColumnLeftCount { get; set; }
 
         public LabelDefinition(int tl, Catalog ctlg, int cl = 0)
         {

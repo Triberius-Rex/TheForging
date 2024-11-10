@@ -1,14 +1,14 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Drithen : MondainQuester
     {
         [Constructable]
         public Drithen()
             : base("Drithen", "the fierce")
-        {
+        { 
         }
 
         public Drithen(Serial serial)
@@ -16,34 +16,40 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(TaleOfTailQuest),
                     typeof(PointyEarsQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            Race = Race.Human;
-            Hue = 0x840F;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.Race = Race.Human;			
+            this.Hue = 0x840F;		
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new ElvenBoots(), 0x723, 1);
-            SetWearable(new LongPants(), 0x549, 1);
-            SetWearable(new Tunic(), 0x72B, 1);
-            SetWearable(new Cloak(), 0x30, 1);
+            this.AddItem(new Backpack());			
+            this.AddItem(new ElvenBoots(0x723));
+            this.AddItem(new LongPants(0x549));
+            this.AddItem(new Tunic(0x72B));
+            this.AddItem(new Cloak(0x30));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

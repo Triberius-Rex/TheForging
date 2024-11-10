@@ -1,11 +1,11 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
     public class MercutiosCutlass : Cutlass
     {
-        public override int LabelNumber => 1154240;  // Mercutio's Cutlass
+        public override int LabelNumber { get { return 1154240; } } // Mercutio's Cutlass
         private int m_Lifespan;
         private Timer m_Timer;
 
@@ -22,26 +22,26 @@ namespace Server.Items
             }
         }
 
-        public virtual int Lifespan => 18000;
+        public virtual int Lifespan { get { return 18000; } }
 
         public override void OnDoubleClick(Mobile from)
         {
-            base.OnDoubleClick(from);
-
-            from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154241); // *It is a beautifully and masterfully crafted blade. The hilt bears the family crest of the former owner*
+			base.OnDoubleClick(from);			
+			
+			from.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1154241); // *It is a beautifully and masterfully crafted blade. The hilt bears the family crest of the former owner*
         }
-
-        public override void GetProperties(ObjectPropertyList list)
+		
+		public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
+            
             list.Add(1072351); // Quest Item
 
             if (Lifespan > 0)
             {
                 TimeSpan t = TimeSpan.FromSeconds(m_Lifespan);
 
-                int weeks = t.Days / 7;
+                int weeks = (int)t.Days / 7;
                 int days = t.Days;
                 int hours = t.Hours;
                 int minutes = t.Minutes;
@@ -64,7 +64,7 @@ namespace Server.Items
             if (m_Timer != null)
                 return;
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), Slice);
+            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), new TimerCallback(Slice));
             m_Timer.Priority = TimerPriority.OneSecond;
         }
 
@@ -123,9 +123,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Lifespan);
+            writer.Write((int)m_Lifespan);
         }
 
         public override void Deserialize(GenericReader reader)

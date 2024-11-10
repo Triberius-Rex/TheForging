@@ -1,6 +1,7 @@
-using Server.Gumps;
-using Server.Mobiles;
+using Server;
 using System;
+using Server.Mobiles;
+using Server.Gumps;
 
 namespace Server.Services.TownCryer
 {
@@ -25,7 +26,7 @@ namespace Server.Services.TownCryer
             base.AddGumpLayout();
 
             AddHtmlLocalized(58, 150, 100, 20, 1158027, false, false); // Author:
-            AddLabel(105, 150, 0, string.Format("{0}", Entry != null ? Entry.Author : User.Name));
+            AddLabel(105, 150, 0, String.Format("{0}", Entry != null ? Entry.Author : User.Name));
 
             AddHtmlLocalized(58, 170, 100, 20, 1158055, false, false); // Guild:
             AddLabel(105, 170, 0, Entry != null && Entry.Guild != null ? Entry.Guild.Name : "Unknown");
@@ -47,7 +48,7 @@ namespace Server.Services.TownCryer
             AddTextEntry(530, 240, 19, 20, 0, 4, Entry != null ? Entry.EventTime.Hour.ToString() : "", 2);
 
             AddHtmlLocalized(58, 260, 150, 20, 1158059, false, false); // Event Timezone:
-            AddLabel(155, 260, 0, TimeZone.CurrentTimeZone.StandardName);
+            AddLabel(155, 260, 0, TimeZoneInfo.Local.StandardName);
 
             AddHtmlLocalized(58, 290, 150, 20, 1158060, false, false); // Event Description:
             AddBackground(58, 310, 740, 40, 0x2486);
@@ -86,7 +87,7 @@ namespace Server.Services.TownCryer
 
                 if (Entry == null)
                 {
-                    if (!DateTime.TryParse(string.Format("{0}/{1}/{2} {3}:00:00", m, d, year.ToString(), t), out dt)) // bad format
+                    if (!DateTime.TryParse(String.Format("{0}/{1}/{2} {3}:00:00", m, d, year.ToString(), t), out dt)) // bad format
                     {
                         illegalDate = true;
                         dt = DateTime.MinValue;
@@ -100,7 +101,7 @@ namespace Server.Services.TownCryer
                     Entry.Body = desc;
                     Entry.EventLocation = meet;
 
-                    if (DateTime.TryParse(string.Format("{0}/{1}/{2} {3}:00:00", m, d, year.ToString(), t), out dt))
+                    if (DateTime.TryParse(String.Format("{0}/{1}/{2} {3}:00:00", m, d, year.ToString(), t), out dt))
                     {
                         Entry.EventTime = dt;
                     }
@@ -123,7 +124,7 @@ namespace Server.Services.TownCryer
 
                     User.SendLocalizedMessage(1158039); // Your entry has been submitted.
 
-                    SendGump(new TownCryerGump(User, Cryer, 0, TownCryerGump.GumpCategory.Guild));
+                    BaseGump.SendGump(new TownCryerGump(User, Cryer, 0, TownCryerGump.GumpCategory.Guild));
                     return;
                 }
 

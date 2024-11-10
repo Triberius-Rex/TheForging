@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class PhilosophersHat : WizardsHat
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public PhilosophersHat()
         {
@@ -16,12 +18,48 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1077602;// Philosopher's Hat
-        public override int BasePhysicalResistance => 5;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 9;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1077602;
+            }
+        }// Philosopher's Hat
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

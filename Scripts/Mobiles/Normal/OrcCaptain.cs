@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Misc;
 
@@ -10,32 +11,77 @@ namespace Server.Mobiles
         public OrcCaptain()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = NameList.RandomName("orc");
-            Body = 7;
-            BaseSoundID = 0x45A;
+            this.Name = NameList.RandomName("orc");
+            this.Body = 7;
+            this.BaseSoundID = 0x45A;
 
-            SetStr(111, 145);
-            SetDex(101, 135);
-            SetInt(86, 110);
+            this.SetStr(111, 145);
+            this.SetDex(101, 135);
+            this.SetInt(86, 110);
 
-            SetHits(67, 87);
+            this.SetHits(67, 87);
 
-            SetDamage(5, 15);
+            this.SetDamage(5, 15);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 30, 35);
-            SetResistance(ResistanceType.Fire, 10, 20);
-            SetResistance(ResistanceType.Cold, 15, 25);
-            SetResistance(ResistanceType.Poison, 5, 10);
-            SetResistance(ResistanceType.Energy, 5, 10);
+            this.SetResistance(ResistanceType.Physical, 30, 35);
+            this.SetResistance(ResistanceType.Fire, 10, 20);
+            this.SetResistance(ResistanceType.Cold, 15, 25);
+            this.SetResistance(ResistanceType.Poison, 5, 10);
+            this.SetResistance(ResistanceType.Energy, 5, 10);
 
-            SetSkill(SkillName.MagicResist, 70.1, 85.0);
-            SetSkill(SkillName.Swords, 70.1, 95.0);
-            SetSkill(SkillName.Tactics, 85.1, 100.0);
+            this.SetSkill(SkillName.MagicResist, 70.1, 85.0);
+            this.SetSkill(SkillName.Swords, 70.1, 95.0);
+            this.SetSkill(SkillName.Tactics, 85.1, 100.0);
 
-            Fame = 2500;
-            Karma = -2500;
+            this.Fame = 2500;
+            this.Karma = -2500;
+
+            this.VirtualArmor = 34;
+
+            // TODO: Skull?
+            switch ( Utility.Random(7) )
+            {
+                case 0:
+                    this.PackItem(new Arrow());
+                    break;
+                case 1:
+                    this.PackItem(new Lockpick());
+                    break;
+                case 2:
+                    this.PackItem(new Shaft());
+                    break;
+                case 3:
+                    this.PackItem(new Ribs());
+                    break;
+                case 4:
+                    this.PackItem(new Bandage());
+                    break;
+                case 5:
+                    this.PackItem(new BeverageBottle(BeverageType.Wine));
+                    break;
+                case 6:
+                    this.PackItem(new Jug(BeverageType.Cider));
+                    break;
+            }
+
+            if (Core.AOS)
+                this.PackItem(Loot.RandomNecromancyReagent());
+
+            if (0.5 > Utility.RandomDouble())
+                PackItem(new Yeast());
+        }
+
+        public override void OnDeath(Container c)
+        {
+            if (Core.ML)
+            {
+                if (Utility.RandomDouble() < 0.05)
+                    c.DropItem(new StoutWhip());
+            }
+
+            base.OnDeath(c);
         }
 
         public OrcCaptain(Serial serial)
@@ -43,17 +89,40 @@ namespace Server.Mobiles
         {
         }
 
-        public override InhumanSpeech SpeechType => InhumanSpeech.Orc;
-        public override bool CanRummageCorpses => true;
-        public override int Meat => 1;
+        public override InhumanSpeech SpeechType
+        {
+            get
+            {
+                return InhumanSpeech.Orc;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Orc;
+        public override TribeType Tribe { get { return TribeType.Orc; } }
 
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.SavagesAndOrcs;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Meager, 2);
-            AddLoot(LootPack.LootItem<Yeast>(50.0));
-            AddLoot(LootPack.LootItem<StoutWhip>(5.0));
+            this.AddLoot(LootPack.Meager, 2);
         }
 
         public override bool IsEnemy(Mobile m)
@@ -82,7 +151,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

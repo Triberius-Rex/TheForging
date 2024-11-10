@@ -1,20 +1,22 @@
-using Server.ContextMenus;
-using Server.Items;
-using Server.Mobiles;
-using Server.Network;
-using Server.Regions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.IO;
+
+using Server;
+using Server.Items;
+using Server.Network;
+using Server.Mobiles;
+using Server.Regions;
+using Server.ContextMenus;
 
 namespace Server.Multis
 {
     public enum BoatOrder
     {
-        PlayerControlled,
-        CourseFull,
-        CourseSingle
+        Move,
+        Course,
+        Single
     }
 
     public enum DamageLevel
@@ -28,29 +30,10 @@ namespace Server.Multis
 
     public abstract class BaseBoat : BaseMulti, IMount
     {
-        #region Statics
-
-        private static readonly Rectangle2D[] m_BritWrap = new Rectangle2D[]{ new Rectangle2D( 16, 16, 5120 - 32, 4096 - 32 ), new Rectangle2D( 5136, 2320, 992, 1760 ),
+        private static Rectangle2D[] m_BritWrap = new Rectangle2D[]{ new Rectangle2D( 16, 16, 5120 - 32, 4096 - 32 ), new Rectangle2D( 5136, 2320, 992, 1760 ),
                                                                      new Rectangle2D(6272, 1088, 319, 319)};
-        private static readonly Rectangle2D[] m_IlshWrap = new Rectangle2D[] { new Rectangle2D(16, 16, 2304 - 32, 1600 - 32) };
-        private static readonly Rectangle2D[] m_TokunoWrap = new Rectangle2D[] { new Rectangle2D(16, 16, 1448 - 32, 1448 - 32) };
-
-        private static readonly Type[] WoodTypes = new Type[] { typeof(Board),  typeof(OakBoard), typeof(AshBoard), typeof(YewBoard), typeof(HeartwoodBoard), typeof(BloodwoodBoard), typeof(FrostwoodBoard),
-                                                typeof(Log), typeof(OakLog), typeof(AshLog), typeof(YewLog), typeof(HeartwoodLog), typeof(BloodwoodLog), typeof(FrostwoodLog), };
-
-        private static readonly Type[] ClothTypes = new Type[] { typeof(Cloth), typeof(UncutCloth) };
-
-        private static readonly int SlowSpeed = 1;
-        private static readonly int FastSpeed = 1;
-
-        private static readonly double WoodPer = 17;
-        private static readonly double ClothPer = 17;
-
-        public static readonly int EmergencyRepairClothCost = 55;
-        public static readonly int EmergencyRepairWoodCost = 25;
-        public static readonly TimeSpan EmergencyRepairSpan = TimeSpan.FromMinutes(6);
-
-        public static List<BaseBoat> Boats { get; } = new List<BaseBoat>();
+        private static Rectangle2D[] m_IlshWrap = new Rectangle2D[] { new Rectangle2D(16, 16, 2304 - 32, 1600 - 32) };
+        private static Rectangle2D[] m_TokunoWrap = new Rectangle2D[] { new Rectangle2D(16, 16, 1448 - 32, 1448 - 32) };
 
         public static BaseBoat FindBoatAt(IEntity entity)
         {
@@ -73,185 +56,12 @@ namespace Server.Multis
             return null;
         }
 
-        public static void Initialize()
-        {
-            new UpdateAllTimer().Start();
-            EventSink.WorldSave += EventSink_WorldSave;
-            EventSink.Disconnected += EventSink_Disconnected;
-            EventSink.PlayerDeath += EventSink_PlayerDeath;
-        }
-
-        public static void UpdateAllComponents()
-        {
-            List<BaseBoat> toDelete = new List<BaseBoat>();
-
-            for (int i = Boats.Count - 1; i >= 0; --i)
-            {
-                BaseBoat boat = Boats[i];
-
-                boat.UpdateComponents();
-
-                if (boat.PlayerCount > 0)
-                    boat.Refresh();
-            }
-
-            foreach (BaseBoat b in toDelete)
-                b.Delete();
-
-            toDelete.Clear();
-            toDelete.TrimExcess();
-        }
-
-        private static void EventSink_WorldSave(WorldSaveEventArgs e)
-        {
-            new UpdateAllTimer().Start();
-        }
-
-        public static void EventSink_Disconnected(DisconnectedEventArgs e)
-        {
-            ForceRemovePilot(e.Mobile);
-        }
-
-        public static void EventSink_PlayerDeath(PlayerDeathEventArgs e)
-        {
-            ForceRemovePilot(e.Mobile);
-        }
-
-        public static void ForceRemovePilot(Mobile m)
-        {
-            if (m.FindItemOnLayer(Layer.Mount) is BoatMountItem mountItem)
-            {
-                if (mountItem.Mount is BaseBoat boat)
-                {
-                    if (boat.Pilot == m)
-                    {
-                        boat.RemovePilot(m);
-                    }
-                    else
-                    {
-                        m.RemoveItem(mountItem);
-                        mountItem.Delete();
-                    }
-                }
-                else
-                {
-                    m.RemoveItem(mountItem);
-                    mountItem.Delete();
-                }
-            }
-        }
-
-        public static bool HasBoat(Mobile from)
-        {
-            if (from.AccessLevel > AccessLevel.Player)
-                return false;
-
-            return Boats.Any(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !boat.IsRowBoat);
-        }
-
-        public static BaseBoat GetBoat(Mobile from)
-        {
-            return Boats.FirstOrDefault(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !boat.IsRowBoat);
-        }
-
-        public static bool IsValidLocation(Point3D p, Map map)
-        {
-            Rectangle2D[] wrap = GetWrapFor(map);
-
-            for (int i = 0; i < wrap.Length; ++i)
-            {
-                if (wrap[i].Contains(p))
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static Rectangle2D[] GetWrapFor(Map m)
-        {
-            if (m == Map.Ilshenar)
-                return m_IlshWrap;
-            else if (m == Map.Tokuno)
-                return m_TokunoWrap;
-            else
-                return m_BritWrap;
-        }
-
-        public static bool IsDriving(Mobile from)
-        {
-            return Boats.Any(b => b.Pilot == from);
-        }
-
-        public static int GetID(int multiID, Direction direction)
-        {
-            switch (direction)
-            {
-                default:
-                case Direction.North: return multiID;
-                case Direction.East: return multiID + 1;
-                case Direction.South: return multiID + 2;
-                case Direction.West: return multiID + 3;
-            }
-        }
-
-        #endregion
-
-        public enum DryDockResult { Valid, Dead, NoKey, NotAnchored, Mobiles, Items, Hold, Decaying, NotEnoughGold, Damaged, Addons, Cannon }
-
-        #region Variables
-
-        /*
-        * OSI sends the 0xF7 packet instead, holding 0xF3 packets
-        * for every entity on the boat. Though, the regular 0xF3
-        * packets are still being sent as well as entities come
-        * into sight. Do we really need it?
-        */
-        private Packet m_ContainerPacket;
-
-        public virtual int ZSurface => 0;
-        public virtual int RuneOffset => 0;
+        public virtual int ZSurface { get { return 0; } }
+        public virtual int RuneOffset { get { return 0; } }
 
         private int m_ClientSpeed;
-        private Timer m_TurnTimer;
-        private string m_ShipName;
 
         public DamageLevel m_DamageTaken;
-
-        public int m_Hits;
-        private Direction m_Facing;
-
-        private Timer m_MoveTimer;
-        private DateTime m_DecayTime;
-        private bool m_Decaying;
-
-        #endregion
-
-        #region Properties
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool Anchored { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public BoatCourse BoatCourse { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public BaseDockedBoat BoatItem { get; set; }
-
-        public virtual int DamageValue
-        {
-            get
-            {
-                switch (m_DamageTaken)
-                {
-                    default:
-                    case DamageLevel.Pristine:
-                    case DamageLevel.Slightly: return 0;
-                    case DamageLevel.Moderately:
-                    case DamageLevel.Heavily: return 1;
-                    case DamageLevel.Severely: return 2;
-                }
-            }
-        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DamageLevel DamageTaken
@@ -296,61 +106,76 @@ namespace Server.Multis
             }
         }
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public double Durability => m_Hits / (double)MaxHits * 100.0;
+        public virtual int DamageValue
+        {
+            get
+            {
+                switch (m_DamageTaken)
+                {
+                    default:
+                    case DamageLevel.Pristine:
+                    case DamageLevel.Slightly: return 0;
+                    case DamageLevel.Moderately:
+                    case DamageLevel.Heavily: return 1;
+                    case DamageLevel.Severely: return 2;
+                }
+            }
+        }
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool DoesDecay { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Direction Facing { get { return m_Facing; } set { SetFacing(value); } }
-
-        public IEnumerable<Item> ItemsOnBoard => GetEntitiesOnBoard().OfType<Item>();
-
-        public IEnumerable<Mobile> MobilesOnBoard => GetEntitiesOnBoard().OfType<Mobile>();
-
-        public override bool HandlesOnSpeech => true;
+        public int m_Hits;
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int Hits { get { return m_Hits; } set { m_Hits = value; ComputeDamage(); InvalidateProperties(); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
+        public double Durability { get { return m_Hits / (double)MaxHits * 100.0; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
         public Hold Hold { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsMoving => (m_MoveTimer != null);
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsTurning => m_TurnTimer != null;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsPiloted => Pilot != null;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Direction Moving { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public MapItem MapItem { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int NextNavPoint { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Mobile Owner { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public BoatOrder Order { get; set; }
-
-        public int PlayerCount => MobilesOnBoard.Where(m => m is PlayerMobile).Count();
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Mobile Pilot { get; set; }
+        public object TillerMan { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Plank PPlank { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Plank SPlank { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Mobile Owner { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Mobile Pilot { get; set; }
+
+        private Direction m_Facing;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Direction Facing { get { return m_Facing; } set { SetFacing(value); } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Direction Moving { get; set; }
+
+        private Timer m_MoveTimer;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool IsMoving { get { return (m_MoveTimer != null); } }
+
+        private Timer m_TurnTimer;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool IsTurning { get { return m_TurnTimer != null; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool IsPiloted { get { return Pilot != null; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int Speed { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool Anchored { get; set; }
+
+        private string m_ShipName;
 
         [CommandProperty(AccessLevel.GameMaster)]
         public string ShipName
@@ -366,7 +191,30 @@ namespace Server.Multis
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
+        public BoatOrder Order { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public MapItem MapItem { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int NextNavPoint { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public BoatCourse BoatCourse { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool DoesDecay { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public BoatMountItem VirtualMount { get; private set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public BaseDockedBoat BoatItem { get; set; }
+
+        [CommandProperty(AccessLevel.GameMaster)]
         public Container SecureContainer { get; set; }
+
+        private DateTime m_DecayTime;
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime TimeOfDecay
@@ -386,70 +234,6 @@ namespace Server.Multis
                 }
             }
         }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public object TillerMan { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public BoatMountItem VirtualMount { get; private set; }
-
-
-        #region Movement Offset
-        private Direction Forward => Facing;
-        private Direction ForwardLeft => (Facing - 1) & Direction.Mask;
-        private Direction ForwardRight => (Facing + 1) & Direction.Mask;
-        private Direction Backward => (Facing - 4) & Direction.Mask;
-        private Direction BackwardLeft => (Facing - 3) & Direction.Mask;
-        private Direction BackwardRight => (Facing + 3) & Direction.Mask;
-        private Direction Left => (Facing - 2) & Direction.Mask;
-        private Direction Right => (Facing + 2) & Direction.Mask;
-        #endregion
-
-        #region Speed
-
-        /*
-        * Intervals:
-        *       drift forward
-        * fast | 0.25|   0.25
-        * slow | 0.50|   0.50
-        *
-        * Speed:
-        *       drift forward
-        * fast |  0x4|    0x4
-        * slow |  0x3|    0x3
-        *
-        * Tiles (per interval):
-        *       drift forward
-        * fast |    1|      1
-        * slow |    1|      1
-        *
-        * 'walking' in piloting mode has a 1s interval, speed 0x2
-        */
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int Speed { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int FastInterval { get; set; } = 250;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int NormalInterval { get; set; } = 500;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int SlowInterval { get; set; } = 1000;
-
-        public TimeSpan FastInt => TimeSpan.FromMilliseconds(FastInterval);
-        public TimeSpan NormalInt => TimeSpan.FromMilliseconds(NormalInterval);
-        public TimeSpan SlowInt => TimeSpan.FromMilliseconds(SlowInterval);
-
-        public TimeSpan FastDriftInterval => NormalInt;
-        public TimeSpan SlowDriftInterval => SlowInt;
-
-        #endregion
-
-        #endregion
-
-        #region Virtual Properties
 
         public virtual int Status
         {
@@ -484,32 +268,45 @@ namespace Server.Multis
             }
         }
 
-        public virtual int NorthID => 0;
-        public virtual int EastID => 0;
-        public virtual int SouthID => 0;
-        public virtual int WestID => 0;
+        public virtual int NorthID { get { return 0; } }
+        public virtual int EastID { get { return 0; } }
+        public virtual int SouthID { get { return 0; } }
+        public virtual int WestID { get { return 0; } }
 
-        public virtual int HoldDistance => 0;
-        public virtual int TillerManDistance => 0;
-        public virtual Point2D StarboardOffset => Point2D.Zero;
-        public virtual Point2D PortOffset => Point2D.Zero;
-        public virtual Point3D MarkOffset => Point3D.Zero;
-        public virtual BaseDockedBoat DockedBoat => null;
+        public virtual int HoldDistance { get { return 0; } }
+        public virtual int TillerManDistance { get { return 0; } }
+        public virtual Point2D StarboardOffset { get { return Point2D.Zero; } }
+        public virtual Point2D PortOffset { get { return Point2D.Zero; } }
+        public virtual Point3D MarkOffset { get { return Point3D.Zero; } }
 
-        public virtual bool IsClassicBoat => true;
-        public virtual bool IsRowBoat => false;
-        public virtual bool CanLinkToLighthouse => true;
-        public virtual int MaxHits => 25000;
-        public virtual double TurnDelay => 0.5;
-        public virtual double ScuttleLevel => 25.0;
-        public virtual TimeSpan BoatDecayDelay => TimeSpan.FromDays(13);
+        #region High Seas
+        public virtual bool IsClassicBoat { get { return true; } }
+        public virtual bool IsRowBoat { get { return false; } }
+        public virtual double TurnDelay { get { return 0.5; } }
+        public virtual int MaxHits { get { return 25000; } }
+        public virtual double ScuttleLevel { get { return 25.0; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual bool Scuttled => !IsUnderEmergencyRepairs() && Durability < ScuttleLevel;
+        public virtual bool Scuttled { get { return !IsUnderEmergencyRepairs() && Durability < ScuttleLevel; } }
 
+        public virtual TimeSpan BoatDecayDelay { get { return TimeSpan.FromDays(13); } }
+        public virtual bool CanLinkToLighthouse { get { return true; } }
+
+        #region IMount Members
+        public Mobile Rider { get { return Pilot; } set { Pilot = value; } }
+
+        public void OnRiderDamaged(Mobile from, ref int amount, bool willKill)
+        {
+        }
+        #endregion
         #endregion
 
-        #region Constructors
+        public virtual BaseDockedBoat DockedBoat { get { return null; } }
+
+        private static List<BaseBoat> m_Instances = new List<BaseBoat>();
+
+        public static List<BaseBoat> Boats { get { return m_Instances; } }
+
         public BaseBoat(Direction direction)
             : this(direction, false)
         {
@@ -546,233 +343,27 @@ namespace Server.Multis
 
             NextNavPoint = -1;
             Movable = false;
-            Boats.Add(this);
+            m_Instances.Add(this);
+        }
+
+        public void RowBoat_Tick_Callback()
+        {
+            if (!GetMobilesOnBoard().Any())
+                Delete();
         }
 
         public BaseBoat(Serial serial)
             : base(serial)
         {
         }
-        #endregion
 
-        #region IMount Members
-        public Mobile Rider { get { return Pilot; } set { Pilot = value; } }
-
-        public void OnRiderDamaged(Mobile from, ref int amount, bool willKill)
-        {
-        }
-        #endregion
-
-        #region Overrides
-        public override bool AllowsRelativeDrop => true;
-        public override bool ForceShowProperties => true;
-
-        public override bool Contains(int x, int y)
-        {
-            if (base.Contains(x, y))
-                return true;
-
-            if (TillerMan != null)
-            {
-                if (TillerMan is Mobile)
-                {
-                    if (x == ((Mobile)TillerMan).X && y == ((Mobile)TillerMan).Y)
-                        return true;
-                }
-                else if (TillerMan is Item)
-                {
-                    if (x == ((Item)TillerMan).X && y == ((Item)TillerMan).Y)
-                        return true;
-                }
-            }
-
-            if (Hold != null && x == Hold.X && y == Hold.Y)
-                return true;
-
-            if (PPlank != null && x == PPlank.X && y == PPlank.Y)
-                return true;
-
-            if (SPlank != null && x == SPlank.X && y == SPlank.Y)
-                return true;
-
-            return false;
-        }
-
-        public override void OnSpeech(SpeechEventArgs e)
-        {
-            if (CheckDecay())
-                return;
-
-            Mobile from = e.Mobile;
-
-            if (CanCommand(from) && Contains(from) && Pilot == null)
-            {
-                for (int i = 0; i < e.Keywords.Length; ++i)
-                {
-                    if (e.Handled)
-                        break;
-
-                    int keyword = e.Keywords[i];
-
-                    if ((keyword >= 0x42 && keyword <= 0x6B) || keyword == 0xF)
-                    {
-                        switch (keyword)
-                        {
-                            case 0x42: SetName(e); break;
-                            case 0x43: RemoveName(e.Mobile); break;
-                            case 0x44: GiveName(e.Mobile); break;
-                            case 0x45: Order = BoatOrder.PlayerControlled; StartMove(Forward, true); break;
-                            case 0x46: Order = BoatOrder.PlayerControlled; StartMove(Backward, true); break;
-                            case 0x47: Order = BoatOrder.PlayerControlled; StartMove(Left, true); break;
-                            case 0x48: Order = BoatOrder.PlayerControlled; StartMove(Right, true); break;
-                            case 0x4B: Order = BoatOrder.PlayerControlled; StartMove(ForwardLeft, true); break;
-                            case 0x4C: Order = BoatOrder.PlayerControlled; StartMove(ForwardRight, true); break;
-                            case 0x4D: Order = BoatOrder.PlayerControlled; StartMove(BackwardLeft, true); break;
-                            case 0x4E: Order = BoatOrder.PlayerControlled; StartMove(BackwardRight, true); break;
-                            case 0x4F: Order = BoatOrder.PlayerControlled; StopMove(true); break;
-                            case 0x50: Order = BoatOrder.PlayerControlled; StartMove(Left, false); break;
-                            case 0x51: Order = BoatOrder.PlayerControlled; StartMove(Right, false); break;
-                            case 0x52: Order = BoatOrder.PlayerControlled; StartMove(Forward, false); break;
-                            case 0x53: Order = BoatOrder.PlayerControlled; StartMove(Backward, false); break;
-                            case 0x54: Order = BoatOrder.PlayerControlled; StartMove(ForwardLeft, false); break;
-                            case 0x55: Order = BoatOrder.PlayerControlled; StartMove(ForwardRight, false); break;
-                            case 0x56: Order = BoatOrder.PlayerControlled; StartMove(BackwardRight, false); break;
-                            case 0x57: Order = BoatOrder.PlayerControlled; StartMove(BackwardLeft, false); break;
-                            case 0x58: Order = BoatOrder.PlayerControlled; OneMove(Left); break;
-                            case 0x59: Order = BoatOrder.PlayerControlled; OneMove(Right); break;
-                            case 0x5A: Order = BoatOrder.PlayerControlled; OneMove(Forward); break;
-                            case 0x5B: Order = BoatOrder.PlayerControlled; OneMove(Backward); break;
-                            case 0x5C: Order = BoatOrder.PlayerControlled; OneMove(ForwardLeft); break;
-                            case 0x5D: Order = BoatOrder.PlayerControlled; OneMove(ForwardRight); break;
-                            case 0x5E: Order = BoatOrder.PlayerControlled; OneMove(BackwardRight); break;
-                            case 0x5F: Order = BoatOrder.PlayerControlled; OneMove(BackwardLeft); break;
-                            case 0x49:
-                            case 0x65: Order = BoatOrder.PlayerControlled; StartTurn(2, true); break; // turn right
-                            case 0x4A:
-                            case 0x66: Order = BoatOrder.PlayerControlled; StartTurn(-2, true); break; // turn left
-                            case 0x67: Order = BoatOrder.PlayerControlled; StartTurn(-4, true); break; // turn around, come about
-                            case 0x68: Order = BoatOrder.PlayerControlled; StartMove(Forward, true); break;
-                            case 0x69: Order = BoatOrder.PlayerControlled; StopMove(true); break;
-                            case 0x6A: break; // Lower Anchor
-                            case 0x6B: break; // Raise Anchor
-                            case 0x60: GiveNavPoint(); break; // nav
-                            case 0x61: NextNavPoint = 0; StartCourse(false, true); break; // start
-                            case 0x62: StartCourse(false, true); break; // continue
-                            case 0x63: StartCourse(e.Speech, false, true); break; // goto*
-                            case 0x64: StartCourse(e.Speech, true, true); break; // single*
-                            case 0xF: TryTrack(from, e.Speech); break;
-                        }
-
-                        e.Handled = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        public override void OnAfterDelete()
-        {
-            if (TillerMan != null)
-            {
-                if (TillerMan is Mobile)
-                    ((Mobile)TillerMan).Delete();
-
-                else if (TillerMan is Item)
-                    ((Item)TillerMan).Delete();
-            }
-
-            if (Hold != null)
-                Hold.Delete();
-
-            if (PPlank != null)
-                PPlank.Delete();
-
-            if (SPlank != null)
-                SPlank.Delete();
-
-            if (m_TurnTimer != null)
-                m_TurnTimer.Stop();
-
-            if (m_MoveTimer != null)
-                m_MoveTimer.Stop();
-
-            #region High Seas
-            if (Owner is BaseShipCaptain)
-                ((BaseShipCaptain)Owner).OnShipDelete();
-
-            if (Pilot != null)
-                RemovePilot(Pilot);
-
-            if (VirtualMount != null)
-                VirtualMount.Delete();
-            #endregion
-
-            if (SecureContainer != null)
-                SecureContainer.Delete();
-
-            if (BoatItem != null && !BoatItem.Deleted && BoatItem.Map == Map.Internal)
-                BoatItem.Delete();
-
-            Boats.Remove(this);
-
-            base.OnAfterDelete();
-        }
-
-        public override void OnLocationChange(Point3D old)
-        {
-            if (TillerMan != null)
-            {
-                if (TillerMan is Mobile && (Math.Abs(X - old.X) > 1 || Math.Abs(Y - old.Y) > 1))
-                    ((Mobile)TillerMan).Location = new Point3D(X + (((Mobile)TillerMan).X - old.X), Y + (((Mobile)TillerMan).Y - old.Y), Z + (((Mobile)TillerMan).Z - old.Z));
-                else if (TillerMan is Item)
-                    ((Item)TillerMan).Location = new Point3D(X + (((Item)TillerMan).X - old.X), Y + (((Item)TillerMan).Y - old.Y), Z + (((Item)TillerMan).Z - old.Z));
-            }
-
-            if (Hold != null)
-                Hold.Location = new Point3D(X + (Hold.X - old.X), Y + (Hold.Y - old.Y), Z + (Hold.Z - old.Z));
-
-            if (PPlank != null)
-                PPlank.Location = new Point3D(X + (PPlank.X - old.X), Y + (PPlank.Y - old.Y), Z + (PPlank.Z - old.Z));
-
-            if (SPlank != null)
-                SPlank.Location = new Point3D(X + (SPlank.X - old.X), Y + (SPlank.Y - old.Y), Z + (SPlank.Z - old.Z));
-
-            #region High Seas
-            Region oldReg = Region.Find(old, Map);
-            Region newReg = Region.Find(Location, Map);
-
-            if (oldReg != newReg && oldReg is CorgulRegion)
-                Timer.DelayCall(TimeSpan.FromSeconds(0.5), new TimerStateCallback(CheckExit), oldReg);
-            else if (oldReg != newReg && newReg is CorgulWarpRegion)
-                Timer.DelayCall(TimeSpan.FromSeconds(1), new TimerStateCallback(CheckEnter), newReg);
-            #endregion
-        }
-
-        public override void OnMapChange()
-        {
-            if (TillerMan != null)
-            {
-                if (TillerMan is Mobile)
-                    ((Mobile)TillerMan).Map = Map;
-                else if (TillerMan is Item)
-                    ((Item)TillerMan).Map = Map;
-            }
-
-            if (Hold != null)
-                Hold.Map = Map;
-
-            if (PPlank != null)
-                PPlank.Map = Map;
-
-            if (SPlank != null)
-                SPlank.Map = Map;
-        }
+        public override bool ForceShowProperties { get { return true; } }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            int health = Hits * 100 / MaxHits;
+            int health = (int)(Hits * 100 / MaxHits);
 
             if (health >= 75)
             {
@@ -792,22 +383,149 @@ namespace Server.Multis
             }
         }
 
+        public virtual bool IsEnemy(BaseBoat boat)
+        {
+            if (Map != null && Map.Rules == MapRules.FeluccaRules)
+                return true;
+
+            Mobile thisOwner = Owner;
+            Mobile themOwner = boat.Owner;
+
+            if (thisOwner == null || themOwner == null)
+                return true;
+
+            if (thisOwner is PlayerMobile && themOwner is PlayerMobile && Map != Map.Felucca)
+                return false;
+
+            return thisOwner.CanBeHarmful(themOwner, false);
+        }
+
+        public virtual bool IsEnemy(Mobile from)
+        {
+            if (Map != null && Map.Rules == MapRules.FeluccaRules)
+                return true;
+
+            Mobile thisOwner = Owner;
+
+            if (thisOwner == null || from == null || thisOwner is BaseCreature || from is BaseCreature)
+                return true;
+
+            return from.CanBeHarmful(thisOwner, false);
+        }
+
+        public virtual void OnTakenDamage(int damage)
+        {
+            OnTakenDamage(null, damage);
+        }
+
+        public virtual void OnTakenDamage(Mobile damager, int damage)
+        {
+            Hits -= damage;
+
+            if (damager != null)
+                SendDamagePacket(damager, damage);
+
+            if (Hits < 0)
+                Hits = 0;
+
+            if (Hits > MaxHits)
+                Hits = MaxHits;
+        }
+
+        public virtual void SendDamagePacket(Mobile from, int amount)
+        {
+            if (amount == 0)
+                return;
+
+            NetState theirState = (from == null ? null : from.NetState);
+
+            if (theirState == null && from != null)
+            {
+                Mobile master = from.GetDamageMaster(null);
+
+                if (master != null)
+                {
+                    theirState = master.NetState;
+                }
+            }
+
+            if (theirState != null)
+            {
+                theirState.Send(new DamagePacket(this, amount));
+            }
+        }
+
+        private void ComputeDamage()
+        {
+            if (Durability >= 100)
+                DamageTaken = DamageLevel.Pristine;
+            else if (Durability >= 75.0)
+                DamageTaken = DamageLevel.Slightly;
+            else if (Durability >= 50.0)
+                DamageTaken = DamageLevel.Moderately;
+            else if (Durability >= 25.0)
+                DamageTaken = DamageLevel.Heavily;
+            else
+                DamageTaken = DamageLevel.Severely;
+        }
+
+        public Point3D GetRotatedLocation(int x, int y)
+        {
+            Point3D p = new Point3D(X + x, Y + y, Z);
+
+            return Rotate(p, (int)m_Facing / 2);
+        }
+
+        public virtual void UpdateComponents()
+        {
+            if (PPlank != null)
+            {
+                PPlank.MoveToWorld(GetRotatedLocation(PortOffset.X, PortOffset.Y), Map);
+                PPlank.SetFacing(m_Facing);
+            }
+
+            if (SPlank != null)
+            {
+                SPlank.MoveToWorld(GetRotatedLocation(StarboardOffset.X, StarboardOffset.Y), Map);
+                SPlank.SetFacing(m_Facing);
+            }
+
+            int xOffset = 0, yOffset = 0;
+            Movement.Movement.Offset(m_Facing, ref xOffset, ref yOffset);
+
+            if (TillerMan != null)
+            {
+                if (TillerMan is TillerMan tillerman)
+                {
+                    tillerman.Location = new Point3D(X + (xOffset * TillerManDistance) + (m_Facing == Direction.North ? 1 : 0), Y + (yOffset * TillerManDistance), tillerman.Z);
+                    tillerman.SetFacing(m_Facing);
+                    tillerman.InvalidateProperties();
+                }
+            }
+
+            if (Hold != null)
+            {
+                Hold.Location = new Point3D(X + (xOffset * HoldDistance), Y + (yOffset * HoldDistance), Hold.Z);
+                Hold.SetFacing(m_Facing);
+            }
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(5);
+            writer.Write((int)5);
 
             writer.Write(m_Hits);
             writer.Write((int)m_DamageTaken);
 
             if (BoatCourse != null)
             {
-                writer.Write(1);
+                writer.Write((int)1);
                 BoatCourse.Serialize(writer);
             }
             else
-                writer.Write(0);
+                writer.Write((int)0);
 
             writer.Write(BoatItem);
 
@@ -815,8 +533,8 @@ namespace Server.Multis
             writer.Write(DoesDecay);
 
             // version 3
-            writer.Write(MapItem);
-            writer.Write(NextNavPoint);
+            writer.Write((Item)MapItem);
+            writer.Write((int)NextNavPoint);
 
             writer.Write((int)m_Facing);
 
@@ -855,11 +573,9 @@ namespace Server.Multis
                     {
                         if (reader.ReadInt() == 1)
                         {
-                            BoatCourse = new BoatCourse(reader)
-                            {
-                                Boat = this,
-                                Map = Map
-                            };
+                            BoatCourse = new BoatCourse(reader);
+                            BoatCourse.Boat = this;
+                            BoatCourse.Map = Map;
                         }
 
                         BoatItem = reader.ReadItem() as BaseDockedBoat;
@@ -922,7 +638,18 @@ namespace Server.Multis
                     }
             }
 
-            Boats.Add(this);
+            m_Instances.Add(this);
+
+            if (version == 6)
+            {
+                if (MapItem != null)
+                {
+                    Timer.DelayCall(TimeSpan.FromSeconds(10), delegate
+                    {
+                        BoatCourse = new BoatCourse(this, MapItem);
+                    });
+                }
+            }
 
             if (version == 4)
             {
@@ -933,24 +660,145 @@ namespace Server.Multis
                 Timer.DelayCall(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5), RowBoat_Tick_Callback);
         }
 
-        #endregion
-
-        #region Virtual
-
-        public virtual bool CheckAddon(Item item)
+        public void RemoveKeys(Mobile m)
         {
-            return false;
+            uint keyValue = 0;
+
+            if (PPlank != null)
+                keyValue = PPlank.KeyValue;
+
+            if (keyValue == 0 && SPlank != null)
+                keyValue = SPlank.KeyValue;
+
+            Key.RemoveKeys(m, keyValue);
         }
 
-        public virtual bool CheckItem(int itemID, Item item, Point3D p)
+        public uint CreateKeys(Mobile m)
         {
-            return Contains(item) ||
-                item is BaseMulti ||
-                item.ItemID > TileData.MaxItemValue ||
-                !item.Visible ||
-                item is Corpse ||
-                IsComponentItem(item) ||
-                item is EffectItem;
+            uint value = Key.RandomValue();
+
+            Key packKey = new Key(KeyType.Gold, value, this);
+            Key bankKey = new Key(KeyType.Gold, value, this);
+
+            packKey.MaxRange = 10;
+            bankKey.MaxRange = 10;
+
+            packKey.Name = "a ship key";
+            bankKey.Name = "a ship key";
+
+            BankBox box = m.BankBox;
+
+            if (!box.TryDropItem(m, bankKey, false))
+                bankKey.Delete();
+            else
+                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502484); // A ship's key is now in my safety deposit box.
+
+            if (m.AddToBackpack(packKey))
+                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502485); // A ship's key is now in my backpack.
+            else
+                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502483); // A ship's key is now at my feet.
+
+            return value;
+        }
+
+        public override bool AllowsRelativeDrop { get { return true; } }
+
+        public override void OnAfterDelete()
+        {
+            if (TillerMan != null)
+            {
+                if (TillerMan is Mobile)
+                    ((Mobile)TillerMan).Delete();
+
+                else if (TillerMan is Item)
+                    ((Item)TillerMan).Delete();
+            }
+
+            if (Hold != null)
+                Hold.Delete();
+
+            if (PPlank != null)
+                PPlank.Delete();
+
+            if (SPlank != null)
+                SPlank.Delete();
+
+            if (m_TurnTimer != null)
+                m_TurnTimer.Stop();
+
+            if (m_MoveTimer != null)
+                m_MoveTimer.Stop();
+
+            #region High Seas
+            if (Owner is BaseShipCaptain)
+                ((BaseShipCaptain)Owner).OnShipDelete();
+
+            if (Pilot != null)
+                RemovePilot(Pilot);
+
+            if (VirtualMount != null)
+                VirtualMount.Delete();
+            #endregion
+
+            if (SecureContainer != null)
+                SecureContainer.Delete();
+
+            if (BoatItem != null && !BoatItem.Deleted && BoatItem.Map == Map.Internal)
+                BoatItem.Delete();
+
+            m_Instances.Remove(this);
+
+            base.OnAfterDelete();
+        }
+
+        public override void OnLocationChange(Point3D old)
+        {
+            if (TillerMan != null)
+            {
+                if (TillerMan is Mobile && (Math.Abs(X - old.X) > 1 || Math.Abs(Y - old.Y) > 1))
+                    ((Mobile)TillerMan).Location = new Point3D(X + (((Mobile)TillerMan).X - old.X), Y + (((Mobile)TillerMan).Y - old.Y), Z + (((Mobile)TillerMan).Z - old.Z));
+                else if (TillerMan is Item)
+                    ((Item)TillerMan).Location = new Point3D(X + (((Item)TillerMan).X - old.X), Y + (((Item)TillerMan).Y - old.Y), Z + (((Item)TillerMan).Z - old.Z));
+            }
+
+            if (Hold != null)
+                Hold.Location = new Point3D(X + (Hold.X - old.X), Y + (Hold.Y - old.Y), Z + (Hold.Z - old.Z));
+
+            if (PPlank != null)
+                PPlank.Location = new Point3D(X + (PPlank.X - old.X), Y + (PPlank.Y - old.Y), Z + (PPlank.Z - old.Z));
+
+            if (SPlank != null)
+                SPlank.Location = new Point3D(X + (SPlank.X - old.X), Y + (SPlank.Y - old.Y), Z + (SPlank.Z - old.Z));
+
+            #region High Seas
+            Region oldReg = Region.Find(old, Map);
+            Region newReg = Region.Find(Location, Map);
+
+            if (oldReg != newReg && oldReg is CorgulRegion)
+                Timer.DelayCall(TimeSpan.FromSeconds(0.5), new TimerStateCallback(CheckExit), oldReg);
+            else if (oldReg != newReg && newReg is CorgulWarpRegion)
+                Timer.DelayCall(TimeSpan.FromSeconds(1), new TimerStateCallback(CheckEnter), newReg);
+            #endregion
+        }
+
+        public override void OnMapChange()
+        {
+            if (TillerMan != null)
+            {
+                if (TillerMan is Mobile)
+                    ((Mobile)TillerMan).Map = Map;
+                else if (TillerMan is Item)
+                    ((Item)TillerMan).Map = Map;
+            }
+
+            if (Hold != null)
+                Hold.Map = Map;
+
+            if (PPlank != null)
+                PPlank.Map = Map;
+
+            if (SPlank != null)
+                SPlank.Map = Map;
         }
 
         public virtual bool CanCommand(Mobile m)
@@ -958,82 +806,11 @@ namespace Server.Multis
             return true;
         }
 
-        public virtual bool CanMoveOver(IEntity entity)
-        {
-            if (entity is Corpse corpse)
-            {
-                if (corpse.Owner == null || corpse.Owner is BaseCreature)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            return entity is Blood;
-        }
-
-        protected virtual bool CheckOnBoard(IEntity e)
-        {
-            if (e is Item && ((Item)e).IsVirtualItem)
-                return false;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Checks for multi components that aren't 'contained' in the multi itself, ie horizontle masts for the orcish galleon
-        /// </summary>
-        /// <param name="newPnt">Where the boat is projected to be</param>
-        /// <param name="itemID">boat's projectied itemID</param>
-        /// <param name="x">object to check x</param>
-        /// <param name="y">object to check y</param>
-        /// <param name="height">object z + itemdata height</param>
-        public virtual bool ExemptOverheadComponent(Point3D newPnt, int itemID, int x, int y, int height)
-        {
-            return false;
-        }
-
-        public virtual IEnumerable<IEntity> GetComponents()
-        {
-            yield break;
-        }
-
         public virtual Point3D GetMarkedLocation()
         {
             Point3D p = new Point3D(X + MarkOffset.X, Y + MarkOffset.Y, Z + MarkOffset.Z);
 
             return Rotate(p, (int)m_Facing / 2);
-        }
-
-        public virtual bool IsEnemy(BaseBoat boat)
-        {
-            if (Map != null && Map.Rules == MapRules.FeluccaRules)
-                return true;
-
-            Mobile thisOwner = Owner;
-            Mobile themOwner = boat.Owner;
-
-            if (thisOwner == null || themOwner == null)
-                return true;
-
-            if (thisOwner is PlayerMobile && themOwner is PlayerMobile && Map != Map.Felucca)
-                return false;
-
-            return thisOwner.CanBeHarmful(themOwner, false);
-        }
-
-        public virtual bool IsEnemy(Mobile from)
-        {
-            if (Map != null && Map.Rules == MapRules.FeluccaRules)
-                return true;
-
-            Mobile thisOwner = Owner;
-
-            if (thisOwner == null || from == null || thisOwner is BaseCreature || from is BaseCreature)
-                return true;
-
-            return from.CanBeHarmful(thisOwner, false);
         }
 
         public virtual bool IsOwner(Mobile from)
@@ -1053,45 +830,89 @@ namespace Server.Multis
             return acct1 != null && acct2 != null && acct1 == acct2;
         }
 
-        public virtual bool IsComponentItem(IEntity item)
+        public bool CheckKey(uint keyValue)
         {
-            if (item == null)
-                return false;
-
-            if (item == this || (TillerMan is Item && item == (Item)TillerMan) || item == SPlank || item == PPlank || item == Hold)
+            if (SPlank != null && SPlank.KeyValue == keyValue)
                 return true;
+
+            if (PPlank != null && PPlank.KeyValue == keyValue)
+                return true;
+
             return false;
         }
 
-        public virtual bool IsExcludedTile(StaticTile tile)
+        /*
+        * Intervals:
+        *       drift forward
+        * fast | 0.25|   0.25
+        * slow | 0.50|   0.50
+        *
+        * Speed:
+        *       drift forward
+        * fast |  0x4|    0x4
+        * slow |  0x3|    0x3
+        *
+        * Tiles (per interval):
+        *       drift forward
+        * fast |    1|      1
+        * slow |    1|      1
+        *
+        * 'walking' in piloting mode has a 1s interval, speed 0x2
+        */
+
+        // Legacy clients will continue to see the old-style movement, but speeds are adjusted
+        private static readonly bool NewBoatMovement = true;
+
+        private static readonly int SlowSpeed = 1;
+        private static readonly int FastSpeed = NewBoatMovement ? 1 : 3;
+        private static readonly int SlowDriftSpeed = 1;
+        private static readonly int FastDriftSpeed = 1;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int FastInterval { get; set; } = 250;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int NormalInterval { get; set; } = 500;
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int SlowInterval { get; set; } = 1000;
+
+        public TimeSpan FastInt { get { return TimeSpan.FromMilliseconds(FastInterval); } }
+        public TimeSpan NormalInt { get { return TimeSpan.FromMilliseconds(NormalInterval); } }
+        public TimeSpan SlowInt { get { return TimeSpan.FromMilliseconds(SlowInterval); } }
+
+        public TimeSpan FastDriftInterval { get { return NormalInt; } }
+        public TimeSpan SlowDriftInterval { get { return SlowInt; } }
+
+        private static readonly Direction Forward = Direction.North;
+        private static readonly Direction ForwardLeft = Direction.Up;
+        private static readonly Direction ForwardRight = Direction.Right;
+        private static readonly Direction Backward = Direction.South;
+        private static readonly Direction BackwardLeft = Direction.Left;
+        private static readonly Direction BackwardRight = Direction.Down;
+        private static readonly Direction Left = Direction.West;
+        private static readonly Direction Right = Direction.East;
+        private static readonly Direction Port = Left;
+        private static readonly Direction Starboard = Right;
+
+        private bool m_Decaying;
+
+        public void Refresh(Mobile from = null)
         {
-            return false;
-        }
-
-        public virtual bool IsExcludedTile(StaticTile[] tile)
-        {
-            return false;
-        }
-
-        public virtual IEnumerable<IEntity> GetEntitiesOnBoard()
-        {
-            Map map = Map;
-
-            if (map == null || map == Map.Internal)
-                yield break;
-
-            MultiComponentList mcl = Components;
-            IPooledEnumerable eable = map.GetObjectsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
-
-            foreach (IEntity ent in eable)
+            if (from != null && Status > 1043010)
             {
-                if (Contains(ent) && CheckOnBoard(ent))
-                {
-                    yield return ent;
-                }
+                from.SendLocalizedMessage(1043294); // Your ship's age and contents have been refreshed.
             }
 
-            eable.Free();
+            m_DecayTime = DateTime.UtcNow + BoatDecayDelay;
+
+            if (TillerMan != null)
+            {
+                if (TillerMan is Mobile)
+                    ((Mobile)TillerMan).InvalidateProperties();
+                else if (TillerMan is Item)
+                    ((Item)TillerMan).InvalidateProperties();
+            }
         }
 
         public virtual bool HasAccess(Mobile from)
@@ -1099,244 +920,88 @@ namespace Server.Multis
             return true;
         }
 
-        public virtual void OnTakenDamage(int damage)
+        public bool OneMove(Direction dir)
         {
-            OnTakenDamage(null, damage);
-        }
+            if (CheckDecay())
+                return false;
 
-        public virtual void OnTakenDamage(Mobile damager, int damage)
-        {
-            Hits -= damage;
-
-            if (damager != null)
-                SendDamagePacket(damager, damage);
-
-            if (Hits < 0)
-                Hits = 0;
-
-            if (Hits > MaxHits)
-                Hits = MaxHits;
-        }
-
-        public virtual void OnMousePilotCommand(Mobile from, Direction d, int rawSpeed)
-        {
-            Order = BoatOrder.PlayerControlled;
-
-            int actualDir = (m_Facing - d) & 0x7;
-            TimeSpan interval = GetMovementInterval(rawSpeed, out int clientSpeed);
-
-            if (rawSpeed > 1 && actualDir > 1 && actualDir != 7)
+            if (Scuttled)
             {
-                Direction turnDirection = (int)d % 2 != 0 ? d - 1 : d;
-                StartTurn((int)turnDirection, false);
+                if (TillerMan != null)
+                    TillerManSay(1116687);  // Arr, we be scuttled!
+
+                return false;
             }
 
-            if (!StartMove(d, 1, clientSpeed, interval, false, false))
-                StopMove(false);
+            bool drift = dir != Forward;
+            TimeSpan interval = drift ? NormalInt : FastInt;
+            int speed = drift ? FastDriftSpeed : FastSpeed;
+
+            if (StartMove(dir, speed, 0x1, interval, true, true))
+            {
+                if (TillerMan != null)
+                    TillerManSay(501429); // Aye aye sir.
+
+                return true;
+            }
+
+            return false;
         }
 
-        public virtual void SendDamagePacket(Mobile from, int amount)
+        public void BeginRename(Mobile from)
         {
-            if (amount == 0)
+            if (CheckDecay())
                 return;
 
-            NetState theirState = (from == null ? null : from.NetState);
-
-            if (theirState == null && from != null)
+            if (from.AccessLevel < AccessLevel.GameMaster && from != Owner)
             {
-                Mobile master = from.GetDamageMaster(null);
+                if (TillerMan != null)
+                    TillerManSay(Utility.Random(1042876, 4)); // Arr, don't do that! | Arr, leave me alone! | Arr, watch what thour'rt doing, matey! | Arr! Do that again and I’ll throw ye overhead!
 
-                if (master != null)
-                {
-                    theirState = master.NetState;
-                }
+                return;
             }
-
-            if (theirState != null)
-            {
-                theirState.Send(new DamagePacket(this, amount));
-            }
-        }
-
-        public virtual void SetFacingComponents(Direction newDirection, Direction oldDirection, bool ignoreLastFacing)
-        {
-        }
-
-        public virtual void OnPlacement(Mobile from)
-        {
-        }
-
-        public virtual void OnAfterPlacement(bool initial)
-        {
-        }
-
-        public virtual void UpdateComponents()
-        {
-            if (PPlank != null)
-            {
-                PPlank.MoveToWorld(GetRotatedLocation(PortOffset.X, PortOffset.Y), Map);
-                PPlank.SetFacing(m_Facing);
-            }
-
-            if (SPlank != null)
-            {
-                SPlank.MoveToWorld(GetRotatedLocation(StarboardOffset.X, StarboardOffset.Y), Map);
-                SPlank.SetFacing(m_Facing);
-            }
-
-            int xOffset = 0, yOffset = 0;
-            Movement.Movement.Offset(m_Facing, ref xOffset, ref yOffset);
 
             if (TillerMan != null)
-            {
-                if (TillerMan is TillerMan tillerman)
-                {
-                    tillerman.Location = new Point3D(X + (xOffset * TillerManDistance) + (m_Facing == Direction.North ? 1 : 0), Y + (yOffset * TillerManDistance), tillerman.Z);
-                    tillerman.SetFacing(m_Facing);
-                    tillerman.InvalidateProperties();
-                }
-            }
+                TillerManSay(502580); // What dost thou wish to name thy ship?
 
-            if (Hold != null)
-            {
-                Hold.Location = new Point3D(X + (xOffset * HoldDistance), Y + (yOffset * HoldDistance), Hold.Z);
-                Hold.SetFacing(m_Facing);
-            }
+            from.Prompt = new RenameBoatPrompt(this);
         }
 
-        #endregion
-
-        #region BoatCourses
-
-        public void GiveNavPoint()
+        public void EndRename(Mobile from, string newName)
         {
-            if (TillerMan == null || CheckDecay())
+            if (Deleted || CheckDecay())
                 return;
 
-            if (NextNavPoint < 0)
-                TillerManSay(1042882); // I have no current nav point.
-            else
-                TillerManSay(1042883, (NextNavPoint + 1).ToString()); // My current destination navpoint is nav ~1_NAV_POINT_NUM~.
-        }
+            if (from.AccessLevel < AccessLevel.GameMaster && from != Owner)
+            {
+                if (TillerMan != null)
+                    TillerManSay(1042880); // Arr! Only the owner of the ship may change its name!
 
-        public void AssociateMap(MapItem map)
-        {
-            if (CheckDecay())
                 return;
-
-            if (map is BlankMap)
+            }
+            else if (!from.Alive)
             {
                 if (TillerMan != null)
-                    TillerManSay(502575); // Ar, that is not a map, tis but a blank piece of paper!
+                    TillerManSay(502582); // You appear to be dead.
+
+                return;
             }
-            else if (map.Pins.Count == 0)
+
+            newName = newName.Trim();
+
+            if (!Guilds.BaseGuildGump.CheckProfanity(newName))
             {
-                if (TillerMan != null)
-                    TillerManSay(502576); // Arrrr, this map has no course on it!
+                from.SendMessage("That name is unacceptable.");
+                return;
             }
-            else
-            {
-                StopMove(false);
 
-                MapItem = map;
-                NextNavPoint = 0;
+            if (newName.Length == 0)
+                newName = null;
 
-                BoatCourse = new BoatCourse(this, map);
-
-                if (TillerMan != null)
-                    TillerManSay(502577); // A map!
-            }
+            Rename(newName);
         }
 
-        public bool StartCourse(string navPoint, bool single, bool message)
-        {
-            int number = -1;
-
-            int start = -1;
-            for (int i = 0; i < navPoint.Length; i++)
-            {
-                if (char.IsDigit(navPoint[i]))
-                {
-                    start = i;
-                    break;
-                }
-            }
-
-            if (start != -1)
-            {
-                string sNumber = navPoint.Substring(start);
-
-                if (!int.TryParse(sNumber, out number))
-                    number = -1;
-
-                if (number != -1)
-                {
-                    number--;
-
-                    if (BoatCourse == null || number < 0 || number >= BoatCourse.Waypoints.Count)
-                    {
-                        number = -1;
-                    }
-                }
-            }
-
-            if (number == -1)
-            {
-                if (message && TillerMan != null)
-                    TillerManSay(1042551); // I don't see that navpoint, sir.
-
-                return false;
-            }
-
-            NextNavPoint = number;
-            return StartCourse(single, message);
-        }
-
-        public bool StartCourse(bool single, bool message)
-        {
-            if (CheckDecay())
-                return false;
-
-            if (BoatCourse == null)
-            {
-                if (message && TillerMan != null)
-                    TillerManSay(502513); // I have seen no map, sir.
-
-                return false;
-            }
-            else if (Map != BoatCourse.Map)
-            {
-                if (message && TillerMan != null)
-                    TillerManSay(502514); // The map is too far away from me, sir.
-
-                return false;
-            }
-            else if ((Map != Map.Trammel && Map != Map.Felucca && Map != Map.Tokuno) || NextNavPoint < 0 || NextNavPoint >= BoatCourse.Waypoints.Count)
-            {
-                if (message && TillerMan != null)
-                    TillerManSay(1042551); // I don't see that navpoint, sir.
-
-                return false;
-            }
-
-            Speed = Owner is BaseShipCaptain ? SlowSpeed : FastSpeed;
-            Order = single ? BoatOrder.CourseSingle : BoatOrder.CourseFull;
-
-            if (m_MoveTimer != null)
-                m_MoveTimer.Stop();
-
-            m_MoveTimer = new MoveTimer(this, FastInt, false);
-            m_MoveTimer.Start();
-
-            if (message && TillerMan != null)
-                TillerManSay(501429); // Aye aye sir.
-
-            return true;
-        }
-
-        #endregion
-
-        #region Docking
+        public enum DryDockResult { Valid, Dead, NoKey, NotAnchored, Mobiles, Items, Hold, Decaying, NotEnoughGold, Damaged, Addons, Cannon }
 
         public virtual DryDockResult CheckDryDock(Mobile from, Mobile dockmaster)
         {
@@ -1370,7 +1035,7 @@ namespace Server.Multis
 
             DryDockResult res = DryDockResult.Valid;
 
-            foreach (IEntity o in GetEntitiesOnBoard())
+            foreach (var o in GetEntitiesOnBoard())
             {
                 if (o == this || IsComponentItem(o) || o is EffectItem || o == TillerMan)
                     continue;
@@ -1392,16 +1057,6 @@ namespace Server.Multis
             }
 
             return res;
-        }
-
-        public virtual void OnDryDock(Mobile from)
-        {
-            LighthouseAddon addon = LighthouseAddon.GetLighthouse(Owner);
-
-            if (addon != null && Owner != null && Owner.NetState != null)
-            {
-                Owner.SendLocalizedMessage(1154594); // You have unlinked your ship from your lighthouse.
-            }
         }
 
         public void BeginDryDock(Mobile from)
@@ -1490,158 +1145,25 @@ namespace Server.Multis
                 Internalize();
 
                 OnDryDock(from);
-            }
+            }            
         }
 
-        #endregion
-
-        #region Decay
-
-        public virtual void OnSink()
+        public virtual void OnDryDock(Mobile from)
         {
-            m_Decaying = false;
+            var addon = LighthouseAddon.GetLighthouse(Owner);
 
-            if (CanLinkToLighthouse)
+            if (addon != null && Owner != null && Owner.NetState != null)
             {
-                LighthouseAddon addon = LighthouseAddon.GetLighthouse(Owner);
-
-                if (addon != null)
-                {
-                    BaseHouse house = BaseHouse.FindHouseAt(addon);
-
-                    if (house != null)
-                    {
-                        addon.DockBoat(this, house);
-                        return;
-                    }
-                }
-            }
-
-            Delete();
-        }
-
-        public bool CheckDecay()
-        {
-            if (Map == Map.Internal)
-                return false;
-
-            if (PlayerCount > 0)
-                return false;
-
-            if (m_Decaying)
-                return true;
-
-            if (DoesDecay && !IsMoving && DateTime.UtcNow >= m_DecayTime)
-            {
-                new DecayTimer(this).Start();
-
-                m_Decaying = true;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public void ForceDecay()
-        {
-            new DecayTimer(this).Start();
-            m_Decaying = true;
-        }
-
-        private class DecayTimer : Timer
-        {
-            private readonly BaseBoat m_Boat;
-            private int m_Count;
-
-            public DecayTimer(BaseBoat boat)
-                : base(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(5.0))
-            {
-                m_Boat = boat;
-
-                Priority = TimerPriority.TwoFiftyMS;
-            }
-
-            protected override void OnTick()
-            {
-                if (m_Count == 5)
-                {
-                    m_Boat.OnSink();
-                    Stop();
-                }
-                else
-                {
-                    //m_Boat.Location = new Point3D(m_Boat.X, m_Boat.Y, m_Boat.Z - 1);
-                    m_Boat.Teleport(0, 0, -1);
-
-                    if (m_Boat.TillerMan != null)
-                        m_Boat.TillerManSay(1007168 + m_Count);
-
-                    ++m_Count;
-                }
+                Owner.SendLocalizedMessage(1154594); // You have unlinked your ship from your lighthouse.
             }
         }
-
-        #endregion
-
-        #region Keys
-
-        public uint CreateKeys(Mobile m)
-        {
-            uint value = Key.RandomValue();
-
-            Key packKey = new Key(KeyType.Gold, value, this);
-            Key bankKey = new Key(KeyType.Gold, value, this);
-
-            packKey.MaxRange = 10;
-            bankKey.MaxRange = 10;
-
-            packKey.Name = "a ship key";
-            bankKey.Name = "a ship key";
-
-            BankBox box = m.BankBox;
-
-            if (!box.TryDropItem(m, bankKey, false))
-                bankKey.Delete();
-            else
-                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502484); // A ship's key is now in my safety deposit box.
-
-            if (m.AddToBackpack(packKey))
-                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502485); // A ship's key is now in my backpack.
-            else
-                m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502483); // A ship's key is now at my feet.
-
-            return value;
-        }
-
-        public bool CheckKey(uint keyValue)
-        {
-            if (SPlank != null && SPlank.KeyValue == keyValue)
-                return true;
-
-            if (PPlank != null && PPlank.KeyValue == keyValue)
-                return true;
-
-            return false;
-        }
-
-        public void RemoveKeys(Mobile m)
-        {
-            uint keyValue = 0;
-
-            if (PPlank != null)
-                keyValue = PPlank.KeyValue;
-
-            if (keyValue == 0 && SPlank != null)
-                keyValue = SPlank.KeyValue;
-
-            Key.RemoveKeys(m, keyValue);
-        }
-
-        #endregion
 
         #region Repairs
         private EmergencyRepairDamageTimer m_EmergencyRepairTimer;
+
+        public static readonly int EmergencyRepairClothCost = 55;
+        public static readonly int EmergencyRepairWoodCost = 25;
+        public static readonly TimeSpan EmergencyRepairSpan = TimeSpan.FromMinutes(6);
 
         public bool IsUnderEmergencyRepairs()
         {
@@ -1752,6 +1274,14 @@ namespace Server.Multis
             SendMessageToAllOnBoard(1116765);  // The emergency repairs have given out!
         }
 
+        private static readonly double WoodPer = 17;
+        private static readonly double ClothPer = 17;
+
+        private Type[] WoodTypes = new Type[] { typeof(Board),  typeof(OakBoard), typeof(AshBoard), typeof(YewBoard), typeof(HeartwoodBoard), typeof(BloodwoodBoard), typeof(FrostwoodBoard),
+                                                typeof(Log), typeof(OakLog), typeof(AshLog), typeof(YewLog), typeof(HeartwoodLog), typeof(BloodwoodLog), typeof(FrostwoodLog), };
+
+        private Type[] ClothTypes = new Type[] { typeof(Cloth), typeof(UncutCloth) };
+
         public void TryRepairs(Mobile from)
         {
             if (from == null || from.Backpack == null)
@@ -1780,15 +1310,15 @@ namespace Server.Multis
                 if (secure != null) cloth += secure.GetAmount(type);
             }
 
-            double durability = (Hits / (double)MaxHits) * 100;
+            double durability = ((double)Hits / (double)MaxHits) * 100;
 
             //Now, how much do they need for 100% repair
             double woodNeeded = WoodPer * (100.0 - durability);
             double clothNeeded = ClothPer * (100.0 - durability);
 
             //Apply skill bonus
-            woodNeeded -= (from.Skills[SkillName.Carpentry].Value / 200.0) * woodNeeded;
-            clothNeeded -= (from.Skills[SkillName.Tailoring].Value / 200.0) * clothNeeded;
+            woodNeeded -= ((double)from.Skills[SkillName.Carpentry].Value / 200.0) * woodNeeded;
+            clothNeeded -= ((double)from.Skills[SkillName.Tailoring].Value / 200.0) * clothNeeded;
 
             //get 10% of needed repairs
             double minWood = woodNeeded / 10;
@@ -1919,7 +1449,7 @@ namespace Server.Multis
 
         private class EmergencyRepairDamageTimer : Timer
         {
-            private readonly BaseBoat m_Boat;
+            private BaseBoat m_Boat;
 
             public DateTime EndRepairs { get; }
 
@@ -1947,8 +1477,6 @@ namespace Server.Multis
             }
         }
         #endregion
-
-        #region Naming
 
         public void SetName(SpeechEventArgs e)
         {
@@ -2054,199 +1582,456 @@ namespace Server.Multis
                 TillerManSay(1042881, m_ShipName); // This is the ~1_BOAT_NAME~.
         }
 
-        public void BeginRename(Mobile from)
+        public void GiveNavPoint()
+        {
+            if (TillerMan == null || CheckDecay())
+                return;
+
+            if (NextNavPoint < 0)
+                TillerManSay(1042882); // I have no current nav point.
+            else
+                TillerManSay(1042883, (NextNavPoint + 1).ToString()); // My current destination navpoint is nav ~1_NAV_POINT_NUM~.
+        }
+
+        public void AssociateMap(MapItem map)
         {
             if (CheckDecay())
                 return;
 
-            if (from.AccessLevel < AccessLevel.GameMaster && from != Owner)
+            if (map is BlankMap)
             {
                 if (TillerMan != null)
-                    TillerManSay(Utility.Random(1042876, 4)); // Arr, don't do that! | Arr, leave me alone! | Arr, watch what thour'rt doing, matey! | Arr! Do that again and I’ll throw ye overhead!
-
-                return;
+                    TillerManSay(502575); // Ar, that is not a map, tis but a blank piece of paper!
             }
-
-            if (TillerMan != null)
-                TillerManSay(502580); // What dost thou wish to name thy ship?
-
-            from.Prompt = new RenameBoatPrompt(this);
-        }
-
-        public void EndRename(Mobile from, string newName)
-        {
-            if (Deleted || CheckDecay())
-                return;
-
-            if (from.AccessLevel < AccessLevel.GameMaster && from != Owner)
+            else if (map.Pins.Count == 0)
             {
                 if (TillerMan != null)
-                    TillerManSay(1042880); // Arr! Only the owner of the ship may change its name!
-
-                return;
+                    TillerManSay(502576); // Arrrr, this map has no course on it!
             }
-            else if (!from.Alive)
+            else
             {
+                StopMove(false);
+
+                MapItem = map;
+                NextNavPoint = -1;
+
+                BoatCourse = new BoatCourse(this, map);
+
                 if (TillerMan != null)
-                    TillerManSay(502582); // You appear to be dead.
-
-                return;
+                    TillerManSay(502577); // A map!
             }
+        }
 
-            newName = newName.Trim();
+        public bool StartCourse(string navPoint, bool single, bool message)
+        {
+            int number = -1;
 
-            if (!Guilds.BaseGuildGump.CheckProfanity(newName))
+            int start = -1;
+            for (int i = 0; i < navPoint.Length; i++)
             {
-                from.SendMessage("That name is unacceptable.");
-                return;
+                if (char.IsDigit(navPoint[i]))
+                {
+                    start = i;
+                    break;
+                }
             }
 
-            if (newName.Length == 0)
-                newName = null;
+            if (start != -1)
+            {
+                string sNumber = navPoint.Substring(start);
 
-            Rename(newName);
+                if (!int.TryParse(sNumber, out number))
+                    number = -1;
+
+                if (number != -1)
+                {
+                    number--;
+
+                    if (BoatCourse == null || number < 0 || number >= BoatCourse.Waypoints.Count)
+                    {
+                        number = -1;
+                    }
+                }
+            }
+
+            if (number == -1)
+            {
+                if (message && TillerMan != null)
+                    TillerManSay(1042551); // I don't see that navpoint, sir.
+
+                return false;
+            }
+
+            NextNavPoint = number;
+            return StartCourse(single, message);
         }
 
-        public void InvalidateTillerManProperties()
+        public bool StartCourse(bool single, bool message)
         {
-            if (TillerMan is Mobile)
-                ((Mobile)TillerMan).InvalidateProperties();
-            else if (TillerMan is Item)
-                ((Item)TillerMan).InvalidateProperties();
-        }
-
-        #endregion
-
-        #region Movement
-
-        public virtual bool SetFacing(Direction facing)
-        {
-            if (Parent != null || Map == null || CheckDecay())
+            if (CheckDecay())
                 return false;
 
-            if (Map != Map.Internal)
+            if (BoatCourse == null)
             {
-                switch (facing)
-                {
-                    default:
-                    case Direction.North: if (!CanFit(Location, Map, NorthID)) return false; break;
-                    case Direction.East: if (!CanFit(Location, Map, EastID)) return false; break;
-                    case Direction.South: if (!CanFit(Location, Map, SouthID)) return false; break;
-                    case Direction.West: if (!CanFit(Location, Map, WestID)) return false; break;
-                }
+                if (message && TillerMan != null)
+                    TillerManSay(502513); // I have seen no map, sir.
+
+                return false;
+            }
+            else if (Map != BoatCourse.Map)
+            {
+                if (message && TillerMan != null)
+                    TillerManSay(502514); // The map is too far away from me, sir.
+
+                return false;
+            }
+            else if ((Map != Map.Trammel && Map != Map.Felucca && Map != Map.Tokuno) || NextNavPoint < 0 || NextNavPoint >= BoatCourse.Waypoints.Count)
+            {
+                if (message && TillerMan != null)
+                    TillerManSay(1042551); // I don't see that navpoint, sir.
+
+                return false;
             }
 
-            Map.OnLeave(this);
+            Speed = Owner is BaseShipCaptain ? SlowSpeed : FastSpeed;
+            Order = single ? BoatOrder.Single : BoatOrder.Course;
 
-            Direction old = m_Facing;
-            List<IEntity> toMove = new List<IEntity>();
+            if (m_MoveTimer != null)
+                m_MoveTimer.Stop();
 
-            if (TillerMan is GalleonPilot)
-                ((GalleonPilot)TillerMan).SetFacing(facing);
-            else if (TillerMan is TillerMan)
-                ((TillerMan)TillerMan).SetFacing(facing);
+            m_MoveTimer = new MoveTimer(this, FastInt, false);
+            m_MoveTimer.Start();
 
-            if (Hold != null)
-                Hold.SetFacing(facing);
-
-            if (PPlank != null)
-            {
-                PPlank.SetFacing(facing);
-                toMove.Add(PPlank);
-            }
-
-            if (SPlank != null)
-            {
-                SPlank.SetFacing(facing);
-                toMove.Add(SPlank);
-            }
-
-            MultiComponentList mcl = Components;
-
-            IPooledEnumerable eable = Map.GetObjectsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
-
-            foreach (IEntity o in eable)
-            {
-                if (o is Item item)
-                {
-                    if (CanMoveOver(item) || item is BaseAddon || (item is AddonComponent && ((AddonComponent)item).Addon != null))
-                        continue;
-
-                    if (item != this && Contains(item) && item.Visible && item.Z >= Z && !(item is TillerMan || item is Hold || item is Plank || item is RudderHandle))
-                        toMove.Add(o);
-                }
-                else if (o is Mobile && Contains((Mobile)o))
-                {
-                    toMove.Add(o);
-                    ((Mobile)o).Direction = (Direction)((int)((Mobile)o).Direction - (int)old + (int)facing);
-                }
-            }
-
-            foreach (IEntity comp in GetComponents().Where(comp => !toMove.Contains(comp)))
-            {
-                toMove.Add(comp);
-            }
-
-            eable.Free();
-
-            m_Facing = facing;
-            int xOffset = 0, yOffset = 0;
-            Movement.Movement.Offset(facing, ref xOffset, ref yOffset);
-
-            if (TillerMan is Item)
-                ((Item)TillerMan).Location = new Point3D(X + (xOffset * TillerManDistance) + (facing == Direction.North ? 1 : 0), Y + (yOffset * TillerManDistance), ((Item)TillerMan).Z);
-
-            if (Hold != null)
-                Hold.Location = new Point3D(X + (xOffset * HoldDistance), Y + (yOffset * HoldDistance), Hold.Z);
-
-            int count = m_Facing - old & 0x7;
-            count /= 2;
-
-            foreach (IEntity e in toMove.Where(e => e != null))
-            {
-                e.Location = Rotate(e.Location, count);
-            }
-
-            switch (facing)
-            {
-                default:
-                case Direction.North: ItemID = NorthID; break;
-                case Direction.East: ItemID = EastID; break;
-                case Direction.South: ItemID = SouthID; break;
-                case Direction.West: ItemID = WestID; break;
-            }
-
-            SetFacingComponents(m_Facing, old, false);
-
-            Map.OnEnter(this);
-
-            ColUtility.Free(toMove);
+            if (message && TillerMan != null)
+                TillerManSay(501429); // Aye aye sir.
 
             return true;
         }
 
-        public virtual TimeSpan GetMovementInterval(int speed, out int clientSpeed)
+        public override bool HandlesOnSpeech { get { return true; } }
+
+        public override void OnSpeech(SpeechEventArgs e)
         {
-            switch (speed)
+            if (CheckDecay())
+                return;
+
+            Mobile from = e.Mobile;
+
+            if (CanCommand(from) && Contains(from) && Pilot == null)
             {
-                default: clientSpeed = 0x0; return TimeSpan.Zero;
-                case 1: clientSpeed = 0x2; return SlowInt;
-                case 2: clientSpeed = 0x4; return FastInt;
+                for (int i = 0; i < e.Keywords.Length; ++i)
+                {
+                    if (e.Handled)
+                        break;
+
+                    int keyword = e.Keywords[i];
+
+                    if ((keyword >= 0x42 && keyword <= 0x6B) || keyword == 0xF)
+                    {
+                        switch (keyword)
+                        {
+                            case 0x42: SetName(e); break;
+                            case 0x43: RemoveName(e.Mobile); break;
+                            case 0x44: GiveName(e.Mobile); break;
+                            case 0x45: StartMove(Forward, true); break;
+                            case 0x46: StartMove(Backward, true); break;
+                            case 0x47: StartMove(Left, true); break;
+                            case 0x48: StartMove(Right, true); break;
+                            case 0x4B: StartMove(ForwardLeft, true); break;
+                            case 0x4C: StartMove(ForwardRight, true); break;
+                            case 0x4D: StartMove(BackwardLeft, true); break;
+                            case 0x4E: StartMove(BackwardRight, true); break;
+                            case 0x4F: StopMove(true); break;
+                            case 0x50: StartMove(Left, false); break;
+                            case 0x51: StartMove(Right, false); break;
+                            case 0x52: StartMove(Forward, false); break;
+                            case 0x53: StartMove(Backward, false); break;
+                            case 0x54: StartMove(ForwardLeft, false); break;
+                            case 0x55: StartMove(ForwardRight, false); break;
+                            case 0x56: StartMove(BackwardRight, false); break;
+                            case 0x57: StartMove(BackwardLeft, false); break;
+                            case 0x58: OneMove(Left); break;
+                            case 0x59: OneMove(Right); break;
+                            case 0x5A: OneMove(Forward); break;
+                            case 0x5B: OneMove(Backward); break;
+                            case 0x5C: OneMove(ForwardLeft); break;
+                            case 0x5D: OneMove(ForwardRight); break;
+                            case 0x5E: OneMove(BackwardRight); break;
+                            case 0x5F: OneMove(BackwardLeft); break;
+                            case 0x49:
+                            case 0x65: StartTurn(2, true); break; // turn right
+                            case 0x4A:
+                            case 0x66: StartTurn(-2, true); break; // turn left
+                            case 0x67: StartTurn(-4, true); break; // turn around, come about
+                            case 0x68: StartMove(Forward, true); break;
+                            case 0x69: StopMove(true); break;
+                            case 0x6A: if (!Core.HS) LowerAnchor(true); break;
+                            case 0x6B: if (!Core.HS) RaiseAnchor(true); break;
+                            case 0x60: GiveNavPoint(); break; // nav
+                            case 0x61: NextNavPoint = 0; StartCourse(false, true); break; // start
+                            case 0x62: StartCourse(false, true); break; // continue
+                            case 0x63: StartCourse(e.Speech, false, true); break; // goto*
+                            case 0x64: StartCourse(e.Speech, true, true); break; // single*
+                            case 0xF: if (Core.HS) TryTrack(from, e.Speech); break;
+                        }
+
+                        e.Handled = true;
+                        break;
+                    }
+                }
             }
         }
 
-        public virtual TimeSpan GetMovementInterval(bool fast, out int clientSpeed)
+        public void TryTrack(Mobile from, string speech)
         {
-            if (fast)
+            if (speech.ToLower().IndexOf("start") >= 0)
+                BoatTrackingArrow.StartTracking(from);
+            else if (speech.ToLower().IndexOf("stop") >= 0)
+                BoatTrackingArrow.StopTracking(from);
+        }
+
+        public bool StartTurn(int offset, bool message)
+        {
+            if (CheckDecay())
+                return false;
+
+            if (Scuttled)
             {
-                clientSpeed = 0x4;
-                return FastInt;
+                if (TillerMan != null)
+                    TillerManSay(1116687);  //Arr, we be scuttled!
+
+                return false;
+            }
+
+            bool resume = false;
+            bool fast = false;
+            var resumeDir = Direction.North;
+
+            if (m_MoveTimer != null)
+            {
+                if (Order == BoatOrder.Move)
+                {
+                    resume = true;
+                    resumeDir = Moving;
+                    fast = m_ClientSpeed == 0x4;
+                }
+
+                m_MoveTimer.Stop();
+                m_MoveTimer = null;
+            }
+
+            if (m_TurnTimer != null)
+            {
+                m_TurnTimer.Stop();
+            }
+
+            m_TurnTimer = new TurnTimer(this, offset, resume, resumeDir, fast);
+            m_TurnTimer.Start();
+
+            if (message && TillerMan != null)
+                TillerManSay(501429); // Aye aye sir.
+
+            return true;
+        }
+
+        public bool Turn(int offset, bool message)
+        {
+            return Turn(offset, message, false, Direction.North, false);
+        }
+
+        public bool Turn(int offset, bool message, bool resume, Direction resumeDir, bool fast)
+        {
+            if (m_TurnTimer != null)
+            {
+                m_TurnTimer.Stop();
+                m_TurnTimer = null;
+            }
+
+            if (CheckDecay())
+                return false;
+
+            Direction d = IsPiloted ? (Direction)offset : (Direction)(((int)m_Facing + offset) & 0x7);
+            bool success = false;
+
+            if (SetFacing(d))
+            {
+                success = true;
+            }
+            else if (message)
+            {
+                TillerManSay(501423); // Ar, can't turn sir.
+            }
+
+            if (resume && !IsPiloted)
+            {
+                StartMove(resumeDir, fast);
+            }
+
+            return success;
+        }
+
+        private class TurnTimer : Timer
+        {
+            private BaseBoat m_Boat;
+            private readonly int m_Offset;
+
+            private readonly bool m_Resume;
+            private readonly Direction m_ResumeDirection;
+            private readonly bool m_Fast;
+
+            public TurnTimer(BaseBoat boat, int offset, bool resume, Direction resumeDir, bool fast)
+                : base(TimeSpan.FromSeconds(0.5))
+            {
+                m_Boat = boat;
+                m_Offset = offset;
+
+                m_Resume = resume;
+                m_ResumeDirection = resumeDir;
+                m_Fast = fast;
+
+                Priority = TimerPriority.TenMS;
+            }
+
+            protected override void OnTick()
+            {
+                if (!m_Boat.Deleted)
+                    m_Boat.Turn(m_Offset, true, m_Resume, m_ResumeDirection, m_Fast);
+            }
+        }
+
+        public bool LowerAnchor(bool message)
+        {
+            if (CheckDecay())
+                return false;
+
+            if (Anchored)
+            {
+                TillerManSay(501445); // Ar, the anchor was already dropped sir.
+
+                return false;
+            }
+
+            StopMove(false);
+
+            Anchored = true;
+
+            TillerManSay(501444); // Ar, anchor dropped sir.
+
+            return true;
+        }
+
+        public bool RaiseAnchor(bool message)
+        {
+            if (CheckDecay())
+                return false;
+
+            if (!Anchored)
+            {
+                TillerManSay(501447); // Ar, the anchor has not been dropped sir.
+
+                return false;
+            }
+
+            Anchored = false;
+
+            TillerManSay(501446); // Ar, anchor raised sir.
+
+            return true;
+        }
+
+        public bool StartMove(Direction dir, bool fast)
+        {
+            if (CheckDecay())
+                return false;
+
+            if (Scuttled)
+            {
+                if (TillerMan != null)
+                    TillerManSay(1116687);  //Arr, we be scuttled!
+
+                return false;
+            }
+
+            bool drift = dir != Forward && dir != ForwardLeft && dir != ForwardRight;
+            int speed = fast ? (drift ? FastDriftSpeed : FastSpeed) : (drift ? SlowDriftSpeed : SlowSpeed);
+            TimeSpan interval = GetMovementInterval(fast, drift, out int clientSpeed);
+
+            if (StartMove(dir, speed, clientSpeed, interval, false, true))
+            {
+                if (TillerMan != null)
+                    TillerManSay(501429); // Aye aye sir.
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool StartMove(Direction dir, int speed, int clientSpeed, TimeSpan interval, bool single, bool message)
+        {
+            if (Pilot != null)
+                Pilot.RevealingAction();
+
+            if (CheckDecay() || Scuttled || clientSpeed == 0x0)
+                return false;
+
+            Moving = dir;
+
+            if (IsRowBoat)
+            {
+                Speed = 1;
+                m_ClientSpeed = 0x2;
+                interval = SlowDriftInterval;
             }
             else
             {
-                clientSpeed = 0x3;
-                return NormalInt;
+                if (IsUnderEmergencyRepairs() || DamageTaken >= DamageLevel.Moderately)
+                {
+                    Speed = 1;
+                    m_ClientSpeed = 0x2;
+                    interval = SlowDriftInterval;
+                }
+                else
+                {
+                    Speed = speed;
+                    m_ClientSpeed = clientSpeed;
+                }
             }
+
+            Order = BoatOrder.Move;
+
+            if (m_MoveTimer != null)
+                m_MoveTimer.Stop();
+
+            m_MoveTimer = new MoveTimer(this, interval, single);
+            m_MoveTimer.Start();
+
+            return true;
+        }
+
+        public bool StopMove(bool message)
+        {
+            if (CheckDecay())
+                return false;
+
+            if (m_MoveTimer == null)
+            {
+                if (message && TillerMan != null)
+                    TillerManSay(501443); // Er, the ship is not moving sir.
+
+                return false;
+            }
+
+            Moving = Direction.North;
+            Speed = 0;
+            m_ClientSpeed = 0;
+            m_MoveTimer.Stop();
+            m_MoveTimer = null;
+
+            if (message && TillerMan != null)
+                TillerManSay(501429); // Aye aye sir.
+
+            return true;
         }
 
         public bool CanFit(Point3D p, Map map, int itemID)
@@ -2275,6 +2060,8 @@ namespace Server.Multis
                     if (dif >= 0 && dif <= 1 && ((landTile.ID >= 168 && landTile.ID <= 171) || (landTile.ID >= 310 && landTile.ID <= 311)))
                         hasWater = true;
 
+                    int z = p.Z;
+
                     for (int i = 0; i < tiles.Length; ++i)
                     {
                         StaticTile tile = tiles[i];
@@ -2290,7 +2077,7 @@ namespace Server.Multis
                         }
                         else if (tile.Z >= p.Z && !isWater)
                         {
-                            if (Owner is BaseShipCaptain && !Owner.Deleted && Order == BoatOrder.CourseFull)
+                            if (Owner is BaseShipCaptain && !Owner.Deleted && Order == BoatOrder.Course)
                             {
                                 ((BaseShipCaptain)Owner).CheckBlock(tile, new Point3D(tx, ty, tile.Z));
                             }
@@ -2337,7 +2124,7 @@ namespace Server.Multis
                         continue;
                 }
 
-                if (Owner is BaseShipCaptain && !Owner.Deleted && Order == BoatOrder.CourseFull)
+                if (Owner is BaseShipCaptain && !Owner.Deleted && Order == BoatOrder.Course)
                 {
                     ((BaseShipCaptain)Owner).CheckBlock(e, e.Location);
                 }
@@ -2348,6 +2135,137 @@ namespace Server.Multis
 
             eable.Free();
             return true;
+        }
+
+        public virtual bool CheckAddon(Item item)
+        {
+            return false;
+        }
+
+        public virtual bool CheckItem(int itemID, Item item, Point3D p)
+        {
+            return Contains(item) ||
+                item is BaseMulti ||
+                item.ItemID > TileData.MaxItemValue ||
+                !item.Visible ||
+                item is Corpse ||
+                IsComponentItem((IEntity)item) ||
+                item is EffectItem;
+        }
+
+        public virtual bool CanMoveOver(IEntity entity)
+        {
+            if (entity is Corpse corpse)
+            {
+                if (corpse.Owner == null || corpse.Owner is BaseCreature)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return entity is Blood;
+        }
+
+        public virtual bool IsExcludedTile(StaticTile tile)
+        {
+            return false;
+        }
+
+        public virtual bool IsExcludedTile(StaticTile[] tile)
+        {
+            return false;
+        }
+
+        public virtual void OnPlacement(Mobile from)
+        {
+        }
+
+        public virtual void OnAfterPlacement(bool initial)
+        {
+        }
+
+        public Point3D Rotate(Point3D p, int count)
+        {
+            int rx = p.X - Location.X;
+            int ry = p.Y - Location.Y;
+
+            for (int i = 0; i < count; ++i)
+            {
+                int temp = rx;
+                rx = -ry;
+                ry = temp;
+            }
+
+            return new Point3D(Location.X + rx, Location.Y + ry, p.Z);
+        }
+
+        public override bool Contains(int x, int y)
+        {
+            if (base.Contains(x, y))
+                return true;
+
+            if (TillerMan != null)
+            {
+                if (TillerMan is Mobile)
+                {
+                    if (x == ((Mobile)TillerMan).X && y == ((Mobile)TillerMan).Y)
+                        return true;
+                }
+                else if (TillerMan is Item)
+                {
+                    if (x == ((Item)TillerMan).X && y == ((Item)TillerMan).Y)
+                        return true;
+                }
+            }
+
+            if (Hold != null && x == Hold.X && y == Hold.Y)
+                return true;
+
+            if (PPlank != null && x == PPlank.X && y == PPlank.Y)
+                return true;
+
+            if (SPlank != null && x == SPlank.X && y == SPlank.Y)
+                return true;
+
+            return false;
+        }
+
+        public static bool HasBoat(Mobile from)
+        {
+            if (from.AccessLevel > AccessLevel.Player)
+                return false;
+
+            return Boats.Any(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !boat.IsRowBoat);
+        }
+
+        public static BaseBoat GetBoat(Mobile from)
+        {
+            return Boats.FirstOrDefault(boat => boat.Owner == from && !boat.Deleted && boat.Map != Map.Internal && !boat.IsRowBoat);
+        }
+
+        public static bool IsValidLocation(Point3D p, Map map)
+        {
+            Rectangle2D[] wrap = GetWrapFor(map);
+
+            for (int i = 0; i < wrap.Length; ++i)
+            {
+                if (wrap[i].Contains(p))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static Rectangle2D[] GetWrapFor(Map m)
+        {
+            if (m == Map.Ilshenar)
+                return m_IlshWrap;
+            else if (m == Map.Tokuno)
+                return m_TokunoWrap;
+            else
+                return m_BritWrap;
         }
 
         public Direction GetMovementFor(int x, int y, out int maxSpeed)
@@ -2367,7 +2285,7 @@ namespace Server.Multis
             else // Right, Down, Left and Up
                 maxSpeed = Math.Min(adx, ady);
 
-            return (Direction)iDir;
+            return (Direction)((iDir - (int)Facing) & 0x7);
         }
 
         public bool DoMovement(bool message, bool single)
@@ -2375,7 +2293,7 @@ namespace Server.Multis
             Direction dir;
             int speed, clientSpeed;
 
-            if (Order == BoatOrder.PlayerControlled)
+            if (Order == BoatOrder.Move)
             {
                 dir = Moving;
                 speed = Speed;
@@ -2395,7 +2313,7 @@ namespace Server.Multis
 
                 return false;
             }
-            else if ((Map != Map.Trammel && Map != Map.Felucca && Map != Map.Tokuno) || NextNavPoint < 0 || NextNavPoint >= BoatCourse.Waypoints.Count || Region.Find(Location, Map).IsPartOf<CorgulRegion>())
+            else if ((Map != Map.Trammel && Map != Map.Felucca && Map != Map.Tokuno) || NextNavPoint < 0 || NextNavPoint >= BoatCourse.Waypoints.Count)
             {
                 if (message && TillerMan != null)
                     TillerManSay(1042551); // I don't see that navpoint, sir.
@@ -2410,14 +2328,14 @@ namespace Server.Multis
 
                 if (maxSpeed == 0)
                 {
-                    if (message && Order == BoatOrder.CourseSingle && TillerMan != null)
+                    if (message && Order == BoatOrder.Single && TillerMan != null)
                         TillerManSay(1042874, (NextNavPoint + 1).ToString()); // We have arrived at nav point ~1_POINT_NUM~ , sir.
 
                     if (NextNavPoint + 1 < BoatCourse.Waypoints.Count)
                     {
                         NextNavPoint++;
 
-                        if (Order == BoatOrder.CourseFull)
+                        if (Order == BoatOrder.Course)
                         {
                             if (message && TillerMan != null)
                                 TillerManSay(1042875, (NextNavPoint + 1).ToString()); // Heading to nav point ~1_POINT_NUM~, sir.
@@ -2431,7 +2349,7 @@ namespace Server.Multis
                     {
                         NextNavPoint = -1;
 
-                        if (message && Order == BoatOrder.CourseFull && TillerMan != null)
+                        if (message && Order == BoatOrder.Course && TillerMan != null)
                             TillerManSay(502515); // The course is completed, sir.
 
                         if (Owner is BaseShipCaptain)
@@ -2441,29 +2359,13 @@ namespace Server.Multis
                     }
                 }
 
-                // TODO: Throw this logic in a new Turn method overload, not this methods job to do it
-                int turn;
-                int offset = ((int)Facing) - ((int)dir);
-                if (Math.Abs(offset) > 4)
-                    turn = offset < 0 ? (8 - Math.Abs(offset)) * (-1) : 8 - offset;
-                else
-                    turn = -offset;
-
-                switch (turn)
+                if (dir == Left || dir == BackwardLeft || dir == Backward)
                 {
-                    case -2:
-                        return Turn(-2, true, true, (Facing - 2) & Direction.Mask, true);
-                    case -3:
-                        return Turn(-2, true, true, (Facing - 3) & Direction.Mask, true);
-                    case 2:
-                        return Turn(2, true, true, (Facing + 2) & Direction.Mask, true);
-                    case 3:
-                        return Turn(2, true, true, (Facing + 3) & Direction.Mask, true);
-                    case 4:
-                    case -4:
-                        return Turn(4, true, true, (Facing + 4) & Direction.Mask, true);
-                    default:
-                        break;
+                    return Turn(-2, true, true, dir, true);
+                }
+                else if (dir == Right || dir == BackwardRight)
+                {
+                    return Turn(2, true, true, dir, true);
                 }
 
                 speed = Math.Min(Speed, maxSpeed);
@@ -2483,11 +2385,10 @@ namespace Server.Multis
             int rx = 0, ry = 0;
             Direction d;
 
-            //TODO: Clean this up
             if (Pilot == null)
             {
-                d = dir;
-                Movement.Movement.Offset(dir, ref rx, ref ry);
+                d = (Direction)(((int)m_Facing + (int)dir) & 0x7);
+                Movement.Movement.Offset((Direction)(((int)m_Facing + (int)dir) & 0x7), ref rx, ref ry);
             }
             else
             {
@@ -2552,7 +2453,7 @@ namespace Server.Multis
                 }
             }
 
-            if (Math.Abs(xOffset) > 1 || Math.Abs(yOffset) > 1)
+            if (!NewBoatMovement || Math.Abs(xOffset) > 1 || Math.Abs(yOffset) > 1)
             {
                 Teleport(xOffset, yOffset, 0);
             }
@@ -2563,7 +2464,7 @@ namespace Server.Multis
                 // entities/boat block move packet
                 NoMoveHS = true;
 
-                foreach (IEntity e in toMove)
+                foreach (var e in toMove)
                 {
                     e.NoMoveHS = true;
                 }
@@ -2587,7 +2488,7 @@ namespace Server.Multis
                 }
 
                 // entities move/restores packet
-                foreach (IEntity ent in toMove.Where(e => !IsComponentItem(e) && !CanMoveOver(e)))
+                foreach (var ent in toMove.Where(e => !IsComponentItem(e) && !CanMoveOver(e)))
                 {
                     ent.Location = new Point3D(ent.X + xOffset, ent.Y + yOffset, ent.Z);
                 }
@@ -2596,7 +2497,7 @@ namespace Server.Multis
 
                 NoMoveHS = false;
 
-                foreach (IEntity e in toMove)
+                foreach (var e in toMove)
                     e.NoMoveHS = false;
 
                 SendContainerPacket();
@@ -2608,223 +2509,9 @@ namespace Server.Multis
             return true;
         }
 
-        public bool OneMove(Direction dir)
-        {
-            if (CheckDecay())
-                return false;
-
-            if (Scuttled)
-            {
-                if (TillerMan != null)
-                    TillerManSay(1116687);  // Arr, we be scuttled!
-
-                return false;
-            }
-
-            // For now, need to clean out and refactor how this info is used here
-            TimeSpan interval = FastInt;
-            int speed = FastSpeed;
-
-            if (StartMove(dir, speed, 0x1, interval, true, true))
-            {
-                if (TillerMan != null)
-                    TillerManSay(501429); // Aye aye sir.
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public Point3D Rotate(Point3D p, int count)
-        {
-            int rx = p.X - Location.X;
-            int ry = p.Y - Location.Y;
-
-            for (int i = 0; i < count; ++i)
-            {
-                int temp = rx;
-                rx = -ry;
-                ry = temp;
-            }
-
-            return new Point3D(Location.X + rx, Location.Y + ry, p.Z);
-        }
-
-        public bool StartMove(Direction dir, bool fast)
-        {
-            if (CheckDecay())
-                return false;
-
-            if (Scuttled)
-            {
-                if (TillerMan != null)
-                    TillerManSay(1116687);  //Arr, we be scuttled!
-
-                return false;
-            }
-
-            int speed = fast ? FastSpeed : SlowSpeed;
-            TimeSpan interval = GetMovementInterval(fast, out int clientSpeed);
-            if (StartMove(dir, speed, clientSpeed, interval, false, true))
-            {
-                if (TillerMan != null && Order == BoatOrder.PlayerControlled)
-                    TillerManSay(501429); // Aye aye sir.
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool StartMove(Direction dir, int speed, int clientSpeed, TimeSpan interval, bool single, bool message)
-        {
-            if (Pilot != null)
-                Pilot.RevealingAction();
-
-            if (CheckDecay() || Scuttled || clientSpeed == 0x0)
-                return false;
-
-            Moving = dir;
-
-            if (IsRowBoat)
-            {
-                Speed = 1;
-                m_ClientSpeed = 0x2;
-                interval = SlowDriftInterval;
-            }
-            else
-            {
-                if (IsUnderEmergencyRepairs() || DamageTaken >= DamageLevel.Moderately)
-                {
-                    Speed = 1;
-                    m_ClientSpeed = 0x2;
-                    interval = SlowDriftInterval;
-                }
-                else
-                {
-                    Speed = speed;
-                    m_ClientSpeed = clientSpeed;
-                }
-            }
-
-            if (m_MoveTimer != null)
-                m_MoveTimer.Stop();
-
-            m_MoveTimer = new MoveTimer(this, interval, single);
-            m_MoveTimer.Start();
-
-            return true;
-        }
-
-        public bool StopMove(bool message)
-        {
-            if (CheckDecay())
-                return false;
-
-            if (m_MoveTimer == null)
-            {
-                if (message && TillerMan != null)
-                    TillerManSay(501443); // Er, the ship is not moving sir.
-
-                return false;
-            }
-
-            Moving = Direction.North;
-            Speed = 0;
-            m_ClientSpeed = 0;
-            m_MoveTimer.Stop();
-            m_MoveTimer = null;
-
-            if (message && TillerMan != null)
-                TillerManSay(501429); // Aye aye sir.
-
-            return true;
-        }
-
-        public bool StartTurn(int offset, bool message)
-        {
-            if (CheckDecay())
-                return false;
-
-            if (Scuttled)
-            {
-                if (TillerMan != null)
-                    TillerManSay(1116687);  //Arr, we be scuttled!
-
-                return false;
-            }
-
-            bool resume = false;
-            bool fast = false;
-            Direction resumeDir = Direction.North;
-
-            if (m_MoveTimer != null)
-            {
-                if (Order == BoatOrder.PlayerControlled)
-                {
-                    resume = true;
-                    resumeDir = (Direction)(((int)Moving) + offset) & Direction.Mask;
-                    fast = m_ClientSpeed == 0x4;
-                }
-
-                m_MoveTimer.Stop();
-                m_MoveTimer = null;
-            }
-
-            if (m_TurnTimer != null)
-            {
-                m_TurnTimer.Stop();
-            }
-
-            m_TurnTimer = new TurnTimer(this, offset, resume, resumeDir, fast);
-            m_TurnTimer.Start();
-
-            if (message && TillerMan != null)
-                TillerManSay(501429); // Aye aye sir.
-
-            return true;
-        }
-
-        public bool Turn(int offset, bool message)
-        {
-            return Turn(offset, message, false, Direction.North, false);
-        }
-
-        public bool Turn(int offset, bool message, bool resume, Direction resumeDir, bool fast)
-        {
-            if (m_TurnTimer != null)
-            {
-                m_TurnTimer.Stop();
-                m_TurnTimer = null;
-            }
-
-            if (CheckDecay())
-                return false;
-
-            Direction d = IsPiloted ? (Direction)offset : (Direction)(((int)m_Facing + offset) & 0x7);
-            bool success = false;
-
-            if (SetFacing(d))
-            {
-                success = true;
-            }
-            else if (message)
-            {
-                TillerManSay(501423); // Ar, can't turn sir.
-            }
-
-            if (resume && !IsPiloted)
-            {
-                StartMove(resumeDir, fast);
-            }
-
-            return success;
-        }
-
         public void Teleport(int xOffset, int yOffset, int zOffset)
         {
-            foreach (IEntity ent in GetEntitiesOnBoard().Where(e => !IsComponentItem(e) && !CanMoveOver(e) && e != TillerMan))
+            foreach (var ent in GetEntitiesOnBoard().Where(e => !IsComponentItem(e) && !CanMoveOver(e) && e != TillerMan))
             {
                 ent.Location = new Point3D(ent.X + xOffset, ent.Y + yOffset, ent.Z + zOffset);
             }
@@ -2832,9 +2519,118 @@ namespace Server.Multis
             Location = new Point3D(X + xOffset, Y + yOffset, Z + zOffset);
         }
 
+        public virtual bool SetFacing(Direction facing)
+        {
+            if (Parent != null || Map == null)
+                return false;
+
+            if (CheckDecay())
+                return false;
+
+            if (Map != Map.Internal)
+            {
+                switch (facing)
+                {
+                    default:
+                    case Direction.North: if (!CanFit(Location, Map, NorthID)) return false; break;
+                    case Direction.East: if (!CanFit(Location, Map, EastID)) return false; break;
+                    case Direction.South: if (!CanFit(Location, Map, SouthID)) return false; break;
+                    case Direction.West: if (!CanFit(Location, Map, WestID)) return false; break;
+                }
+            }
+
+            Map.OnLeave(this);
+
+            Direction old = m_Facing;
+            List<IEntity> toMove = new List<IEntity>();
+
+            if (TillerMan is GalleonPilot)
+                ((GalleonPilot)TillerMan).SetFacing(facing);
+            else if (TillerMan is TillerMan)
+                ((TillerMan)TillerMan).SetFacing(facing);
+
+            if (Hold != null)
+                Hold.SetFacing(facing);
+
+            if (PPlank != null)
+            {
+                PPlank.SetFacing(facing);
+                toMove.Add(PPlank);
+            }
+
+            if (SPlank != null)
+            {
+                SPlank.SetFacing(facing);
+                toMove.Add(SPlank);
+            }
+
+            MultiComponentList mcl = Components;
+
+            IPooledEnumerable eable = Map.GetObjectsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
+
+            foreach (IEntity o in eable)
+            {
+                if (o is Item item)
+                {
+                    if (CanMoveOver(item))
+                        continue;
+
+                    if (item != this && Contains(item) && item.Visible && item.Z >= Z && !(item is TillerMan || item is Hold || item is Plank || item is RudderHandle))
+                        toMove.Add(o);
+                }
+                else if (o is Mobile && Contains((Mobile)o))
+                {
+                    toMove.Add(o);
+                    ((Mobile)o).Direction = (Direction)((int)((Mobile)o).Direction - (int)old + (int)facing);
+                }
+            }
+
+            foreach (var comp in GetComponents().Where(comp => !toMove.Contains(comp)))
+            {
+                toMove.Add(comp);
+            }
+
+            eable.Free();
+
+            m_Facing = facing;
+            int xOffset = 0, yOffset = 0;
+            Movement.Movement.Offset(facing, ref xOffset, ref yOffset);
+
+            if (TillerMan is Item)
+                ((Item)TillerMan).Location = new Point3D(X + (xOffset * TillerManDistance) + (facing == Direction.North ? 1 : 0), Y + (yOffset * TillerManDistance), ((Item)TillerMan).Z);
+
+            if (Hold != null)
+                Hold.Location = new Point3D(X + (xOffset * HoldDistance), Y + (yOffset * HoldDistance), Hold.Z);
+
+            int count = (int)(m_Facing - old) & 0x7;
+            count /= 2;
+
+            foreach (IEntity e in toMove.Where(e => e != null))
+            {
+                e.Location = Rotate(e.Location, count);
+            }
+
+            switch (facing)
+            {
+                default:
+                case Direction.North: ItemID = NorthID; break;
+                case Direction.East: ItemID = EastID; break;
+                case Direction.South: ItemID = SouthID; break;
+                case Direction.West: ItemID = WestID; break;
+            }
+
+            SetFacingComponents(m_Facing, old, false);
+
+            Map.OnEnter(this);
+
+            ColUtility.Free(toMove);
+
+            return true;
+        }
+
         private class MoveTimer : Timer
         {
-            private readonly BaseBoat m_Boat;
+            private BaseBoat m_Boat;
             private readonly bool m_SingleMove;
 
             public MoveTimer(BaseBoat boat, TimeSpan interval, bool single)
@@ -2855,236 +2651,60 @@ namespace Server.Multis
             }
         }
 
-        private class TurnTimer : Timer
+        public static void UpdateAllComponents()
         {
-            private readonly BaseBoat m_Boat;
-            private readonly int m_Offset;
+            List<BaseBoat> toDelete = new List<BaseBoat>();
 
-            private readonly bool m_Resume;
-            private readonly Direction m_ResumeDirection;
-            private readonly bool m_Fast;
-
-            public TurnTimer(BaseBoat boat, int offset, bool resume, Direction resumeDir, bool fast)
-                : base(TimeSpan.FromSeconds(0.5))
+            for (int i = m_Instances.Count - 1; i >= 0; --i)
             {
-                m_Boat = boat;
-                m_Offset = offset;
+                BaseBoat boat = m_Instances[i];
 
-                m_Resume = resume;
-                m_ResumeDirection = resumeDir;
-                m_Fast = fast;
+                boat.UpdateComponents();
 
-                Priority = TimerPriority.TenMS;
+                if (boat.PlayerCount() > 0)
+                    boat.Refresh();
             }
 
-            protected override void OnTick()
-            {
-                if (!m_Boat.Deleted)
-                    m_Boat.Turn(m_Offset, true, m_Resume, m_ResumeDirection, m_Fast);
-            }
+            foreach (BaseBoat b in toDelete)
+                b.Delete();
+
+            toDelete.Clear();
+            toDelete.TrimExcess();
         }
 
-        #endregion
-
-        #region Packets
-
-        public virtual void SendContainerPacket()
+        public void InvalidateTillerManProperties()
         {
-            if (NoMoveHS || Map == null)
-                return;
-
-            IPooledEnumerable eable = Map.GetClientsInRange(Location, Core.GlobalRadarRange);
-
-            ReleaseContainerPacket();
-
-            foreach (NetState state in eable)
-            {
-                if (state.Mobile == null || state.Mobile.InUpdateRange(Location))
-                    continue;
-
-                state.Send(RemovePacket);
-
-                foreach (Item item in ItemsOnBoard)
-                {
-                    state.Send(item.RemovePacket);
-                }
-
-                state.Send(GetPacketContainer(GetEntitiesOnBoard()));
-            }
-
-            eable.Free();
+            if (TillerMan is Mobile)
+                ((Mobile)TillerMan).InvalidateProperties();
+            else if (TillerMan is Item)
+                ((Item)TillerMan).InvalidateProperties();
         }
 
-        public Packet ContainerPacket
+        public static void Initialize()
         {
-            get { return m_ContainerPacket; }
-            set
-            {
-                m_ContainerPacket = value;
-
-                if (m_ContainerPacket != null)
-                    m_ContainerPacket.SetStatic();
-            }
+            new UpdateAllTimer().Start();
+            EventSink.WorldSave += new WorldSaveEventHandler(EventSink_WorldSave);
+            EventSink.Disconnected += new DisconnectedEventHandler(EventSink_Disconnected);
+            EventSink.PlayerDeath += new PlayerDeathEventHandler(EventSink_PlayerDeath);
         }
 
-        protected Packet GetPacketContainer(IEnumerable<IEntity> entities)
+        private static void EventSink_WorldSave(WorldSaveEventArgs e)
         {
-            if (ContainerPacket == null)
-            {
-                ContainerPacket = new PacketContainer(entities);
-            }
-
-            return ContainerPacket;
+            new UpdateAllTimer().Start();
         }
 
-        private void ReleaseContainerPacket()
+        #region High Seas
+        /// <summary>
+        /// Checks for multi components that aren't 'contained' in the multi itself, ie horizontle masts for the orcish galleon
+        /// </summary>
+        /// <param name="newPnt">Where the boat is projected to be</param>
+        /// <param name="itemID">boat's projectied itemID</param>
+        /// <param name="x">object to check x</param>
+        /// <param name="y">object to check y</param>
+        /// <param name="height">object z + itemdata height</param>
+        public virtual bool ExemptOverheadComponent(Point3D newPnt, int itemID, int x, int y, int height)
         {
-            Packet.Release(ref m_ContainerPacket);
-        }
-
-        public sealed class MoveBoatHS : Packet
-        {
-            public MoveBoatHS(BaseBoat boat, Direction d, int speed, int xOffset, int yOffset)
-                : base(0xF6)
-            {
-                EnsureCapacity(18);
-
-                m_Stream.Write(boat.Serial);
-                m_Stream.Write((byte)speed);
-                m_Stream.Write((byte)d);
-                m_Stream.Write((byte)boat.Facing);
-                m_Stream.Write((short)(boat.X + xOffset));
-                m_Stream.Write((short)(boat.Y + yOffset));
-                m_Stream.Write((short)boat.Z);
-
-                long cp = m_Stream.Seek(0, SeekOrigin.Current);
-                short length = 0;
-
-                m_Stream.Write(length);
-
-                foreach (IEntity ent in boat.GetEntitiesOnBoard().Where(e => e != boat))
-                {
-                    m_Stream.Write(ent.Serial);
-                    m_Stream.Write((short)(ent.X + xOffset));
-                    m_Stream.Write((short)(ent.Y + yOffset));
-                    m_Stream.Write((short)ent.Z);
-
-                    ++length;
-                }
-
-                m_Stream.Seek(cp, SeekOrigin.Begin);
-                m_Stream.Write(length);
-
-                length *= 10;
-
-                m_Stream.Seek(1, SeekOrigin.Begin);
-                m_Stream.Write(length);
-            }
-        }
-
-        public class PacketContainer : Packet
-        {
-            public PacketContainer(IEnumerable<IEntity> entities)
-                : base(0xF7)
-            {
-                EnsureCapacity(5);
-                short c = 0;
-                m_Stream.Write(c);
-
-                foreach (IEntity entity in entities)
-                {
-                    int itemID = 0;
-                    short amount = 0x01;
-                    short hue = 0x00;
-                    byte cmd = 0x0, light = 0x0, flags = 0x0;
-
-                    if (entity is BaseMulti)
-                    {
-                        BaseMulti multi = entity as BaseMulti;
-
-                        cmd = 0x02;
-                        itemID = multi.ItemID;
-                        itemID &= 0x7FFF;
-                        hue = (short)multi.Hue;
-                        amount = (short)multi.Amount;
-                    }
-                    else if (entity is Item)
-                    {
-                        Item item = entity as Item;
-
-                        cmd = (byte)(!item.Movable && item is IDamageable ? 0x03 : 0x00);
-                        itemID = item.ItemID;
-                        itemID &= 0xFFFF;
-                        hue = (short)item.Hue;
-                        amount = (short)item.Amount;
-                        light = (byte)item.Light;
-                        flags = (byte)item.GetPacketFlags();
-                    }
-                    else if (entity is Mobile)
-                    {
-                        Mobile mobile = entity as Mobile;
-
-                        cmd = 0x01;
-                        itemID = mobile.BodyValue;
-                        hue = (short)mobile.Hue;
-                        flags = (byte)mobile.GetPacketFlags();
-                    }
-
-                    m_Stream.Write((byte)0xF3);
-
-                    m_Stream.Write((short)0x1);
-                    m_Stream.Write(cmd);
-                    m_Stream.Write(entity.Serial);
-                    m_Stream.Write((ushort)itemID);
-                    m_Stream.Write((byte)0);
-
-                    m_Stream.Write(amount);
-                    m_Stream.Write(amount);
-
-                    m_Stream.Write((short)(entity.X & 0x7FFF));
-                    m_Stream.Write((short)(entity.Y & 0x3FFF));
-                    m_Stream.Write((sbyte)entity.Z);
-
-                    m_Stream.Write(light);
-                    m_Stream.Write(hue);
-                    m_Stream.Write(flags);
-
-                    m_Stream.Write((short)0x00); // ??
-
-                    ++c;
-                }
-
-                m_Stream.Seek(3, SeekOrigin.Begin);
-                m_Stream.Write(c);
-            }
-        }
-
-        #endregion
-         
-        public void CheckExit(object o)
-        {
-            if (o is CorgulRegion)
-                ((CorgulRegion)o).CheckExit(this);
-        }
-
-        public void CheckEnter(object o)
-        {
-            if (o is CorgulWarpRegion)
-                ((CorgulWarpRegion)o).CheckEnter(this);
-        }
-
-        private void ComputeDamage()
-        {
-            if (Durability >= 100)
-                DamageTaken = DamageLevel.Pristine;
-            else if (Durability >= 75.0)
-                DamageTaken = DamageLevel.Slightly;
-            else if (Durability >= 50.0)
-                DamageTaken = DamageLevel.Moderately;
-            else if (Durability >= 25.0)
-                DamageTaken = DamageLevel.Heavily;
-            else
-                DamageTaken = DamageLevel.Severely;
+            return false;
         }
 
         public void LockPilot(Mobile pilot)
@@ -3115,7 +2735,7 @@ namespace Server.Multis
         public void RemovePilot(Mobile from)
         {
             Pilot.RemoveItem(VirtualMount);
-            VirtualMount.Internalize();
+            VirtualMount.Internalize();            
 
             if (IsMoving)
                 StopMove(false);
@@ -3132,51 +2752,146 @@ namespace Server.Multis
             Pilot = null;
         }
 
-        public void RowBoat_Tick_Callback()
+        public static bool IsDriving(Mobile from)
         {
-            if (!MobilesOnBoard.Any())
-                Delete();
+            return m_Instances.Any(b => b.Pilot == from);
         }
 
-        public Point3D GetRotatedLocation(int x, int y)
+        public virtual void OnMousePilotCommand(Mobile from, Direction d, int rawSpeed)
         {
-            Point3D p = new Point3D(X + x, Y + y, Z);
+            int actualDir = (m_Facing - d) & 0x7;
+            TimeSpan interval = GetMovementInterval(rawSpeed, out int clientSpeed);
 
-            return Rotate(p, (int)m_Facing / 2);
+            if (rawSpeed > 1 && actualDir > 1 && actualDir != 7)
+            {
+                Direction turnDirection = (int)d % 2 != 0 ? d - 1 : d;
+                StartTurn((int)turnDirection, false);
+            }
+
+            if (!StartMove(d, 1, clientSpeed, interval, false, false))
+                StopMove(false);
         }
 
-        public void Refresh(Mobile from = null)
+        public static void EventSink_Disconnected(DisconnectedEventArgs e)
         {
-            if (from != null && Owner != null && from.Account != Owner.Account)
-            {
-                return;
-            }
+            ForceRemovePilot(e.Mobile);
+        }
 
-            if (from != null && Status > 1043010)
-            {
-                from.SendLocalizedMessage(1043294); // Your ship's age and contents have been refreshed.
-            }
+        public static void EventSink_PlayerDeath(PlayerDeathEventArgs e)
+        {
+            ForceRemovePilot(e.Mobile);
+        }
 
-            m_DecayTime = DateTime.UtcNow + BoatDecayDelay;
+        public static void ForceRemovePilot(Mobile m)
+        {
+            
 
-            if (TillerMan != null)
+            if (m.FindItemOnLayer(Layer.Mount) is BoatMountItem mountItem)
             {
-                if (TillerMan is Mobile)
-                    ((Mobile)TillerMan).InvalidateProperties();
-                else if (TillerMan is Item)
-                    ((Item)TillerMan).InvalidateProperties();
+                if (mountItem.Mount is BaseBoat boat)
+                {
+                    if (boat.Pilot == m)
+                    {
+                        boat.RemovePilot(m);
+                    }
+                    else
+                    {
+                        m.RemoveItem(mountItem);
+                        mountItem.Delete();
+                    }
+                }
+                else
+                {
+                    m.RemoveItem(mountItem);
+                    mountItem.Delete();
+                }
             }
         }
 
         public void SendMessageToAllOnBoard(object message)
         {
-            foreach (Mobile m in MobilesOnBoard.OfType<PlayerMobile>().Where(pm => pm.NetState != null))
+            foreach (Mobile m in GetMobilesOnBoard().OfType<PlayerMobile>().Where(pm => pm.NetState != null))
             {
                 if (message is int)
                     m.SendLocalizedMessage((int)message);
                 else if (message is string)
                     m.SendMessage((string)message);
             }
+        }
+
+        public virtual void SetFacingComponents(Direction newDirection, Direction oldDirection, bool ignoreLastFacing)
+        {
+        }
+
+        public virtual IEnumerable<IEntity> GetComponents()
+        {
+            yield break;
+        }
+
+        public void CheckExit(object o)
+        {
+            if (o is CorgulRegion)
+                ((CorgulRegion)o).CheckExit(this);
+        }
+
+        public void CheckEnter(object o)
+        {
+            if (o is CorgulWarpRegion)
+                ((CorgulWarpRegion)o).CheckEnter(this);
+        }
+
+        public virtual bool IsComponentItem(IEntity item)
+        {
+            if (item == null)
+                return false;
+
+            if (item == this || (TillerMan is Item && item == (Item)TillerMan) || item == SPlank || item == PPlank || item == Hold)
+                return true;
+            return false;
+        }
+
+        public virtual IEnumerable<IEntity> GetEntitiesOnBoard()
+        {
+            Map map = Map;
+
+            if (map == null || map == Map.Internal)
+                yield break;
+
+            MultiComponentList mcl = Components;
+            IPooledEnumerable eable = map.GetObjectsInBounds(new Rectangle2D(X + mcl.Min.X, Y + mcl.Min.Y, mcl.Width, mcl.Height));
+
+            foreach (IEntity ent in eable)
+            {
+                if (Contains(ent) && CheckOnBoard(ent))
+                {
+                    yield return ent;
+                }
+            }
+
+            eable.Free();
+        }
+
+        public IEnumerable<Item> GetItemsOnBoard()
+        {
+            return GetEntitiesOnBoard().OfType<Item>();
+        }
+
+        public IEnumerable<Mobile> GetMobilesOnBoard()
+        {
+            return GetEntitiesOnBoard().OfType<Mobile>();
+        }
+
+        public int PlayerCount()
+        {
+            return GetMobilesOnBoard().Where(m => m is PlayerMobile).Count();
+        }
+
+        protected virtual bool CheckOnBoard(IEntity e)
+        {
+            if (e is Item && ((Item)e).IsVirtualItem)
+                return false;
+
+            return true;
         }
 
         public void TillerManSay(object message)
@@ -3215,13 +2930,319 @@ namespace Server.Multis
             }
         }
 
-        public void TryTrack(Mobile from, string speech)
+        public static int GetID(int multiID, Direction direction)
         {
-            if (speech.ToLower().IndexOf("start") >= 0)
-                BoatTrackingArrow.StartTracking(from);
-            else if (speech.ToLower().IndexOf("stop") >= 0)
-                BoatTrackingArrow.StopTracking(from);
+            switch (direction)
+            {
+                default:
+                case Direction.North: return multiID;
+                case Direction.East: return multiID + 1;
+                case Direction.South: return multiID + 2;
+                case Direction.West: return multiID + 3;
+            }
         }
+
+        public void ForceDecay()
+        {
+            new DecayTimer(this).Start();
+            m_Decaying = true;
+        }
+
+        private class DecayTimer : Timer
+        {
+            private BaseBoat m_Boat;
+            private int m_Count;
+
+            public DecayTimer(BaseBoat boat)
+                : base(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(5.0))
+            {
+                m_Boat = boat;
+
+                Priority = TimerPriority.TwoFiftyMS;
+            }
+
+            protected override void OnTick()
+            {
+                if (m_Count == 5)
+                {
+                    m_Boat.OnSink();
+                    Stop();
+                }
+                else
+                {
+                    //m_Boat.Location = new Point3D(m_Boat.X, m_Boat.Y, m_Boat.Z - 1);
+                    m_Boat.Teleport(0, 0, -1);
+
+                    if (m_Boat.TillerMan != null)
+                        m_Boat.TillerManSay(1007168 + m_Count);
+
+                    ++m_Count;
+                }
+            }
+        }
+
+        public bool CheckDecay()
+        {
+            if (Map == Map.Internal)
+                return false;
+
+            if (PlayerCount() > 0)
+                return false;
+
+            if (m_Decaying)
+                return true;
+
+            if (DoesDecay && !IsMoving && DateTime.UtcNow >= m_DecayTime)
+            {
+                new DecayTimer(this).Start();
+
+                m_Decaying = true;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual void OnSink()
+        {
+            m_Decaying = false;
+
+            if (CanLinkToLighthouse)
+            {
+                var addon = LighthouseAddon.GetLighthouse(Owner);
+
+                if (addon != null)
+                {
+                    BaseHouse house = BaseHouse.FindHouseAt(addon);
+
+                    if (house != null)
+                    {
+                        addon.DockBoat(this, house);
+                        return;
+                    }
+                }
+            }
+
+            Delete();
+        }
+
+        /*
+		 * OSI sends the 0xF7 packet instead, holding 0xF3 packets
+		 * for every entity on the boat. Though, the regular 0xF3
+		 * packets are still being sent as well as entities come
+		 * into sight. Do we really need it?
+         */
+
+        private Packet m_ContainerPacket;
+
+        public Packet ContainerPacket
+        {
+            get { return m_ContainerPacket; }
+            set
+            {
+                m_ContainerPacket = value;
+
+                if (m_ContainerPacket != null)
+                    m_ContainerPacket.SetStatic();
+            }
+        }
+
+        private void ReleaseContainerPacket()
+        {
+            Packet.Release(ref m_ContainerPacket);
+        }
+
+        protected Packet GetPacketContainer(IEnumerable<IEntity> entities)
+        {
+            if (ContainerPacket == null)
+            {
+                ContainerPacket = new PacketContainer(entities);
+            }
+
+            return ContainerPacket;
+        }
+
+        public virtual void SendContainerPacket()
+        {
+            if (!NewBoatMovement || NoMoveHS || Map == null)
+                return;
+
+            IPooledEnumerable eable = Map.GetClientsInRange(Location, Core.GlobalRadarRange);
+
+            ReleaseContainerPacket();
+
+            foreach (NetState state in eable)
+            {
+                if (!state.HighSeas || state.Mobile == null || state.Mobile.InUpdateRange(Location))
+                    continue;
+
+                state.Send(RemovePacket);
+
+                foreach (var item in GetItemsOnBoard())
+                {
+                    state.Send(item.RemovePacket);
+                }
+
+                state.Send(GetPacketContainer(GetEntitiesOnBoard()));
+            }
+
+            eable.Free();
+        }
+
+        public sealed class MoveBoatHS : Packet
+        {
+            public MoveBoatHS(BaseBoat boat, Direction d, int speed, int xOffset, int yOffset)
+                : base(0xF6)
+            {
+                EnsureCapacity(18);
+
+                m_Stream.Write((int)boat.Serial);
+                m_Stream.Write((byte)speed);
+                m_Stream.Write((byte)d);
+                m_Stream.Write((byte)boat.Facing);
+                m_Stream.Write((short)(boat.X + xOffset));
+                m_Stream.Write((short)(boat.Y + yOffset));
+                m_Stream.Write((short)boat.Z);
+
+                var cp = m_Stream.Seek(0, SeekOrigin.Current);
+                short length = 0;
+
+                m_Stream.Write(length);
+
+                foreach (var ent in boat.GetEntitiesOnBoard().Where(e => e != boat))
+                {
+                    m_Stream.Write((int)ent.Serial);
+                    m_Stream.Write((short)(ent.X + xOffset));
+                    m_Stream.Write((short)(ent.Y + yOffset));
+                    m_Stream.Write((short)ent.Z);
+
+                    ++length;
+                }
+
+                m_Stream.Seek(cp, SeekOrigin.Begin);
+                m_Stream.Write(length);
+
+                length *= 10;
+
+                m_Stream.Seek(1, SeekOrigin.Begin);
+                m_Stream.Write(length);
+            }
+        }
+
+        public class PacketContainer : Packet
+        {
+            public PacketContainer(IEnumerable<IEntity> entities)
+                : base(0xF7)
+            {
+                EnsureCapacity(5);
+                short c = 0;
+                m_Stream.Write(c);
+
+                foreach (var entity in entities)
+                {
+                    var itemID = 0;
+                    short amount = 0x01;
+                    short hue = 0x00;
+                    byte cmd = 0x0, light = 0x0, flags = 0x0;
+
+                    if (entity is BaseMulti)
+                    {
+                        var multi = entity as BaseMulti;
+
+                        cmd = 0x02;
+                        itemID = multi.ItemID;
+                        itemID &= 0x7FFF;
+                        hue = (short)multi.Hue;
+                        amount = (short)multi.Amount;
+                    }
+                    else if (entity is Item)
+                    {
+                        var item = entity as Item;
+
+                        cmd = (byte)(!item.Movable && item is IDamageable ? 0x03 : 0x00);
+                        itemID = item.ItemID;
+                        itemID &= 0xFFFF;
+                        hue = (short)item.Hue;
+                        amount = (short)item.Amount;
+                        light = (byte)item.Light;
+                        flags = (byte)item.GetPacketFlags();
+                    }
+                    else if (entity is Mobile)
+                    {
+                        var mobile = entity as Mobile;
+
+                        cmd = 0x01;
+                        itemID = mobile.BodyValue;
+                        hue = (short)mobile.Hue;
+                        flags = (byte)mobile.GetPacketFlags();
+                    }
+
+                    m_Stream.Write((byte)0xF3);
+
+                    m_Stream.Write((short)0x1);
+                    m_Stream.Write(cmd);
+                    m_Stream.Write(entity.Serial);
+                    m_Stream.Write((ushort)itemID);
+                    m_Stream.Write((byte)0);
+
+                    m_Stream.Write(amount);
+                    m_Stream.Write(amount);
+
+                    m_Stream.Write((short)(entity.X & 0x7FFF));
+                    m_Stream.Write((short)(entity.Y & 0x3FFF));
+                    m_Stream.Write((sbyte)entity.Z);
+
+                    m_Stream.Write(light);
+                    m_Stream.Write(hue);
+                    m_Stream.Write(flags);
+
+                    m_Stream.Write((short)0x00); // ??
+
+                    ++c;
+                }
+
+                m_Stream.Seek(3, SeekOrigin.Begin);
+                m_Stream.Write(c);
+            }
+        }
+
+        public virtual TimeSpan GetMovementInterval(int speed, out int clientSpeed)
+        {
+            switch (speed)
+            {
+                default: clientSpeed = 0x0; return TimeSpan.Zero;
+                case 1: clientSpeed = 0x2; return SlowInt;
+                case 2: clientSpeed = 0x4; return FastInt;
+            }
+        }
+
+        public virtual TimeSpan GetMovementInterval(bool fast, bool drifting, out int clientSpeed)
+        {
+            if (fast)
+            {
+                if (drifting)
+                {
+                    clientSpeed = 0x3;
+                    return NormalInt;
+                }
+
+                clientSpeed = 0x4;
+                return FastInt;
+            }
+            else
+            {
+                if (drifting)
+                {
+                    clientSpeed = 0x2;
+                    return SlowInt;
+                }
+
+                clientSpeed = 0x3;
+                return NormalInt;
+            }
+        }
+        #endregion
 
         public class UpdateAllTimer : Timer
         {
@@ -3240,8 +3261,8 @@ namespace Server.Multis
     [PropertyObject]
     public class BoatCourse
     {
-        private readonly List<Point2D> m_Waypoints = new List<Point2D>();
-        public List<Point2D> Waypoints => m_Waypoints;
+        private List<Point2D> m_Waypoints = new List<Point2D>();
+        public List<Point2D> Waypoints { get { return m_Waypoints; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public BaseBoat Boat { get; set; }
@@ -3250,7 +3271,7 @@ namespace Server.Multis
         public Map Map { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int NumWaypoints => m_Waypoints.Count;
+        public int NumWaypoints { get { return m_Waypoints.Count; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool GivenMap { get; set; }
@@ -3389,7 +3410,7 @@ namespace Server.Multis
 
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(0);
+            writer.Write((int)0);
             writer.Write(GivenMap);
 
             writer.Write(m_Waypoints.Count);

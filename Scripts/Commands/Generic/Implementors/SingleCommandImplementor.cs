@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Commands.Generic
@@ -18,26 +19,26 @@ namespace Server.Commands.Generic
             base.Register(command);
 
             for (int i = 0; i < command.Commands.Length; ++i)
-                CommandSystem.Register(command.Commands[i], command.AccessLevel, Redirect);
+                CommandSystem.Register(command.Commands[i], command.AccessLevel, new CommandEventHandler(Redirect));
         }
 
         public void Redirect(CommandEventArgs e)
         {
             BaseCommand command = null;
 
-            Commands.TryGetValue(e.Command, out command);
+            this.Commands.TryGetValue(e.Command, out command);
 
             if (command == null)
                 e.Mobile.SendMessage("That is either an invalid command name or one that does not support this modifier.");
             else if (e.Mobile.AccessLevel < command.AccessLevel)
                 e.Mobile.SendMessage("You do not have access to that command.");
             else if (command.ValidateArgs(this, e))
-                Process(e.Mobile, command, e.Arguments);
+                this.Process(e.Mobile, command, e.Arguments);
         }
 
         public override void Process(Mobile from, BaseCommand command, string[] args)
         {
-            if (command.ValidateArgs(this, new CommandEventArgs(from, command.Commands[0], GenerateArgString(args), args)))
+            if (command.ValidateArgs(this, new CommandEventArgs(from, command.Commands[0], this.GenerateArgString(args), args)))
                 from.BeginTarget(-1, command.ObjectTypes == ObjectTypes.All, TargetFlags.None, new TargetStateCallback(OnTarget), new object[] { command, args });
         }
 
@@ -53,7 +54,7 @@ namespace Server.Commands.Generic
             BaseCommand command = (BaseCommand)states[0];
             string[] args = (string[])states[1];
 
-            switch (command.ObjectTypes)
+            switch ( command.ObjectTypes )
             {
                 case ObjectTypes.Both:
                     {
@@ -87,7 +88,7 @@ namespace Server.Commands.Generic
                     }
             }
 
-            RunCommand(from, targeted, command, args);
+            this.RunCommand(from, targeted, command, args);
         }
     }
 }

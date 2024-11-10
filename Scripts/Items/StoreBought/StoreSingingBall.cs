@@ -13,18 +13,18 @@ namespace Server.Items
 
     public class StoreSingingBall : SingingBall
     {
-        public override int LabelNumber => 1152323 + (int)Type;
+        public override int LabelNumber { get { return 1152323 + (int)Type; } }
 
         public SBType Type { get; set; }
-
+        
         [Constructable]
         public StoreSingingBall()
             : base(0x468A)
         {
-            Array values = Enum.GetValues(typeof(SBType));
+            var values = Enum.GetValues(typeof(SBType));
             Type = (SBType)values.GetValue(Utility.Random(values.Length));
 
-            Weight = 1.0;
+            Weight = 1.0;            
             LootType = LootType.Regular;
             SetHue();
         }
@@ -69,7 +69,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write((int)Type);
         }

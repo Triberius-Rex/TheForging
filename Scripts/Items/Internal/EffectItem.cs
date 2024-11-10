@@ -15,10 +15,16 @@ namespace Server.Items
         private EffectItem()
             : base(1)// nodraw
         {
-            Movable = false;
+            this.Movable = false;
         }
 
-        public override bool Decays => true;
+        public override bool Decays
+        {
+            get
+            {
+                return true;
+            }
+        }
         public static EffectItem Create(Point3D p, Map map, TimeSpan duration)
         {
             EffectItem item = null;
@@ -53,7 +59,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -62,7 +68,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            Delete();
+            this.Delete();
         }
 
         private class FreeTimer : Timer
@@ -71,15 +77,15 @@ namespace Server.Items
             public FreeTimer(EffectItem item, TimeSpan delay)
                 : base(delay)
             {
-                m_Item = item;
-                Priority = TimerPriority.OneSecond;
+                this.m_Item = item;
+                this.Priority = TimerPriority.OneSecond;
             }
 
             protected override void OnTick()
             {
-                m_Item.Internalize();
+                this.m_Item.Internalize();
 
-                m_Free.Add(m_Item);
+                m_Free.Add(this.m_Item);
             }
         }
     }

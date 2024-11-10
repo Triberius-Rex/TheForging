@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class GhostShipAnchor : Item
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public GhostShipAnchor()
             : base(0x14F7)
         {
-            Hue = 0x47E;
-            Weight = 2;
+            this.Hue = 0x47E;
+            this.Weight = 2;
         }
 
         public GhostShipAnchor(Serial serial)
@@ -16,12 +18,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1070816;// Ghost Ship Anchor
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1070816;
+            }
+        }// Ghost Ship Anchor
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -33,12 +41,12 @@ namespace Server.Items
             switch (version)
             {
                 case 0:
-                    Weight = 2;
+                    this.Weight = 2;
                     break;
             }
-
-            if (ItemID == 0x1F47)
-                ItemID = 0x14F7;
+            
+            if (this.ItemID == 0x1F47)
+                this.ItemID = 0x14F7;
         }
     }
 }

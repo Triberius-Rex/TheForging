@@ -1,13 +1,13 @@
+using System;
 using Server.Mobiles;
 using Server.Regions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class BaseObjective
-    {
+    { 
         private BaseQuest m_Quest;
         private int m_MaxProgress;
         private int m_CurProgress;
@@ -24,14 +24,14 @@ namespace Server.Engines.Quests
         }
 
         public BaseObjective(int maxProgress, int seconds)
-        {
+        { 
             m_MaxProgress = maxProgress;
             m_Seconds = seconds;
-
+			
             if (seconds > 0)
                 Timed = true;
             else
-                Timed = false;
+                Timed = false;	
         }
 
         public BaseQuest Quest
@@ -63,15 +63,15 @@ namespace Server.Engines.Quests
                 return m_CurProgress;
             }
             set
-            {
-                m_CurProgress = value;
-
+            { 
+                m_CurProgress = value; 
+				
                 if (Completed)
                     OnCompleted();
-
+					
                 if (m_CurProgress == -1)
                     OnFailed();
-
+					
                 if (m_CurProgress < -1)
                     m_CurProgress = -1;
             }
@@ -83,9 +83,9 @@ namespace Server.Engines.Quests
                 return m_Seconds;
             }
             set
-            {
+            { 
                 m_Seconds = value;
-
+				
                 if (m_Seconds < 0)
                     m_Seconds = 0;
             }
@@ -101,10 +101,25 @@ namespace Server.Engines.Quests
                 m_Timed = value;
             }
         }
-        public bool Completed => CurProgress >= MaxProgress;
-        public bool Failed => CurProgress == -1;
+        public bool Completed
+        {
+            get
+            {
+                return CurProgress >= MaxProgress;
+            }
+        }
+        public bool Failed
+        { 
+            get
+            {
+                return CurProgress == -1;
+            }
+        }
 
-        public virtual object ObjectiveDescription => null;
+        public virtual object ObjectiveDescription
+        {
+            get { return null; }
+        }
 
         public virtual void Complete()
         {
@@ -142,7 +157,7 @@ namespace Server.Engines.Quests
         {
             if (!Timed || Failed)
                 return;
-
+		
             if (Seconds > 0)
             {
                 Seconds -= 1;
@@ -150,23 +165,23 @@ namespace Server.Engines.Quests
             else if (!Completed)
             {
                 m_Quest.Owner.SendLocalizedMessage(1072258); // You failed to complete an objective in time!
-
+				
                 Fail();
             }
         }
 
         public virtual void Serialize(GenericWriter writer)
         {
-            writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_CurProgress);
-            writer.Write(m_Seconds);
+            writer.WriteEncodedInt((int)0); // version
+			
+            writer.Write((int)m_CurProgress);
+            writer.Write((int)m_Seconds);
         }
 
         public virtual void Deserialize(GenericReader reader)
         {
             int version = reader.ReadEncodedInt();
-
+			
             m_CurProgress = reader.ReadInt();
             m_Seconds = reader.ReadInt();
         }
@@ -174,61 +189,88 @@ namespace Server.Engines.Quests
 
     public class SlayObjective : BaseObjective
     {
-        public SlayObjective(Type creature, string name, int amount)
-            : this(new Type[] { creature }, name, amount, 0, null, 0)
-        {
-        }
+        private Type[] m_Creatures;
+        private string m_Name;
+        private Region m_Region;
 
-        public SlayObjective(Type creature, string name, int amount, int label, string region)
-            : this(new Type[] { creature }, name, amount, label, region, 0)
+        public SlayObjective(Type creature, string name, int amount)
+            : this(new Type[] { creature }, name, amount, null, 0)
         {
         }
 
         public SlayObjective(Type creature, string name, int amount, string region)
-            : this(new Type[] { creature }, name, amount, 0, region, 0)
+            : this(new Type[] { creature }, name, amount, region, 0)
         {
         }
 
         public SlayObjective(Type creature, string name, int amount, int seconds)
-            : this(new Type[] { creature }, name, amount, 0, null, seconds)
+            : this(new Type[] { creature }, name, amount, null, seconds)
         {
         }
 
         public SlayObjective(string name, int amount, params Type[] creatures)
-            : this(creatures, name, amount, 0, null, 0)
+            : this(creatures, name, amount, null, 0)
         {
         }
 
         public SlayObjective(string name, int amount, string region, params Type[] creatures)
-            : this(creatures, name, amount, 0, region, 0)
+            : this(creatures, name, amount, region, 0)
         {
         }
 
         public SlayObjective(string name, int amount, int seconds, params Type[] creatures)
-            : this(creatures, name, amount, 0, null, seconds)
+            : this(creatures, name, amount, null, seconds)
         {
         }
 
-        public SlayObjective(Type[] creatures, string name, int amount, int label, string region, int seconds)
+        public SlayObjective(Type[] creatures, string name, int amount, string region, int seconds)
             : base(amount, seconds)
         {
-            Creatures = creatures;
-            Name = name;
-            Label = label;
+            m_Creatures = creatures;
+            m_Name = name;
 
             if (region != null)
             {
-                Region = QuestHelper.ValidateRegion(region) ? region : null;
+                m_Region = QuestHelper.FindRegion(region);
 
-                if (Region == null)
-                    Console.WriteLine(string.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
+                if (m_Region == null)
+                    Console.WriteLine(String.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
             }
         }
 
-        public Type[] Creatures { get; set; }
-        public string Name { get; set; }
-        public string Region { get; set; }
-        public int Label { get; set; }
+        public Type[] Creatures
+        { 
+            get
+            {
+                return m_Creatures;
+            }
+            set
+            {
+                m_Creatures = value;
+            }
+        }
+        public string Name
+        { 
+            get
+            {
+                return m_Name;
+            }
+            set
+            {
+                m_Name = value;
+            }
+        }
+        public Region Region
+        { 
+            get
+            {
+                return m_Region;
+            }
+            set
+            {
+                m_Region = value;
+            }
+        }
 
         public virtual void OnKill(Mobile killed)
         {
@@ -239,21 +281,21 @@ namespace Server.Engines.Quests
         }
 
         public virtual bool IsObjective(Mobile mob)
-        {
-            if (Creatures == null)
+        { 
+            if (m_Creatures == null)
                 return false;
 
-            foreach (Type type in Creatures)
+            foreach (var type in m_Creatures)
             {
                 if (type.IsAssignableFrom(mob.GetType()))
                 {
-                    if (Region != null && !mob.Region.IsPartOf(Region))
+                    if (m_Region != null && !m_Region.Contains(mob.Location))
                         return false;
 
                     return true;
                 }
             }
-
+			
             return false;
         }
 
@@ -262,35 +304,37 @@ namespace Server.Engines.Quests
             if (obj is Mobile)
             {
                 Mobile mob = (Mobile)obj;
-
+			
                 if (IsObjective(mob))
-                {
+                { 
                     if (!Completed)
                         CurProgress += 1;
-
-                    OnKill(mob);
+						
+                    OnKill(mob);					
                     return true;
                 }
             }
-
+			
             return false;
         }
 
         public override Type Type()
         {
-            return Creatures != null && Creatures.Length > 0 ? Creatures[0] : null;
+            return m_Creatures != null && m_Creatures.Length > 0 ? m_Creatures[0] : null;
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.WriteEncodedInt(0); // version
+			
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadEncodedInt();
+			
+            int version = reader.ReadEncodedInt();
         }
     }
 
@@ -318,7 +362,7 @@ namespace Server.Engines.Quests
 
         public ObtainObjective(Type obtain, string name, int amount, int image, int seconds, int hue)
             : base(amount, seconds)
-        {
+        { 
             m_Obtain = obtain;
             m_Name = name;
             m_Image = image;
@@ -326,7 +370,7 @@ namespace Server.Engines.Quests
         }
 
         public Type Obtain
-        {
+        { 
             get
             {
                 return m_Obtain;
@@ -337,7 +381,7 @@ namespace Server.Engines.Quests
             }
         }
         public string Name
-        {
+        { 
             get
             {
                 return m_Name;
@@ -348,7 +392,7 @@ namespace Server.Engines.Quests
             }
         }
         public int Image
-        {
+        { 
             get
             {
                 return m_Image;
@@ -370,17 +414,17 @@ namespace Server.Engines.Quests
             }
         }
         public override bool Update(object obj)
-        {
+        { 
             if (obj is Item)
             {
                 Item obtained = (Item)obj;
-
+				
                 if (IsObjective(obtained))
-                {
+                { 
                     if (!obtained.QuestItem)
-                    {
+                    { 
                         CurProgress += obtained.Amount;
-
+							
                         obtained.QuestItem = true;
                         Quest.Owner.SendLocalizedMessage(1072353); // You set the item to Quest Item status
 
@@ -389,15 +433,15 @@ namespace Server.Engines.Quests
                     else
                     {
                         CurProgress -= obtained.Amount;
-
+							
                         obtained.QuestItem = false;
                         Quest.Owner.SendLocalizedMessage(1072354); // You remove Quest Item status from the item
                     }
-
+						
                     return true;
                 }
             }
-
+			
             return false;
         }
 
@@ -405,10 +449,10 @@ namespace Server.Engines.Quests
         {
             if (m_Obtain == null)
                 return false;
-
+		
             if (m_Obtain.IsAssignableFrom(item.GetType()))
                 return true;
-
+			
             return false;
         }
 
@@ -420,14 +464,14 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.WriteEncodedInt(0); // version
+			
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadEncodedInt();
         }
     }
@@ -446,16 +490,16 @@ namespace Server.Engines.Quests
 
         public DeliverObjective(Type delivery, string deliveryName, int amount, Type destination, string destName, int seconds)
             : base(amount, seconds)
-        {
+        { 
             m_Delivery = delivery;
             m_DeliveryName = deliveryName;
-
+			
             m_Destination = destination;
             m_DestName = destName;
         }
 
         public Type Delivery
-        {
+        { 
             get
             {
                 return m_Delivery;
@@ -466,7 +510,7 @@ namespace Server.Engines.Quests
             }
         }
         public string DeliveryName
-        {
+        { 
             get
             {
                 return m_DeliveryName;
@@ -477,7 +521,7 @@ namespace Server.Engines.Quests
             }
         }
         public Type Destination
-        {
+        { 
             get
             {
                 return m_Destination;
@@ -488,7 +532,7 @@ namespace Server.Engines.Quests
             }
         }
         public string DestName
-        {
+        { 
             get
             {
                 return m_DestName;
@@ -505,68 +549,68 @@ namespace Server.Engines.Quests
                 Quest.StartingItem.QuestItem = true;
                 return;
             }
-
-            int amount = MaxProgress;
-
+			
+            int amount = MaxProgress;		
+			
             while (amount > 0 && !Failed)
-            {
-                Item item = Loot.Construct(m_Delivery);
-
+            { 
+                Item item = QuestHelper.Construct(m_Delivery) as Item;
+				
                 if (item == null)
                 {
                     Fail();
                     break;
                 }
-
+					
                 if (item.Stackable)
                 {
                     item.Amount = amount;
                     amount = 1;
                 }
-
+						
                 if (!Quest.Owner.PlaceInBackpack(item))
                 {
                     Quest.Owner.SendLocalizedMessage(503200); // You do not have room in your backpack for 
                     Quest.Owner.SendLocalizedMessage(1075574); // Could not create all the necessary items. Your quest has not advanced.
-
+					
                     Fail();
-
+					
                     break;
                 }
                 else
                     item.QuestItem = true;
-
+						
                 amount -= 1;
             }
-
+			
             if (Failed)
             {
                 QuestHelper.DeleteItems(Quest.Owner, m_Delivery, MaxProgress - amount, false);
-
-                Quest.RemoveQuest();
+			
+                Quest.RemoveQuest();	
             }
         }
 
         public override bool Update(object obj)
-        {
+        { 
             if (m_Delivery == null || m_Destination == null)
                 return false;
-
+				
             if (Failed)
             {
                 Quest.Owner.SendLocalizedMessage(1074813);  // You have failed to complete your delivery.
                 return false;
             }
-
+			
             if (obj is BaseVendor)
             {
                 if (Quest.StartingItem != null)
                 {
-                    Complete();
+                    Complete();					
                     return true;
                 }
                 else if (m_Destination.IsAssignableFrom(obj.GetType()))
-                {
+                { 
                     if (MaxProgress < QuestHelper.CountQuestItems(Quest.Owner, Delivery))
                     {
                         Quest.Owner.SendLocalizedMessage(1074813);  // You have failed to complete your delivery.						
@@ -574,11 +618,11 @@ namespace Server.Engines.Quests
                     }
                     else
                         Complete();
-
+					
                     return true;
                 }
             }
-
+			
             return false;
         }
 
@@ -590,21 +634,21 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.WriteEncodedInt(0); // version
+			
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadEncodedInt();
         }
     }
 
     public class EscortObjective : BaseObjective
     {
-        public string Region { get; set; }
+        public Region Region { get; set; }
         public int Fame { get; set; }
         public int Compassion { get; set; }
         public int Label { get; set; }
@@ -632,18 +676,14 @@ namespace Server.Engines.Quests
         public EscortObjective(string region, int fame, int compassion, int seconds, int label)
             : base(1, seconds)
         {
-            if (region != null)
-            {
-                Region = QuestHelper.ValidateRegion(region) ? region : null;
-
-                if (Region == null)
-                    Console.WriteLine(string.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
-            }
-
+            Region = QuestHelper.FindRegion(region);
             Fame = fame;
             Compassion = compassion;
             Label = label;
-        }
+
+            if (Region == null)
+                Console.WriteLine(String.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
+        }        
 
         public override void OnCompleted()
         {
@@ -658,14 +698,14 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.WriteEncodedInt(0); // version
+			
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadEncodedInt();
         }
     }
@@ -673,7 +713,7 @@ namespace Server.Engines.Quests
     public class ApprenticeObjective : BaseObjective
     {
         private SkillName m_Skill;
-        private string m_Region;
+        private Region m_Region;
         private object m_Enter;
         private object m_Leave;
 
@@ -686,15 +726,15 @@ namespace Server.Engines.Quests
             : base(cap)
         {
             m_Skill = skill;
-
+		
             if (region != null)
             {
-                m_Region = QuestHelper.ValidateRegion(region) ? region : null;
-                m_Enter = enterRegion;
+                m_Region = QuestHelper.FindRegion(region);					
+                m_Enter = enterRegion;	
                 m_Leave = leaveRegion;
-
+				
                 if (m_Region == null)
-                    Console.WriteLine(string.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
+                    Console.WriteLine(String.Format("Invalid region name ('{0}') in '{1}' objective!", region, GetType()));
             }
         }
 
@@ -709,7 +749,7 @@ namespace Server.Engines.Quests
                 m_Skill = value;
             }
         }
-        public string Region
+        public Region Region
         {
             get
             {
@@ -746,33 +786,33 @@ namespace Server.Engines.Quests
         {
             if (Completed)
                 return false;
-
+		
             if (obj is Skill)
             {
-                Skill skill = (Skill)obj;
-
+                Skill skill = (Skill)obj;				
+				
                 if (skill.SkillName != m_Skill)
-                    return false;
-
+                    return false;				
+				
                 if (Quest.Owner.Skills[m_Skill].Base >= MaxProgress)
                 {
                     Complete();
                     return true;
                 }
             }
-
+			
             return false;
         }
 
         public override void OnAccept()
         {
             Region region = Quest.Owner.Region;
-
+			
             while (region != null)
-            {
+            { 
                 if (region is ApprenticeRegion)
-                    region.OnEnter(Quest.Owner);
-
+                    region.OnEnter(Quest.Owner);									
+				
                 region = region.Parent;
             }
         }
@@ -785,14 +825,14 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.WriteEncodedInt(1); // version
+			
+            writer.WriteEncodedInt((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadEncodedInt();
         }
     }
@@ -801,10 +841,10 @@ namespace Server.Engines.Quests
     {
         private int _CurrentIndex;
 
-        private readonly List<int> m_Done = new List<int>();
-        private readonly QuestionAndAnswerEntry[] m_EntryTable;
+        private List<int> m_Done = new List<int>();
+        private QuestionAndAnswerEntry[] m_EntryTable;
 
-        public virtual QuestionAndAnswerEntry[] EntryTable => m_EntryTable;
+        public virtual QuestionAndAnswerEntry[] EntryTable { get { return m_EntryTable; } }
 
         public QuestionAndAnswerObjective(int count, QuestionAndAnswerEntry[] table)
             : base(count)
@@ -850,7 +890,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(_CurrentIndex);
 

@@ -1,9 +1,9 @@
-using Server.Accounting;
-using Server.Gumps;
-using Server.Network;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Server.Accounting;
+using Server.Gumps;
+using Server.Network;
 
 namespace Server.Engines.Help
 {
@@ -26,17 +26,17 @@ namespace Server.Engines.Help
         public SpeechLogGump(Mobile player, List<SpeechLogEntry> log, int page)
             : base(500, 30)
         {
-            m_Player = player;
-            m_Log = log;
-            m_Page = page;
+            this.m_Player = player;
+            this.m_Log = log;
+            this.m_Page = page;
 
-            AddImageTiled(0, 0, 300, 425, 0xA40);
-            AddAlphaRegion(1, 1, 298, 423);
+            this.AddImageTiled(0, 0, 300, 425, 0xA40);
+            this.AddAlphaRegion(1, 1, 298, 423);
 
             string playerName = player.Name;
             string playerAccount = player.Account is Account ? player.Account.Username : "???";
 
-            AddHtml(10, 10, 280, 20, string.Format("<basefont color=#A0A0FF><center>SPEECH LOG - {0} (<i>{1}</i>)</center></basefont>", playerName, Utility.FixHtml(playerAccount)), false, false);
+            this.AddHtml(10, 10, 280, 20, String.Format("<basefont color=#A0A0FF><center>SPEECH LOG - {0} (<i>{1}</i>)</center></basefont>", playerName, Utility.FixHtml(playerAccount)), false, false);
 
             int lastPage = (log.Count - 1) / MaxEntriesPerPage;
 
@@ -72,34 +72,34 @@ namespace Server.Engines.Help
                 sLog = builder.ToString();
             }
 
-            AddHtml(10, 40, 280, 350, sLog, false, true);
+            this.AddHtml(10, 40, 280, 350, sLog, false, true);
 
             if (page > 0)
-                AddButton(10, 395, 0xFAE, 0xFB0, 1, GumpButtonType.Reply, 0); // Previous page
+                this.AddButton(10, 395, 0xFAE, 0xFB0, 1, GumpButtonType.Reply, 0); // Previous page
 
-            AddLabel(45, 395, 0x481, string.Format("Current page: {0}/{1}", page + 1, lastPage + 1));
+            this.AddLabel(45, 395, 0x481, String.Format("Current page: {0}/{1}", page + 1, lastPage + 1));
 
             if (page < lastPage)
-                AddButton(261, 395, 0xFA5, 0xFA7, 2, GumpButtonType.Reply, 0); // Next page
+                this.AddButton(261, 395, 0xFA5, 0xFA7, 2, GumpButtonType.Reply, 0); // Next page
         }
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             Mobile from = sender.Mobile;
 
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case 1: // Previous page
                     {
-                        if (m_Page - 1 >= 0)
-                            from.SendGump(new SpeechLogGump(m_Player, m_Log, m_Page - 1));
+                        if (this.m_Page - 1 >= 0)
+                            from.SendGump(new SpeechLogGump(this.m_Player, this.m_Log, this.m_Page - 1));
 
                         break;
                     }
                 case 2: // Next page
                     {
-                        if ((m_Page + 1) * MaxEntriesPerPage < m_Log.Count)
-                            from.SendGump(new SpeechLogGump(m_Player, m_Log, m_Page + 1));
+                        if ((this.m_Page + 1) * MaxEntriesPerPage < this.m_Log.Count)
+                            from.SendGump(new SpeechLogGump(this.m_Player, this.m_Log, this.m_Page + 1));
 
                         break;
                     }

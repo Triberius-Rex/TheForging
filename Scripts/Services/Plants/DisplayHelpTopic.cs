@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Network
 {
     public class DisplayHelpTopic : Packet
@@ -5,12 +7,12 @@ namespace Server.Network
         public DisplayHelpTopic(int topicID, bool display)
             : base(0xBF)
         {
-            EnsureCapacity(11);
+            this.EnsureCapacity(11);
 
-            m_Stream.Write((short)0x17);
-            m_Stream.Write((byte)1);
-            m_Stream.Write(topicID);
-            m_Stream.Write(display);
+            this.m_Stream.Write((short)0x17);
+            this.m_Stream.Write((byte)1);
+            this.m_Stream.Write((int)topicID);
+            this.m_Stream.Write((bool)display);
         }
     }
 }

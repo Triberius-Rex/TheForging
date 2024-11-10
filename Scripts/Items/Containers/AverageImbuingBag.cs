@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class AverageImbuingBag : BaseRewardBag
@@ -22,12 +24,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113768; //Average Imbuing Bag
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113768; //Average Imbuing Bag
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version 
+            writer.Write((int)0); // version 
         }
 
         public override void Deserialize(GenericReader reader)

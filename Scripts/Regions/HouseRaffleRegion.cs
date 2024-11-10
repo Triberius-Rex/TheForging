@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Spells.Sixth;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Regions
 {
@@ -10,10 +11,10 @@ namespace Server.Regions
         private readonly HouseRaffleStone m_Stone;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public HouseRaffleStone Stone => m_Stone;
+        public HouseRaffleStone Stone { get { return m_Stone; } }
 
         public HouseRaffleRegion(HouseRaffleStone stone)
-            : base(null, stone.PlotFacet, DefaultPriority, stone.PlotBounds)
+            : base(null, stone.PlotFacet, Region.DefaultPriority, stone.PlotBounds)
         {
             m_Stone = stone;
         }
@@ -31,12 +32,12 @@ namespace Server.Regions
 
             Container pack = from.Backpack;
 
-            if (pack != null && ContainsDeed(pack))
+            if (pack != null && this.ContainsDeed(pack))
                 return true;
 
             BankBox bank = from.FindBankNoCreate();
 
-            if (bank != null && ContainsDeed(bank))
+            if (bank != null && this.ContainsDeed(bank))
                 return true;
 
             return false;

@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Mobiles;
 using Server.Network;
 using Server.Spells;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -21,12 +22,12 @@ namespace Server.Items
         {
             if (from.InRange(this, 2))
             {
-                Map map = Map;
+                Map map = this.Map;
 
                 if (map == Map.Trammel || map == Map.Felucca)
                 {
                     from.MoveToWorld(new Point3D(5922, 2024, 0), map);
-                    PublicOverheadMessage(MessageType.Regular, 0x3B2, true, string.Format("* {0} dives into the hole and disappears!*", from.Name));
+                    this.PublicOverheadMessage(MessageType.Regular, 0x3B2, true, String.Format("* {0} dives into the hole and disappears!*", from.Name)); 
                 }
             }
             else
@@ -55,18 +56,18 @@ namespace Server.Items
         public SolenAntHole()
             : base()
         {
-            m_Spawned = new List<Mobile>();
+            this.m_Spawned = new List<Mobile>();
 
-            AddComponent(new AddonComponent(0x914), "dirt", 0, 0, 0, 0);
-            AddComponent(new SolenAntHoleComponent(0x122A), "a hole", 0x1, 0, 0, 0);
-            AddComponent(new AddonComponent(0x1B23), "dirt", 0x970, 1, 1, 0);
-            AddComponent(new AddonComponent(0xEE0), "dirt", 0, 1, 0, 0);
-            AddComponent(new AddonComponent(0x1B24), "dirt", 0x970, 1, -1, 0);
-            AddComponent(new AddonComponent(0xEE1), "dirt", 0, 0, -1, 0);
-            AddComponent(new AddonComponent(0x1B25), "dirt", 0x970, -1, -1, 0);
-            AddComponent(new AddonComponent(0xEE2), "dirt", 0, -1, 0, 0);
-            AddComponent(new AddonComponent(0x1B26), "dirt", 0x970, -1, 1, 0);
-            AddComponent(new AddonComponent(0xED3), "dirt", 0, 0, 1, 0);
+            this.AddComponent(new AddonComponent(0x914), "dirt", 0, 0, 0, 0);
+            this.AddComponent(new SolenAntHoleComponent(0x122A), "a hole", 0x1, 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x1B23), "dirt", 0x970, 1, 1, 0);
+            this.AddComponent(new AddonComponent(0xEE0), "dirt", 0, 1, 0, 0);
+            this.AddComponent(new AddonComponent(0x1B24), "dirt", 0x970, 1, -1, 0);
+            this.AddComponent(new AddonComponent(0xEE1), "dirt", 0, 0, -1, 0);
+            this.AddComponent(new AddonComponent(0x1B25), "dirt", 0x970, -1, -1, 0);
+            this.AddComponent(new AddonComponent(0xEE2), "dirt", 0, -1, 0, 0);
+            this.AddComponent(new AddonComponent(0x1B26), "dirt", 0x970, -1, 1, 0);
+            this.AddComponent(new AddonComponent(0xED3), "dirt", 0, 0, 1, 0);
         }
 
         public SolenAntHole(Serial serial)
@@ -74,22 +75,34 @@ namespace Server.Items
         {
         }
 
-        public override bool ShareHue => false;
-        public override bool HandlesOnMovement => true;
+        public override bool ShareHue
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool HandlesOnMovement
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
-            if (!m.Player || !m.Alive || m.Hidden || !SpawnKilled())
+            if (!m.Player || !m.Alive || m.Hidden || !this.SpawnKilled())
                 return;
-
-            if (Utility.InRange(Location, m.Location, 3) && !Utility.InRange(Location, oldLocation, 3))
+				
+            if (Utility.InRange(this.Location, m.Location, 3) && !Utility.InRange(this.Location, oldLocation, 3))
             {
                 int count = 1 + Utility.Random(4);
 
                 for (int i = 0; i < count; i++)
-                    SpawnAnt();
+                    this.SpawnAnt();
 
                 if (0.05 > Utility.RandomDouble())
-                    SpawnAnt(new Beetle());
+                    this.SpawnAnt(new Beetle());
             }
         }
 
@@ -97,55 +110,55 @@ namespace Server.Items
         {
             c.Hue = hue;
             c.Name = name;
-            AddComponent(c, x, y, z);
+            this.AddComponent(c, x, y, z);
         }
 
         public void SpawnAnt()
         {
             int random = Utility.Random(3);
-            Map map = Map;
+            Map map = this.Map;
 
             if (map == Map.Trammel)
             {
                 if (random < 2)
-                    SpawnAnt(new RedSolenWorker());
+                    this.SpawnAnt(new RedSolenWorker());
                 else
-                    SpawnAnt(new RedSolenWarrior());
+                    this.SpawnAnt(new RedSolenWarrior());
             }
             else if (map == Map.Felucca)
             {
                 if (random < 2)
-                    SpawnAnt(new BlackSolenWorker());
+                    this.SpawnAnt(new BlackSolenWorker());
                 else
-                    SpawnAnt(new BlackSolenWarrior());
+                    this.SpawnAnt(new BlackSolenWarrior());
             }
         }
 
         public void SpawnAnt(BaseCreature ant)
         {
-            m_Spawned.Add(ant);
+            this.m_Spawned.Add(ant);
 
-            Map map = Map;
-            Point3D p = Location;
+            Map map = this.Map;
+            Point3D p = this.Location;
 
             for (int i = 0; i < 5; i++)
                 if (SpellHelper.FindValidSpawnLocation(map, ref p, false))
                     break;
 
             ant.MoveToWorld(p, map);
-            ant.Home = Location;
+            ant.Home = this.Location;
             ant.RangeHome = 10;
         }
 
         public bool SpawnKilled()
         {
-            for (int i = m_Spawned.Count - 1; i >= 0; i--)
+            for (int i = this.m_Spawned.Count - 1; i >= 0; i--)
             {
-                if (!m_Spawned[i].Alive || m_Spawned[i].Deleted)
-                    m_Spawned.RemoveAt(i);
+                if (!this.m_Spawned[i].Alive || this.m_Spawned[i].Deleted)
+                    this.m_Spawned.RemoveAt(i);
             }
 
-            return m_Spawned.Count < 2;
+            return this.m_Spawned.Count < 2;
         }
 
         public override void Serialize(GenericWriter writer)
@@ -154,7 +167,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.WriteMobileList(m_Spawned);
+            writer.WriteMobileList<Mobile>(this.m_Spawned);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -163,7 +176,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Spawned = reader.ReadStrongMobileList<Mobile>();
+            this.m_Spawned = reader.ReadStrongMobileList<Mobile>();
         }
     }
 }

@@ -1,7 +1,10 @@
 #region References
-using Microsoft.Win32;
 using System;
 using System.IO;
+
+using Microsoft.Win32;
+
+using Ultima;
 #endregion
 
 namespace Server.Misc
@@ -14,30 +17,30 @@ namespace Server.Misc
         * Example:
         *  private static string CustomPath = @"C:\Program Files\Ultima Online";
         */
-        private static readonly string CustomPath = Config.Get(@"DataPath.CustomPath", default(string));
+		private static readonly string CustomPath = Config.Get(@"DataPath.CustomPath", default(string));
 
-        static DataPath()
-        {
-            string path;
+		static DataPath()
+		{
+			string path;
 
-            if (CustomPath != null)
-            {
-                path = CustomPath;
-            }
-            else if (!Core.Unix)
-            {
-                path = GetPath(@"Electronic Arts\EA Games\Ultima Online Classic", "InstallDir");
-            }
-            else
-            {
-                path = null;
-            }
+			if (CustomPath != null)
+			{
+				path = CustomPath;
+			}
+			else if (!Core.Unix)
+			{
+				path = Files.LoadDirectory();
+			}
+			else
+			{
+				path = null;
+			}
 
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                Core.DataDirectories.Add(path);
-            }
-        }
+			if (!String.IsNullOrWhiteSpace(path))
+			{
+				Core.DataDirectories.Add(path);
+			}
+		}
 
         /* The following is a list of files which a required for proper execution:
         * 
@@ -56,17 +59,22 @@ namespace Server.Misc
         */
         public static void Configure()
         {
-            if (Core.DataDirectories.Count == 0 && !Core.Service)
-            {
-                Console.WriteLine("Enter the Ultima Online directory:");
-                Console.Write("> ");
-
-                Core.DataDirectories.Add(Console.ReadLine());
-            }
-
-            Utility.PushColor(ConsoleColor.DarkYellow);
-            Console.WriteLine("DataPath: " + Core.DataDirectories[0]);
-            Utility.PopColor();
+			if (Core.DataDirectories.Count == 0 && !Core.Service)
+			{
+				Console.WriteLine("Enter the Ultima Online directory:");
+	            Console.Write("> ");
+	
+	            Core.DataDirectories.Add(Console.ReadLine());
+			}
+	
+			foreach (var path in Core.DataDirectories)
+			{
+				Files.SetMulPath(path);
+			}
+		
+			Utility.PushColor(ConsoleColor.DarkYellow);
+			Console.WriteLine("DataPath: " + Core.DataDirectories[0]);
+			Utility.PopColor();
         }
 
         private static string GetPath(string subName, string keyName)
@@ -80,14 +88,14 @@ namespace Server.Misc
                 else
                     keyString = @"SOFTWARE\{0}";
 
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(string.Format(keyString, subName)))
+                using (var key = Registry.LocalMachine.OpenSubKey(String.Format(keyString, subName)))
                 {
                     if (key == null)
                         return null;
 
-                    string v = key.GetValue(keyName) as string;
+                    var v = key.GetValue(keyName) as string;
 
-                    if (string.IsNullOrEmpty(v))
+                    if (String.IsNullOrEmpty(v))
                         return null;
 
                     if (keyName == "InstallDir")
@@ -95,15 +103,14 @@ namespace Server.Misc
 
                     v = Path.GetDirectoryName(v);
 
-                    if (string.IsNullOrEmpty(v))
+                    if (String.IsNullOrEmpty(v))
                         return null;
 
                     return v;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
                 return null;
             }
         }

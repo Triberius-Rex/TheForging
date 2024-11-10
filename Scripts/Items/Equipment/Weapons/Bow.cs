@@ -2,7 +2,7 @@ using System;
 
 namespace Server.Items
 {
-    [Flipable(0x13B2, 0x13B1)]
+    [FlipableAttribute(0x13B2, 0x13B1)]
     public class Bow : BaseRanged
     {
         [Constructable]
@@ -18,25 +18,136 @@ namespace Server.Items
         {
         }
 
-        public override int EffectID => 0xF42;
-        public override Type AmmoType => typeof(Arrow);
-        public override Item Ammo => new Arrow();
-        public override WeaponAbility PrimaryAbility => WeaponAbility.ParalyzingBlow;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.MortalStrike;
-        public override int StrengthReq => 30;
-        public override int MinDamage => 17;
-        public override int MaxDamage => 21;
-        public override float Speed => 4.25f;
-
-        public override int DefMaxRange => 10;
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 60;
-        public override WeaponAnimation DefAnimation => WeaponAnimation.ShootBow;
-		
+        public override int EffectID
+        {
+            get
+            {
+                return 0xF42;
+            }
+        }
+        public override Type AmmoType
+        {
+            get
+            {
+                return typeof(Arrow);
+            }
+        }
+        public override Item Ammo
+        {
+            get
+            {
+                return new Arrow();
+            }
+        }
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ParalyzingBlow;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.MortalStrike;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return Core.ML ? 17 : 16;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return Core.ML ? 21 : 18;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 25;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 4.25f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 9;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 41;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int DefMaxRange
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 60;
+            }
+        }
+        public override WeaponAnimation DefAnimation
+        {
+            get
+            {
+                return WeaponAnimation.ShootBow;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

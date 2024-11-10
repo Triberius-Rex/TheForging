@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -7,8 +8,15 @@ namespace Server.Mobiles
     {
         [Constructable]
         public BronzeElemental()
+            : this(25)
+        {
+        }
+
+        [Constructable]
+        public BronzeElemental(int oreAmount)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
+            // TODO: Gas attack
             Name = "a bronze elemental";
             Body = 108;
             BaseSoundID = 268;
@@ -36,7 +44,13 @@ namespace Server.Mobiles
 
             Fame = 5000;
             Karma = -5000;
-            
+
+            VirtualArmor = 29;
+
+            Item ore = new BronzeOre(oreAmount);
+            ore.ItemID = 0x19B9;
+            PackItem(ore);
+
             SetAreaEffect(AreaEffect.PoisonBreath);
         }
 
@@ -45,21 +59,38 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-        public override bool BleedImmune => true;
-        public override int TreasureMapLevel => 1;
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Average);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<BronzeOre>(25));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

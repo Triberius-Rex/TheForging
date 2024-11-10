@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
@@ -5,7 +6,7 @@ using Server.Network;
 using Server.Targeting;
 
 namespace Server.Items
-{
+{ 
     public class DecorativeShield : Item, IAddon, IRewardItem
     {
         private bool m_IsRewardItem;
@@ -18,8 +19,8 @@ namespace Server.Items
         [Constructable]
         public DecorativeShield(int itemID)
             : base(itemID)
-        {
-            Movable = false;
+        { 
+            this.Movable = false;
         }
 
         public DecorativeShield(Serial serial)
@@ -27,16 +28,19 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
-        public Item Deed
+        public override bool ForceShowProperties
         {
             get
             {
-                DecorativeShieldDeed deed = new DecorativeShieldDeed
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                return ObjectPropertyList.Enabled;
+            }
+        }
+        public Item Deed
+        { 
+            get
+            { 
+                DecorativeShieldDeed deed = new DecorativeShieldDeed();
+                deed.IsRewardItem = this.m_IsRewardItem;
 
                 return deed;
             }
@@ -46,29 +50,29 @@ namespace Server.Items
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public bool FacingSouth
         {
             get
             {
-                if (ItemID < 0x1582)
-                    return (ItemID & 0x1) == 0;
-
-                return ItemID <= 0x1585;
+                if (this.ItemID < 0x1582)
+                    return (this.ItemID & 0x1) == 0;
+				
+                return this.ItemID <= 0x1585; 
             }
         }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (Core.ML && this.m_IsRewardItem)
                 list.Add(1076220); // 4th Year Veteran Reward
         }
 
@@ -79,10 +83,10 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
-                BaseHouse house = BaseHouse.FindHouseAt(this);
-
+                BaseHouse house = BaseHouse.FindHouseAt(this);  
+				
                 if (house != null && house.IsOwner(from))
                 {
                     from.CloseGump(typeof(RewardDemolitionGump));
@@ -100,8 +104,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)this.m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -109,16 +113,16 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
+			
+            this.m_IsRewardItem = reader.ReadBool();
         }
 
         public bool CouldFit(IPoint3D p, Map map)
-        {
-            if (map == null || !map.CanFit(p.X, p.Y, p.Z, ItemData.Height))
+        { 
+            if (map == null || !map.CanFit(p.X, p.Y, p.Z, this.ItemData.Height))
                 return false;
-
-            if (FacingSouth)
+				
+            if (this.FacingSouth)
                 return BaseAddon.IsWall(p.X, p.Y - 1, p.Z, map); // north wall
             else
                 return BaseAddon.IsWall(p.X - 1, p.Y, p.Z, map); // west wall
@@ -131,9 +135,9 @@ namespace Server.Items
         [Constructable]
         public DecorativeShieldDeed()
             : base(0x14F0)
-        {
-            LootType = LootType.Blessed;
-            Weight = 1.0;
+        { 
+            this.LootType = LootType.Blessed;
+            this.Weight = 1.0;
         }
 
         public DecorativeShieldDeed(Serial serial)
@@ -141,23 +145,29 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1049771;// deed for a decorative shield wall hanging
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1049771;
+            }
+        }// deed for a decorative shield wall hanging
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem
         {
             get
             {
-                return m_IsRewardItem;
+                return this.m_IsRewardItem;
             }
             set
             {
-                m_IsRewardItem = value;
-                InvalidateProperties();
+                this.m_IsRewardItem = value;
+                this.InvalidateProperties();
             }
         }
         public static int GetWestItemID(int east)
         {
-            switch (east)
+            switch ( east )
             {
                 case 0x1582:
                     return 0x1635;
@@ -175,17 +185,17 @@ namespace Server.Items
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (m_IsRewardItem)
+			
+            if (this.m_IsRewardItem)
                 list.Add(1076220); // 4th Year Veteran Reward
         }
 
         public override void OnDoubleClick(Mobile from)
-        {
-            if (m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
+        { 
+            if (this.m_IsRewardItem && !RewardSystem.CheckIsUsableBy(from, this, null))
                 return;
-
-            if (IsChildOf(from.Backpack))
+		
+            if (this.IsChildOf(from.Backpack))
             {
                 from.CloseGump(typeof(InternalGump));
                 from.SendGump(new InternalGump(this));
@@ -199,8 +209,8 @@ namespace Server.Items
             base.Serialize(writer);
 
             writer.WriteEncodedInt(0); // version
-
-            writer.Write(m_IsRewardItem);
+			
+            writer.Write((bool)this.m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -208,8 +218,8 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_IsRewardItem = reader.ReadBool();
+			
+            this.m_IsRewardItem = reader.ReadBool();
         }
 
         private class InternalGump : Gump
@@ -226,28 +236,28 @@ namespace Server.Items
             public InternalGump(DecorativeShieldDeed shield, int page)
                 : base(150, 50)
             {
-                m_Shield = shield;
-                m_Page = page;
+                this.m_Shield = shield;
+                this.m_Page = page;
+				
+                this.Closable = true;
+                this.Disposable = true;
+                this.Dragable = true;
+                this.Resizable = false;
+				
+                this.AddPage(0);
 
-                Closable = true;
-                Disposable = true;
-                Dragable = true;
-                Resizable = false;
-
-                AddPage(0);
-
-                AddBackground(25, 0, 500, 230, 0xA28);
+                this.AddBackground(25, 0, 500, 230, 0xA28);
 
                 int itemID = Start;
 
                 for (int i = 1; i <= 2; i++)
                 {
-                    AddPage(i);
+                    this.AddPage(i);
 
                     for (int j = 0; j < 9 - i; j++)
                     {
-                        AddItem(40 + j * 60, 70, itemID);
-                        AddButton(60 + j * 60, 50, 0x845, 0x846, itemID, GumpButtonType.Reply, 0);
+                        this.AddItem(40 + j * 60, 70, itemID);
+                        this.AddButton(60 + j * 60, 50, 0x845, 0x846, itemID, GumpButtonType.Reply, 0);
 
                         if (itemID < 0x1582)
                             itemID += 2;
@@ -255,31 +265,31 @@ namespace Server.Items
                             itemID += 1;
                     }
 
-                    switch (i)
+                    switch ( i )
                     {
                         case 1:
-                            AddButton(455, 198, 0x8B0, 0x8B0, 0, GumpButtonType.Page, 2);
+                            this.AddButton(455, 198, 0x8B0, 0x8B0, 0, GumpButtonType.Page, 2);
                             break;
                         case 2:
-                            AddButton(70, 198, 0x8AF, 0x8AF, 0, GumpButtonType.Page, 1);
-                            break;
+                            this.AddButton(70, 198, 0x8AF, 0x8AF, 0, GumpButtonType.Page, 1);
+                            break;	
                     }
                 }
             }
 
             public override void OnResponse(NetState sender, RelayInfo info)
             {
-                if (m_Shield == null || m_Shield.Deleted)
-                    return;
-
-                Mobile m = sender.Mobile;
-
+                if (this.m_Shield == null || this.m_Shield.Deleted)
+                    return;		
+				
+                Mobile m = sender.Mobile;	
+			
                 if (info.ButtonID >= Start && info.ButtonID <= End)
                 {
                     if ((info.ButtonID & 0x1) == 0 && info.ButtonID < 0x1582 || info.ButtonID >= 0x1582 && info.ButtonID <= 0x1585)
                     {
                         m.SendLocalizedMessage(1049780); // Where would you like to place this decoration?
-                        m.Target = new InternalTarget(m_Shield, info.ButtonID);
+                        m.Target = new InternalTarget(this.m_Shield, info.ButtonID);
                     }
                 }
             }
@@ -292,16 +302,16 @@ namespace Server.Items
             public InternalTarget(DecorativeShieldDeed shield, int itemID)
                 : base(-1, true, TargetFlags.None)
             {
-                m_Shield = shield;
-                m_ItemID = itemID;
+                this.m_Shield = shield;
+                this.m_ItemID = itemID;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Shield == null || m_Shield.Deleted)
+                if (this.m_Shield == null || this.m_Shield.Deleted)
                     return;
-
-                if (m_Shield.IsChildOf(from.Backpack))
+					
+                if (this.m_Shield.IsChildOf(from.Backpack))
                 {
                     BaseHouse house = BaseHouse.FindHouseAt(from);
 
@@ -309,42 +319,42 @@ namespace Server.Items
                     {
                         IPoint3D p = targeted as IPoint3D;
                         Map map = from.Map;
-
+						
                         if (p == null || map == null)
                             return;
-
+							
                         Point3D p3d = new Point3D(p);
-                        ItemData id = TileData.ItemTable[m_ItemID & TileData.MaxItemValue];
-
+                        ItemData id = TileData.ItemTable[this.m_ItemID & TileData.MaxItemValue];
+						
                         if (map.CanFit(p3d, id.Height))
                         {
                             house = BaseHouse.FindHouseAt(p3d, map, id.Height);
-
+							
                             if (house != null && house.IsOwner(from))
                             {
                                 bool north = BaseAddon.IsWall(p3d.X, p3d.Y - 1, p3d.Z, map);
                                 bool west = BaseAddon.IsWall(p3d.X - 1, p3d.Y, p3d.Z, map);
-
+															
                                 if (north && west)
                                 {
                                     from.CloseGump(typeof(FacingGump));
-                                    from.SendGump(new FacingGump(m_Shield, m_ItemID, p3d, house));
+                                    from.SendGump(new FacingGump(this.m_Shield, this.m_ItemID, p3d, house));
                                 }
                                 else if (north || west)
                                 {
                                     DecorativeShield shield = null;
-
+									
                                     if (north)
-                                        shield = new DecorativeShield(m_ItemID);
+                                        shield = new DecorativeShield(this.m_ItemID);
                                     else if (west)
-                                        shield = new DecorativeShield(GetWestItemID(m_ItemID));
-
+                                        shield = new DecorativeShield(GetWestItemID(this.m_ItemID));
+										
                                     house.Addons[shield] = from;
 
-                                    shield.IsRewardItem = m_Shield.IsRewardItem;
+                                    shield.IsRewardItem = this.m_Shield.IsRewardItem;
                                     shield.MoveToWorld(p3d, map);
 
-                                    m_Shield.Delete();
+                                    this.m_Shield.Delete();
                                 }
                                 else
                                     from.SendLocalizedMessage(1049781); // This decoration must be placed next to a wall.		
@@ -371,24 +381,24 @@ namespace Server.Items
                 public FacingGump(DecorativeShieldDeed shield, int itemID, Point3D location, BaseHouse house)
                     : base(150, 50)
                 {
-                    m_Shield = shield;
-                    m_ItemID = itemID;
-                    m_Location = location;
-                    m_House = house;
+                    this.m_Shield = shield;
+                    this.m_ItemID = itemID;
+                    this.m_Location = location;
+                    this.m_House = house;
+				
+                    this.Closable = true;
+                    this.Disposable = true;
+                    this.Dragable = true;
+                    this.Resizable = false;
 
-                    Closable = true;
-                    Disposable = true;
-                    Dragable = true;
-                    Resizable = false;
+                    this.AddPage(0);
+                    this.AddBackground(0, 0, 300, 150, 0xA28);
+					
+                    this.AddItem(90, 30, GetWestItemID(itemID));
+                    this.AddItem(180, 30, itemID);
 
-                    AddPage(0);
-                    AddBackground(0, 0, 300, 150, 0xA28);
-
-                    AddItem(90, 30, GetWestItemID(itemID));
-                    AddItem(180, 30, itemID);
-
-                    AddButton(50, 35, 0x867, 0x869, (int)Buttons.East, GumpButtonType.Reply, 0);
-                    AddButton(145, 35, 0x867, 0x869, (int)Buttons.South, GumpButtonType.Reply, 0);
+                    this.AddButton(50, 35, 0x867, 0x869, (int)Buttons.East, GumpButtonType.Reply, 0);					
+                    this.AddButton(145, 35, 0x867, 0x869, (int)Buttons.South, GumpButtonType.Reply, 0);
                 }
 
                 private enum Buttons
@@ -399,24 +409,24 @@ namespace Server.Items
                 }
                 public override void OnResponse(NetState sender, RelayInfo info)
                 {
-                    if (m_Shield == null || m_Shield.Deleted || m_House == null)
-                        return;
-
-                    DecorativeShield shield = null;
-
+                    if (this.m_Shield == null || this.m_Shield.Deleted || this.m_House == null)
+                        return;		
+					
+                    DecorativeShield shield = null;	
+				
                     if (info.ButtonID == (int)Buttons.East)
-                        shield = new DecorativeShield(GetWestItemID(m_ItemID));
+                        shield = new DecorativeShield(GetWestItemID(this.m_ItemID));
                     if (info.ButtonID == (int)Buttons.South)
-                        shield = new DecorativeShield(m_ItemID);
-
+                        shield = new DecorativeShield(this.m_ItemID);
+						
                     if (shield != null)
                     {
-                        m_House.Addons[shield] = sender.Mobile;
+                        this.m_House.Addons[shield] = sender.Mobile;
 
-                        shield.IsRewardItem = m_Shield.IsRewardItem;
-                        shield.MoveToWorld(m_Location, sender.Mobile.Map);
+                        shield.IsRewardItem = this.m_Shield.IsRewardItem;
+                        shield.MoveToWorld(this.m_Location, sender.Mobile.Map);
 
-                        m_Shield.Delete();
+                        this.m_Shield.Delete();
                     }
                 }
             }

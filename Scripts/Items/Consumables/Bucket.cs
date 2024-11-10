@@ -1,4 +1,4 @@
-namespace Server.Items
+﻿namespace Server.Items
 {
     class Bucket : BaseWaterContainer
     {
@@ -12,7 +12,7 @@ namespace Server.Items
 
         [Constructable]
         public Bucket(bool filled)
-            : base((filled) ? fItemID : vItemID, filled)
+            : base((filled) ? Bucket.fItemID : Bucket.vItemID, filled)
         {
         }
 
@@ -21,14 +21,32 @@ namespace Server.Items
         {
         }
 
-        public override int voidItem_ID => vItemID;
-        public override int fullItem_ID => fItemID;
-        public override int MaxQuantity => 25;
+        public override int voidItem_ID
+        {
+            get
+            {
+                return vItemID;
+            }
+        }
+        public override int fullItem_ID
+        {
+            get
+            {
+                return fItemID;
+            }
+        }
+        public override int MaxQuantity
+        {
+            get
+            {
+                return 25;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

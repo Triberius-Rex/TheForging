@@ -1,3 +1,6 @@
+using System;
+using Server.Gumps;
+
 namespace Server.Items
 {
     public class GreyGoblinStatuette : MonsterStatuette
@@ -118,7 +121,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
             writer.Write(User);
         }
 

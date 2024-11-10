@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class RingOfTheSavant : GoldRing
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public RingOfTheSavant()
         {
@@ -17,7 +19,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1077608;// Ring of the Savant
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1077608;
+            }
+        }// Ring of the Savant
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

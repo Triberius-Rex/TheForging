@@ -1,6 +1,7 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -8,16 +9,22 @@ namespace Server.Items
     {
         public static Dictionary<Mobile, Timer> ProtectionTable = new Dictionary<Mobile, Timer>();
 
-        public override int KeyCount => 16;
-        public override MasterKey MasterKey => new ParoxysmusKey();
+        public override int KeyCount { get { return 16; } }
+        public override MasterKey MasterKey { get { return new ParoxysmusKey(); } }
 
-        public override Type[] Keys => new Type[]
+        public override Type[] Keys
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof( CoagulatedLegs ), typeof( PartiallyDigestedTorso ),
                     typeof( GelatanousSkull ), typeof( SpleenOfThePutrefier )
                 };
+            }
+        }
 
-        public override BasePeerless Boss => new ChiefParoxysmus();
+        public override BasePeerless Boss { get { return new ChiefParoxysmus(); } }
 
         [Constructable]
         public ParoxysmusAltar() : base(0x207A)
@@ -29,9 +36,12 @@ namespace Server.Items
             ExitDest = new Point3D(5623, 3038, 15);
         }
 
-        public override Rectangle2D[] BossBounds => m_Bounds;
+        public override Rectangle2D[] BossBounds
+        {
+            get { return m_Bounds; }
+        }
 
-        private readonly Rectangle2D[] m_Bounds = new Rectangle2D[]
+        private Rectangle2D[] m_Bounds = new Rectangle2D[]
         {
             new Rectangle2D(6501, 351, 35, 48),
         };
@@ -71,11 +81,11 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(ProtectionTable.Count);
 
-            foreach (KeyValuePair<Mobile, Timer> kvp in ProtectionTable)
+            foreach (var kvp in ProtectionTable)
             {
                 writer.Write(kvp.Key);
                 writer.Write(kvp.Value.Next);
@@ -174,9 +184,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(Altar);
+            writer.Write((Item)Altar);
         }
 
         public override void Deserialize(GenericReader reader)

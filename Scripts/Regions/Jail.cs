@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 
 namespace Server.Regions
@@ -9,7 +10,7 @@ namespace Server.Regions
         {
         }
 
-        public override bool AllowAutoClaim(Mobile from)
+        public override bool AllowAutoClaim( Mobile from )
         {
             return false;
         }

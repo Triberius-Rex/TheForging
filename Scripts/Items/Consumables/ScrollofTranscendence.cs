@@ -1,19 +1,37 @@
-using Server.Accounting;
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
+using Server.Accounting;
 
 namespace Server.Items
 {
     [TypeAlias("Server.Items.ScrollofTranscendence")]
     public class ScrollOfTranscendence : SpecialScroll, IAccountRestricted
     {
-        public override int LabelNumber => 1094934;// Scroll of Transcendence
-
-        public override int Message => 1094933;/*Using a Scroll of Transcendence for a given skill will permanently increase your current 
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1094934;
+            }
+        }// Scroll of Transcendence
+		
+        public override int Message
+        {
+            get
+            {
+                return 1094933;
+            }
+        }/*Using a Scroll of Transcendence for a given skill will permanently increase your current 
         *level in that skill by the amount of points displayed on the scroll.
         *As you may not gain skills beyond your maximum skill cap, any excess points will be lost.*/
-
-        public override string DefaultTitle => string.Format("<basefont color=#FFFFFF>Scroll of Transcendence ({0} Skill):</basefont>", Value);
+																
+        public override string DefaultTitle
+        {
+            get
+            {
+                return String.Format("<basefont color=#FFFFFF>Scroll of Transcendence ({0} Skill):</basefont>", Value);
+            }
+        }
 
         public static ScrollOfTranscendence CreateRandom(int min, int max)
         {
@@ -29,7 +47,7 @@ namespace Server.Items
             : this(SkillName.Alchemy, 0.0)
         {
         }
-
+		
         [Constructable]
         public ScrollOfTranscendence(SkillName skill, double value)
             : base(skill, value)
@@ -49,20 +67,20 @@ namespace Server.Items
 
             list.Add(1076759, "{0}\t{1:0.0} Skill Points", GetName(), Value);
 
-            if (!string.IsNullOrEmpty(Account))
+            if (!String.IsNullOrEmpty(Account))
                 list.Add(1155526); // Account Bound
         }
-
+		
         public override bool CanUse(Mobile from)
         {
             if (!base.CanUse(from))
                 return false;
-
+			
             PlayerMobile pm = from as PlayerMobile;
-
+			
             if (pm == null)
                 return false;
-
+			
             #region Scroll of Alacrity
             if (pm.AcceleratedStart > DateTime.UtcNow)
             {
@@ -71,7 +89,7 @@ namespace Server.Items
             }
             #endregion
 
-            if (!string.IsNullOrEmpty(Account))
+            if (!String.IsNullOrEmpty(Account))
             {
                 Account acct = pm.Account as Account;
 
@@ -89,11 +107,11 @@ namespace Server.Items
         {
             if (!CanUse(from))
                 return;
-
+			
             double tskill = from.Skills[Skill].Base; // value of skill without item bonuses etc
             double tcap = from.Skills[Skill].Cap; // maximum value permitted
             bool canGain = false;
-
+			
             double newValue = Value;
 
             if ((tskill + newValue) > tcap)
@@ -119,7 +137,7 @@ namespace Server.Items
                 else
                     canGain = true;
             }
-
+			
             if (!canGain)
             {
                 from.SendLocalizedMessage(1094935);	/*You cannot increase this skill at this time. The skill may be locked or set to lower in your skill menu.
@@ -128,7 +146,7 @@ namespace Server.Items
             }
 
             from.SendLocalizedMessage(1049513, GetNameLocalized()); // You feel a surge of magic as the scroll enhances your ~1_type~!
-
+					
             from.Skills[Skill].Base += newValue;
 
             Effects.PlaySound(from.Location, from.Map, 0x1F7);
@@ -137,12 +155,12 @@ namespace Server.Items
 
             Delete();
         }
-
+		
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(Account);
         }

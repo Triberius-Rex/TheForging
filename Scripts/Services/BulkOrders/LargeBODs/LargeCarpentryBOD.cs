@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Engines.BulkOrders
 {
     public class LargeCarpentryBOD : LargeBOD
     {
-        public override BODType BODType => BODType.Carpentry;
+        public override BODType BODType { get { return BODType.Carpentry; } }
 
         public static double[] m_CarpentryingMaterialChances = new double[]
         {
@@ -60,20 +61,20 @@ namespace Server.Engines.BulkOrders
             else
                 material = BulkMaterialType.None;
 
-            Hue = hue;
-            AmountMax = amountMax;
-            Entries = entries;
-            RequireExceptional = reqExceptional;
-            Material = material;
+            this.Hue = hue;
+            this.AmountMax = amountMax;
+            this.Entries = entries;
+            this.RequireExceptional = reqExceptional;
+            this.Material = material;
         }
 
         public LargeCarpentryBOD(int amountMax, bool reqExceptional, BulkMaterialType mat, LargeBulkEntry[] entries)
         {
-            Hue = 1512;
-            AmountMax = amountMax;
-            Entries = entries;
-            RequireExceptional = reqExceptional;
-            Material = mat;
+            this.Hue = 1512;
+            this.AmountMax = amountMax;
+            this.Entries = entries;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
         }
 
         public LargeCarpentryBOD(Serial serial)
@@ -130,7 +131,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

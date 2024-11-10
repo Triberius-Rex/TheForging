@@ -1,101 +1,105 @@
-using Server.Engines.Points;
-using Server.Engines.SeasonalEvents;
-using Server.Items;
-using Server.Mobiles;
-using Server.Multis;
-using Server.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Mobiles;
+using Server.ContextMenus;
+using Server.Engines.Points;
+using Server.Engines;
+using Server.Items;
+using Server.Multis;
+using Server.Regions;
+using Server.Engines.SeasonalEvents;
 
 namespace Server.Engines.CityLoyalty
 {
     public enum TradeTitle
     {
-        Trader = 1151739,
-        Exporter = 1151741,
-        Broker = 1151743,
-        Tycoon = 1151745,
-        Smuggler = 1151747,
-        Magnate = 1155481
+        Trader      = 1151739,
+        Exporter    = 1151741,
+        Broker      = 1151743,
+        Tycoon      = 1151745,
+        Smuggler    = 1151747,
+        Magnate     = 1155481
     }
 
-    public class CityTradeSystem : PointsSystem
-    {
+	public class CityTradeSystem : PointsSystem
+	{
         public static readonly int TurnInGold = Config.Get("CityTrading.TurnInGold", 10000);
         public static readonly int CrateDuration = Config.Get("CityTrading.CrateDuration", 24);
         public static readonly int AmbushWaitDuration = Config.Get("CityTrading.AmbushWaitDuration", 5);
         public static readonly int AmbusherDelete = Config.Get("CityTrading.AmbusherDelete", 10);
 
-        public override TextDefinition Name => new TextDefinition("City Trading");
-        public override PointsType Loyalty => PointsType.CityTrading;
-        public override bool AutoAdd => false;
-        public override double MaxPoints => double.MaxValue;
-        public override bool ShowOnLoyaltyGump => false;
+        public override TextDefinition Name { get { return new TextDefinition("City Trading"); } }
+        public override PointsType Loyalty { get { return PointsType.CityTrading; } }
+        public override bool AutoAdd { get { return false; } }
+        public override double MaxPoints { get { return double.MaxValue; } }
+        public override bool ShowOnLoyaltyGump { get { return false; } }
 
-        public static bool KrampusEncounterActive => KrampusEvent.Instance.Running;
+        public static bool KrampusEncounterActive { get { return KrampusEncounter.Enabled && KrampusEncounter.Encounter != null; } }
 
         public static Dictionary<Mobile, TradeOrderCrate> ActiveTrades { get; private set; }
         public static Dictionary<BaseCreature, DateTime> Ambushers { get; private set; }
-
-        public CityTradeSystem()
-        {
-            ActiveTrades = new Dictionary<Mobile, TradeOrderCrate>();
+		
+		public CityTradeSystem() 
+		{
+			ActiveTrades = new Dictionary<Mobile, TradeOrderCrate>();
 
             _NameBuffer = new Dictionary<Type, string>();
-        }
+		}
 
         public override PointsEntry GetSystemEntry(PlayerMobile pm)
         {
             return new CityTradeEntry(pm);
         }
 
-        public int GetMaxTrades(Mobile m)
-        {
+		public int GetMaxTrades(Mobile m)
+		{
             CityTradeEntry entry = GetPlayerEntry<CityTradeEntry>(m as PlayerMobile);
 
-            if (entry == null)
-                return 1;
+			if(entry == null)
+				return 1;
 
             return Math.Min(8, Math.Max(1, (entry.Completed / 25) + 1));
-        }
-
-        public static bool HasTrade(Mobile from)
-        {
+		}
+		
+		public static bool HasTrade(Mobile from)
+		{
             return ActiveTrades.ContainsKey(from);
-        }
-
-        public bool HasTurnIn(Mobile from, TradeMinister minister)
-        {
-            if (from == null || minister == null || !ActiveTrades.ContainsKey(from) || ActiveTrades[from] == null)
-                return false;
+		}
+		
+		public bool HasTurnIn(Mobile from, TradeMinister minister)
+		{
+			if(from == null || minister == null || !ActiveTrades.ContainsKey(from) || ActiveTrades[from] == null)
+				return false;
 
             TradeOrderCrate crate = ActiveTrades[from];
 
             return crate.Entry != null && crate.Entry.Origin != minister.City;
-        }
-
-        public bool TryOfferTrade(Mobile from, TradeMinister minister)
-        {
-            if (from == null || from.Backpack == null)
-                return true;
+		}
+		
+		public bool TryOfferTrade(Mobile from, TradeMinister minister)
+		{
+			if(from == null || from.Backpack == null)
+				return true;
 
             if (ActiveTrades.ContainsKey(from))
             {
                 minister.SayTo(from, 1151722); // It appears you are already delivering a trade order. Deliver your current order before requesting another.
             }
-            else if (KrampusEncounterActive && (KrampusEvent.Instance.Krampus != null || KrampusEvent.Instance.KrampusSpawning))
+            else if (KrampusEncounterActive && (KrampusEncounter.Encounter.Krampus != null || KrampusEncounter.Encounter.KrampusSpawning))
             {
-                Point3D p = KrampusEvent.Instance.SpawnLocation;
-                Map map = KrampusEvent.Instance.SpawnMap;
+                var p = KrampusEncounter.Encounter.SpawnLocation;
+                var map = KrampusEncounter.Encounter.SpawnMap;
 
                 minister.SayTo(
                     from,
                     1158790,
-                    string.Format("{0}\t{1}",
+                    String.Format("{0}\t{1}",
                     WorldLocationInfo.GetLocationString(p, map),
                     Sextant.GetCoords(p, map)), 1150);
-                // Take notice! The vile Krampus has been spotted near ~2_where~ at ~1_coords~!  New Trade Orders are suspended until Krampus has been defeated!
+                    // Take notice! The vile Krampus has been spotted near ~2_where~ at ~1_coords~!  New Trade Orders are suspended until Krampus has been defeated!
             }
             else
             {
@@ -124,11 +128,6 @@ namespace Server.Engines.CityLoyalty
 
                     if (t != null)
                     {
-                        if (entry.Details.Any(x => x.ItemType.Name == t.Name))
-                        {
-                            continue;
-                        }
-                        
                         int amount = Utility.RandomList(5, 10, 15, 20);
                         entry.Details.Add(new TradeEntry.TradeDetails(t, worth, amount, name));
                     }
@@ -149,25 +148,25 @@ namespace Server.Engines.CityLoyalty
 
                 return true;
             }
-
-            return false;
-        }
-
-        public bool TryTurnIn(Mobile from, TradeOrderCrate order, Mobile turninMobile)
-        {
+			
+			return false;
+		}
+		
+		public bool TryTurnIn(Mobile from, TradeOrderCrate order, Mobile turninMobile)
+		{
             if (order == null || from == null || turninMobile == null || order.Entry == null)
-                return false;
-
-            TradeEntry entry = order.Entry;
+				return false;
+				
+			TradeEntry entry = order.Entry;
             TradeMinister minister = turninMobile as TradeMinister;
 
-            if (from.AccessLevel == AccessLevel.Player && minister != null && minister.City != entry.Destination)
-                turninMobile.SayTo(from, 1151738, string.Format("#{0}", CityLoyaltySystem.GetCityLocalization(entry.Destination))); // Begging thy pardon, but those goods are destined for the City of ~1_city~
-            else if (!order.Fulfilled)
+			if(from.AccessLevel == AccessLevel.Player && minister != null && minister.City != entry.Destination)
+                turninMobile.SayTo(from, 1151738, String.Format("#{0}", CityLoyaltySystem.GetCityLocalization(entry.Destination))); // Begging thy pardon, but those goods are destined for the City of ~1_city~
+			else if(!order.Fulfilled)
                 turninMobile.SayTo(from, 1151732); // This trade order has not been fulfilled.  Fill the trade order with all necessary items and try again.
-            else
-            {
-                CityLoyaltySystem.OnTradeComplete(from, order.Entry);
+			else
+			{
+				CityLoyaltySystem.OnTradeComplete(from, order.Entry);
                 CityTradeEntry pentry = GetPlayerEntry<CityTradeEntry>(from as PlayerMobile);
 
                 if (pentry != null)
@@ -177,13 +176,13 @@ namespace Server.Engines.CityLoyalty
                     pentry.Completed++;
                     CheckTitle(pentry);
                 }
-
-                order.Delete();
+				
+				order.Delete();
                 return true;
-            }
+			}
 
             return false;
-        }
+		}
 
         public bool TryTurnInToSlim(Mobile from, TradeOrderCrate order, SlimTheFence slim)
         {
@@ -227,45 +226,36 @@ namespace Server.Engines.CityLoyalty
                 case 150: entry.Player.AddRewardTitle((int)TradeTitle.Magnate); break;
             }
 
-            if (entry.CompletedSlim == 50)
+            if(entry.CompletedSlim == 50)
                 entry.Player.AddRewardTitle((int)TradeTitle.Smuggler);
         }
 
         public override void OnPlayerAdded(PlayerMobile m)
         {
             m.Backpack.DropItem(new MysteriousNote());
-            m.PrivateOverheadMessage(Network.MessageType.Regular, 1150, 1151734, m.NetState); // *A passerby slips a rolled bit of parchment into your hand...*
+            m.PrivateOverheadMessage(Server.Network.MessageType.Regular, 1150, 1151734, m.NetState); // *A passerby slips a rolled bit of parchment into your hand...*
         }
-
-        public static void CancelTradeOrder(Mobile from, TradeOrderCrate crate)
-        {
+		
+		public static void CancelTradeOrder(Mobile from, TradeOrderCrate crate)
+		{
             if (from == null)
                 from = crate.Owner;
 
             if (from != null)
             {
-                var items = new List<Item>(crate.Items);
-
-                for (int i = 0; i < items.Count; i++)
+                crate.Items.ForEach(i =>
                 {
-                    from.Backpack.DropItem(items[i]);
-                }
+                    from.Backpack.DropItem(i);
+                });
 
-                ColUtility.Free(items);
+                CityTradeEntry entry = CityLoyaltySystem.CityTrading.GetPlayerEntry<CityTradeEntry>(from as PlayerMobile, true);
 
-                if (from is PlayerMobile pm)
-                {
-                    CityTradeEntry entry = CityLoyaltySystem.CityTrading.GetPlayerEntry<CityTradeEntry>(pm, true);
-
-                    if (entry != null)
-                    {
-                        entry.Canceled++;
-                    }
-                }
+                if (entry != null)
+                    entry.Canceled++;
             }
-
-            crate.Delete();
-        }
+			
+			crate.Delete();
+		}
 
         private Dictionary<Type, string> _NameBuffer;
 
@@ -298,34 +288,34 @@ namespace Server.Engines.CityLoyalty
             Console.WriteLine("WARNING: Using Fallback name for: {0}", t.Name);
             return fallbackname;
         }
-
-        public void RemoveCrate(Mobile from, TradeOrderCrate crate)
-        {
-            if (ActiveTrades.ContainsKey(from))
-            {
+		
+		public void RemoveCrate(Mobile from, TradeOrderCrate crate)
+		{
+			if(ActiveTrades.ContainsKey(from))
+			{
                 ActiveTrades.Remove(from);
-            }
-        }
+			}
+		}
 
-        public static void OnQuickTravelUsed(Mobile from)
+        public static void OnPublicMoongateUsed(Mobile from)
         {
             if (ActiveTrades.ContainsKey(from))
             {
                 ActiveTrades[from].Entry.Distance = 0;
             }
         }
-
-        public static int GetDistance(TradeMinister origin, City destination)
-        {
+		
+		public static int GetDistance(TradeMinister origin, City destination)
+		{
             TradeMinister destMinister = TradeMinister.Ministers.FirstOrDefault(m => m.City == destination);
-
-            if (destMinister != null)
-            {
-                return (int)origin.GetDistanceToSqrt(destMinister.Location);
-            }
-
-            return 0;
-        }
+			
+			if(destMinister != null)
+			{
+				return (int)origin.GetDistanceToSqrt(destMinister.Location);
+			}
+			
+			return 0;
+		}
 
         public static Type GetRandomTrade(City originCity, City dest, ref int worth, ref string name)
         {
@@ -367,7 +357,7 @@ namespace Server.Engines.CityLoyalty
             List<TradeOrderCrate> crates = new List<TradeOrderCrate>(ActiveTrades.Values);
             List<BaseCreature> toDelete = new List<BaseCreature>();
 
-            foreach (TradeOrderCrate c in crates)
+            foreach (var c in crates)
             {
                 if (c.Expired)
                 {
@@ -508,7 +498,7 @@ namespace Server.Engines.CityLoyalty
                     bc.RawStr += (int)(bc.RawStr * difficulty);
                     bc.RawInt += (int)(bc.RawInt * difficulty);
                     bc.RawDex += (int)(bc.RawDex * difficulty);
-
+                    
                     if (bc.HitsMaxSeed == -1)
                         bc.HitsMaxSeed = bc.RawStr;
 
@@ -544,7 +534,7 @@ namespace Server.Engines.CityLoyalty
                 }
             }
 
-            m.LocalOverheadMessage(Network.MessageType.Regular, 1150, 1155479); // *Your keen senses alert you to an incoming ambush of attackers!*
+            m.LocalOverheadMessage(Server.Network.MessageType.Regular, 1150, 1155479); // *Your keen senses alert you to an incoming ambush of attackers!*
             m.SendLocalizedMessage(1049330, "", 0x22); // You have been ambushed! Fight for your honor!!!
         }
 
@@ -552,7 +542,7 @@ namespace Server.Engines.CityLoyalty
         {
             if (KrampusEncounterActive)
             {
-                return KrampusEvent.Instance.GetCreatureTypes(m, wet);
+                return KrampusEncounter.Encounter.GetCreatureTypes(m, wet);
             }
 
             return wet ? _SeaTypes : _LandTypes;
@@ -574,12 +564,12 @@ namespace Server.Engines.CityLoyalty
             }
         }
 
-        private static readonly Type[] _SeaTypes =
+        private static Type[] _SeaTypes =
         {
             typeof(SeaSerpent), typeof(DeepSeaSerpent), typeof(Kraken), typeof(WaterElemental)
         };
 
-        private static readonly Type[] _LandTypes =
+        private static Type[] _LandTypes =
         {
             typeof(Troll), typeof(Ettin), typeof(GiantSpider), typeof(Brigand)
         };
@@ -632,7 +622,7 @@ namespace Server.Engines.CityLoyalty
                 impassable = id.Impassable;
 
                 wet = (id.Flags & TileFlag.Wet) != 0;
-
+                
                 if (cantwalk && !wet)
                 {
                     impassable = true;
@@ -651,7 +641,7 @@ namespace Server.Engines.CityLoyalty
 
             IPooledEnumerable eable = map.GetItemsInRange(new Point3D(x, y, z), 0);
 
-            foreach (Item item in eable)
+            foreach(Item item in eable)
             {
                 if (item.ItemID < 0x4000)
                 {
@@ -688,7 +678,7 @@ namespace Server.Engines.CityLoyalty
             {
                 eable = map.GetMobilesInRange(new Point3D(x, y, z), 0);
 
-                foreach (Mobile m in eable)
+                foreach(Mobile m in eable)
                 {
                     if (m.AccessLevel == AccessLevel.Player || !m.Hidden)
                     {
@@ -707,36 +697,36 @@ namespace Server.Engines.CityLoyalty
         }
 
         [PropertyObject]
-        public class CityTradeEntry : PointsEntry
-        {
+		public class CityTradeEntry : PointsEntry
+		{
             [CommandProperty(AccessLevel.GameMaster)]
-            public int Canceled { get; set; }
+			public int Canceled { get; set; }
 
             [CommandProperty(AccessLevel.GameMaster)]
-            public int DistanceTraveled { get; set; }
+			public int DistanceTraveled { get; set; }
 
             [CommandProperty(AccessLevel.GameMaster)]
             public int Completed { get; set; }
 
             [CommandProperty(AccessLevel.GameMaster)]
             public int CompletedSlim { get; set; }
-
-            public CityTradeEntry(PlayerMobile pm) : base(pm)
-            {
-            }
+			
+			public CityTradeEntry(PlayerMobile pm) : base(pm)
+			{
+			}
 
             public override string ToString()
             {
                 return "...";
             }
-
-            public override void Serialize(GenericWriter writer)
-            {
-                base.Serialize(writer);
-                writer.Write(1);
-
-                writer.Write(Canceled);
-                writer.Write(DistanceTraveled);
+			
+			public override void Serialize(GenericWriter writer)
+			{
+				base.Serialize(writer);
+				writer.Write(1);
+				
+				writer.Write(Canceled);
+				writer.Write(DistanceTraveled);
                 writer.Write(Completed);
 
                 writer.Write(Ambushers == null ? 0 : Ambushers.Count);
@@ -748,15 +738,15 @@ namespace Server.Engines.CityLoyalty
                         writer.Write(kvp.Value);
                     }
                 }
-            }
-
-            public override void Deserialize(GenericReader reader)
-            {
-                base.Deserialize(reader);
-                int version = reader.ReadInt();
-
-                Canceled = reader.ReadInt();
-                DistanceTraveled = reader.ReadInt();
+			}
+			
+			public override void Deserialize(GenericReader reader)
+			{
+				base.Deserialize(reader);
+				int version = reader.ReadInt();
+				
+				Canceled = reader.ReadInt();
+				DistanceTraveled = reader.ReadInt();
                 Completed = reader.ReadInt();
 
                 int count = reader.ReadInt();
@@ -789,15 +779,15 @@ namespace Server.Engines.CityLoyalty
                                 Player.AddRewardTitle(1151739);
                         });
                 }
-            }
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-
-            writer.Write(ActiveTrades.Count);
+			}
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
+			
+			writer.Write(ActiveTrades.Count);
             foreach (KeyValuePair<Mobile, TradeOrderCrate> kvp in ActiveTrades)
             {
                 writer.Write(kvp.Key);
@@ -810,14 +800,14 @@ namespace Server.Engines.CityLoyalty
                 writer.Write(kvp.Key.Name);
                 writer.Write(kvp.Value);
             }
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-
-            int count = reader.ReadInt();
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+			
+			int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
                 Mobile m = reader.ReadMobile();
@@ -838,6 +828,6 @@ namespace Server.Engines.CityLoyalty
                 if (t != null)
                     _NameBuffer[t] = name;
             }
-        }
-    }
+		}
+	}
 }

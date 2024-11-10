@@ -1,17 +1,21 @@
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Mobiles;
 using Server.Items;
 
 namespace Server.Engines.VvV
 {
     public class VvVRobe : BaseOuterTorso
-    {
+	{
         public override int LabelNumber
         {
             get
             {
-                if (Hue == ViceVsVirtueSystem.VirtueHue)
+                if (this.Hue == ViceVsVirtueSystem.VirtueHue)
                     return 1155532;
 
-                if (Hue == ViceVsVirtueSystem.ViceHue)
+                if (this.Hue == ViceVsVirtueSystem.ViceHue)
                     return 1155533;
 
                 return base.LabelNumber;
@@ -26,8 +30,8 @@ namespace Server.Engines.VvV
 
         public VvVRobe(Serial serial)
             : base(serial)
-        {
-        }
+		{
+		}
 
         public override void Serialize(GenericWriter writer)
         {
@@ -43,5 +47,5 @@ namespace Server.Engines.VvV
             if (version == 0)
                 Timer.DelayCall(() => ViceVsVirtueSystem.Instance.AddVvVItem(this));
         }
-    }
+	}
 }

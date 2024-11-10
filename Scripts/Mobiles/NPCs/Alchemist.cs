@@ -1,6 +1,6 @@
-using Server.Engines.BulkOrders;
 using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Mobiles
 {
@@ -11,12 +11,12 @@ namespace Server.Mobiles
         public Alchemist()
             : base("the alchemist")
         {
-            SetSkill(SkillName.Alchemy, 85.0, 100.0);
-            SetSkill(SkillName.TasteID, 65.0, 88.0);
+            this.SetSkill(SkillName.Alchemy, 85.0, 100.0);
+            this.SetSkill(SkillName.TasteID, 65.0, 88.0);
         }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Alchemy;
+        public override BODType BODType { get { return BODType.Alchemy; } }
 
         public override bool IsValidBulkOrder(Item item)
         {
@@ -41,26 +41,44 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.MagesGuild;
-        public override VendorShoeType ShoeType => Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.MagesGuild;
+            }
+        }
+        public override VendorShoeType ShoeType
+        {
+            get
+            {
+                return Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBAlchemist(this));
+            this.m_SBInfos.Add(new SBAlchemist(this));
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-            SetWearable(new Items.Robe(), Utility.RandomPinkHue());
+            this.AddItem(new Server.Items.Robe(Utility.RandomPinkHue()));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

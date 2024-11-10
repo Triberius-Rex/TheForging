@@ -1,12 +1,12 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Engines.BulkOrders
 {
     public class LargeTinkerBOD : LargeBOD
     {
-        public override BODType BODType => BODType.Tinkering;
+        public override BODType BODType { get { return BODType.Tinkering; } }
 
         private GemType _GemType;
 
@@ -45,10 +45,10 @@ namespace Server.Engines.BulkOrders
             LargeBulkEntry[] entries;
             bool useMaterials = true;
             bool jewelry = false;
-
+			
             int rand = Utility.Random(4);
 
-            switch (rand)
+            switch ( rand )
             {
                 default:
                 case 0:
@@ -168,7 +168,7 @@ namespace Server.Engines.BulkOrders
 
         public void AssignGemNumbers()
         {
-            foreach (LargeBulkEntry entry in Entries)
+            foreach (var entry in Entries)
             {
                 Type jewelType = entry.Details.Type;
 
@@ -198,7 +198,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)_GemType);
         }

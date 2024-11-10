@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -36,32 +37,55 @@ namespace Server.Mobiles
             Fame = 21000;
             Karma = -21000;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetSpecialAbility(SpecialAbility.AngryFire);
         }
+		public override bool CanBeParagon { get { return false; } }
+        public override void OnDeath( Container c )
+        {
+            base.OnDeath( c );
 
-        public override bool CanBeParagon => false;
+            if ( Utility.RandomDouble() < 0.25 )
+            c.DropItem( new IrksBrain() );
 
+            if ( Utility.RandomDouble() < 0.025 )
+            c.DropItem( new PaladinGloves() );
+        }
+ 
         public Irk(Serial serial)
             : base(serial)
         {
         }
 
-        public override string DefaultName => "Irk";
-        public override int DefaultHue => 0x489;
+        public override string DefaultName
+        {
+            get
+            {
+                return "Irk";
+            }
+        }
+        public override int DefaultHue
+        {
+            get
+            {
+                return 0x489;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 2);
-            AddLoot(LootPack.ArcanistScrolls);
-            AddLoot(LootPack.LootItem<IrksBrain>(25.0));
-            AddLoot(LootPack.LootItem<PaladinGloves>(2.5));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Mobiles
@@ -21,7 +22,7 @@ namespace Server.Mobiles
             Class classificaion,
             MagicalAbility magicalAbility,
             SpecialAbility[] specialAbility,
-            WeaponAbility[] weaponAbility,
+            WeaponAbility[] weaponAbility, 
             AreaEffect[] areaEffect,
             int controlmin,
             int controlmax)

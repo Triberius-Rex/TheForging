@@ -1,6 +1,6 @@
+using System;
 using Server.Network;
 using Server.Spells;
-using System;
 
 namespace Server.Items
 {
@@ -17,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1024656;// Guillotine
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1024656;
+            }
+        }// Guillotine
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -39,7 +45,7 @@ namespace Server.Items
         public GuillotineAddon()
             : base()
         {
-            AddComponent(new GuillotineComponent(), 0, 0, 0);
+            this.AddComponent(new GuillotineComponent(), 0, 0, 0);
         }
 
         public GuillotineAddon(Serial serial)
@@ -47,14 +53,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new GuillotineDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new GuillotineDeed();
+            }
+        }
         public override void OnComponentUsed(AddonComponent c, Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
                 if (Utility.RandomBool())
                 {
-                    from.Location = Location;
+                    from.Location = this.Location;
 
                     Timer.DelayCall(TimeSpan.FromSeconds(0.5), new TimerStateCallback(Activate), new object[] { c, from });
                 }
@@ -123,7 +135,7 @@ namespace Server.Items
             object[] param = (object[])obj;
 
             if (param[0] is AddonComponent && param[1] is Mobile)
-                Activate((AddonComponent)param[0], (Mobile)param[1]);
+                this.Activate((AddonComponent)param[0], (Mobile)param[1]);
         }
 
         private void Deactivate(object obj)
@@ -150,7 +162,7 @@ namespace Server.Items
         public GuillotineDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public GuillotineDeed(Serial serial)
@@ -158,8 +170,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new GuillotineAddon();
-        public override int LabelNumber => 1024656;// Guillotine
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new GuillotineAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1024656;
+            }
+        }// Guillotine
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

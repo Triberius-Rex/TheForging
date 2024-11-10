@@ -1,6 +1,7 @@
-using Server.Items;
+using System;
 using System.Collections;
 using System.IO;
+using Server.Items;
 
 namespace Server.Commands
 {
@@ -9,7 +10,7 @@ namespace Server.Commands
         private const string ExportFile = @"C:\Uo\WorldForge\items.wsc";
         public static void Initialize()
         {
-            CommandSystem.Register("ExportWSC", AccessLevel.Administrator, Export_OnCommand);
+            CommandSystem.Register("ExportWSC", AccessLevel.Administrator, new CommandEventHandler(Export_OnCommand));
         }
 
         public static void Export_OnCommand(CommandEventArgs e)

@@ -74,9 +74,8 @@ namespace Server
                                 m_Table[body] = item;
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        Diagnostics.ExceptionLogging.LogException(e);
                     }
                 }
             }

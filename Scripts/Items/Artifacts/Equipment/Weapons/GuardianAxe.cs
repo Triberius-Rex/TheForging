@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class GuardianAxe : OrnateAxe
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public GuardianAxe()
         {
@@ -15,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073545;// guardian axe
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073545;
+            }
+        }// guardian axe
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

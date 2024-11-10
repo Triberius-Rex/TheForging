@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Items
@@ -8,7 +9,7 @@ namespace Server.Items
         public LOSBlocker()
             : base(0x21A2)
         {
-            Movable = false;
+            this.Movable = false;
         }
 
         public LOSBlocker(Serial serial)
@@ -16,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override string DefaultName => "no line of sight";
+        public override string DefaultName
+        {
+            get
+            {
+                return "no line of sight";
+            }
+        }
         public static void Initialize()
         {
             TileData.ItemTable[0x21A2].Flags = TileFlag.Wall | TileFlag.NoShoot;
@@ -27,7 +34,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -36,8 +43,8 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            if (version < 1 && ItemID == 0x2199)
-                ItemID = 0x21A2;
+            if (version < 1 && this.ItemID == 0x2199)
+                this.ItemID = 0x21A2;
         }
 
         protected override Packet GetWorldPacketFor(NetState state)
@@ -57,7 +64,7 @@ namespace Server.Items
             public GMItemPacket(Item item)
                 : base(0x1A)
             {
-                EnsureCapacity(20);
+                this.EnsureCapacity(20);
 
                 // 14 base length
                 // +2 - Amount
@@ -79,18 +86,18 @@ namespace Server.Items
                 else
                     serial &= 0x7FFFFFFF;
 
-                m_Stream.Write(serial);
-                m_Stream.Write((short)(itemID & TileData.MaxItemValue));
+                this.m_Stream.Write((uint)serial);
+				this.m_Stream.Write((short)(itemID & TileData.MaxItemValue));
 
                 if (amount != 0)
-                    m_Stream.Write((short)amount);
+                    this.m_Stream.Write((short)amount);
 
                 x &= 0x7FFF;
 
                 if (direction != 0)
                     x |= 0x8000;
 
-                m_Stream.Write((short)x);
+                this.m_Stream.Write((short)x);
 
                 y &= 0x3FFF;
 
@@ -100,18 +107,18 @@ namespace Server.Items
                 if (flags != 0)
                     y |= 0x4000;
 
-                m_Stream.Write((short)y);
+                this.m_Stream.Write((short)y);
 
                 if (direction != 0)
-                    m_Stream.Write((byte)direction);
+                    this.m_Stream.Write((byte)direction);
 
-                m_Stream.Write((sbyte)loc.Z);
+                this.m_Stream.Write((sbyte)loc.Z);
 
                 if (hue != 0)
-                    m_Stream.Write((ushort)hue);
+                    this.m_Stream.Write((ushort)hue);
 
                 if (flags != 0)
-                    m_Stream.Write((byte)flags);
+                    this.m_Stream.Write((byte)flags);
             }
         }
     }

@@ -1,12 +1,14 @@
-﻿using Server.Engines.Craft;
+﻿using System;
+using Server;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefTailoring), typeof(GargishShadowCloakOfRejuvenation))]
     public class ShadowCloakOfRejuvenation : Cloak
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1115649;  // Shadow Cloak Of Rejuvenation
+        public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1115649; } } // Shadow Cloak Of Rejuvenation
 
         [Constructable]
         public ShadowCloakOfRejuvenation()
@@ -27,7 +29,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -40,8 +42,8 @@ namespace Server.Items
 
     public class GargishShadowCloakOfRejuvenation : GargishClothWingArmor
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1115649;  // Shadow Cloak Of Rejuvenation
+        public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1115649; } } // Shadow Cloak Of Rejuvenation
 
         [Constructable]
         public GargishShadowCloakOfRejuvenation()
@@ -62,7 +64,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

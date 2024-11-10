@@ -1,33 +1,42 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
-    public class SkitteringHopperCostume : BaseCostume
-    {
-        public override string CreatureName => "skittering hopper";
+	public class SkitteringHopperCostume : BaseCostume
+	{
+        public override string CreatureName { get { return "skittering hopper"; } }
 
         [Constructable]
-        public SkitteringHopperCostume() : base()
+		public SkitteringHopperCostume() : base( )
+		{
+            this.CostumeBody = 302;
+		}
+		
+		public override int LabelNumber
         {
-            CostumeBody = 302;
-        }
+            get
+            {
+                return 1114240;
+            }
+        }// skittering hopper costume
 
-        public override int LabelNumber => 1114240;// skittering hopper costume
+		public SkitteringHopperCostume( Serial serial ) : base( serial )
+		{
+		}
 
-        public SkitteringHopperCostume(Serial serial) : base(serial)
-        {
-        }
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+			writer.Write( (int) 0 );
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize( reader );
 
-            writer.Write(0);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-
-            int version = reader.ReadInt();
-        }
-    }
+			int version = reader.ReadInt();
+		}
+	}
 }

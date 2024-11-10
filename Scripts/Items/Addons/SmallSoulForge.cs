@@ -1,9 +1,12 @@
-﻿namespace Server.Items
+﻿using Server;
+using System;
+
+namespace Server.Items
 {
     public class SmallSoulForge : BaseAddon
     {
-        public override BaseAddonDeed Deed => new SmallSoulForgeDeed();
-        public override bool RetainDeedHue => true;
+        public override BaseAddonDeed Deed { get { return new SmallSoulForgeDeed(); } }
+        public override bool RetainDeedHue { get { return true; } }
 
         [Constructable]
         public SmallSoulForge()
@@ -19,7 +22,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -31,8 +34,8 @@
 
     public class SmallSoulForgeDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new SmallSoulForge();
-        public override int LabelNumber => 1149695;
+        public override BaseAddon Addon { get { return new SmallSoulForge(); } }
+        public override int LabelNumber { get { return 1149695; } } 
 
         [Constructable]
         public SmallSoulForgeDeed()
@@ -47,7 +50,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

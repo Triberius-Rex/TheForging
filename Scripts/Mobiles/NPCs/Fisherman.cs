@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,7 +10,7 @@ namespace Server.Mobiles
         public Fisherman()
             : base("the fisher")
         {
-            SetSkill(SkillName.Fishing, 75.0, 98.0);
+            this.SetSkill(SkillName.Fishing, 75.0, 98.0);
         }
 
         public Fisherman(Serial serial)
@@ -18,25 +18,37 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.FishermensGuild;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.FishermensGuild;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBFisherman());
+            this.m_SBInfos.Add(new SBFisherman());
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-            SetWearable(new FishingPole(), dropChance: 1);
+            this.AddItem(new Server.Items.FishingPole());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

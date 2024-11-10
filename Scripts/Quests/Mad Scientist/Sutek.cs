@@ -1,32 +1,32 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
     public class PerfectTimingQuest : BaseQuest
     {
         /* Perfect Timing */
-        public override object Title => 1112870;
+        public override object Title { get { return 1112870; } }
 
         /* Presumptuous, are we? You think i will just let you get your grubby hands on
 		 * my clever inventions! I think not! If you want to learn how to create these
 		 * wonders of mechanical life, you will have to prove yourself. Correctly combine
 		 * the required ingredients to build one of my inventions in a timely manner and
 		 * I might share my secrets with you. */
-        public override object Description => 1112873;
+        public override object Description { get { return 1112873; } }
 
         /* I'm not surprised. *disdainful snort*  People with both manual and mental
 		 * dexterity come in short supply. Move along then. Science does not wait for
 		 * anyone. */
-        public override object Refuse => 1112875;
+        public override object Refuse { get { return 1112875; } }
 
         /* Give your assembly the material it requests. You'll find everything lying
 		 * around here. Just use it. But be quick! */
-        public override object Uncomplete => 1112877;
+        public override object Uncomplete { get { return 1112877; } }
 
         /* There's more to you than meets the eye after all! Well done! You should enjoy
 		 * this copy of my manual. */
-        public override object Complete => 1112878;
+        public override object Complete { get { return 1112878; } }
 
         public PerfectTimingQuest()
         {
@@ -60,7 +60,7 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -72,8 +72,8 @@ namespace Server.Engines.Quests
 
     public class Sutek : MondainQuester
     {
-        private static readonly Type[] m_Quests = { typeof(PerfectTimingQuest) };
-        public override Type[] Quests => m_Quests;
+        private static Type[] m_Quests = new Type[] { typeof(PerfectTimingQuest) };
+        public override Type[] Quests { get { return m_Quests; } }
 
         [Constructable]
         public Sutek()
@@ -107,24 +107,26 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new Sandals(), dropChance: 1);
-            SetWearable(new TattsukeHakama(), 0x528, 1);
-            SetWearable(new WizardsHat(), 0x528, 1);
-			SetWearable(new Tunic(), 0x528, 1);
+            AddItem(new Sandals());
+            AddItem(new TattsukeHakama(0x528));
+            AddItem(new WizardsHat(0x528));
+            AddItem(new Tunic(0x528));
         }
 
         public void TalkTimer()
         {
-            Timer.DelayCall(TimeSpan.Zero, TimeSpan.FromSeconds(15.0), delegate
-            {
-                Say(1113224 + Utility.Random(15));
-            });
+            Timer.DelayCall(TimeSpan.Zero, TimeSpan.FromSeconds(15.0), new TimerCallback(
+                delegate
+                {
+                    Say(1113224 + Utility.Random(15));
+                }
+            ));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

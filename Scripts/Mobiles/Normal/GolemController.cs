@@ -1,14 +1,15 @@
+using System;
 using Server.Items;
 
-namespace Server.Mobiles
-{
-    [CorpseName("a golem controller corpse")]
-    public class GolemController : BaseCreature
-    {
-        [Constructable]
+namespace Server.Mobiles 
+{ 
+    [CorpseName("a golem controller corpse")] 
+    public class GolemController : BaseCreature 
+    { 
+        [Constructable] 
         public GolemController()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
-        {
+        { 
             Name = NameList.RandomName("golem controller");
             Title = "the controller";
 
@@ -45,20 +46,42 @@ namespace Server.Mobiles
 
             Fame = 4000;
             Karma = -4000;
+
+            VirtualArmor = 16;
+
+            if (0.7 > Utility.RandomDouble())
+                PackItem(new ArcaneGem());
         }
 
         public GolemController(Serial serial)
             : base(serial)
-        {
+        { 
         }
 
-        public override bool ClickTitle => false;
-        public override bool ShowFameTitle => false;
-        public override bool AlwaysMurderer => true;
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
-            AddLoot(LootPack.LootItem<ArcaneGem>(70.0));
         }
 
         public void AddArcane(Item item)
@@ -72,19 +95,19 @@ namespace Server.Mobiles
             item.Hue = ArcaneGem.DefaultArcaneHue;
             item.LootType = LootType.Newbied;
 
-            SetWearable(item);
+            AddItem(item);
         }
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
+        public override void Serialize(GenericWriter writer) 
+        { 
+            base.Serialize(writer); 
+            writer.Write((int)0); 
         }
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+        public override void Deserialize(GenericReader reader) 
+        { 
+            base.Deserialize(reader); 
+            int version = reader.ReadInt(); 
         }
     }
 }

@@ -31,9 +31,9 @@ namespace Server
         {
             if (damage < 30)
                 return;
-            if (AosWeaponAttributes.GetValue(m, AosWeaponAttribute.BattleLust) == 0)
+            else if (AosWeaponAttributes.GetValue(m, AosWeaponAttribute.BattleLust) == 0)
                 return;
-            if (m_Table.ContainsKey(m))
+            else if (m_Table.ContainsKey(m))
             {
                 if (m_Table[m].CanGain)
                 {
@@ -81,26 +81,26 @@ namespace Server
             public BattleLustTimer(Mobile m, int bonus)
                 : base(TimeSpan.FromSeconds(2.0), TimeSpan.FromSeconds(2.0))
             {
-                m_Mobile = m;
-                Bonus = bonus;
-                m_Count = 1;
+                this.m_Mobile = m;
+                this.Bonus = bonus;
+                this.m_Count = 1;
             }
 
             protected override void OnTick()
             {
-                m_Count %= 3;
+                this.m_Count %= 3;
 
-                if (m_Count == 0)
+                if (this.m_Count == 0)
                 {
-                    if (!DecreaseBattleLust(m_Mobile))
-                        Stop();
+                    if (!DecreaseBattleLust(this.m_Mobile))
+                        this.Stop();
                 }
                 else
                 {
-                    CanGain = true;
+                    this.CanGain = true;
                 }
 
-                m_Count++;
+                this.m_Count++;
             }
         }
     }

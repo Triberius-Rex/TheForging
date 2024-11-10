@@ -1,3 +1,8 @@
+using System;
+using Server;
+using Server.Items;
+using Server.Engines.MyrmidexInvasion;
+
 namespace Server.Mobiles
 {
     [CorpseName("a kotl warrior corpse")]
@@ -57,11 +62,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Rich, 2);
+            this.AddLoot(LootPack.Rich, 2);
         }
 
-        public override Poison HitPoison => Poison.Deadly;
-        public override Poison PoisonImmune => Poison.Deadly;
+        public override Poison HitPoison { get { return Poison.Deadly; } }
+        public override Poison PoisonImmune { get { return Poison.Deadly; } }
 
         public override bool IsEnemy(Mobile m)
         {

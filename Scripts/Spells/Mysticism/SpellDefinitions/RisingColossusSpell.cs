@@ -1,26 +1,29 @@
-using Server.Mobiles;
-using Server.Targeting;
 using System;
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Spells;
+using Server.Targeting;
 
 namespace Server.Spells.Mysticism
 {
-    public class RisingColossusSpell : MysticSpell
-    {
-        public override SpellCircle Circle => SpellCircle.Eighth;
+	public class RisingColossusSpell : MysticSpell
+	{
+        public override SpellCircle Circle { get { return SpellCircle.Eighth; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
-                "Rising Colossus", "Kal Vas Xen Corp Ylem",
-                230,
-                9022,
-                Reagent.DaemonBone,
-                Reagent.DragonBlood,
-                Reagent.FertileDirt,
-                Reagent.Nightshade
-            );
+		private static SpellInfo m_Info = new SpellInfo(
+				"Rising Colossus", "Kal Vas Xen Corp Ylem",
+				230,
+				9022,
+				Reagent.DaemonBone,
+				Reagent.DragonBlood,
+				Reagent.FertileDirt,
+				Reagent.Nightshade
+			);
 
-        public RisingColossusSpell(Mobile caster, Item scroll) : base(caster, scroll, m_Info)
-        {
-        }
+		public RisingColossusSpell( Mobile caster, Item scroll ) : base( caster, scroll, m_Info )
+		{
+		}
 
         public override void OnCast()
         {
@@ -63,7 +66,7 @@ namespace Server.Spells.Mysticism
 
         public class InternalTarget : Target
         {
-            private readonly RisingColossusSpell m_Owner;
+            private RisingColossusSpell m_Owner;
 
             public InternalTarget(RisingColossusSpell owner)
                 : base(12, true, TargetFlags.None)

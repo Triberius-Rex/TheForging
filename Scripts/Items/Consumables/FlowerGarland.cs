@@ -1,9 +1,12 @@
-﻿namespace Server.Items
+﻿using System;
+using Server;
+
+namespace Server.Items
 {
     public class BegFlowerGarland : FlowerGarland
     {
         [Constructable]
-        public BegFlowerGarland()
+        public BegFlowerGarland() 
         {
             ItemID = Utility.RandomDouble() > .5 ? 8965 : 8966;
         }
@@ -22,7 +25,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

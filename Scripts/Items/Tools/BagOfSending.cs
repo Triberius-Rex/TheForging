@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Network;
 using Server.Targeting;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -10,8 +10,7 @@ namespace Server.Items
     {
         Yellow,
         Blue,
-        Red,
-        Green
+        Red
     }
 
     public class BagOfSending : Item, TranslocationItem
@@ -80,11 +79,35 @@ namespace Server.Items
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
-        public int MaxCharges => 30;
+        public int MaxCharges
+        {
+            get
+            {
+                return 30;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public int MaxRecharges => 255;
-        public string TranslocationItemName => "bag of sending";
-        public override int LabelNumber => 1054104;// a bag of sending
+        public int MaxRecharges
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public string TranslocationItemName
+        {
+            get
+            {
+                return "bag of sending";
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1054104;
+            }
+        }// a bag of sending
         [CommandProperty(AccessLevel.GameMaster)]
         public BagOfSendingHue BagOfSendingHue
         {
@@ -96,7 +119,7 @@ namespace Server.Items
             {
                 m_BagOfSendingHue = value;
 
-                switch (value)
+                switch ( value )
                 {
                     case BagOfSendingHue.Yellow:
                         Hue = 0x8A5;
@@ -107,24 +130,19 @@ namespace Server.Items
                     case BagOfSendingHue.Red:
                         Hue = 0x89B;
                         break;
-                    case BagOfSendingHue.Green:
-                        Hue = 0x08A0;
-                        break;
                 }
             }
         }
         public static BagOfSendingHue RandomHue()
         {
-            switch (Utility.Random(4))
+            switch ( Utility.Random(3) )
             {
                 case 0:
                     return BagOfSendingHue.Yellow;
                 case 1:
                     return BagOfSendingHue.Blue;
-                case 2:
-                    return BagOfSendingHue.Red;
                 default:
-                    return BagOfSendingHue.Green;
+                    return BagOfSendingHue.Red;
             }
         }
 
@@ -133,6 +151,13 @@ namespace Server.Items
             base.GetProperties(list);
 
             list.Add(1060741, m_Charges.ToString()); // charges: ~1_val~
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            LabelTo(from, 1060741, m_Charges.ToString()); // charges: ~1_val~
         }
 
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
@@ -167,11 +192,11 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(1); // version
+            writer.WriteEncodedInt((int)1); // version
 
-            writer.WriteEncodedInt(m_Recharges);
+            writer.WriteEncodedInt((int)m_Recharges);
 
-            writer.WriteEncodedInt(m_Charges);
+            writer.WriteEncodedInt((int)m_Charges);
             writer.WriteEncodedInt((int)m_BagOfSendingHue);
         }
 
@@ -181,7 +206,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -265,7 +290,7 @@ namespace Server.Items
                     {
                         MessageHelper.SendLocalizedMessageTo(m_Bag, from, 1054108, 0x59); // The bag of sending rejects the cursed item.
                     }
-                    else if (!item.VerifyMove(from) || item is Engines.Quests.QuestItem || item.QuestItem)
+                    else if (!item.VerifyMove(from) || item is Server.Engines.Quests.QuestItem || item.QuestItem)
                     {
                         MessageHelper.SendLocalizedMessageTo(m_Bag, from, 1054109, 0x59); // The bag of sending rejects that item.
                     }
@@ -277,13 +302,13 @@ namespace Server.Items
                     {
                         MessageHelper.SendLocalizedMessageTo(m_Bag, from, 1054110, 0x59); // Your bank box is full.
                     }
-                    else if (reqCharges > m_Bag.Charges)
+                    else if (Core.ML && reqCharges > m_Bag.Charges)
                     {
                         from.SendLocalizedMessage(1079932); //You don't have enough charges to send that much weight
                     }
                     else
                     {
-                        m_Bag.Charges -= reqCharges;
+                        m_Bag.Charges -= (Core.ML ? reqCharges : 1);
                         MessageHelper.SendLocalizedMessageTo(m_Bag, from, 1054150, 0x59); // The item was placed in your bank box.
                     }
                 }

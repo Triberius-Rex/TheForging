@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.PathAlgorithms
 {
     public abstract class PathAlgorithm

@@ -1,12 +1,13 @@
-using Server.ContextMenus;
-using Server.Gumps;
-using Server.Mobiles;
-using Server.Multis;
+using System;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Multis;
+using Server.Mobiles;
+using Server.Gumps;
 
 namespace Server.Items
 {
-    [Flipable(0x4B20, 0x4B21)]
+    [FlipableAttribute(0x4B20, 0x4B21)]
     public class CustomizableWallSign : Item, ICustomizableMessageItem
     {
         public string[] Lines { get; set; }
@@ -23,19 +24,19 @@ namespace Server.Items
         {
             if (IsChildOf(from.Backpack))
             {
-                if (from is PlayerMobile)
+                if(from is PlayerMobile)
                     BaseGump.SendGump(new AddCustomizableMessageGump((PlayerMobile)from, this));
             }
             else
             {
                 from.SendLocalizedMessage(1116249); // That must be in your backpack for you to use it.
-            }
+            }            
         }
 
         public override void GetProperties(ObjectPropertyList list)
         {
-            base.GetProperties(list);
-
+            base.GetProperties(list);            
+            
             if (Lines != null)
             {
                 for (int i = 0; i < Lines.Length; i++)
@@ -68,12 +69,12 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(Lines.Length);
+            writer.Write((int)Lines.Length);
 
             for (int i = 0; i < Lines.Length; i++)
-                writer.Write(Lines[i]);
+                writer.Write((string)Lines[i]);
         }
 
         public override void Deserialize(GenericReader reader)

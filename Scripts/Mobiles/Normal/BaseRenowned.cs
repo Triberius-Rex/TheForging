@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -26,13 +26,19 @@ namespace Server.Mobiles
         public abstract Type[] UniqueSAList { get; }
         public abstract Type[] SharedSAList { get; }
 
-        public virtual bool NoGoodies => false;
+        public virtual bool NoGoodies
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -110,17 +116,14 @@ namespace Server.Mobiles
             if (to == null || artifact == null)
                 return;
 
+			to.PlaySound(0x5B4);
+
             Container pack = to.Backpack;
 
             if (pack == null || !pack.TryDropItem(to, artifact, false))
-            {
                 artifact.Delete();
-            }
             else
-            {
                 to.SendLocalizedMessage(1062317); // For your valor in combating the fallen beast, a special artifact has been bestowed on you.
-                to.PlaySound(0x5B4);
-            }
         }
 
         public bool IsEligible(Mobile m, Item Artifact)
@@ -153,7 +156,7 @@ namespace Server.Mobiles
 
             return artifact;
         }
-
+        
         public override bool OnBeforeDeath()
         {
             if (!NoKillAwards)

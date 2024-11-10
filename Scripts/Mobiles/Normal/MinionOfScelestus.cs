@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -13,7 +14,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Mage, FightMode.Weakest, 10, 1, 0.2, 0.4)
         {
             Name = "a minion of scelestus";
-            Body = 9;
+            Body = 9;	
             BaseSoundID = 357;
             Hue = 1159;
 
@@ -51,17 +52,17 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss);
-            AddLoot(LootPack.UltraRich);
+            this.AddLoot(LootPack.SuperBoss);
+            this.AddLoot(LootPack.UltraRich);
         }
 
-        public override int TreasureMapLevel => 4;
-        public override Poison PoisonImmune => Poison.Parasitic;
-        public override Poison HitPoison => Poison.Lethal;
-        public override bool TaintedLifeAura => true;
-        public override bool ReacquireOnMovement => true;
-        public override bool AcquireOnApproach => true;
-        public override int AcquireOnApproachRange => 12;
+		public override int TreasureMapLevel { get { return 4; } }
+        public override Poison PoisonImmune { get { return Poison.Parasitic; } }
+        public override Poison HitPoison { get { return Poison.Lethal; } }
+        public override bool TaintedLifeAura { get { return true; } }
+        public override bool ReacquireOnMovement { get { return true; } }
+        public override bool AcquireOnApproach { get { return true; } }
+        public override int AcquireOnApproachRange { get { return 12; } }
 
         public override void OnGaveMeleeAttack(Mobile defender)
         {
@@ -69,9 +70,9 @@ namespace Server.Mobiles
             {
                 if (defender is PlayerMobile)
                 {
-                    if (Spells.Ninjitsu.AnimalForm.UnderTransformation(defender))
+                    if (Server.Spells.Ninjitsu.AnimalForm.UnderTransformation(defender))
                     {
-                        defender.SendLocalizedMessage(1114066, Name); // ~1_NAME~ knocked you out of animal form!
+                        defender.SendLocalizedMessage(1114066, this.Name); // ~1_NAME~ knocked you out of animal form!
                     }
                     else if (defender.Mounted)
                     {
@@ -107,9 +108,9 @@ namespace Server.Mobiles
         {
             base.OnThink();
 
-            if (GetDistanceToSqrt(Home) > MaxWanderDistance && (Combatant == null || 0.01 > Utility.RandomDouble()))
+            if (this.GetDistanceToSqrt(Home) > MaxWanderDistance && (Combatant == null || 0.01 > Utility.RandomDouble()))
             {
-                IPooledEnumerable eable = GetMobilesInRange(10);
+                IPooledEnumerable eable = this.GetMobilesInRange(10);
                 foreach (Mobile m in eable)
                 {
                     if (m.NetState != null)
@@ -117,18 +118,18 @@ namespace Server.Mobiles
                 }
                 eable.Free();
 
-                FixedParticles(0x376A, 9, 32, 0x13AF, EffectLayer.Waist);
-                MoveToWorld(Home, Map);
+                this.FixedParticles(0x376A, 9, 32, 0x13AF, EffectLayer.Waist);
+                MoveToWorld(Home, this.Map);
             }
         }
 
-        private readonly Type[] m_Types = new Type[]
-        {
-            typeof(ChallengeRite),          typeof(AnthenaeumDecree),       typeof(LetterFromTheKing),
-            typeof(OnTheVoid),              typeof(ShilaxrinarsMemorial),   typeof(ToTheHighScholar),
-            typeof(ToTheHighBroodmother),   typeof(ReplyToTheHighScholar),  typeof(AccessToTheIsle),
-            typeof(InMemory)
-        };
+        private Type[] m_Types = new Type[]
+		{
+			typeof(ChallengeRite), 			typeof(AnthenaeumDecree), 		typeof(LetterFromTheKing),
+			typeof(OnTheVoid),				typeof(ShilaxrinarsMemorial),	typeof(ToTheHighScholar),
+			typeof(ToTheHighBroodmother),	typeof(ReplyToTheHighScholar),	typeof(AccessToTheIsle),
+			typeof(InMemory)
+		};
 
         public MinionOfScelestus(Serial serial)
             : base(serial)
@@ -139,7 +140,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

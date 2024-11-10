@@ -1,13 +1,15 @@
-using Server.Items;
+using Server;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Server.Items;
 
 namespace Server.Engines.Khaldun
 {
     public static class KhaldunRewards
     {
         public static List<CollectionItem> Rewards { get; set; }
-
+        
         public static void Initialize()
         {
             Rewards = new List<CollectionItem>();
@@ -22,6 +24,11 @@ namespace Server.Engines.Khaldun
             Rewards.Add(new CollectionItem(typeof(SterlingSilverRing), 0x1F09, 1155606, 0, 50));
             Rewards.Add(new CollectionItem(typeof(TalonsOfEscaping), 0x41D8, 1155682, 0, 50));
             Rewards.Add(new CollectionItem(typeof(BootsOfEscaping), 0x1711, 1155607, 0, 50));
+        }
+
+        public static bool IsTokunoDyable(Type t)
+        {
+            return Rewards.FirstOrDefault(item => item.Type == t) != null;
         }
     }
 }

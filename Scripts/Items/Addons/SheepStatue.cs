@@ -1,7 +1,8 @@
+using System;
 using Server.Engines.VeteranRewards;
+using Server.Gumps;
 using Server.Multis;
 using Server.Network;
-using System;
 
 namespace Server.Items
 {
@@ -13,7 +14,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextResourceCount { get; set; }
 
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         [Constructable]
         public SheepStatue(int itemID)
@@ -32,11 +33,9 @@ namespace Server.Items
         {
             get
             {
-                SheepStatueDeed deed = new SheepStatueDeed
-                {
-                    IsRewardItem = m_IsRewardItem,
-                    ResourceCount = m_ResourceCount
-                };
+                SheepStatueDeed deed = new SheepStatueDeed();
+                deed.IsRewardItem = m_IsRewardItem;
+                deed.ResourceCount = m_ResourceCount;
 
                 return deed;
             }
@@ -104,7 +103,7 @@ namespace Server.Items
 
             if (!from.InRange(GetWorldLocation(), 2) || !from.InLOS(this) || !((from.Z - Z) > -3 && (from.Z - Z) < 3))
             {
-                from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
+                from.LocalOverheadMessage(Network.MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
             }
             else if (house != null && house.HasSecureAccess(from, SecureLevel.Friends))
             {
@@ -112,7 +111,7 @@ namespace Server.Items
                 {
                     Item res = null;
 
-                    switch (Utility.Random(5))
+                    switch ( Utility.Random(5) )
                     {
                         case 0: res = new Wool(); break;
                         case 1: res = new Leather(); break;
@@ -122,21 +121,17 @@ namespace Server.Items
                     }
 
                     int amount = Math.Min(10, m_ResourceCount);
+                    res.Amount = amount;
 
-                    if (res != null)
+                    if (!from.PlaceInBackpack(res))
                     {
-                        res.Amount = amount;
-
-                        if (!from.PlaceInBackpack(res))
-                        {
-                            res.Delete();
-                            from.SendLocalizedMessage(1078837); // Your backpack is full! Please make room and try again.
-                        }
-                        else
-                        {
-                            ResourceCount -= amount;
-                            PublicOverheadMessage(MessageType.Regular, 0, 1151834, m_ResourceCount.ToString()); // Resources: ~1_COUNT~
-                        }
+                        res.Delete();
+                        from.SendLocalizedMessage(1078837); // Your backpack is full! Please make room and try again.
+                    }
+                    else
+                    {
+                        ResourceCount -= amount;
+                        PublicOverheadMessage(MessageType.Regular, 0, 1151834, m_ResourceCount.ToString()); // Resources: ~1_COUNT~
                     }
                 }
                 else
@@ -149,7 +144,7 @@ namespace Server.Items
         private class InternalAddonComponent : AddonComponent
         {
             public InternalAddonComponent(int id)
-                : base(id)
+                :base(id)
             {
             }
 
@@ -191,8 +186,8 @@ namespace Server.Items
 
             TryGiveResourceCount();
 
-            writer.Write(m_IsRewardItem);
-            writer.Write(m_ResourceCount);
+            writer.Write((bool)m_IsRewardItem);
+            writer.Write((int)m_ResourceCount);
 
             writer.Write(NextResourceCount);
         }
@@ -236,17 +231,21 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1151835;// Sheep Statue Deed
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1151835;
+            }
+        }// Sheep Statue Deed
 
         public override BaseAddon Addon
         {
             get
             {
-                SheepStatue addon = new SheepStatue(m_ResourceCount > 0 ? 0x4A94 : 0x4A95)
-                {
-                    IsRewardItem = m_IsRewardItem,
-                    ResourceCount = m_ResourceCount
-                };
+                SheepStatue addon = new SheepStatue(m_ResourceCount > 0 ? 0x4A94 : 0x4A95);
+                addon.IsRewardItem = m_IsRewardItem;
+                addon.ResourceCount = m_ResourceCount;
 
                 return addon;
             }
@@ -304,8 +303,8 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_IsRewardItem);
-            writer.Write(m_ResourceCount);
+            writer.Write((bool)m_IsRewardItem);
+            writer.Write((int)m_ResourceCount);
         }
 
         public override void Deserialize(GenericReader reader)

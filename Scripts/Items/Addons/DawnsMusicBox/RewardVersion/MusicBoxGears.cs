@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items.MusicBox
@@ -16,8 +17,8 @@ namespace Server.Items.MusicBox
         public MusicBoxGears(MusicName music)
             : base(0x1053)
         {
-            m_Music = music;
-            Weight = 1.0;
+            this.m_Music = music;
+            this.Weight = 1.0;
         }
 
         public MusicBoxGears(Serial serial)
@@ -26,7 +27,13 @@ namespace Server.Items.MusicBox
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public MusicName Music => m_Music;
+        public MusicName Music
+        {
+            get
+            {
+                return this.m_Music;
+            }
+        }
         public static MusicBoxGears RandomMusixBoxGears(TrackRarity rarity)
         {
             return new MusicBoxGears(TrackInfo.RandomSong(rarity));
@@ -39,8 +46,8 @@ namespace Server.Items.MusicBox
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            TrackInfo ti = TrackInfo.GetInfo(m_Music);
-            switch (ti.Rarity)
+            TrackInfo ti = TrackInfo.GetInfo(this.m_Music);
+            switch( ti.Rarity )
             {
                 case TrackRarity.Common:
                     list.Add(1075204);
@@ -57,16 +64,16 @@ namespace Server.Items.MusicBox
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            TrackInfo ti = TrackInfo.GetInfo(m_Music);
+			
+            TrackInfo ti = TrackInfo.GetInfo(this.m_Music);
             list.Add(ti.Label);
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
-                from.BeginTarget(3, false, TargetFlags.None, OnTarget);
+                from.BeginTarget(3, false, TargetFlags.None, new TargetCallback(OnTarget));
                 from.SendMessage("Select a Dawn's music box to add this gears to.");
             }
             else
@@ -77,7 +84,7 @@ namespace Server.Items.MusicBox
 
         public virtual void OnTarget(Mobile from, object obj)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return;
 
             DawnsMusicBox mb = obj as DawnsMusicBox;
@@ -88,10 +95,10 @@ namespace Server.Items.MusicBox
             }
             else
             {
-                if (mb.AddSong(m_Music))
+                if (mb.AddSong(this.m_Music))
                 {
                     from.SendMessage("You have added this gear to the music box.");
-                    Delete();
+                    this.Delete();
                 }
                 else
                     from.SendMessage("This gear is already present in this box.");
@@ -101,18 +108,18 @@ namespace Server.Items.MusicBox
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
-
-            writer.Write((int)m_Music);
+            
+            writer.Write((int)0); // version
+            
+            writer.Write((int)this.m_Music);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+            
             int version = reader.ReadInt();
-
+            
             MusicName m_Music = (MusicName)reader.ReadInt();
         }
     }

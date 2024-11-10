@@ -1,8 +1,8 @@
-using Server.Engines.Quests;
-using Server.Items;
 using System;
+using Server.Items;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
@@ -10,7 +10,7 @@ namespace Server.Mobiles
     public class IceWyrm : WhiteWyrm
     {
         public static List<IceWyrm> Instances { get; set; }
-
+        
         [Constructable]
         public IceWyrm()
             : base()
@@ -18,8 +18,8 @@ namespace Server.Mobiles
             Name = "Ice Wyrm";
             Hue = 2729;
             Body = 180;
-
-            SetResistance(ResistanceType.Cold, 100);
+			
+			SetResistance(ResistanceType.Cold, 100);
 
             Timer SelfDeleteTimer = new InternalSelfDeleteTimer(this);
             SelfDeleteTimer.Start();
@@ -37,11 +37,9 @@ namespace Server.Mobiles
             if (Instances != null && Instances.Count > 0)
                 return null;
 
-            IceWyrm creature = new IceWyrm
-            {
-                Home = platLoc,
-                RangeHome = 4
-            };
+            IceWyrm creature = new IceWyrm();
+            creature.Home = platLoc;
+            creature.RangeHome = 4;
             creature.MoveToWorld(platLoc, platMap);
 
             return creature;
@@ -49,9 +47,9 @@ namespace Server.Mobiles
 
         public class InternalSelfDeleteTimer : Timer
         {
-            private readonly IceWyrm Mare;
+            private IceWyrm Mare;
 
-            public InternalSelfDeleteTimer(Mobile p) : base(TimeSpan.FromMinutes(10))
+            public InternalSelfDeleteTimer(Mobile p) : base(TimeSpan.FromMinutes(60))
             {
                 Priority = TimerPriority.FiveSeconds;
                 Mare = ((IceWyrm)p);
@@ -68,7 +66,7 @@ namespace Server.Mobiles
 
         public override void OnDeath(Container c)
         {
-            List<DamageStore> rights = GetLootingRights();
+            List<DamageStore> rights = GetLootingRights();            
 
             foreach (Mobile m in rights.Select(x => x.m_Mobile).Distinct())
             {
@@ -78,8 +76,8 @@ namespace Server.Mobiles
 
                     if (pm.ExploringTheDeepQuest == ExploringTheDeepQuestChain.CusteauPerron)
                     {
-                        Item item = new IceWyrmScale();
-
+						Item item = new IceWyrmScale();
+						
                         if (m.Backpack == null || !m.Backpack.TryDropItem(m, item, false))
                         {
                             m.BankBox.DropItem(item);
@@ -87,7 +85,7 @@ namespace Server.Mobiles
 
                         m.SendLocalizedMessage(1154489); // You received a Quest Item!
                     }
-                }
+                }                
             }
 
             if (Instances != null && Instances.Contains(this))
@@ -96,16 +94,14 @@ namespace Server.Mobiles
             base.OnDeath(c);
         }
 
-        public override bool ReacquireOnMovement => true;
-
-        public override int Meat => 0;
-		public override int Scales => 0;
-        public override int Hides => 0;
-		
-		public override void GenerateLoot()
-        {
-			// Kept blank to zero out the loot created by it's base class
-        }
+        public override bool ReacquireOnMovement { get { return true; } }
+        public override int TreasureMapLevel { get { return 4; } }
+        public override int Meat { get { return 20; } }
+        public override int Hides { get { return 25; } }
+        public override HideType HideType { get { return HideType.Barbed; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat; } }
+        public override bool CanAngerOnTame { get { return true; } }
+        public override bool CanRummageCorpses { get { return true; } }
 
         public override void OnAfterDelete()
         {
@@ -122,7 +118,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -134,7 +130,7 @@ namespace Server.Mobiles
             Instances.Add(this);
 
             Timer SelfDeleteTimer = new InternalSelfDeleteTimer(this);
-            SelfDeleteTimer.Start();
+            SelfDeleteTimer.Start();     
         }
     }
 }

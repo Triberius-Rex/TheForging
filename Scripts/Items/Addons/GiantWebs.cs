@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class GiantWeb1 : BaseAddon
@@ -7,9 +9,10 @@ namespace Server.Items
         {
             int itemID = 4280;
             int count = 5;
+            bool leftToRight = false;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), count - 1 - i, -(count - 1 - i), 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb1(Serial serial)
@@ -39,9 +42,10 @@ namespace Server.Items
         {
             int itemID = 4285;
             int count = 5;
+            bool leftToRight = true;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), i, -i, 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb2(Serial serial)
@@ -71,9 +75,10 @@ namespace Server.Items
         {
             int itemID = 4290;
             int count = 4;
+            bool leftToRight = true;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), i, -i, 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb3(Serial serial)
@@ -103,9 +108,10 @@ namespace Server.Items
         {
             int itemID = 4294;
             int count = 4;
+            bool leftToRight = false;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), count - 1 - i, -(count - 1 - i), 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb4(Serial serial)
@@ -135,9 +141,10 @@ namespace Server.Items
         {
             int itemID = 4298;
             int count = 4;
+            bool leftToRight = true;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), i, -i, 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb5(Serial serial)
@@ -167,9 +174,10 @@ namespace Server.Items
         {
             int itemID = 4302;
             int count = 4;
+            bool leftToRight = false;
 
             for (int i = 0; i < count; ++i)
-                AddComponent(new AddonComponent(itemID++), count - 1 - i, -(count - 1 - i), 0);
+                this.AddComponent(new AddonComponent(itemID++), leftToRight ? i : count - 1 - i, -(leftToRight ? i : count - 1 - i), 0);
         }
 
         public GiantWeb6(Serial serial)

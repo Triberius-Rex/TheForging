@@ -1,6 +1,6 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Engines.Quests
 {
@@ -35,40 +35,94 @@ namespace Server.Engines.Quests
         {
             // Don't morph me!
         }
-        public override bool IsActiveVendor => false;
-        public override bool IsInvulnerable => true;
-        public override bool DisallowAllMoves => false;
-        public override bool ClickTitle => false;
-        public override bool CanTeach => true;
-        public virtual int AutoTalkRange => -1;
-        public virtual int AutoSpeakRange => 10;
-        public virtual TimeSpan SpeakDelay => TimeSpan.FromMinutes(1);
-        public abstract Type[] Quests { get; }
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override void InitSBInfo()
+        public override bool IsActiveVendor
         {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool DisallowAllMoves
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool CanTeach
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public virtual int AutoTalkRange
+        {
+            get
+            {
+                return -1;
+            }
+        }
+        public virtual int AutoSpeakRange
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public virtual TimeSpan SpeakDelay
+        {
+            get
+            {
+                return TimeSpan.FromMinutes(1);
+            }
+        }
+        public abstract Type[] Quests { get; }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return m_SBInfos;
+            }
+        }
+        public override void InitSBInfo()
+        { 
         }
 
         public virtual void OnTalk(PlayerMobile player)
-        {
+        { 
             if (QuestHelper.DeliveryArrived(player, this))
                 return;
-
+			
             if (QuestHelper.InProgress(player, this))
                 return;
-
+		
             if (QuestHelper.QuestLimitReached(player))
                 return;
-
+			
             // check if this quester can offer any quest chain (already started)
             foreach (KeyValuePair<QuestChain, BaseChain> pair in player.Chains)
             {
                 BaseChain chain = pair.Value;
-
+																			
                 if (chain != null && chain.Quester != null && chain.Quester == GetType())
                 {
                     BaseQuest quest = QuestHelper.RandomQuest(player, new Type[] { chain.CurrentQuest }, this);
-
+					
                     if (quest != null)
                     {
                         player.CloseGump(typeof(MondainQuestGump));
@@ -77,9 +131,9 @@ namespace Server.Engines.Quests
                     }
                 }
             }
-
+					
             BaseQuest questt = QuestHelper.RandomQuest(player, Quests, this);
-
+						
             if (questt != null)
             {
                 player.CloseGump(typeof(MondainQuestGump));
@@ -124,14 +178,14 @@ namespace Server.Engines.Quests
 
                 if (range >= 0 && InRange(m, range) && !InRange(oldLocation, range))
                     OnTalk(pm);
-
+					
                 range = AutoSpeakRange;
-
+				
                 if (InLOS(m) && range >= 0 && InRange(m, range) && !InRange(oldLocation, range) && DateTime.UtcNow >= m_Spoken + SpeakDelay)
                 {
                     if (Utility.Random(100) < 50)
                         Advertise();
-
+					
                     m_Spoken = DateTime.UtcNow;
                 }
             }
@@ -140,7 +194,7 @@ namespace Server.Engines.Quests
         public override void OnDoubleClick(Mobile m)
         {
             if (m.Alive && m is PlayerMobile)
-                OnTalk((PlayerMobile)m);
+                OnTalk((PlayerMobile)m);				
         }
 
         public override void GetProperties(ObjectPropertyList list)
@@ -159,22 +213,22 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
-
+            writer.Write((int)0); // version
+			
             if (CantWalk)
-                Frozen = true;
+                Frozen = true;	
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
 
-            int version = reader.ReadInt();
-
+            int version = reader.ReadInt();		
+			
             m_Spoken = DateTime.UtcNow;
-
+			
             if (CantWalk)
-                Frozen = true;
+                Frozen = true;	
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -5,7 +6,7 @@ namespace Server.Items
 {
     public class HABPromotionalToken : Item, IAccountRestricted
     {
-        public override int LabelNumber => 1070997;  // A promotional token
+        public override int LabelNumber { get { return 1070997; } } // A promotional token
 
         [CommandProperty(AccessLevel.GameMaster)]
         public string Account { get; set; }
@@ -30,7 +31,7 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(1070998, string.Format("#{0}", 1158657)); // Use this to redeem<br>your ~1_PROMO~
+            list.Add(1070998, String.Format("#{0}", 1158657)); // Use this to redeem<br>your ~1_PROMO~
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -237,7 +238,7 @@ namespace Server.Items
                     from.SendGump(new InternalGump(from, Token, entry));
                 }
             }
-        }
+        }        
 
         private class InternalGump : Gump
         {
@@ -299,7 +300,7 @@ namespace Server.Items
                             AddTooltip(_Entries[i].Tooltip);
                             AddImage(10 + (124 * i), 20, _Entries[i].GumpID);
                             AddRadio(30 + (124 * i), 80, 0xD0, 0xD1, false, 41400 + i);
-                        }
+                        }                        
                     }
                 }
             }
@@ -316,7 +317,7 @@ namespace Server.Items
 
                 if (info.ButtonID == 1)
                 {
-                    int[] switches = info.Switches;
+                    var switches = info.Switches;
 
                     if (switches.Length > 0)
                     {

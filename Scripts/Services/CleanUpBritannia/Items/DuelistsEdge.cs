@@ -1,18 +1,21 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class DuelistsEdge : BaseTalisman
     {
-        public override bool IsArtifact => true;
-
+		public override bool IsArtifact { get { return true; } }
+		
         [Constructable]
         public DuelistsEdge()
             : base(0x2F58)
         {
-            Hue = 1902;
-            SkillBonuses.SetValues(0, SkillName.Anatomy, 10.0);
-            Attributes.RegenStam = 2;
-            Attributes.AttackChance = 5;
-            Attributes.WeaponDamage = 20;
+            this.Hue = 1902;
+            this.SkillBonuses.SetValues(0, SkillName.Anatomy, 10.0);
+            this.Attributes.RegenStam = 2;
+            this.Attributes.AttackChance = 5;
+            this.Attributes.WeaponDamage = 20;
         }
 
         public DuelistsEdge(Serial serial)
@@ -20,13 +23,25 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1154727;// Duelist's Edge
-        public override bool ForceShowName => true;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1154727;
+            }
+        }// Duelist's Edge
+        public override bool ForceShowName
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

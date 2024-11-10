@@ -1,12 +1,12 @@
-using Server.Engines.Craft;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
 
 namespace Server.Engines.BulkOrders
 {
     public class SmallCookingBOD : SmallBOD
     {
-        public override BODType BODType => BODType.Cooking;
+        public override BODType BODType { get { return BODType.Cooking; } }
 
         [Constructable]
         public SmallCookingBOD()
@@ -116,7 +116,7 @@ namespace Server.Engines.BulkOrders
                 if (theirSkill >= 70.1)
                     excChance = (theirSkill + 80.0) / 200.0;
 
-                bool reqExceptional = !nonexceptional && excChance > Utility.RandomDouble();
+                bool reqExceptional = !nonexceptional  && excChance > Utility.RandomDouble();
 
                 CraftSystem system = DefCooking.CraftSystem;
 
@@ -198,7 +198,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

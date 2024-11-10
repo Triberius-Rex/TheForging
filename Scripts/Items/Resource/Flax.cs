@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items
@@ -14,9 +15,9 @@ namespace Server.Items
         public Flax(int amount)
             : base(0x1A9C)
         {
-            Stackable = true;
-            Weight = 1.0;
-            Amount = amount;
+            this.Stackable = true;
+            this.Weight = 1.0;
+            this.Amount = amount;
         }
 
         public Flax(Serial serial)
@@ -26,10 +27,8 @@ namespace Server.Items
 
         public static void OnSpun(ISpinningWheel wheel, Mobile from, int hue)
         {
-            Item item = new SpoolOfThread(6)
-            {
-                Hue = hue
-            };
+            Item item = new SpoolOfThread(6);
+            item.Hue = hue;
 
             from.AddToBackpack(item);
             from.SendLocalizedMessage(1010577); // You put the spools of thread in your backpack.
@@ -39,7 +38,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -51,7 +50,7 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(502655); // What spinning wheel do you wish to spin this on?
                 from.Target = new PickWheelTarget(this);
@@ -68,12 +67,12 @@ namespace Server.Items
             public PickWheelTarget(Flax flax)
                 : base(3, false, TargetFlags.None)
             {
-                m_Flax = flax;
+                this.m_Flax = flax;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Flax.Deleted)
+                if (this.m_Flax.Deleted)
                     return;
 
                 ISpinningWheel wheel = targeted as ISpinningWheel;
@@ -85,7 +84,7 @@ namespace Server.Items
                 {
                     Item item = (Item)wheel;
 
-                    if (!m_Flax.IsChildOf(from.Backpack))
+                    if (!this.m_Flax.IsChildOf(from.Backpack))
                     {
                         from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
                     }
@@ -95,8 +94,8 @@ namespace Server.Items
                     }
                     else
                     {
-                        m_Flax.Consume();
-                        wheel.BeginSpin(OnSpun, from, m_Flax.Hue);
+                        this.m_Flax.Consume();
+                        wheel.BeginSpin(new SpinCallback(Flax.OnSpun), from, this.m_Flax.Hue);
                     }
                 }
                 else

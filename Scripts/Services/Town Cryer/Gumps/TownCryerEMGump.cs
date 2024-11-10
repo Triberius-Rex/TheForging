@@ -1,5 +1,8 @@
-using Server.Gumps;
+using Server;
+using System;
+using System.Collections.Generic;
 using Server.Mobiles;
+using Server.Gumps;
 
 namespace Server.Services.TownCryer
 {
@@ -31,11 +34,9 @@ namespace Server.Services.TownCryer
         {
             if (info.ButtonID == 0)
             {
-                TownCryerGump gump = new TownCryerGump(User, Cryer)
-                {
-                    Category = TownCryerGump.GumpCategory.EventModerator
-                };
-                SendGump(gump);
+                var gump = new TownCryerGump(User, Cryer);
+                gump.Category = TownCryerGump.GumpCategory.EventModerator;
+                BaseGump.SendGump(gump);
             }
         }
     }

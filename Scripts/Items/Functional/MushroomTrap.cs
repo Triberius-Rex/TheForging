@@ -1,5 +1,5 @@
-using Server.Regions;
 using System;
+using Server.Regions;
 
 namespace Server.Items
 {
@@ -16,36 +16,60 @@ namespace Server.Items
         {
         }
 
-        public override bool PassivelyTriggered => true;
-        public override TimeSpan PassiveTriggerDelay => TimeSpan.Zero;
-        public override int PassiveTriggerRange => 2;
-        public override TimeSpan ResetDelay => TimeSpan.Zero;
+        public override bool PassivelyTriggered
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override TimeSpan PassiveTriggerDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
+        public override int PassiveTriggerRange
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override TimeSpan ResetDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
         public override void OnTrigger(Mobile from)
         {
-            if (!from.Alive || ItemID != 0x1125 || from.IsStaff())
+            if (!from.Alive || this.ItemID != 0x1125 || from.IsStaff())
                 return;
 
-            ItemID = 0x1126;
-            Effects.PlaySound(Location, Map, 0x306);
+            this.ItemID = 0x1126;
+            Effects.PlaySound(this.Location, this.Map, 0x306);
 
             Spells.SpellHelper.Damage(TimeSpan.FromSeconds(0.5), from, from, Utility.Dice(2, 4, 0));
 
-            Timer.DelayCall(TimeSpan.FromSeconds(2.0), OnMushroomReset);
+            Timer.DelayCall(TimeSpan.FromSeconds(2.0), new TimerCallback(OnMushroomReset));
         }
 
         public virtual void OnMushroomReset()
         {
-            if (Region.Find(Location, Map).IsPartOf<DungeonRegion>())
-                ItemID = 0x1125; // reset
+            if (Region.Find(this.Location, this.Map).IsPartOf<DungeonRegion>())
+                this.ItemID = 0x1125; // reset
             else
-                Delete();
+                this.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -54,8 +78,8 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            if (ItemID == 0x1126)
-                OnMushroomReset();
+            if (this.ItemID == 0x1126)
+                this.OnMushroomReset();
         }
     }
 }

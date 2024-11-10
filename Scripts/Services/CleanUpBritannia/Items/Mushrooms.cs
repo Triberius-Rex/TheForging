@@ -1,4 +1,7 @@
-﻿namespace Server.Items
+﻿using System;
+using Server.Items;
+
+namespace Server.Items
 {
     public class Mushrooms1 : Item
     {
@@ -18,7 +21,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -47,7 +50,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -76,7 +79,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -105,7 +108,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

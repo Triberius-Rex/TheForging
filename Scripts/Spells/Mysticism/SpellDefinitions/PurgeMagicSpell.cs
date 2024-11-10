@@ -1,12 +1,16 @@
+using System;
+using Server;
 using Server.Items;
-using Server.Spells.Fifth;
+using Server.Mobiles;
+using Server.Spells;
+using Server.Targeting;
+using System.Collections.Generic;
 using Server.Spells.First;
-using Server.Spells.Ninjitsu;
 using Server.Spells.Second;
 using Server.Spells.Third;
-using Server.Targeting;
-using System;
-using System.Collections.Generic;
+using Server.Spells.Fourth;
+using Server.Spells.Fifth;
+using Server.Spells.Ninjitsu;
 
 namespace Server.Spells.Mysticism
 {
@@ -27,9 +31,9 @@ namespace Server.Spells.Mysticism
 
     public class PurgeMagicSpell : MysticSpell
     {
-        public override SpellCircle Circle => SpellCircle.Second;
+        public override SpellCircle Circle { get { return SpellCircle.Second; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Purge", "An Ort Sanct ",
                 230,
                 9022,
@@ -72,7 +76,7 @@ namespace Server.Spells.Mysticism
                 }
                 else
                 {
-                    SpellHelper.CheckReflect(this, Caster, ref target);
+                    SpellHelper.CheckReflect((int)Circle, Caster, ref target);
 
                     Caster.PlaySound(0x655);
                     Effects.SendLocationParticles(EffectItem.Create(target.Location, target.Map, EffectItem.DefaultDuration), 0x3728, 1, 13, 0x834, 0, 0x13B2, 0);
@@ -213,8 +217,8 @@ namespace Server.Spells.Mysticism
             return type;
         }
 
-        private static readonly Dictionary<Mobile, ImmuneTimer> m_ImmuneTable = new Dictionary<Mobile, ImmuneTimer>();
-        private static readonly Dictionary<Mobile, CurseTimer> m_CurseTable = new Dictionary<Mobile, CurseTimer>();
+        private static Dictionary<Mobile, ImmuneTimer> m_ImmuneTable = new Dictionary<Mobile, ImmuneTimer>();
+        private static Dictionary<Mobile, CurseTimer> m_CurseTable = new Dictionary<Mobile, CurseTimer>();
 
         public static void RemoveImmunity(Mobile from)
         {
@@ -262,7 +266,7 @@ namespace Server.Spells.Mysticism
 
         private class ImmuneTimer : Timer
         {
-            private readonly Mobile m_Mobile;
+            private Mobile m_Mobile;
 
             public ImmuneTimer(Mobile mob, TimeSpan duration) : base(duration)
             {
@@ -272,18 +276,18 @@ namespace Server.Spells.Mysticism
 
             protected override void OnTick()
             {
-                RemoveImmunity(m_Mobile);
+                PurgeMagicSpell.RemoveImmunity(m_Mobile);
             }
         }
 
         private class CurseTimer : Timer
         {
-            private readonly Mobile m_Mobile;
-            private readonly Mobile m_Caster;
-            private readonly DateTime m_StartTime;
+            private Mobile m_Mobile;
+            private Mobile m_Caster;
+            private DateTime m_StartTime;
 
-            public DateTime StartTime => m_StartTime;
-            public Mobile Caster => m_Caster;
+            public DateTime StartTime { get { return m_StartTime; } }
+            public Mobile Caster { get { return m_Caster; } }
 
             public CurseTimer(Mobile mob, Mobile caster, TimeSpan duration)
                 : base(duration)
@@ -296,7 +300,7 @@ namespace Server.Spells.Mysticism
 
             protected override void OnTick()
             {
-                RemoveCurse(m_Mobile, m_Caster);
+                PurgeMagicSpell.RemoveCurse(m_Mobile, m_Caster);
             }
         }
 

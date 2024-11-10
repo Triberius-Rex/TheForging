@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -10,7 +11,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a lava elemental";
-            Body = 720;
+            Body = 720; 
 
             SetStr(446, 510);
             SetDex(160, 190);
@@ -37,6 +38,10 @@ namespace Server.Mobiles
             SetSkill(SkillName.Wrestling, 71.7, 85.4);
             SetSkill(SkillName.Poisoning, 90.0, 100.0);
             SetSkill(SkillName.DetectHidden, 75.1);
+
+            PackItem(new Nightshade(4));
+            PackItem(new SulfurousAsh(5));
+            PackItem(new LesserPoisonPotion());
         }
 
         public LavaElemental(Serial serial)
@@ -49,10 +54,6 @@ namespace Server.Mobiles
             AddLoot(LootPack.FilthyRich, 3);
             AddLoot(LootPack.Gems, 2);
             AddLoot(LootPack.MedScrolls);
-
-            AddLoot(LootPack.LootItem<Nightshade>(4, true));
-            AddLoot(LootPack.LootItem<SulfurousAsh>(5, true));
-            AddLoot(LootPack.LootItem<LesserPoisonPotion>(true));
         }
 
         public override int GetAttackSound() { return 0x60A; }
@@ -63,7 +64,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

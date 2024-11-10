@@ -6,10 +6,31 @@ namespace Server.Spells.Bushido
     public class HonorableExecution : SamuraiMove
     {
         private static readonly Hashtable m_Table = new Hashtable();
+        public HonorableExecution()
+        {
+        }
 
-        public override int BaseMana => 0;
-        public override double RequiredSkill => 25.0;
-        public override TextDefinition AbilityMessage => new TextDefinition(1063122);// You better kill your enemy with your next hit or you'll be rather sorry...
+        public override int BaseMana
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 25.0;
+            }
+        }
+        public override TextDefinition AbilityMessage
+        {
+            get
+            {
+                return new TextDefinition(1063122);
+            }
+        }// You better kill your enemy with your next hit or you'll be rather sorry...
         public static int GetSwingBonus(Mobile target)
         {
             HonorableExecutionInfo info = m_Table[target] as HonorableExecutionInfo;
@@ -34,7 +55,7 @@ namespace Server.Spells.Bushido
         {
             HonorableExecutionInfo info = m_Table[target] as HonorableExecutionInfo;
 
-            if (info == null || info.m_SwingBonus == 0 && !info.m_Penalty)
+            if (info == null || !info.m_Penalty)
                 return;
 
             info.Clear();
@@ -55,7 +76,7 @@ namespace Server.Spells.Bushido
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, true))
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, true))
                 return;
 
             ClearCurrentMove(attacker);
@@ -83,8 +104,6 @@ namespace Server.Spells.Bushido
                 info = new HonorableExecutionInfo(attacker, swingBonus);
                 info.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(20.0), new TimerStateCallback(EndEffect), info);
 
-                BuffInfo.AddBuff(attacker, new BuffInfo(BuffIcon.HonorableExecution, 1060595, 1153807, TimeSpan.FromSeconds(20.0), attacker, string.Format("{0}", swingBonus)));
-
                 m_Table[attacker] = info;
             }
             else
@@ -105,20 +124,20 @@ namespace Server.Spells.Bushido
                 info = new HonorableExecutionInfo(attacker, mods);
                 info.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(7.0), new TimerStateCallback(EndEffect), info);
 
-                BuffInfo.AddBuff(attacker, new BuffInfo(BuffIcon.HonorableExecution, 1060595, 1153808, TimeSpan.FromSeconds(7.0), attacker, string.Format("{0}\t40\t40\t40\t40\t40", resSpells)));
+                BuffInfo.AddBuff(attacker, new BuffInfo(BuffIcon.HonorableExecution, 1060595, 1153808, TimeSpan.FromSeconds(7.0), attacker, String.Format("{0}\t40\t40\t40\t40\t40", resSpells)));
 
                 m_Table[attacker] = info;
             }
 
             attacker.Delta(MobileDelta.WeaponDamage);
-            CheckGain(attacker);
+            this.CheckGain(attacker);
         }
 
         public void EndEffect(object state)
         {
             HonorableExecutionInfo info = (HonorableExecutionInfo)state;
 
-            if (info.m_Mobile != null)
+            if(info.m_Mobile != null)
                 info.m_Mobile.Delta(MobileDelta.WeaponDamage);
 
             RemovePenalty(info.m_Mobile);
@@ -143,43 +162,43 @@ namespace Server.Spells.Bushido
 
             public HonorableExecutionInfo(Mobile from, int swingBonus, ArrayList mods, bool penalty)
             {
-                m_Mobile = from;
-                m_SwingBonus = swingBonus;
-                m_Mods = mods;
-                m_Penalty = penalty;
+                this.m_Mobile = from;
+                this.m_SwingBonus = swingBonus;
+                this.m_Mods = mods;
+                this.m_Penalty = penalty;
 
-                Apply();
+                this.Apply();
             }
 
             public void Apply()
             {
-                if (m_Mods == null)
+                if (this.m_Mods == null)
                     return;
 
-                for (int i = 0; i < m_Mods.Count; ++i)
+                for (int i = 0; i < this.m_Mods.Count; ++i)
                 {
-                    object mod = m_Mods[i];
+                    object mod = this.m_Mods[i];
 
                     if (mod is ResistanceMod)
-                        m_Mobile.AddResistanceMod((ResistanceMod)mod);
+                        this.m_Mobile.AddResistanceMod((ResistanceMod)mod);
                     else if (mod is SkillMod)
-                        m_Mobile.AddSkillMod((SkillMod)mod);
+                        this.m_Mobile.AddSkillMod((SkillMod)mod);
                 }
             }
 
             public void Clear()
             {
-                if (m_Mods == null)
+                if (this.m_Mods == null)
                     return;
 
-                for (int i = 0; i < m_Mods.Count; ++i)
+                for (int i = 0; i < this.m_Mods.Count; ++i)
                 {
-                    object mod = m_Mods[i];
+                    object mod = this.m_Mods[i];
 
                     if (mod is ResistanceMod)
-                        m_Mobile.RemoveResistanceMod((ResistanceMod)mod);
+                        this.m_Mobile.RemoveResistanceMod((ResistanceMod)mod);
                     else if (mod is SkillMod)
-                        m_Mobile.RemoveSkillMod((SkillMod)mod);
+                        this.m_Mobile.RemoveSkillMod((SkillMod)mod);
                 }
             }
         }

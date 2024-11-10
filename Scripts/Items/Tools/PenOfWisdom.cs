@@ -1,15 +1,16 @@
-using Server.Gumps;
-using Server.Multis;
-using Server.Network;
+using System;
 using Server.Targeting;
+using Server.Gumps;
+using Server.Network;
 using System.Collections.Generic;
+using Server.Multis;
 
 namespace Server.Items
 {
-    [Flipable(0x0FBF, 0x0FC0)]
+    [FlipableAttribute(0x0FBF, 0x0FC0)]
     public class PenOfWisdom : Item, IUsesRemaining
     {
-        public override int LabelNumber => 1115358;  // Pen of Wisdom		
+        public override int LabelNumber { get { return 1115358; } } // Pen of Wisdom		
         private int m_UsesRemaining;
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -69,9 +70,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_UsesRemaining);
+            writer.Write((int)m_UsesRemaining);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -225,7 +226,7 @@ namespace Server.Items
             AddBackground(4, 39, 391, 313 + y, 9200);
             AddImageTiled(8, 45, 380, 53, 2624);
 
-            AddHtmlLocalized(7, 50, 380, 53, 1115428, string.Format("@{0}@{1}@{2}@{3}", MarkScrollAmount.ToString(), RuneAmount.ToString(), Checked.Count, Blank.ToString()), EntryColor, false, false); // <CENTER>Pen of Wisdom<br>(Mark Scrolls: ~1_VAL~, Runes: ~2_VAL~ | Selected: ~3_VAL~, Blank: ~4_VAL~)</CENTER>
+            AddHtmlLocalized(7, 50, 380, 53, 1115428, String.Format("@{0}@{1}@{2}@{3}", MarkScrollAmount.ToString(), RuneAmount.ToString(), Checked.Count, Blank.ToString()), EntryColor, false, false); // <CENTER>Pen of Wisdom<br>(Mark Scrolls: ~1_VAL~, Runes: ~2_VAL~ | Selected: ~3_VAL~, Blank: ~4_VAL~)</CENTER>
 
             AddImageTiled(8, 101, 188, 220, 2624);
             AddImageTiled(199, 101, 188, 220, 2624);
@@ -271,12 +272,12 @@ namespace Server.Items
                 if (yy < 8)
                 {
                     AddButton(15, 110 + (yy * 25), Checked.Contains(SourceBook.Entries[i]) ? 211 : 210, Checked.Contains(SourceBook.Entries[i]) ? 210 : 211, i, GumpButtonType.Reply, 0);
-                    AddLabelCropped(45, 110 + (yy * 25), 115, 17, RunebookGump.GetMapHue(SourceBook.Entries[i].Map), string.Format("{0}", description));
+                    AddLabelCropped(45, 110 + (yy * 25), 115, 17, RunebookGump.GetMapHue(SourceBook.Entries[i].Map), String.Format("{0}", description));
                 }
                 else
                 {
                     AddButton(205, 110 + ((yy - 8) * 25), Checked.Contains(SourceBook.Entries[i]) ? 211 : 210, Checked.Contains(SourceBook.Entries[i]) ? 210 : 211, i, GumpButtonType.Reply, 0);
-                    AddLabelCropped(235, 110 + ((yy - 8) * 25), 115, 17, RunebookGump.GetMapHue(SourceBook.Entries[i].Map), string.Format("{0}", description));
+                    AddLabelCropped(235, 110 + ((yy - 8) * 25), 115, 17, RunebookGump.GetMapHue(SourceBook.Entries[i].Map), String.Format("{0}", description));
                 }
 
                 yy++;
@@ -346,17 +347,11 @@ namespace Server.Items
 
                             bp.ConsumeTotal(typeof(MarkScroll), Checked.Count, true);
                             bp.ConsumeTotal(typeof(RecallRune), Checked.Count, true);
-                            Pen.UsesRemaining--;
+                            Pen.UsesRemaining -= 1;
+                            Pen.InvalidateProperties();
 
-                            if (Pen.UsesRemaining <= 0)
-                            {
-                                Pen.Delete();
-                                from.SendLocalizedMessage(1115366); // The pen's magical power is consumed and it crumbles to dust.
-                            }
-                            else
-                            {
-                                from.SendLocalizedMessage(1115331); // The Pen magically marks runes and binds them to the runebook.
-                            }
+                            from.SendLocalizedMessage(1115331); // The Pen magically marks runes and binds them to the runebook.
+                            from.SendLocalizedMessage(1115366); // The pen's magical power is consumed and it crumbles to dust.
                         }
 
                         break;

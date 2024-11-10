@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Plants;
 using Server.Multis;
 using Server.Targeting;
@@ -58,11 +59,27 @@ namespace Server.Items
                 InvalidateProperties();
             }
         }
-        public override int LabelNumber => 1112136;// natural dye
-        public bool RetainsColorFrom => true;
-
-        public override bool ForceShowProperties => true;
-
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1112136;
+            }
+        }// natural dye
+        public bool RetainsColorFrom
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
@@ -73,7 +90,7 @@ namespace Server.Items
         public override void AddNameProperty(ObjectPropertyList list)
         {
             PlantPigmentHueInfo hueInfo = PlantPigmentHueInfo.GetInfo(m_Hue);
-
+            
             if (Amount > 1)
                 list.Add(PlantPigmentHueInfo.IsBright(m_Hue) ? 1113277 : 1113276, "{0}\t{1}", Amount, "#" + hueInfo.Name);  // ~1_COLOR~ Softened Reeds
             else
@@ -84,10 +101,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)m_Hue);
-            writer.Write(m_UsesRemaining);
+            writer.Write((int)m_UsesRemaining);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -96,7 +113,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     m_Hue = (PlantPigmentHue)reader.ReadInt();
@@ -135,12 +152,12 @@ namespace Server.Items
                         item is BaseWeapon || item is Runebook ||
                         item is Spellbook || item is DecorativePlant || item is ShoulderParrot ||
                         item.IsArtifact || BasePigmentsOfTokuno.IsValidItem(item));
-
-                    if (item is HoodedShroudOfShadows || item is MonkRobe)
-                    {
-                        from.SendLocalizedMessage(1042083); // You cannot dye that.
-                        return;
-                    }
+					
+					if (item is HoodedShroudOfShadows || item is MonkRobe)
+					{
+						from.SendLocalizedMessage(1042083); // You cannot dye that.
+						return;
+					}
 
                     if (!valid && FurnitureAttribute.Check(item))
                     {

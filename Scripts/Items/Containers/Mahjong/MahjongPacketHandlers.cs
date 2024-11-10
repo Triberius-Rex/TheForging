@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Engines.Mahjong
@@ -26,20 +27,20 @@ namespace Server.Engines.Mahjong
 
         public static void Initialize()
         {
-            PacketHandlers.Register(0xDA, 0, true, OnPacket);
+            PacketHandlers.Register(0xDA, 0, true, new OnPacketReceive(OnPacket));
 
-            RegisterSubCommand(0x6, ExitGame);
-            RegisterSubCommand(0xA, GivePoints);
-            RegisterSubCommand(0xB, RollDice);
-            RegisterSubCommand(0xC, BuildWalls);
-            RegisterSubCommand(0xD, ResetScores);
-            RegisterSubCommand(0xF, AssignDealer);
-            RegisterSubCommand(0x10, OpenSeat);
-            RegisterSubCommand(0x11, ChangeOption);
-            RegisterSubCommand(0x15, MoveWallBreakIndicator);
-            RegisterSubCommand(0x16, TogglePublicHand);
-            RegisterSubCommand(0x17, MoveTile);
-            RegisterSubCommand(0x18, MoveDealerIndicator);
+            RegisterSubCommand(0x6, new OnMahjongPacketReceive(ExitGame));
+            RegisterSubCommand(0xA, new OnMahjongPacketReceive(GivePoints));
+            RegisterSubCommand(0xB, new OnMahjongPacketReceive(RollDice));
+            RegisterSubCommand(0xC, new OnMahjongPacketReceive(BuildWalls));
+            RegisterSubCommand(0xD, new OnMahjongPacketReceive(ResetScores));
+            RegisterSubCommand(0xF, new OnMahjongPacketReceive(AssignDealer));
+            RegisterSubCommand(0x10, new OnMahjongPacketReceive(OpenSeat));
+            RegisterSubCommand(0x11, new OnMahjongPacketReceive(ChangeOption));
+            RegisterSubCommand(0x15, new OnMahjongPacketReceive(MoveWallBreakIndicator));
+            RegisterSubCommand(0x16, new OnMahjongPacketReceive(TogglePublicHand));
+            RegisterSubCommand(0x17, new OnMahjongPacketReceive(MoveTile));
+            RegisterSubCommand(0x18, new OnMahjongPacketReceive(MoveDealerIndicator));
         }
 
         public static void OnPacket(NetState state, PacketReader pvSrc)
@@ -219,7 +220,7 @@ namespace Server.Engines.Mahjong
 
         private static MahjongPieceDirection GetDirection(int value)
         {
-            switch (value)
+            switch ( value )
             {
                 case 0:
                     return MahjongPieceDirection.Up;
@@ -234,7 +235,7 @@ namespace Server.Engines.Mahjong
 
         private static MahjongWind GetWind(int value)
         {
-            switch (value)
+            switch ( value )
             {
                 case 0:
                     return MahjongWind.North;

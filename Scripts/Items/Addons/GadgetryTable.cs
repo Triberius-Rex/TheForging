@@ -1,18 +1,18 @@
-using Server.ContextMenus;
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
+using System;
 using Server.Multis;
 using Server.Network;
-using System;
+using Server.Items;
+using Server.Gumps;
+using Server.ContextMenus;
 using System.Collections.Generic;
+using Server.Mobiles;
 using System.Linq;
 
 namespace Server.Engines.VeteranRewards
 {
     public class GadgetryTableComponent : LocalizedAddonComponent
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         public GadgetryTableComponent(int id)
             : base(id, 1098558) // gadgetry table
@@ -53,10 +53,8 @@ namespace Server.Engines.VeteranRewards
         {
             get
             {
-                GadgetryTableAddonDeed deed = new GadgetryTableAddonDeed
-                {
-                    IsRewardItem = IsRewardItem
-                };
+                GadgetryTableAddonDeed deed = new GadgetryTableAddonDeed();
+                deed.IsRewardItem = IsRewardItem;
 
                 return deed;
             }
@@ -76,7 +74,7 @@ namespace Server.Engines.VeteranRewards
             switch (type)
             {
                 case DirectionType.South:
-                    AddComponent(new GadgetryTableComponent(20372), 1, 0, 0);
+                    AddComponent(new GadgetryTableComponent(20372), 1, 0, 0);  
                     AddComponent(new GadgetryTableComponent(20362), 0, 0, 0);
                     AddComponent(new GadgetryTableComponent(20352), -1, 0, 0);
                     AddComponent(new GadgetryTableComponent(19687), -1, 1, 0);
@@ -199,7 +197,7 @@ namespace Server.Engines.VeteranRewards
 
             writer.Write(NextGolemTime);
             writer.Write((int)Level);
-            writer.Write(IsRewardItem);
+            writer.Write((bool)IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -227,16 +225,14 @@ namespace Server.Engines.VeteranRewards
 
     public class GadgetryTableAddonDeed : BaseAddonDeed, IRewardItem, IRewardOption
     {
-        public override int LabelNumber => 1154583;  // Deed for a Gadgetry Table
+        public override int LabelNumber { get { return 1154583; } } // Deed for a Gadgetry Table
 
         public override BaseAddon Addon
         {
             get
             {
-                GadgetryTableAddon addon = new GadgetryTableAddon(_Direction)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                GadgetryTableAddon addon = new GadgetryTableAddon(_Direction);
+                addon.IsRewardItem = m_IsRewardItem;
 
                 return addon;
             }
@@ -297,7 +293,7 @@ namespace Server.Engines.VeteranRewards
 
             if (!Deleted)
                 base.OnDoubleClick(from);
-        }
+        }        
 
         public GadgetryTableAddonDeed(Serial serial)
             : base(serial)
@@ -309,7 +305,7 @@ namespace Server.Engines.VeteranRewards
             base.Serialize(writer);
             writer.Write(0); // Version
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -373,7 +369,7 @@ namespace Server.Engines.VeteranRewards
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

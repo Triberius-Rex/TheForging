@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -40,6 +40,38 @@ namespace Server.Mobiles
             Fame = 9000;
             Karma = -9000;
 
+            PackItem(new GreenGourd());
+            PackItem(new ExecutionersAxe());
+
+            switch ( Utility.Random(3) )
+            {
+                case 0:
+                    PackItem(new LongPants());
+                    break;
+                case 1:
+                    PackItem(new ShortPants());
+                    break;
+            }
+
+            switch ( Utility.Random(6) )
+            {
+                case 0:
+                    PackItem(new Shoes());
+                    break;
+                case 1:
+                    PackItem(new Sandals());
+                    break;
+                case 2:
+                    PackItem(new Boots());
+                    break;
+                case 3:
+                    PackItem(new ThighBoots());
+                    break;
+            }
+
+            if (Utility.RandomDouble() < .25)
+                PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
+
             SetWeaponAbility(WeaponAbility.DoubleStrike);
         }
 
@@ -47,20 +79,36 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
+		
+		public override int TreasureMapLevel { get { return 4; } }
 
-        public override int TreasureMapLevel => 4;
-
-        public override FoodType FavoriteFood => FoodType.Fish;
-        public override int Meat => 1;
-        public override bool CanRummageCorpses => true;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Fish;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Gems, 4);
-            AddLoot(LootPack.LootItem<GreenGourd>(true));
-            AddLoot(LootPack.BonsaiSeed);
         }
 
         // TODO: Body Transformation
@@ -85,7 +133,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

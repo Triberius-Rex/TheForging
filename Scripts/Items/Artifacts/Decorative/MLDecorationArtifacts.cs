@@ -1,9 +1,12 @@
-﻿namespace Server.Items
+﻿using System;
+using Server;
+
+namespace Server.Items 
 {
     public class AncientShipModelOfTheHMSCape : Item
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1063476;
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1063476; } }
 
         [Constructable]
         public AncientShipModelOfTheHMSCape()
@@ -22,7 +25,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseScales : Item, ICommodity
     {
-        protected virtual CraftResource DefaultResource => CraftResource.RedScales;
+        protected virtual CraftResource DefaultResource { get { return CraftResource.RedScales; } }
 
         private CraftResource m_Resource;
         public BaseScales(CraftResource resource)
@@ -13,11 +15,11 @@ namespace Server.Items
         public BaseScales(CraftResource resource, int amount)
             : base(0x26B4)
         {
-            Stackable = true;
-            Amount = amount;
-            Hue = CraftResources.GetHue(resource);
+            this.Stackable = true;
+            this.Amount = amount;
+            this.Hue = CraftResources.GetHue(resource);
 
-            m_Resource = resource;
+            this.m_Resource = resource;
         }
 
         public BaseScales(Serial serial)
@@ -25,30 +27,54 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1053139;// dragon scales
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1053139;
+            }
+        }// dragon scales
         [CommandProperty(AccessLevel.GameMaster)]
         public CraftResource Resource
         {
             get
             {
-                return m_Resource;
+                return this.m_Resource;
             }
             set
             {
-                m_Resource = value;
-                InvalidateProperties();
+                this.m_Resource = value;
+                this.InvalidateProperties();
             }
         }
-        public override double DefaultWeight => 0.1;
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 0.1;
+            }
+        }
+        TextDefinition ICommodity.Description
+        {
+            get
+            {
+                return this.LabelNumber;
+            }
+        }
+        bool ICommodity.IsDeedable
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write((int)m_Resource);
+            writer.Write((int)this.m_Resource);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -60,12 +86,12 @@ namespace Server.Items
             switch (version)
             {
                 case 1: // Reset from Resource System
-                    m_Resource = DefaultResource;
+                    this.m_Resource = this.DefaultResource;
                     reader.ReadString();
                     break;
                 case 0:
                     {
-                        m_Resource = (CraftResource)reader.ReadInt();
+                        this.m_Resource = (CraftResource)reader.ReadInt();
                         break;
                     }
             }
@@ -95,7 +121,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -108,7 +134,7 @@ namespace Server.Items
 
     public class YellowScales : BaseScales
     {
-        protected override CraftResource DefaultResource => CraftResource.YellowScales;
+        protected override CraftResource DefaultResource { get { return CraftResource.YellowScales; } }
 
         [Constructable]
         public YellowScales()
@@ -131,7 +157,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -144,7 +170,7 @@ namespace Server.Items
 
     public class BlackScales : BaseScales
     {
-        protected override CraftResource DefaultResource => CraftResource.BlackScales;
+        protected override CraftResource DefaultResource { get { return CraftResource.BlackScales; } }
 
         [Constructable]
         public BlackScales()
@@ -167,7 +193,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -180,7 +206,7 @@ namespace Server.Items
 
     public class GreenScales : BaseScales
     {
-        protected override CraftResource DefaultResource => CraftResource.GreenScales;
+        protected override CraftResource DefaultResource { get { return CraftResource.GreenScales; } }
 
         [Constructable]
         public GreenScales()
@@ -203,7 +229,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -216,7 +242,7 @@ namespace Server.Items
 
     public class WhiteScales : BaseScales
     {
-        protected override CraftResource DefaultResource => CraftResource.WhiteScales;
+        protected override CraftResource DefaultResource { get { return CraftResource.WhiteScales; } }
 
         [Constructable]
         public WhiteScales()
@@ -239,7 +265,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -252,7 +278,7 @@ namespace Server.Items
 
     public class BlueScales : BaseScales
     {
-        protected override CraftResource DefaultResource => CraftResource.BlueScales;
+        protected override CraftResource DefaultResource { get { return CraftResource.BlueScales; } }
 
         [Constructable]
         public BlueScales()
@@ -271,12 +297,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1053140;// sea serpent scales
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1053140;
+            }
+        }// sea serpent scales
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

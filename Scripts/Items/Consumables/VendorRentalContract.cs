@@ -1,115 +1,115 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Multis;
 using Server.Targeting;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class VendorRentalContract : Item
     {
-		public override int LabelNumber => 1062332;// a vendor rental contract
-		
         private VendorRentalDuration m_Duration;
         private int m_Price;
         private bool m_LandlordRenew;
         private Mobile m_Offeree;
         private Timer m_OfferExpireTimer;
-		
         [Constructable]
         public VendorRentalContract()
             : base(0x14F0)
         {
-            Weight = 1.0;
-            Hue = 0x672;
+            this.Weight = 1.0;
+            this.Hue = 0x672;
 
-            m_Duration = VendorRentalDuration.Instances[0];
-            m_Price = 1500;
+            this.m_Duration = VendorRentalDuration.Instances[0];
+            this.m_Price = 1500;
         }
 
         public VendorRentalContract(Serial serial)
             : base(serial)
         {
         }
-		
+
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1062332;
+            }
+        }// a vendor rental contract
         public VendorRentalDuration Duration
         {
             get
             {
-                return m_Duration;
+                return this.m_Duration;
             }
             set
             {
                 if (value != null)
-                    m_Duration = value;
+                    this.m_Duration = value;
             }
         }
-		
         [CommandProperty(AccessLevel.GameMaster)]
         public int Price
         {
             get
             {
-                return m_Price;
+                return this.m_Price;
             }
             set
             {
-                m_Price = value;
+                this.m_Price = value;
             }
         }
-		
         [CommandProperty(AccessLevel.GameMaster)]
         public bool LandlordRenew
         {
             get
             {
-                return m_LandlordRenew;
+                return this.m_LandlordRenew;
             }
             set
             {
-                m_LandlordRenew = value;
+                this.m_LandlordRenew = value;
             }
         }
-		
         public Mobile Offeree
         {
             get
             {
-                return m_Offeree;
+                return this.m_Offeree;
             }
             set
             {
-                if (m_OfferExpireTimer != null)
+                if (this.m_OfferExpireTimer != null)
                 {
-                    m_OfferExpireTimer.Stop();
-                    m_OfferExpireTimer = null;
+                    this.m_OfferExpireTimer.Stop();
+                    this.m_OfferExpireTimer = null;
                 }
 
-                m_Offeree = value;
+                this.m_Offeree = value;
 
                 if (value != null)
                 {
-                    m_OfferExpireTimer = new OfferExpireTimer(this);
-                    m_OfferExpireTimer.Start();
+                    this.m_OfferExpireTimer = new OfferExpireTimer(this);
+                    this.m_OfferExpireTimer.Start();
                 }
 
-                InvalidateProperties();
+                this.InvalidateProperties();
             }
         }
-		
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            if (Offeree != null)
-                list.Add(1062368, Offeree.Name); // Being Offered To ~1_NAME~
+            if (this.Offeree != null)
+                list.Add(1062368, this.Offeree.Name); // Being Offered To ~1_NAME~
         }
 
         public bool IsLandlord(Mobile m)
         {
-            if (IsLockedDown)
+            if (this.IsLockedDown)
             {
                 BaseHouse house = BaseHouse.FindHouseAt(this);
 
@@ -122,10 +122,10 @@ namespace Server.Items
 
         public bool IsUsableBy(Mobile from, bool byLandlord, bool byBackpack, bool noOfferee, bool sendMessage)
         {
-            if (Deleted || !from.CheckAlive(sendMessage))
+            if (this.Deleted || !from.CheckAlive(sendMessage))
                 return false;
 
-            if (noOfferee && Offeree != null)
+            if (noOfferee && this.Offeree != null)
             {
                 if (sendMessage)
                     from.SendLocalizedMessage(1062343); // That item is currently in use.
@@ -133,12 +133,12 @@ namespace Server.Items
                 return false;
             }
 
-            if (byBackpack && IsChildOf(from.Backpack))
+            if (byBackpack && this.IsChildOf(from.Backpack))
                 return true;
 
-            if (byLandlord && IsLandlord(from))
+            if (byLandlord && this.IsLandlord(from))
             {
-                if (from.Map != Map || !from.InRange(this, 5))
+                if (from.Map != this.Map || !from.InRange(this, 5))
                 {
                     if (sendMessage)
                         from.SendLocalizedMessage(501853); // Target is too far away.
@@ -154,7 +154,7 @@ namespace Server.Items
 
         public override void OnDelete()
         {
-            if (IsLockedDown)
+            if (this.IsLockedDown)
             {
                 BaseHouse house = BaseHouse.FindHouseAt(this);
 
@@ -167,13 +167,13 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (Offeree != null)
+            if (this.Offeree != null)
             {
                 from.SendLocalizedMessage(1062343); // That item is currently in use.
             }
-            else if (!IsLockedDown)
+            else if (!this.IsLockedDown)
             {
-                if (!IsChildOf(from.Backpack))
+                if (!this.IsChildOf(from.Backpack))
                 {
                     from.SendLocalizedMessage(1062334); // This item must be in your backpack to be used.
                     return;
@@ -184,6 +184,10 @@ namespace Server.Items
                 if (house == null || !house.IsOwner(from))
                 {
                     from.SendLocalizedMessage(1062333); // You must be standing inside of a house that you own to make use of this contract.
+                }
+                else if (!house.IsAosRules)
+                {
+                    from.SendMessage("Rental contracts can only be placed in AOS-enabled houses.");
                 }
                 else if (!house.Public)
                 {
@@ -199,7 +203,7 @@ namespace Server.Items
                     from.Target = new RentTarget(this);
                 }
             }
-            else if (IsLandlord(from))
+            else if (this.IsLandlord(from))
             {
                 if (from.InRange(this, 5))
                 {
@@ -217,7 +221,7 @@ namespace Server.Items
         {
             base.GetContextMenuEntries(from, list);
 
-            if (IsUsableBy(from, true, true, true, false))
+            if (this.IsUsableBy(from, true, true, true, false))
             {
                 list.Add(new ContractOptionEntry(this));
             }
@@ -229,10 +233,10 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.WriteEncodedInt(m_Duration.ID);
+            writer.WriteEncodedInt(this.m_Duration.ID);
 
-            writer.Write(m_Price);
-            writer.Write(m_LandlordRenew);
+            writer.Write((int)this.m_Price);
+            writer.Write((bool)this.m_LandlordRenew);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -243,32 +247,31 @@ namespace Server.Items
 
             int durationID = reader.ReadEncodedInt();
             if (durationID < VendorRentalDuration.Instances.Length)
-                m_Duration = VendorRentalDuration.Instances[durationID];
+                this.m_Duration = VendorRentalDuration.Instances[durationID];
             else
-                m_Duration = VendorRentalDuration.Instances[0];
+                this.m_Duration = VendorRentalDuration.Instances[0];
 
-            m_Price = reader.ReadInt();
-            m_LandlordRenew = reader.ReadBool();
+            this.m_Price = reader.ReadInt();
+            this.m_LandlordRenew = reader.ReadBool();
         }
 
         private class ContractOptionEntry : ContextMenuEntry
         {
             private readonly VendorRentalContract m_Contract;
-			
             public ContractOptionEntry(VendorRentalContract contract)
                 : base(6209)
             {
-                m_Contract = contract;
+                this.m_Contract = contract;
             }
 
             public override void OnClick()
             {
-                Mobile from = Owner.From;
+                Mobile from = this.Owner.From;
 
-                if (m_Contract.IsUsableBy(from, true, true, true, true))
+                if (this.m_Contract.IsUsableBy(from, true, true, true, true))
                 {
                     from.CloseGump(typeof(VendorRentalContractGump));
-                    from.SendGump(new VendorRentalContractGump(m_Contract, from));
+                    from.SendGump(new VendorRentalContractGump(this.m_Contract, from));
                 }
             }
         }
@@ -279,12 +282,12 @@ namespace Server.Items
             public RentTarget(VendorRentalContract contract)
                 : base(-1, false, TargetFlags.None)
             {
-                m_Contract = contract;
+                this.m_Contract = contract;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (!m_Contract.IsUsableBy(from, false, true, true, true))
+                if (!this.m_Contract.IsUsableBy(from, false, true, true, true))
                     return;
 
                 IPoint3D location = targeted as IPoint3D;
@@ -303,6 +306,10 @@ namespace Server.Items
                 else if (BaseHouse.FindHouseAt(from) != house)
                 {
                     from.SendLocalizedMessage(1062339); // You must be located inside of the house in which you are trying to place the contract.
+                }
+                else if (!house.IsAosRules)
+                {
+                    from.SendMessage("Rental contracts can only be placed in AOS-enabled houses.");
                 }
                 else if (!house.Public)
                 {
@@ -335,11 +342,11 @@ namespace Server.Items
                     }
                     else
                     {
-                        m_Contract.MoveToWorld(pLocation, map);
+                        this.m_Contract.MoveToWorld(pLocation, map);
 
-                        if (!house.LockDown(from, m_Contract))
+                        if (!house.LockDown(from, this.m_Contract))
                         {
-                            from.AddToBackpack(m_Contract);
+                            from.AddToBackpack(this.m_Contract);
                         }
                     }
                 }
@@ -354,24 +361,23 @@ namespace Server.Items
         private class OfferExpireTimer : Timer
         {
             private readonly VendorRentalContract m_Contract;
-			
             public OfferExpireTimer(VendorRentalContract contract)
                 : base(TimeSpan.FromSeconds(30.0))
             {
-                m_Contract = contract;
+                this.m_Contract = contract;
 
-                Priority = TimerPriority.OneSecond;
+                this.Priority = TimerPriority.OneSecond;
             }
 
             protected override void OnTick()
             {
-                Mobile offeree = m_Contract.Offeree;
+                Mobile offeree = this.m_Contract.Offeree;
 
                 if (offeree != null)
                 {
                     offeree.CloseGump(typeof(VendorRentalOfferGump));
 
-                    m_Contract.Offeree = null;
+                    this.m_Contract.Offeree = null;
                 }
             }
         }

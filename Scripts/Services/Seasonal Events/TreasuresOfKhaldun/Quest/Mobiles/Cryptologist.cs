@@ -1,8 +1,11 @@
-using Server.Engines.Quests;
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
-using System.Collections.Generic;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
@@ -11,8 +14,8 @@ namespace Server.Engines.Khaldun
         public static Cryptologist TramInstance { get; set; }
 
         protected readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override bool IsActiveVendor => false;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
+        public override bool IsActiveVendor { get { return false; } }
 
         public override void InitSBInfo()
         {
@@ -20,11 +23,14 @@ namespace Server.Engines.Khaldun
 
         public static void Initialize()
         {
-            if (TramInstance == null)
+            if (Core.TOL)
             {
-                TramInstance = new Cryptologist();
-                TramInstance.MoveToWorld(new Point3D(4325, 949, 10), Map.Trammel);
-                TramInstance.Direction = Direction.South;
+                if (TramInstance == null)
+                {
+                    TramInstance = new Cryptologist();
+                    TramInstance.MoveToWorld(new Point3D(4325, 949, 10), Map.Trammel);
+                    TramInstance.Direction = Direction.South;
+                }
             }
         }
 
@@ -51,12 +57,12 @@ namespace Server.Engines.Khaldun
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            AddItem(new Backpack());
 
-            SetWearable(new HakamaShita(), dropChance: 1);
-            SetWearable(new ShortPants(), 1157, 1);
-            SetWearable(new Obi(), 1157, 1);
-            SetWearable(new Sandals(), dropChance: 1);
+            SetWearable(new HakamaShita());
+            SetWearable(new ShortPants(), 1157);
+            SetWearable(new Obi(), 1157);
+            SetWearable(new Sandals());
         }
 
         public override void OnDoubleClick(Mobile m)
@@ -124,7 +130,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -137,6 +143,9 @@ namespace Server.Engines.Khaldun
             {
                 TramInstance = this;
             }
+
+            if (!Core.TOL)
+                Delete();
         }
     }
 }

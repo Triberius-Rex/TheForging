@@ -1,7 +1,7 @@
-using Server.Engines.CannedEvil;
-using Server.Items;
 using System;
 using System.Collections;
+using Server.Engines.CannedEvil;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -41,6 +41,8 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            VirtualArmor = 130;
+
             ForceActiveSpeed = 0.35;
             ForcePassiveSpeed = 0.7;
         }
@@ -50,28 +52,76 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Power;
-        public override Type[] UniqueList => new[] { typeof(CrownOfTalKeesh) };
-        public override Type[] SharedList => new[]
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Power;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(CrownOfTalKeesh) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(TheMostKnowledgePerson),
                     typeof(BraveKnightOfTheBritannia),
                     typeof(LieutenantOfTheBritannianRoyalGuard)
                 };
-        public override Type[] DecorativeList => new[]
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(LavaTile),
                     typeof(MonsterStatuette),
                     typeof(MonsterStatuette)
                 };
-        public override MonsterStatuetteType[] StatueTypes => new[]
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[]
                 {
                     MonsterStatuetteType.OphidianArchMage,
                     MonsterStatuetteType.OphidianWarrior
                 };
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override ScaleType ScaleType => ScaleType.All;
-        public override int Scales => 20;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override ScaleType ScaleType
+        {
+            get
+            {
+                return ScaleType.All;
+            }
+        }
+        public override int Scales
+        {
+            get
+            {
+                return 20;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 4);
@@ -82,12 +132,12 @@ namespace Server.Mobiles
             base.OnGaveMeleeAttack(defender);
 
             if (0.2 >= Utility.RandomDouble())
-                Earthquake();
+                this.Earthquake();
         }
 
         public void Earthquake()
         {
-            Map map = Map;
+            Map map = this.Map;
 
             if (map == null)
                 return;
@@ -98,10 +148,10 @@ namespace Server.Mobiles
 
             foreach (Mobile m in eable)
             {
-                if (m == this || !CanBeHarmful(m))
+                if (m == this || !this.CanBeHarmful(m))
                     continue;
 
-                if (m is BaseCreature && (((BaseCreature)m).Controlled || ((BaseCreature)m).Summoned || ((BaseCreature)m).Team != Team))
+                if (m is BaseCreature && (((BaseCreature)m).Controlled || ((BaseCreature)m).Summoned || ((BaseCreature)m).Team != this.Team))
                     targets.Add(m);
                 else if (m.Player)
                     targets.Add(m);
@@ -109,7 +159,7 @@ namespace Server.Mobiles
 
             eable.Free();
 
-            PlaySound(0x2F3);
+            this.PlaySound(0x2F3);
 
             for (int i = 0; i < targets.Count; ++i)
             {
@@ -122,7 +172,7 @@ namespace Server.Mobiles
                 else if (damage > 75.0)
                     damage = 75.0;
 
-                DoHarmful(m);
+                this.DoHarmful(m);
 
                 AOS.Damage(m, this, (int)damage, 100, 0, 0, 0, 0);
 
@@ -160,7 +210,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

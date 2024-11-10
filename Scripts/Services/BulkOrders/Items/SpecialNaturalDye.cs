@@ -1,6 +1,7 @@
+using System;
+using Server.Engines.Plants;
 using Server.Multis;
 using Server.Targeting;
-using System;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -40,12 +41,12 @@ namespace Server.Items
         {
             get
             {
-                return m_UsesRemaining;
+                return this.m_UsesRemaining;
             }
             set
             {
-                m_UsesRemaining = value;
-                InvalidateProperties();
+                this.m_UsesRemaining = value;
+                this.InvalidateProperties();
             }
         }
 
@@ -54,12 +55,12 @@ namespace Server.Items
         {
             get
             {
-                return m_BooksOnly;
+                return this.m_BooksOnly;
             }
             set
             {
-                m_BooksOnly = value;
-                InvalidateProperties();
+                this.m_BooksOnly = value;
+                this.InvalidateProperties();
             }
         }
 
@@ -82,9 +83,9 @@ namespace Server.Items
 
         public void ValidateHue()
         {
-            if (HueInfo.ContainsKey(DyeType))
+            if (HueInfo.ContainsKey(this.DyeType))
             {
-                Hue = HueInfo[DyeType].Item1;
+                Hue = HueInfo[this.DyeType].Item1;
             }
         }
 
@@ -93,15 +94,27 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1112136;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1112136;
+            }
+        }
 
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            list.Add(1060584, m_UsesRemaining.ToString()); // uses remaining: ~1_val~
+            list.Add(1060584, this.m_UsesRemaining.ToString()); // uses remaining: ~1_val~
 
             if (m_BooksOnly)
                 list.Add(1157205); // Spellbook Only Dye
@@ -109,17 +122,17 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            if (DyeType == DyeType.None)
+            if (this.DyeType == DyeType.None)
             {
                 base.AddNameProperty(list);
             }
-            else if (Amount > 1)
+            else if (this.Amount > 1)
             {
-                list.Add(1113276, "{0}\t{1}", Amount, string.Format("#{0}", HueInfo[DyeType].Item2));  // ~1_AMOUNT~ ~2_COLOR~ natural dyes
+                list.Add(1113276, "{0}\t{1}", this.Amount, String.Format("#{0}", HueInfo[this.DyeType].Item2));  // ~1_AMOUNT~ ~2_COLOR~ natural dyes
             }
             else
             {
-                list.Add(1112137, string.Format("#{0}", HueInfo[DyeType].Item2));  // ~1_COLOR~ natural dye
+                list.Add(1112137, String.Format("#{0}", HueInfo[this.DyeType].Item2));  // ~1_COLOR~ natural dye
             }
         }
 
@@ -127,10 +140,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write((int)m_DyeType);
-            writer.Write(m_UsesRemaining);
+            writer.Write((int)this.m_DyeType);
+            writer.Write((int)this.m_UsesRemaining);
             writer.Write(m_BooksOnly);
         }
 
@@ -140,9 +153,9 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_DyeType = (DyeType)reader.ReadInt();
-            m_UsesRemaining = reader.ReadInt();
-            m_BooksOnly = reader.ReadBool();
+            this.m_DyeType = (DyeType)reader.ReadInt();
+            this.m_UsesRemaining = reader.ReadInt();
+            this.m_BooksOnly = reader.ReadBool();
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -158,12 +171,12 @@ namespace Server.Items
             public InternalTarget(SpecialNaturalDye item)
                 : base(1, false, TargetFlags.None)
             {
-                m_Item = item;
+                this.m_Item = item;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Item.Deleted)
+                if (this.m_Item.Deleted)
                     return;
 
                 Item item = targeted as Item;
@@ -182,7 +195,7 @@ namespace Server.Items
                                       item is BaseJewel || item is BaseStatuette ||
                                       item is BaseWeapon || item is Runebook ||
                                       item is BaseTalisman || item is Spellbook ||
-                                      item.IsArtifact || BasePigmentsOfTokuno.IsValidItem(item));
+									  item.IsArtifact || BasePigmentsOfTokuno.IsValidItem(item));
 
                         if (!valid && item is BaseArmor)
                         {
@@ -196,7 +209,7 @@ namespace Server.Items
 
                         if (!valid && FurnitureAttribute.Check(item))
                         {
-                            if (!from.InRange(m_Item.GetWorldLocation(), 1) || !from.InRange(item.GetWorldLocation(), 1))
+                            if (!from.InRange(this.m_Item.GetWorldLocation(), 1) || !from.InRange(item.GetWorldLocation(), 1))
                             {
                                 from.SendLocalizedMessage(500446); // That is too far away.
                                 return;
@@ -226,10 +239,10 @@ namespace Server.Items
                         item.Hue = m_Item.Hue;
                         from.PlaySound(0x23E);
 
-                        if (--m_Item.UsesRemaining > 0)
-                            m_Item.InvalidateProperties();
+                        if (--this.m_Item.UsesRemaining > 0)
+                            this.m_Item.InvalidateProperties();
                         else
-                            m_Item.Delete();
+                            this.m_Item.Delete();
 
                         return;
                     }

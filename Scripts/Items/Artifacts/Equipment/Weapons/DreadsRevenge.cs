@@ -1,18 +1,20 @@
+using System;
+
 namespace Server.Items
 {
     public class DreadsRevenge : Kryss
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1072092; // Dread's Revenge
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+	{
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1072092; } }// Dread's Revenge
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         [Constructable]
         public DreadsRevenge()
             : base()
         {
-            Hue = 0x3A;
-            SkillBonuses.SetValues(0, SkillName.Fencing, 20.0);
+            Hue = 0x3A;		
+            SkillBonuses.SetValues(0, SkillName.Fencing, 20.0);		
             WeaponAttributes.HitPoisonArea = 30;
             Attributes.AttackChance = 15;
             Attributes.WeaponSpeed = 50;
@@ -32,9 +34,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
-
+		
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);

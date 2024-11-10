@@ -1,4 +1,6 @@
-﻿using Server.Gumps;
+﻿using System;
+using Server;
+using Server.Gumps;
 
 namespace Server.Items
 {
@@ -10,11 +12,11 @@ namespace Server.Items
 
     public class JusticeVirtueTileAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new JusticeVirtueTileDeed();
+        public override BaseAddonDeed Deed { get { return new JusticeVirtueTileDeed(); } }
 
-        private readonly JusticeTileType m_JusticeTileType;
+        private JusticeTileType m_JusticeTileType;
 
-        private readonly int offset;
+        private int offset;
 
         [Constructable]
         public JusticeVirtueTileAddon(JusticeTileType type)
@@ -43,7 +45,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -56,8 +58,8 @@ namespace Server.Items
 
     public class JusticeVirtueTileDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new JusticeVirtueTileAddon(m_JusticeTileType);
-        public override int LabelNumber => 1080487;  // Justice Virtue Tile Deed
+        public override BaseAddon Addon { get { return new JusticeVirtueTileAddon(m_JusticeTileType); } }
+        public override int LabelNumber { get { return 1080487; } } // Justice Virtue Tile Deed
 
         private JusticeTileType m_JusticeTileType;
 
@@ -87,7 +89,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

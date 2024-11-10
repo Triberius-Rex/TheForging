@@ -1,15 +1,19 @@
-using Server.Gumps;
+using System;
+using Server;
 using Server.Items;
-using Server.Mobiles;
+using Server.Gumps;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Engines.Points;
+using Server.Mobiles;
 
 namespace Server.Engines.TreasuresOfDoom
 {
     public class Elizabeth : BaseVendor
     {
         protected readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override bool IsActiveVendor => false;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
+        public override bool IsActiveVendor { get { return false; } }
 
         public static Elizabeth Instance { get; set; }
         public static readonly Point3D SpawnLocation = new Point3D(2364, 1284, -90);

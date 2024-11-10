@@ -1,8 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells.Necromancy;
-using System;
-using System.Linq;
 
 namespace Server.Spells.Chivalry
 {
@@ -17,30 +19,72 @@ namespace Server.Spells.Chivalry
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.25);
-        public override double RequiredSkill => 35.0;
-        public override int RequiredMana => 10;
-        public override int RequiredTithing => 10;
-        public override int MantraNumber => 1060721;// Dispiro Malas
-        public override bool BlocksMovement => false;
-        public override bool DelayedDamage => false;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 35.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int RequiredTithing
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int MantraNumber
+        {
+            get
+            {
+                return 1060721;
+            }
+        }// Dispiro Malas
+        public override bool BlocksMovement
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void SendCastEffect()
         {
-            Caster.FixedEffect(0x37C4, 10, 7, 4, 3); // At player
+           Caster.FixedEffect(0x37C4, 10, 7, 4, 3); // At player
         }
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
-                Caster.PlaySound(0xF5);
-                Caster.PlaySound(0x299);
-                Caster.FixedParticles(0x37C4, 1, 25, 9922, 14, 3, EffectLayer.Head);
+               Caster.PlaySound(0xF5);
+               Caster.PlaySound(0x299);
+               Caster.FixedParticles(0x37C4, 1, 25, 9922, 14, 3, EffectLayer.Head);
 
                 int dispelSkill = ComputePowerValue(2);
                 double chiv = Caster.Skills.Chivalry.Value;
 
-                foreach (Mobile m in AcquireIndirectTargets(Caster.Location, 8).OfType<Mobile>())
+                foreach (var m in AcquireIndirectTargets(Caster.Location, 8).OfType<Mobile>())
                 {
                     BaseCreature bc = m as BaseCreature;
 
@@ -74,7 +118,7 @@ namespace Server.Spells.Chivalry
                             if (fleeChance > Utility.RandomDouble())
                             {
                                 // guide says 2 seconds, it's longer
-                                bc.ForceFleeUntil = DateTime.UtcNow + TimeSpan.FromSeconds(30.0);
+                                bc.BeginFlee(TimeSpan.FromSeconds(30.0));
                             }
                         }
                     }
@@ -83,7 +127,7 @@ namespace Server.Spells.Chivalry
                     if (context != null && context.Spell is NecromancerSpell)	//Trees are not evil!	TODO: OSI confirm?
                     {
                         // transformed ..
-                        double drainChance = 0.5 * (Caster.Skills.Chivalry.Value / Math.Max(m.Skills.Necromancy.Value, 1));
+                        double drainChance = 0.5 * (this.Caster.Skills.Chivalry.Value / Math.Max(m.Skills.Necromancy.Value, 1));
 
                         if (drainChance > Utility.RandomDouble())
                         {
@@ -96,7 +140,7 @@ namespace Server.Spells.Chivalry
                 }
             }
 
-            FinishSequence();
+           FinishSequence();
         }
     }
 }

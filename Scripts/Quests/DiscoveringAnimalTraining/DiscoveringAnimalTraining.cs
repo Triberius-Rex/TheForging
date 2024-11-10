@@ -1,6 +1,7 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
-using System;
+using Server.Gumps;
 
 namespace Server.Engines.Quests
 {
@@ -14,35 +15,35 @@ namespace Server.Engines.Quests
             AddReward(new BaseReward(1157538)); // A step closer to mastering Animal Training.
         }
 
-        public override QuestChain ChainID => QuestChain.AnimalTraining;
-        public override Type NextQuest => typeof(UsingAnimalLoreQuest);
+        public override QuestChain ChainID{get {return QuestChain.AnimalTraining; } }
+        public override Type NextQuest { get { return typeof(UsingAnimalLoreQuest); } }
 
         /* Discovering Animal Training */
-        public override object Title => 1157527;
+        public override object Title { get { return 1157527; } }
 
         /*Years of patience and meticulous study have paid off!  New Animal Training techniques have been discovered!  
          * Animal tamers may now train their pets, teaching them new ways to fight and survive!  The first step is to 
          * tame a creature.  Find a creature in the wild, and using your animal taming skill - tame it!*/
-        public override object Description => 1157528;
+        public override object Description { get { return 1157528; } }
 
         /* The life of an animal trainer is not for everyone, return to an Animal Trainer if you wish to try again. */
-        public override object Refuse => 1157530;
+        public override object Refuse { get { return 1157530; } }
 
         /* Find a creature in the wild, and using the animal taming skill - tame it! */
-        public override object Uncomplete => 1157531;
+        public override object Uncomplete { get { return 1157531; } }
 
         /* Well done!  Now that you have your pet it is time to start training! */
-        public override object Complete => 1157532;
+        public override object Complete { get { return 1157532; } }
 
-        public override int AcceptSound => 0x2E8;
-        public override int CompleteMessage => 1157539;  // // You've completed an Animal Training quest! Visit an Animal Trainer to continue!				
+        public override int AcceptSound { get { return 0x2E8; } }
+        public override int CompleteMessage { get { return 1157539; } } // // You've completed an Animal Training quest! Visit an Animal Trainer to continue!				
 
         public static void CheckTame(PlayerMobile pm)
         {
             if (pm == null)
                 return;
 
-            BaseQuest quest = QuestHelper.GetQuest(pm, typeof(TamingPetQuest));
+            var quest = QuestHelper.GetQuest(pm, typeof(TamingPetQuest));
 
             if (quest != null && !quest.Completed)
             {
@@ -55,7 +56,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -67,7 +68,7 @@ namespace Server.Engines.Quests
 
         public class InternalObjective : BaseObjective
         {
-            public override object ObjectiveDescription => 1157529;  // Tame a Creature
+            public override object ObjectiveDescription { get { return 1157529; } } // Tame a Creature
 
             public InternalObjective()
                 : base(1)
@@ -78,7 +79,7 @@ namespace Server.Engines.Quests
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -100,12 +101,12 @@ namespace Server.Engines.Quests
             AddReward(new BaseReward(1157538)); // A step closer to mastering Animal Training.
         }
 
-        public override QuestChain ChainID => QuestChain.AnimalTraining;
-        public override Type NextQuest => typeof(LeadingIntoBattleQuest);
+        public override QuestChain ChainID { get { return QuestChain.AnimalTraining; } }
+        public override Type NextQuest { get { return typeof(LeadingIntoBattleQuest); } }
         //public override bool DoneOnce { get { return true; } }
 
         /* Discovering Animal Training */
-        public override object Title => 1157527;
+        public override object Title { get { return 1157527; } }
 
         /*Now that your pet is tame, you must begin the training process.  Pets will train while they are engaged in 
          * combat, and will progress as they battle other creatures.  Pets train best against wild creatures, and will
@@ -113,16 +114,16 @@ namespace Server.Engines.Quests
          * a single foe, so make sure your pet has fresh adversaries!<br><br>When you are ready to begin the training 
          * process, use the Animal Lore skill on your pet and select "Begin Animal Training."  When your pet has 
          * completed the training process you can teach them new ways to fight and survive!*/
-        public override object Description => 1157533;
+        public override object Description { get { return 1157533; } }
 
         /* The life of an animal trainer is not for everyone, return to an Animal Trainer if you wish to try again. */
-        public override object Refuse => 1157530;
+        public override object Refuse { get { return 1157530; } }
 
         /* When you are ready to begin the training process, use the Animal Lore skill on your pet and select "Begin Animal Training." */
-        public override object Uncomplete => 1157535;
+        public override object Uncomplete { get { return 1157535; } }
 
         /* Well done!  Now that your pet has begun the Animal Training process return to the Animal Trainer to learn more about the next steps. */
-        public override object Complete => 1157536;
+        public override object Complete { get { return 1157536; } }
 
         public override void OnCompleted()
         {
@@ -135,7 +136,7 @@ namespace Server.Engines.Quests
             if (pm == null)
                 return;
 
-            BaseQuest quest = QuestHelper.GetQuest(pm, typeof(UsingAnimalLoreQuest));
+            var quest = QuestHelper.GetQuest(pm, typeof(UsingAnimalLoreQuest));
 
             if (quest != null && !quest.Completed)
             {
@@ -146,7 +147,7 @@ namespace Server.Engines.Quests
 
         public class InternalObjective : BaseObjective
         {
-            public override object ObjectiveDescription => 1157534;
+            public override object ObjectiveDescription { get { return 1157534; } }
             /*Use the Animal Lore Skill on your pet and select "Begin Animal Training."<br><br> */
 
             public InternalObjective()
@@ -158,7 +159,7 @@ namespace Server.Engines.Quests
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -173,7 +174,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -194,12 +195,12 @@ namespace Server.Engines.Quests
             AddReward(new BaseReward(1157538)); // A step closer to mastering Animal Training.
         }
 
-        public override QuestChain ChainID => QuestChain.AnimalTraining;
-        public override Type NextQuest => typeof(TeachingSomethingNewQuest);
+        public override QuestChain ChainID { get { return QuestChain.AnimalTraining; } }
+        public override Type NextQuest { get { return typeof(TeachingSomethingNewQuest); } }
         //public override bool DoneOnce { get { return true; } }
 
         /* Discovering Animal Training */
-        public override object Title => 1157527;
+        public override object Title { get { return 1157527; } }
 
         /*Now that you have started the training process it is time to lead your pet into battle!  Pets will train while 
          * they are engaged in combat, and will progress as they battle other creatures.  Pets train best against wild 
@@ -207,18 +208,18 @@ namespace Server.Engines.Quests
          * pet can learn from a single foe, so make sure your pet has fresh adversaries!  When the "Pet Training Progress"
          * bar is full, your pet is ready to learn new ways to fight and survive.  <br><br>Now you must lead your pet into 
          * the wild and battle it against other creatures!*/
-        public override object Description => 1157540;
+        public override object Description { get { return 1157540; } }
 
         /* The life of an animal trainer is not for everyone, return to an Animal Trainer if you wish to try again. */
-        public override object Refuse => 1157530;
+        public override object Refuse { get { return 1157530; } }
 
         /* Lead your pet into the wild and battle it against other creatures until the "Pet Training Progress" bar is full. 
          * Remember Pets train best against wild creatures, and will learn the most from the fiercest creatures in the realm!  
          * There is a limit to how much a pet can learn from a single foe, so make sure your pet has fresh adversaries! */
-        public override object Uncomplete => 1157542;
+        public override object Uncomplete { get { return 1157542; } }
 
         /* Well done!  Now that your pet has begun the Animal Training process return to the Animal Trainer to learn more about the next steps. */
-        public override object Complete => 1157536;
+        public override object Complete { get { return 1157536; } }
 
         public override void OnCompleted()
         {
@@ -231,7 +232,7 @@ namespace Server.Engines.Quests
             if (pm == null)
                 return;
 
-            BaseQuest quest = QuestHelper.GetQuest(pm, typeof(LeadingIntoBattleQuest));
+            var quest = QuestHelper.GetQuest(pm, typeof(LeadingIntoBattleQuest));
 
             if (quest != null && !quest.Completed)
             {
@@ -242,7 +243,7 @@ namespace Server.Engines.Quests
 
         public class InternalObjective : BaseObjective
         {
-            public override object ObjectiveDescription => 1157541;
+            public override object ObjectiveDescription { get { return 1157541; } }
             /*Lead your pet into the wild and battle it against other creatures until the "Pet Training Progress" bar is full.*/
 
             public InternalObjective()
@@ -254,7 +255,7 @@ namespace Server.Engines.Quests
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -269,7 +270,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -290,12 +291,12 @@ namespace Server.Engines.Quests
             AddReward(new BaseReward(1157538)); // A step closer to mastering Animal Training.
         }
 
-        public override QuestChain ChainID => QuestChain.AnimalTraining;
-        public override Type NextQuest => null;
-        public override bool DoneOnce => true;
+        public override QuestChain ChainID { get { return QuestChain.AnimalTraining; } }
+        public override Type NextQuest { get { return null; } }
+        public override bool DoneOnce { get { return true; } }
 
         /* Discovering Animal Training */
-        public override object Title => 1157527;
+        public override object Title { get { return 1157527; } }
 
         /*Now that your pet has fully trained, it is time to teach it something new!  Use the Animal Lore skill on your pet and select 
          * "Pet Training Options."  The Animal Training menu lists all of the available training properties you can apply to the pet.
@@ -312,19 +313,19 @@ namespace Server.Engines.Quests
          * much during each training level.  As you mix and match properties from the Animal Training menu, the amount of available training
          * points will decrease based on your selections.  Different property selections have different training point costs.  When you are
          * ready to apply a new property to your pet, select "Train Pet" and confirm you are ready to do so!*/
-        public override object Description => 1157545;
+        public override object Description { get { return 1157545; } }
 
         /* The life of an animal trainer is not for everyone, return to an Animal Trainer if you wish to try again. */
-        public override object Refuse => 1157530;
+        public override object Refuse { get { return 1157530; } }
 
         /*Use the Animal Lore skill on your pet and select "Pet Training Options" to mix and match which properties 
              * you will train your pet.  When you are satisfied with the property you have chosen select "Train Pet" 
              * and confirm the training!.*/
-        public override object Uncomplete => 1157546;
+        public override object Uncomplete { get { return 1157546; } }
 
         /* You have Discovered Animal Training!  Train new pets and mix and match properties to create unique variations of pets to take into 
          * battle!  Good Luck, Animal Trainer! */
-        public override object Complete => 1157547;
+        public override object Complete { get { return 1157547; } }
 
         public override void OnCompleted()
         {
@@ -337,7 +338,7 @@ namespace Server.Engines.Quests
             if (pm == null)
                 return;
 
-            BaseQuest quest = QuestHelper.GetQuest(pm, typeof(TeachingSomethingNewQuest));
+            var quest = QuestHelper.GetQuest(pm, typeof(TeachingSomethingNewQuest));
 
             if (quest != null && !quest.Completed)
             {
@@ -355,7 +356,7 @@ namespace Server.Engines.Quests
 
         public class InternalObjective : BaseObjective
         {
-            public override object ObjectiveDescription => 1157546;
+            public override object ObjectiveDescription { get { return 1157546; } }
             /*Use the Animal Lore skill on your pet and select "Pet Training Options" to mix and match which properties 
             * you will train your pet.  When you are satisfied with the property you have chosen select "Train Pet" 
             * and confirm the training!.*/
@@ -369,7 +370,7 @@ namespace Server.Engines.Quests
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -384,7 +385,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

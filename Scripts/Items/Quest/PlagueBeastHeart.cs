@@ -8,8 +8,8 @@ namespace Server.Items
         public PlagueBeastHeart()
             : base(0x1363, 0x21)
         {
-            m_Timer = new InternalTimer(this);
-            m_Timer.Start();
+            this.m_Timer = new InternalTimer(this);
+            this.m_Timer.Start();
         }
 
         public PlagueBeastHeart(Serial serial)
@@ -19,8 +19,8 @@ namespace Server.Items
 
         public override void OnAfterDelete()
         {
-            if (m_Timer != null && m_Timer.Running)
-                m_Timer.Stop();
+            if (this.m_Timer != null && this.m_Timer.Running)
+                this.m_Timer.Stop();
         }
 
         public override void Serialize(GenericWriter writer)
@@ -35,9 +35,9 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            m_Timer = new InternalTimer(this);
-            m_Timer.Start();
+			
+            this.m_Timer = new InternalTimer(this);
+            this.m_Timer.Start();
         }
 
         private class InternalTimer : Timer
@@ -47,32 +47,32 @@ namespace Server.Items
             public InternalTimer(PlagueBeastHeart heart)
                 : base(TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(0.5))
             {
-                m_Heart = heart;
+                this.m_Heart = heart;
             }
 
             protected override void OnTick()
             {
-                if (m_Heart == null || m_Heart.Deleted || m_Heart.Owner == null || !m_Heart.Owner.Alive)
+                if (this.m_Heart == null || this.m_Heart.Deleted || this.m_Heart.Owner == null || !this.m_Heart.Owner.Alive)
                 {
-                    Stop();
+                    this.Stop();
                     return;
                 }
 
-                if (m_Heart.ItemID == 0x1363)
+                if (this.m_Heart.ItemID == 0x1363)
                 {
-                    if (m_Delay)
+                    if (this.m_Delay)
                     {
-                        m_Heart.ItemID = 0x1367;
-                        m_Heart.Owner.PlaySound(0x11F);
+                        this.m_Heart.ItemID = 0x1367;
+                        this.m_Heart.Owner.PlaySound(0x11F);
                     }
 
-                    m_Delay = !m_Delay;
+                    this.m_Delay = !this.m_Delay;
                 }
                 else
                 {
-                    m_Heart.ItemID = 0x1363;
-                    m_Heart.Owner.PlaySound(0x120);
-                    m_Delay = false;
+                    this.m_Heart.ItemID = 0x1363;
+                    this.m_Heart.Owner.PlaySound(0x120);
+                    this.m_Delay = false;
                 }
             }
         }

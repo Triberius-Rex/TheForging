@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public enum SlayerName

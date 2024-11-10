@@ -1,8 +1,8 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Beninort : MondainQuester
     {
         [Constructable]
@@ -18,10 +18,16 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] 
                 {
                     typeof(SecretsoftheSoulforge)
                 };
+            }
+        }
         public override void InitBody()
         {
             InitStats(100, 100, 25);
@@ -36,10 +42,10 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new SerpentStoneStaff(), dropChance: 1);
-            SetWearable(new GargishClothChest(), 1609, 1);
-            SetWearable(new GargishClothArms(), 1651, 1);
-            SetWearable(new GargishClothKilt(), 1649, 1);
+            AddItem(new SerpentStoneStaff());
+            AddItem(new GargishClothChest(1609));
+            AddItem(new GargishClothArms(1651));
+            AddItem(new GargishClothKilt(1649));
         }
 
         public override void Advertise()
@@ -50,7 +56,7 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

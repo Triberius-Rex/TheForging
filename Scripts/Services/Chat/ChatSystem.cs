@@ -1,5 +1,7 @@
-using Server.Network;
 using System;
+using System.IO;
+
+using Server.Network;
 
 namespace Server.Engines.Chat
 {
@@ -9,8 +11,6 @@ namespace Server.Engines.Chat
         public static readonly bool AllowCreateChannels = Config.Get("Chat.AllowCreateChannels", true);
         public static readonly string DefaultChannel = "Help";
 
-        public static readonly long ChatDelay = 5000;
-
         public static void Initialize()
         {
             PacketHandlers.Register(0xB5, 0x40, true, OpenChatWindowRequest);
@@ -19,7 +19,7 @@ namespace Server.Engines.Chat
 
         public static void OpenChatWindowRequest(NetState state, PacketReader pvSrc)
         {
-            Mobile from = state.Mobile;
+            var from = state.Mobile;
 
             if (!Enabled)
             {
@@ -27,7 +27,10 @@ namespace Server.Engines.Chat
                 return;
             }
 
-            string chatName = from.Name;
+            //pvSrc.Seek(2, SeekOrigin.Begin);
+            ///*string chatName = */pvSrc.ReadUnicodeStringSafe((0x40 - 2) >> 1).Trim();
+
+            var chatName = from.Name;
 
             SendCommandTo(from, ChatCommand.OpenChatWindow, chatName);
             ChatUser.AddChatUser(from);
@@ -40,21 +43,21 @@ namespace Server.Engines.Chat
 
             try
             {
-                Mobile from = state.Mobile;
-                ChatUser user = ChatUser.GetChatUser(from);
+                var from = state.Mobile;
+                var user = ChatUser.GetChatUser(from);
 
                 if (user == null)
                     return;
 
-                string lang = pvSrc.ReadStringSafe(4);
-                short actionId = pvSrc.ReadInt16();
-                string param = pvSrc.ReadUnicodeString();
+                var lang = pvSrc.ReadStringSafe(4);
+                var actionId = pvSrc.ReadInt16();
+                var param = pvSrc.ReadUnicodeString();
 
-                ChatActionHandler handler = ChatActionHandlers.GetHandler(actionId);
+                var handler = ChatActionHandlers.GetHandler(actionId);
 
                 if (handler != null)
                 {
-                    Channel channel = user.CurrentChannel;
+                    var channel = user.CurrentChannel;
 
                     if (handler.RequireConference && channel == null)
                     {
@@ -75,7 +78,7 @@ namespace Server.Engines.Chat
             }
             catch (Exception e)
             {
-                Diagnostics.ExceptionLogging.LogException(e);
+                Console.WriteLine(e);
             }
         }
 

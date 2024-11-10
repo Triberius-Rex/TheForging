@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a minion corpse")]
@@ -53,7 +56,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

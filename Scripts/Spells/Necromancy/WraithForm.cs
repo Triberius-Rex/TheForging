@@ -1,5 +1,6 @@
-using Server.Mobiles;
 using System;
+using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Spells.Necromancy
 {
@@ -16,16 +17,76 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.25);
-        public override double RequiredSkill => 20.0;
-        public override int RequiredMana => 17;
-        public override int Body => Caster.Female ? 747 : 748;
-        public override int Hue => Caster.Female ? 0 : 0x4001;
-        public override int PhysResistOffset => +15;
-        public override int FireResistOffset => -5;
-        public override int ColdResistOffset => 0;
-        public override int PoisResistOffset => 0;
-        public override int NrgyResistOffset => -5;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 20.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 17;
+            }
+        }
+        public override int Body
+        {
+            get
+            {
+                return this.Caster.Female ? 747 : 748;
+            }
+        }
+        public override int Hue
+        {
+            get
+            {
+                return this.Caster.Female ? 0 : 0x4001;
+            }
+        }
+        public override int PhysResistOffset
+        {
+            get
+            {
+                return +15;
+            }
+        }
+        public override int FireResistOffset
+        {
+            get
+            {
+                return -5;
+            }
+        }
+        public override int ColdResistOffset
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int PoisResistOffset
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int NrgyResistOffset
+        {
+            get
+            {
+                return -5;
+            }
+        }
         public override void DoEffect(Mobile m)
         {
             if (m is PlayerMobile)
@@ -34,9 +95,9 @@ namespace Server.Spells.Necromancy
             m.PlaySound(0x17F);
             m.FixedParticles(0x374A, 1, 15, 9902, 1108, 4, EffectLayer.Waist);
 
-            int manadrain = Math.Max(8, 5 + (int)(0.16 * m.Skills.SpiritSpeak.Value));
+            int manadrain = (int)(m.Skills.SpiritSpeak.Value / 5);
 
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.WraithForm, 1060524, 1153829, string.Format("15\t5\t5\t{0}", manadrain)));
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.WraithForm, 1060524, 1153829, String.Format("15\t5\t5\t{0}", manadrain)));
         }
 
         public override void RemoveEffect(Mobile m)

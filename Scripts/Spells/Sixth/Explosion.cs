@@ -1,5 +1,5 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Spells.Sixth
 {
@@ -16,8 +16,27 @@ namespace Server.Spells.Sixth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Sixth;
-        public override bool DelayedDamageStacking => false;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Sixth;
+            }
+        }
+        public override bool DelayedDamageStacking
+        {
+            get
+            {
+                return !Core.AOS;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -25,7 +44,7 @@ namespace Server.Spells.Sixth
 
         public void Target(IDamageable m)
         {
-            if (HasDelayContext(m))
+            if (Core.SA && HasDelayContext(m))
             {
                 DoHurtFizzle();
                 return;
@@ -41,7 +60,7 @@ namespace Server.Spells.Sixth
 
                 SpellHelper.Turn(Caster, m);
 
-                SpellHelper.CheckReflect(this, Caster, ref m);
+                SpellHelper.CheckReflect((int)Circle, Caster, ref m);
 
                 InternalTimer t = new InternalTimer(this, attacker, m);
                 t.Start();
@@ -57,7 +76,7 @@ namespace Server.Spells.Sixth
             private readonly Mobile m_Attacker;
 
             public InternalTimer(MagerySpell spell, Mobile attacker, IDamageable target)
-                : base(TimeSpan.FromSeconds(3.0))
+                : base(TimeSpan.FromSeconds(Core.AOS ? 3.0 : 2.5))
             {
                 m_Spell = spell;
                 m_Attacker = attacker;
@@ -75,7 +94,25 @@ namespace Server.Spells.Sixth
 
                 if (m_Attacker.HarmfulCheck(m_Target))
                 {
-                    double damage = m_Spell.GetNewAosDamage(40, 1, 5, m_Target);
+                    double damage = 0;
+
+                    if (Core.AOS)
+                    {
+                        damage = m_Spell.GetNewAosDamage(40, 1, 5, m_Target);
+                    }
+                    else if (defender != null)
+                    {
+                        damage = Utility.Random(23, 22);
+
+                        if (m_Spell.CheckResisted(defender))
+                        {
+                            damage *= 0.75;
+
+                            defender.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                        }
+
+                        damage *= m_Spell.GetDamageScalar(defender);
+                    }
 
                     if (defender != null)
                     {
@@ -103,7 +140,7 @@ namespace Server.Spells.Sixth
         {
             private readonly ExplosionSpell m_Owner;
             public InternalTarget(ExplosionSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

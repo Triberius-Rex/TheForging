@@ -1,10 +1,11 @@
 #region References
-using Server.ContextMenus;
-using Server.Gumps;
-using Server.Multis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server.Multis;
+using Server.Gumps;
+using Server.ContextMenus;
 #endregion
 
 namespace Server.Items
@@ -29,7 +30,7 @@ namespace Server.Items
 
         private static readonly DateTime WorldStart = new DateTime(1997, 9, 1);
 
-        public static DateTime ServerStart { get; private set; }
+		public static DateTime ServerStart { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public SecureLevel Level { get; set; }
@@ -53,10 +54,10 @@ namespace Server.Items
         {
         }
 
-        [CallPriority(-1)]
+		[CallPriority(-1)]
         public static void Initialize()
         {
-            ServerStart = DateTime.UtcNow;
+			ServerStart = DateTime.UtcNow;
 
             Timer.DelayCall(TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2), ClockTime.Tick_Callback);
         }
@@ -75,9 +76,9 @@ namespace Server.Items
             GetTime(map, x, y, out hours, out minutes, out totalMinutes);
 
             if (map != null)
-            {
-                totalMinutes /= 10 + (map.MapIndex * 20);
-            }
+			{
+				totalMinutes /= 10 + (map.MapIndex * 20);
+			}
 
             return (MoonPhase)(totalMinutes % 8);
         }
@@ -91,14 +92,14 @@ namespace Server.Items
 
         public static void GetTime(Map map, int x, int y, out int hours, out int minutes, out int totalMinutes)
         {
-            TimeSpan timeSpan = DateTime.UtcNow - WorldStart;
+			var timeSpan = DateTime.UtcNow - WorldStart;
 
             totalMinutes = (int)(timeSpan.TotalSeconds / SecondsPerUOMinute);
 
             if (map != null)
-            {
+			{
                 totalMinutes += map.MapIndex * 320;
-            }
+			}
 
             // Really on OSI this must be by subserver
             totalMinutes += x / 16;
@@ -133,46 +134,46 @@ namespace Server.Items
             // 08:00 PM - 11:59 AM : Late at night
 
             if (hours >= 20)
-            {
+			{
                 generalNumber = 1042957; // It's late at night
-            }
+			}
             else if (hours >= 16)
-            {
+			{
                 generalNumber = 1042956; // It's early in the evening
-            }
+			}
             else if (hours >= 13)
-            {
+			{
                 generalNumber = 1042955; // It's the afternoon
-            }
+			}
             else if (hours >= 12)
-            {
+			{
                 generalNumber = 1042954; // It's around noon
-            }
+			}
             else if (hours >= 08)
-            {
+			{
                 generalNumber = 1042953; // It's late in the morning
-            }
+			}
             else if (hours >= 04)
-            {
+			{
                 generalNumber = 1042952; // It's early in the morning
-            }
+			}
             else if (hours >= 01)
-            {
+			{
                 generalNumber = 1042951; // It's the middle of the night
-            }
+			}
             else
-            {
+			{
                 generalNumber = 1042950; // 'Tis the witching hour. 12 Midnight.
-            }
+			}
 
             hours %= 12;
 
             if (hours == 0)
-            {
+			{
                 hours = 12;
-            }
+			}
 
-            exactTime = string.Format("{0}:{1:D2}", hours, minutes);
+            exactTime = String.Format("{0}:{1:D2}", hours, minutes);
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -184,12 +185,12 @@ namespace Server.Items
 
             SendLocalizedMessageTo(from, genericNumber);
             SendLocalizedMessageTo(from, 1042958, exactTime); // ~1_TIME~ to be exact
-        }
+        }        
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)Level);
         }
@@ -212,7 +213,7 @@ namespace Server.Items
 
     public class ClockTime : Clock
     {
-        private static readonly List<ClockTime> _Instances = new List<ClockTime>();
+        private static List<ClockTime> _Instances = new List<ClockTime>();        
 
         [Constructable]
         public ClockTime()
@@ -225,7 +226,7 @@ namespace Server.Items
             : base(itemID)
         {
             Weight = 10.0;
-            LootType = LootType.Blessed;
+            LootType = LootType.Blessed;            
             _Instances.Add(this);
         }
 
@@ -243,7 +244,7 @@ namespace Server.Items
 
         public static void Tick_Callback()
         {
-            foreach (ClockTime clock in _Instances.Where(p => p != null && !p.Deleted && p.IsLockedDown))
+            foreach (var clock in _Instances.Where(p => p != null && !p.Deleted && p.IsLockedDown))
             {
                 IPooledEnumerable ie = clock.GetMobilesInRange(10);
 
@@ -278,7 +279,7 @@ namespace Server.Items
             base.Deserialize(reader);
 
             reader.ReadInt();
-
+            
             _Instances.Add(this);
         }
     }
@@ -300,7 +301,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -327,7 +328,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -340,7 +341,7 @@ namespace Server.Items
     [Flipable(0x44DD, 0x44E1)]
     public class LargeGrandfatherClock : ClockTime
     {
-        public override int LabelNumber => 1149902;  // Large Grandfather Clock
+        public override int LabelNumber { get { return 1149902; } } // Large Grandfather Clock
 
         [Constructable]
         public LargeGrandfatherClock()
@@ -356,7 +357,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -369,7 +370,7 @@ namespace Server.Items
     [Flipable(0x44D5, 0x44D9)]
     public class SmallGrandfatherClock : ClockTime
     {
-        public override int LabelNumber => 1149901;  // Small Grandfather Clock
+        public override int LabelNumber { get { return 1149901; } } // Small Grandfather Clock
 
         [Constructable]
         public SmallGrandfatherClock()
@@ -385,7 +386,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -398,7 +399,7 @@ namespace Server.Items
     [Flipable(0x48D4, 0x48D8)]
     public class WhiteGrandfatherClock : ClockTime
     {
-        public override int LabelNumber => 1149903;  // White Grandfather Clock
+        public override int LabelNumber { get { return 1149903; } } // White Grandfather Clock
 
         [Constructable]
         public WhiteGrandfatherClock()
@@ -414,7 +415,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

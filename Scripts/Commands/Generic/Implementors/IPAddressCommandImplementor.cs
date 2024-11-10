@@ -1,6 +1,6 @@
-using Server.Network;
 using System;
 using System.Collections;
+using Server.Network;
 
 namespace Server.Commands.Generic
 {
@@ -8,12 +8,12 @@ namespace Server.Commands.Generic
     {
         public IPAddressCommandImplementor()
         {
-            Accessors = new string[] { "IPAddress" };
-            SupportRequirement = CommandSupport.IPAddress;
-            SupportsConditionals = true;
-            AccessLevel = AccessLevel.Administrator;
-            Usage = "IPAddress <command> [condition]";
-            Description = "Invokes the command on one mobile from each IP address that is logged in. Optional condition arguments can further restrict the set of objects.";
+            this.Accessors = new string[] { "IPAddress" };
+            this.SupportRequirement = CommandSupport.IPAddress;
+            this.SupportsConditionals = true;
+            this.AccessLevel = AccessLevel.Administrator;
+            this.Usage = "IPAddress <command> [condition]";
+            this.Description = "Invokes the command on one mobile from each IP address that is logged in. Optional condition arguments can further restrict the set of objects.";
         }
 
         public override void Compile(Mobile from, BaseCommand command, ref string[] args, ref object obj)
@@ -24,7 +24,7 @@ namespace Server.Commands.Generic
 
                 bool items, mobiles;
 
-                if (!CheckObjectTypes(from, command, ext, out items, out mobiles))
+                if (!this.CheckObjectTypes(from, command, ext, out items, out mobiles))
                     return;
 
                 if (!mobiles) // sanity check
@@ -40,7 +40,7 @@ namespace Server.Commands.Generic
 
                 for (int i = 0; i < states.Count; ++i)
                 {
-                    NetState ns = states[i];
+                    NetState ns = (NetState)states[i];
                     Mobile mob = ns.Mobile;
 
                     if (mob != null && !addresses.Contains(ns.Address) && ext.IsValid(mob))
@@ -54,10 +54,9 @@ namespace Server.Commands.Generic
 
                 obj = list;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                from.SendMessage(e.Message);
-                Diagnostics.ExceptionLogging.LogException(e);
+                from.SendMessage(ex.Message);
             }
         }
     }

@@ -1,6 +1,7 @@
+using System;
+using System.Collections;
 using Server.Gumps;
 using Server.Network;
-using System.Collections;
 
 namespace Server.Engines.Quests
 {
@@ -8,10 +9,13 @@ namespace Server.Engines.Quests
     {
         private QuestSystem m_System;
         private bool m_HasBeenRead;
+        public QuestConversation()
+        {
+        }
 
         public abstract object Message { get; }
-        public virtual QuestItemInfo[] Info => null;
-        public virtual bool Logged => true;
+        public virtual QuestItemInfo[] Info { get { return null; } }
+        public virtual bool Logged { get { return true; } }
 
         public QuestSystem System
         {
@@ -48,16 +52,16 @@ namespace Server.Engines.Quests
 
         public virtual void BaseSerialize(GenericWriter writer)
         {
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
 
-            writer.Write(m_HasBeenRead);
+            writer.Write((bool)m_HasBeenRead);
 
             ChildSerialize(writer);
         }
 
         public virtual void ChildSerialize(GenericWriter writer)
         {
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public virtual void OnRead()

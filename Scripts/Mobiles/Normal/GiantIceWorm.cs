@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a giant ice worm corpse")]
@@ -36,6 +38,8 @@ namespace Server.Mobiles
             Fame = 4500;
             Karma = -4500;
 
+            VirtualArmor = 40;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 71.1;
@@ -46,18 +50,42 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool SubdueBeforeTame => true;
-        public override Poison PoisonImmune => Poison.Greater;
-        public override Poison HitPoison => Poison.Greater;
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override bool SubdueBeforeTame
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Greater;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Greater;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
 
-        public override bool StatLossAfterTame => true;
+        public override bool StatLossAfterTame { get { return true; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Engines.Quests.Hag
 {
@@ -24,7 +24,7 @@ namespace Server.Engines.Quests.Hag
 
     public class IngredientInfo
     {
-        private static readonly IngredientInfo[] m_Table =
+        private static readonly IngredientInfo[] m_Table = new IngredientInfo[]
         {
             // sheep liver
             new IngredientInfo(1055020, 5, typeof(Sheep)),
@@ -62,14 +62,32 @@ namespace Server.Engines.Quests.Hag
         private readonly int m_Quantity;
         private IngredientInfo(int name, int quantity, params Type[] creatures)
         {
-            m_Name = name;
-            m_Creatures = creatures;
-            m_Quantity = quantity;
+            this.m_Name = name;
+            this.m_Creatures = creatures;
+            this.m_Quantity = quantity;
         }
 
-        public int Name => m_Name;
-        public Type[] Creatures => m_Creatures;
-        public int Quantity => m_Quantity;
+        public int Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+        }
+        public Type[] Creatures
+        {
+            get
+            {
+                return this.m_Creatures;
+            }
+        }
+        public int Quantity
+        {
+            get
+            {
+                return this.m_Quantity;
+            }
+        }
         public static IngredientInfo Get(Ingredient ingredient)
         {
             int index = (int)ingredient;

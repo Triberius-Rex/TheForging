@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -18,14 +19,28 @@ namespace Server.Mobiles
             HairHue = Race.RandomHairHue();
             Race.RandomFacialHair(this);
 
-            SetWearable(new ThighBoots(), 0x51D, 1);
-			SetWearable(new FancyShirt(), 0x51D, 1);
-			SetWearable(new StuddedMempo(), dropChance: 1);
-			SetWearable(new JinBaori(), 0x2A, 1);
-			SetWearable(new StuddedGloves(), 0x2A, 1);
-			SetWearable(new LeatherNinjaPants(), 0x51D, 1);
-			SetWearable(new LightPlateJingasa(), 0x51D, 1);
-			SetWearable(new Sai(), 0x51D, 1); 
+            AddItem(new ThighBoots(0x51D));
+            AddItem(new FancyShirt(0x51D));
+            AddItem(new StuddedMempo());
+            AddItem(new JinBaori(0x2A));
+
+            Item item;
+
+            item = new StuddedGloves();
+            item.Hue = 0x2A;
+            AddItem(item);
+
+            item = new LeatherNinjaPants();
+            item.Hue = 0x51D;
+            AddItem(item);
+
+            item = new LightPlateJingasa();
+            item.Hue = 0x51D;
+            AddItem(item);
+
+            item = new Sai();
+            item.Hue = 0x51D;
+            AddItem(item);
 
             SetStr(440, 460);
             SetDex(160, 175);
@@ -55,6 +70,8 @@ namespace Server.Mobiles
 
             Fame = 13000;
             Karma = -13000;
+
+            VirtualArmor = 58;
         }
 
         public SerpentsFangAssassin(Serial serial)
@@ -62,12 +79,12 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override bool ShowFameTitle { get { return false; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 4);
+            AddLoot(LootPack.AosFilthyRich, 4);
         }
 
         public override void OnDeath(Container c)
@@ -81,7 +98,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

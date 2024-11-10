@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     public class PolishedMeteorite : Item
     {
-        public override int LabelNumber => 1158693;  // polished meteorite
-
+        public override int LabelNumber { get { return 1158693; } } // polished meteorite
+        
         [Constructable]
         public PolishedMeteorite()
             : base(41422 + Utility.Random(12))
@@ -19,7 +21,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,12 +1,22 @@
-using Server.Gumps;
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Mobiles;
 using Server.Items;
+using Server.Gumps;
 
 namespace Server.Engines.VvV
 {
-    [Flipable(39355, 39356)]
+    [FlipableAttribute(39355, 39356)]
     public class HonorBanner : Item
-    {
-        public override int LabelNumber => 1123379;
+	{
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1123379;
+            }
+        }
 
         [Constructable]
         public HonorBanner() : base(39355)
@@ -15,7 +25,7 @@ namespace Server.Engines.VvV
 
         public override void OnDoubleClick(Mobile m)
         {
-            if (m.InRange(GetWorldLocation(), 2))
+            if (m.InRange(this.GetWorldLocation(), 2))
             {
                 Gump g = new Gump(50, 50);
                 g.AddImage(0, 0, 30577);
@@ -31,19 +41,19 @@ namespace Server.Engines.VvV
 
         public HonorBanner(Serial serial)
             : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
-    }
+		{
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+		}
+	}
 }

@@ -13,22 +13,22 @@ namespace Server.Items
         [Constructable]
         public JackOLantern(bool south)
         {
-            AddComponent(new AddonComponent(5703), 0, 0, +0);
+            this.AddComponent(new AddonComponent(5703), 0, 0, +0);
 
             int hue = 1161;
             //( 1 > Utility.Random( 5 ) ? 2118 : 1161 );
 
             if (!south)
             {
-                AddComponent(GetComponent(3178, 0000), 0, 0, -1);
-                AddComponent(GetComponent(3883, hue), 0, 0, +1);
-                AddComponent(GetComponent(3862, hue), 0, 0, +0);
+                this.AddComponent(this.GetComponent(3178, 0000), 0, 0, -1);
+                this.AddComponent(this.GetComponent(3883, hue), 0, 0, +1);
+                this.AddComponent(this.GetComponent(3862, hue), 0, 0, +0);
             }
             else
             {
-                AddComponent(GetComponent(3179, 0000), 0, 0, +0);
-                AddComponent(GetComponent(3885, hue), 0, 0, -1);
-                AddComponent(GetComponent(3871, hue), 0, 0, +0);
+                this.AddComponent(this.GetComponent(3179, 0000), 0, 0, +0);
+                this.AddComponent(this.GetComponent(3885, hue), 0, 0, -1);
+                this.AddComponent(this.GetComponent(3871, hue), 0, 0, +0);
             }
         }
 
@@ -37,7 +37,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ShareHue => false;
+        public override bool ShareHue
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -53,11 +59,11 @@ namespace Server.Items
 
             if (version == 0)
             {
-                Timer.DelayCall(TimeSpan.Zero, delegate ()
+                Timer.DelayCall(TimeSpan.Zero, delegate()
                 {
-                    for (int i = 0; i < Components.Count; ++i)
+                    for (int i = 0; i < this.Components.Count; ++i)
                     {
-                        AddonComponent ac = Components[i] as AddonComponent;
+                        AddonComponent ac = this.Components[i] as AddonComponent;
 
                         if (ac != null && ac.Hue == 2118)
                             ac.Hue = 1161;
@@ -67,11 +73,11 @@ namespace Server.Items
 
             if (version <= 1)
             {
-                Timer.DelayCall(TimeSpan.Zero, delegate ()
+                Timer.DelayCall(TimeSpan.Zero, delegate()
                 {
-                    for (int i = 0; i < Components.Count; ++i)
+                    for (int i = 0; i < this.Components.Count; ++i)
                     {
-                        AddonComponent ac = Components[i] as AddonComponent;
+                        AddonComponent ac = this.Components[i] as AddonComponent;
 
                         if (ac != null)
                             ac.Name = "jack-o-lantern";
@@ -82,11 +88,10 @@ namespace Server.Items
 
         private AddonComponent GetComponent(int itemID, int hue)
         {
-            AddonComponent ac = new AddonComponent(itemID)
-            {
-                Hue = hue,
-                Name = "jack-o-lantern"
-            };
+            AddonComponent ac = new AddonComponent(itemID);
+
+            ac.Hue = hue;
+            ac.Name = "jack-o-lantern";
 
             return ac;
         }

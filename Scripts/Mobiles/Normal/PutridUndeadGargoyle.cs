@@ -1,4 +1,5 @@
 /* Based on Gargoyle, still no infos on Undead Gargoyle... Have to get also the correct body ID */
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -43,6 +44,17 @@ namespace Server.Mobiles
 
             Fame = 3500;
             Karma = -3500;
+
+            VirtualArmor = 32;
+
+            if (0.05 > Utility.RandomDouble())
+                PackItem(new TatteredAncientScroll());
+
+            if (0.10 > Utility.RandomDouble())
+                PackItem(new InfusedGlassStave());
+
+            if (0.15 > Utility.RandomDouble())
+                PackItem(new AncientPotteryFragments());
         }
 
         public PutridUndeadGargoyle(Serial serial)
@@ -50,25 +62,52 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override bool Unprovokable => true;
-        public override bool BardImmune => true;
-        public override Poison PoisonImmune => Poison.Deadly;
-        public override Poison HitPoison => Poison.Deadly;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Deadly;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Deadly;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 5);
+            AddLoot(LootPack.AosFilthyRich, 5);
             AddLoot(LootPack.MedScrolls);
             AddLoot(LootPack.Gems, Utility.RandomMinMax(1, 4));
-            AddLoot(LootPack.LootItem<TatteredAncientScroll>(5.0));
-            AddLoot(LootPack.LootItem<InfusedGlassStave>(10.0));
-            AddLoot(LootPack.LootItem<AncientPotteryFragments>(15.0));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

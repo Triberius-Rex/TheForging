@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class GlobOfMonstreousInterredGrizzle : Item
@@ -13,12 +15,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072117;// Glob of Monsterous Interred Grizzle
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072117;
+            }
+        }// Glob of Monsterous Interred Grizzle
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

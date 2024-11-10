@@ -1,8 +1,10 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class IceCrystals : Item
     {
-        public override int LabelNumber => 1028710;  // crystal
+        public override int LabelNumber { get { return 1028710; } } // crystal
 
         private static readonly int[] m_ItemIDs = new int[]
         {
@@ -13,8 +15,8 @@
         public IceCrystals()
             : base(Utility.RandomList(m_ItemIDs))
         {
-            Hue = 2729;
-            Movable = false;
+            this.Hue = 2729;
+            this.Movable = false;
         }
 
         public IceCrystals(Serial serial)
@@ -25,7 +27,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

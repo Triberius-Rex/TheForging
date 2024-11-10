@@ -10,10 +10,10 @@ namespace Server.Items
         public DecayedCorpse(string name)
             : base(Utility.Random(0xECA, 9))
         {
-            Movable = false;
-            Name = name;
+            this.Movable = false;
+            this.Name = name;
 
-            BeginDecay(m_DefaultDecayTime);
+            this.BeginDecay(m_DefaultDecayTime);
         }
 
         public DecayedCorpse(Serial serial)
@@ -22,24 +22,30 @@ namespace Server.Items
         }
 
         // Do not display (x items, y stones)
-        public override bool DisplaysContent => false;
+        public override bool DisplaysContent
+        {
+            get
+            {
+                return false;
+            }
+        }
         public void BeginDecay(TimeSpan delay)
         {
-            if (m_DecayTimer != null)
-                m_DecayTimer.Stop();
+            if (this.m_DecayTimer != null)
+                this.m_DecayTimer.Stop();
 
-            m_DecayTime = DateTime.UtcNow + delay;
+            this.m_DecayTime = DateTime.UtcNow + delay;
 
-            m_DecayTimer = new InternalTimer(this, delay);
-            m_DecayTimer.Start();
+            this.m_DecayTimer = new InternalTimer(this, delay);
+            this.m_DecayTimer.Start();
         }
 
         public override void OnAfterDelete()
         {
-            if (m_DecayTimer != null)
-                m_DecayTimer.Stop();
+            if (this.m_DecayTimer != null)
+                this.m_DecayTimer.Stop();
 
-            m_DecayTimer = null;
+            this.m_DecayTimer = null;
         }
 
         // Do not display (x items, y stones)
@@ -50,19 +56,24 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1046414, Name); // the remains of ~1_NAME~
+            list.Add(1046414, this.Name); // the remains of ~1_NAME~
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            this.LabelTo(from, 1046414, this.Name); // the remains of ~1_NAME~
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_DecayTimer != null);
+            writer.Write(this.m_DecayTimer != null);
 
-            if (m_DecayTimer != null)
-                writer.WriteDeltaTime(m_DecayTime);
+            if (this.m_DecayTimer != null)
+                writer.WriteDeltaTime(this.m_DecayTime);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -71,18 +82,18 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        BeginDecay(m_DefaultDecayTime);
+                        this.BeginDecay(m_DefaultDecayTime);
 
                         break;
                     }
                 case 1:
                     {
                         if (reader.ReadBool())
-                            BeginDecay(reader.ReadDeltaTime() - DateTime.UtcNow);
+                            this.BeginDecay(reader.ReadDeltaTime() - DateTime.UtcNow);
 
                         break;
                     }
@@ -95,13 +106,13 @@ namespace Server.Items
             public InternalTimer(DecayedCorpse c, TimeSpan delay)
                 : base(delay)
             {
-                m_Corpse = c;
-                Priority = TimerPriority.FiveSeconds;
+                this.m_Corpse = c;
+                this.Priority = TimerPriority.FiveSeconds;
             }
 
             protected override void OnTick()
             {
-                m_Corpse.Delete();
+                this.m_Corpse.Delete();
             }
         }
     }

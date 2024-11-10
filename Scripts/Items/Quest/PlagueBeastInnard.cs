@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 using Server.Network;
 
@@ -8,10 +9,10 @@ namespace Server.Items
         public PlagueBeastInnard(int itemID, int hue)
             : base(itemID)
         {
-            Name = "plague beast innards";
-            Hue = hue;
-            Movable = false;
-            Weight = 1.0;
+            this.Name = "plague beast innards";
+            this.Hue = hue;
+            this.Movable = false;
+            this.Weight = 1.0;
         }
 
         public PlagueBeastInnard(Serial serial)
@@ -19,7 +20,13 @@ namespace Server.Items
         {
         }
 
-        public PlagueBeastLord Owner => RootParent as PlagueBeastLord;
+        public PlagueBeastLord Owner
+        {
+            get
+            {
+                return this.RootParent as PlagueBeastLord;
+            }
+        }
         public virtual bool Scissor(Mobile from, Scissors scissors)
         {
             return false;
@@ -40,7 +47,7 @@ namespace Server.Items
             if ((int)check.AccessLevel >= (int)AccessLevel.GameMaster)
                 return true;
 
-            PlagueBeastLord owner = Owner;
+            PlagueBeastLord owner = this.Owner;
 
             if (owner == null)
                 return false;
@@ -68,10 +75,10 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            PlagueBeastLord owner = Owner;
+            PlagueBeastLord owner = this.Owner;
 
             if (owner == null || !owner.Alive)
-                Delete();
+                this.Delete();
         }
     }
 
@@ -86,7 +93,7 @@ namespace Server.Items
         public PlagueBeastComponent(int itemID, int hue, bool movable)
             : base(itemID, hue)
         {
-            Movable = movable;
+            this.Movable = movable;
         }
 
         public PlagueBeastComponent(Serial serial)
@@ -98,16 +105,34 @@ namespace Server.Items
         {
             get
             {
-                return m_Organ;
+                return this.m_Organ;
             }
             set
             {
-                m_Organ = value;
+                this.m_Organ = value;
             }
         }
-        public bool IsBrain => ItemID == 0x1CF0;
-        public bool IsGland => ItemID == 0x1CEF;
-        public bool IsReceptacle => ItemID == 0x9DF;
+        public bool IsBrain
+        {
+            get
+            {
+                return this.ItemID == 0x1CF0;
+            }
+        }
+        public bool IsGland
+        {
+            get
+            {
+                return this.ItemID == 0x1CEF;
+            }
+        }
+        public bool IsReceptacle
+        {
+            get
+            {
+                return this.ItemID == 0x9DF;
+            }
+        }
         public override bool DropToItem(Mobile from, Item target, Point3D p)
         {
             if (target is PlagueBeastBackpack)
@@ -133,10 +158,10 @@ namespace Server.Items
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
-            if (m_Organ != null && m_Organ.OnDropped(from, dropped, this))
+            if (this.m_Organ != null && this.m_Organ.OnDropped(from, dropped, this))
             {
                 if (dropped is PlagueBeastComponent)
-                    m_Organ.Components.Add((PlagueBeastComponent)dropped);
+                    this.m_Organ.Components.Add((PlagueBeastComponent)dropped);
             }
 
             return true;
@@ -144,16 +169,16 @@ namespace Server.Items
 
         public override bool OnDragLift(Mobile from)
         {
-            if (IsAccessibleTo(from))
+            if (this.IsAccessibleTo(from))
             {
-                if (m_Organ != null && m_Organ.OnLifted(from, this))
+                if (this.m_Organ != null && this.m_Organ.OnLifted(from, this))
                 {
-                    from.SendLocalizedMessage(IsGland ? 1071895 : 1071914, null, 0x3B2); // * You rip the organ out of the plague beast's flesh *
+                    from.SendLocalizedMessage(this.IsGland ? 1071895 : 1071914, null, 0x3B2); // * You rip the organ out of the plague beast's flesh *
 
-                    if (m_Organ.Components.Contains(this))
-                        m_Organ.Components.Remove(this);
+                    if (this.m_Organ.Components.Contains(this))
+                        this.m_Organ.Components.Remove(this);
 
-                    m_Organ = null;
+                    this.m_Organ = null;
                     from.PlaySound(0x1CA);
                 }
 
@@ -169,7 +194,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.WriteItem(m_Organ);
+            writer.WriteItem<PlagueBeastOrgan>(this.m_Organ);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -178,7 +203,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Organ = reader.ReadItem<PlagueBeastOrgan>();
+            this.m_Organ = reader.ReadItem<PlagueBeastOrgan>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Server.Gumps;
+﻿using System;
+using Server.Gumps;
 using Server.Network;
 
 namespace Server.Items
@@ -9,8 +10,8 @@ namespace Server.Items
         public PersonalAttendantToken()
             : base(0x2AAA)
         {
-            LootType = LootType.Blessed;
-            Weight = 5.0;
+            this.LootType = LootType.Blessed;
+            this.Weight = 5.0;
         }
 
         public PersonalAttendantToken(Serial serial)
@@ -18,10 +19,16 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1070997;// A promotional token
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1070997;
+            }
+        }// A promotional token
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.CloseGump(typeof(InternalGump));
                 from.SendGump(new InternalGump(this));
@@ -34,14 +41,14 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(1070998, string.Format("#{0}", 1075997));  // Use this to redeem<br>Personal Attendant
+            list.Add(1070998, String.Format("#{0}", 1075997));  // Use this to redeem<br>Personal Attendant
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -57,32 +64,32 @@ namespace Server.Items
             public InternalGump(PersonalAttendantToken token)
                 : base(200, 200)
             {
-                m_Token = token;
+                this.m_Token = token;
 
-                AddPage(0);
+                this.AddPage(0);
 
-                AddBackground(0, 0, 291, 159, 0x13BE);
-                AddImageTiled(5, 6, 280, 20, 0xA40);
-                AddHtmlLocalized(9, 8, 280, 20, 1049004, 0x7FFF, false, false); // Confirm
-                AddImageTiled(5, 31, 280, 100, 0xA40);
-                AddHtmlLocalized(9, 35, 272, 100, 1076052, 0x7FFF, false, false); // Clicking "OK" will create a Personal Attendant contract bound to you. You will not be able to trade it to another player, and only you will be able to use it.
+                this.AddBackground(0, 0, 291, 159, 0x13BE);
+                this.AddImageTiled(5, 6, 280, 20, 0xA40);
+                this.AddHtmlLocalized(9, 8, 280, 20, 1049004, 0x7FFF, false, false); // Confirm
+                this.AddImageTiled(5, 31, 280, 100, 0xA40);
+                this.AddHtmlLocalized(9, 35, 272, 100, 1076052, 0x7FFF, false, false); // Clicking "OK" will create a Personal Attendant contract bound to you. You will not be able to trade it to another player, and only you will be able to use it.
+				
+                this.AddButton(190, 133, 0xFB7, 0xFB8, 1, GumpButtonType.Reply, 0);
+                this.AddHtmlLocalized(225, 135, 90, 20, 1006044, 0x7FFF, false, false); // OK
 
-                AddButton(190, 133, 0xFB7, 0xFB8, 1, GumpButtonType.Reply, 0);
-                AddHtmlLocalized(225, 135, 90, 20, 1006044, 0x7FFF, false, false); // OK
-
-                AddButton(5, 133, 0xFB1, 0xFB2, 0, GumpButtonType.Reply, 0);
-                AddHtmlLocalized(40, 135, 100, 20, 1060051, 0x7FFF, false, false); // CANCEL
+                this.AddButton(5, 133, 0xFB1, 0xFB2, 0, GumpButtonType.Reply, 0);
+                this.AddHtmlLocalized(40, 135, 100, 20, 1060051, 0x7FFF, false, false); // CANCEL
             }
 
             public override void OnResponse(NetState sender, RelayInfo info)
             {
-                if (m_Token == null || m_Token.Deleted)
+                if (this.m_Token == null || this.m_Token.Deleted)
                     return;
 
                 if (info.ButtonID == 1)
                 {
                     sender.Mobile.AddToBackpack(new PersonalAttendantDeed(sender.Mobile));
-                    m_Token.Delete();
+                    this.m_Token.Delete();
                 }
             }
         }

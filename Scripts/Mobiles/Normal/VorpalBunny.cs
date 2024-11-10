@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -33,10 +33,23 @@ namespace Server.Mobiles
             Fame = 1000;
             Karma = 0;
 
+            VirtualArmor = 4;
+
             DelayBeginTunnel();
 
             ForceActiveSpeed = 0.2;
             ForcePassiveSpeed = 0.4;
+        }
+		
+		public virtual void SpawnPackItems()
+        {
+            int carrots = Utility.RandomMinMax(5, 10);
+            PackItem(new Carrot(carrots));
+
+            if (Utility.Random(5) == 0)
+                PackItem(new BrightlyColoredEggs());
+
+            PackStatue();
         }
 
         public VorpalBunny(Serial serial)
@@ -44,41 +57,43 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override int Hides => 1;
-
-        public override double FleeChance => 1.0;
-        public override double BreakFleeChance => 0.05;
-
+        public override int Meat { get { return 1; } }
+        public override int Hides { get { return 1; } }
+        public override bool BardImmune { get { return !Core.AOS; } }
+		
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Rich, 2);
-            AddLoot(LootPack.LootItem<Carrot>(100.0, Utility.RandomMinMax(5, 10), false, true));
-            AddLoot(LootPack.LootItem<BrightlyColoredEggs>(20.0, 1, false, true));
-            AddLoot(LootPack.RandomLootItem(Loot.StatueTypes, false, true));
         }
+
+        public override IDamageable Combatant
+        {
+            get { return base.Combatant; }
+            set
+            {
+                base.Combatant = value;
+
+                if (0.05 > Utility.RandomDouble())
+                {
+                    StopFlee();
+                }
+                else if (!CheckFlee())
+                {
+                    BeginFlee(TimeSpan.FromSeconds(30));
+                }
+            }
+        }
+
 
         public override bool CheckFlee()
         {
-            return true;
-        }
-
-        public override bool CheckBreakFlee()
-        {
-            return false;
-        }
-
-        public override bool BreakFlee()
-        {
-            NextFleeCheck = Core.TickCount + 1500;
-
-            return true;
+            return DateTime.UtcNow < EndFleeTime;
         }
 
         public virtual void DelayBeginTunnel()
         {
-            Timer.DelayCall(TimeSpan.FromMinutes(3.0), BeginTunnel);
+            Timer.DelayCall(TimeSpan.FromMinutes(3.0), new TimerCallback(BeginTunnel));
         }
 
         public virtual void BeginTunnel()
@@ -92,7 +107,7 @@ namespace Server.Mobiles
             Say("* The bunny begins to dig a tunnel back to its underground lair *");
             PlaySound(0x247);
 
-            Timer.DelayCall(TimeSpan.FromSeconds(5.0), Delete);
+            Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerCallback(Delete));
         }
 
         public override int GetAttackSound() { return 0xC9; }
@@ -103,7 +118,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -124,7 +139,7 @@ namespace Server.Mobiles
                 Hue = 1;
                 Name = "a mysterious rabbit hole";
 
-                Timer.DelayCall(TimeSpan.FromSeconds(40.0), Delete);
+                Timer.DelayCall(TimeSpan.FromSeconds(40.0), new TimerCallback(Delete));
             }
 
             public BunnyHole(Serial serial)
@@ -136,7 +151,7 @@ namespace Server.Mobiles
             {
                 base.Serialize(writer);
 
-                writer.Write(0);
+                writer.Write((int)0);
             }
 
             public override void Deserialize(GenericReader reader)

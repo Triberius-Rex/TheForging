@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Mobiles;
 using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Commands
 {
@@ -9,9 +10,21 @@ namespace Server.Commands
     {
         public static void Initialize()
         {
-            CommandSystem.Register("Vis", AccessLevel.Counselor, Vis_OnCommand);
-            CommandSystem.Register("VisList", AccessLevel.Counselor, VisList_OnCommand);
-            CommandSystem.Register("VisClear", AccessLevel.Counselor, VisClear_OnCommand);
+            EventSink.Login += new LoginEventHandler(OnLogin);
+
+            CommandSystem.Register("Vis", AccessLevel.Counselor, new CommandEventHandler(Vis_OnCommand));
+            CommandSystem.Register("VisList", AccessLevel.Counselor, new CommandEventHandler(VisList_OnCommand));
+            CommandSystem.Register("VisClear", AccessLevel.Counselor, new CommandEventHandler(VisClear_OnCommand));
+        }
+
+        public static void OnLogin(LoginEventArgs e)
+        {
+            if (e.Mobile is PlayerMobile)
+            {
+                PlayerMobile pm = (PlayerMobile)e.Mobile;
+
+                pm.VisibilityList.Clear();
+            }
         }
 
         [Usage("Vis")]
@@ -56,7 +69,7 @@ namespace Server.Commands
             {
                 PlayerMobile pm = (PlayerMobile)e.Mobile;
                 List<Mobile> list = new List<Mobile>(pm.VisibilityList);
-
+				
                 pm.VisibilityList.Clear();
                 pm.SendMessage("Your visibility list has been cleared.");
 
@@ -107,12 +120,18 @@ namespace Server.Commands
                             {
                                 if (targ.CanSee(from))
                                 {
-                                    ns.Send(new MobileIncoming(targ, from));
+                                    if (ns.StygianAbyss)
+                                        ns.Send(new MobileIncoming(targ, from));
+                                    else
+                                        ns.Send(new MobileIncomingOld(targ, from));
 
-                                    ns.Send(from.OPLPacket);
+                                    if (targ.ViewOPL)
+                                    {
+                                        ns.Send(from.OPLPacket);
 
-                                    foreach (Item item in from.Items)
-                                        ns.Send(item.OPLPacket);
+                                        foreach (Item item in from.Items)
+                                            ns.Send(item.OPLPacket);
+                                    }
                                 }
                                 else
                                 {

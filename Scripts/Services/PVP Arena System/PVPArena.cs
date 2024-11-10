@@ -1,9 +1,10 @@
-using Server.Items;
-using Server.Mobiles;
-using Server.Regions;
+using Server;
 using System;
 using System.Collections.Generic;
+using Server.Items;
+using Server.Mobiles;
 using System.Linq;
+using Server.Regions;
 
 namespace Server.Engines.ArenaSystem
 {
@@ -30,7 +31,7 @@ namespace Server.Engines.ArenaSystem
         public ArenaDefinition Definition { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool InUse => CurrentDuel != null;
+        public bool InUse { get { return CurrentDuel != null; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public ArenaDuel CurrentDuel { get; set; }
@@ -96,7 +97,7 @@ namespace Server.Engines.ArenaSystem
 
             if (GuardRegion == null)
             {
-                GuardRegion = new GuardedArenaRegion(string.Format("{0}_Guarded", Definition.Name), Definition.Map, Definition.GuardBounds);
+                GuardRegion = new GuardedArenaRegion(String.Format("{0}_Guarded", Definition.Name), Definition.Map, Definition.GuardBounds);
                 GuardRegion.Register();
             }
         }
@@ -136,7 +137,7 @@ namespace Server.Engines.ArenaSystem
             }
         }
 
-        private readonly List<ArenaDuel> _Remove = new List<ArenaDuel>();
+        private List<ArenaDuel> _Remove = new List<ArenaDuel>();
 
         public void OnTick()
         {
@@ -145,7 +146,7 @@ namespace Server.Engines.ArenaSystem
                 CurrentDuel.OnTick();
             }
 
-            foreach (KeyValuePair<ArenaDuel, DateTime> kvp in PendingDuels)
+            foreach (var kvp in PendingDuels)
             {
                 if (kvp.Value < DateTime.UtcNow)
                 {
@@ -155,7 +156,7 @@ namespace Server.Engines.ArenaSystem
 
             if (_Remove.Count > 0)
             {
-                foreach (ArenaDuel duel in _Remove)
+                foreach (var duel in _Remove)
                 {
                     if (PendingDuels.ContainsKey(duel))
                         PendingDuels.Remove(duel);
@@ -175,7 +176,7 @@ namespace Server.Engines.ArenaSystem
 
         public void RemovePendingDuel(ArenaDuel duel, bool cancel = false)
         {
-            if (PendingDuels.ContainsKey(duel))
+            if(PendingDuels.ContainsKey(duel))
             {
                 PendingDuels.Remove(duel);
 
@@ -219,7 +220,7 @@ namespace Server.Engines.ArenaSystem
         {
             CurrentDuel = null;
 
-            foreach (Corpse corpse in Region.GetEnumeratedItems().OfType<Corpse>())
+            foreach (var corpse in Region.GetEnumeratedItems().OfType<Corpse>())
             {
                 if (corpse.Owner != null && corpse.Owner.InRange(corpse.Location, 30))
                 {
@@ -233,7 +234,7 @@ namespace Server.Engines.ArenaSystem
 
             if (BookedDuels.Count > 0)
             {
-                ArenaDuel newDuel = BookedDuels[0];
+                var newDuel = BookedDuels[0];
                 CurrentDuel = newDuel;
 
                 PVPArenaSystem.SendParticipantMessage(newDuel, 1153141); // Your session has been booked. Please wait a few moments to start the fight.
@@ -258,14 +259,14 @@ namespace Server.Engines.ArenaSystem
             // lets remove pets, too
             if (m is PlayerMobile && ((PlayerMobile)m).AllFollowers.Count > 0)
             {
-                foreach (Mobile mob in ((PlayerMobile)m).AllFollowers.Where(pet => pet.Region.IsPartOf<ArenaRegion>()))
+                foreach (var mob in ((PlayerMobile)m).AllFollowers.Where(pet => pet.Region.IsPartOf<ArenaRegion>()))
                 {
                     mob.MoveToWorld(p, map);
                     mob.Delta(MobileDelta.Noto);
                 }
             }
 
-            if (winner)
+            if(winner)
             {
                 for (int i = 0; i < 5; i++)
                 {
@@ -280,7 +281,7 @@ namespace Server.Engines.ArenaSystem
             {
                 IPooledEnumerable eable = map.GetMobilesInRange(m.Location, 5);
 
-                foreach (Mobile mob in eable)
+                foreach(Mobile mob in eable)
                 {
                     if (mob is ArenaManager)
                     {
@@ -323,9 +324,9 @@ namespace Server.Engines.ArenaSystem
             else
                 rankings = SurvivalRankings;
 
-            foreach (KeyValuePair<PlayerMobile, PlayerStatsEntry> part in duel.GetParticipants())
+            foreach (var part in duel.GetParticipants())
             {
-                PlayerMobile pm = part.Key;
+                var pm = part.Key;
                 ArenaStats stats = rankings.FirstOrDefault(r => r.Owner == pm);
 
                 if (stats == null)
@@ -334,7 +335,7 @@ namespace Server.Engines.ArenaSystem
                     rankings.Add(stats);
                 }
 
-                ArenaTeam team = duel.GetTeam(pm);
+                var team = duel.GetTeam(pm);
 
                 if (team != winners)
                 {
@@ -351,22 +352,22 @@ namespace Server.Engines.ArenaSystem
 
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(1);
+            writer.Write(0);
 
             writer.Write(SurvivalRankings.Count);
-            foreach (ArenaStats ranking in SurvivalRankings)
+            foreach (var ranking in SurvivalRankings)
             {
                 ranking.Serialize(writer);
             }
 
             writer.Write(TeamRankings.Count);
-            foreach (ArenaStats ranking in TeamRankings)
+            foreach (var ranking in TeamRankings)
             {
                 ranking.Serialize(writer);
             }
 
             writer.Write(Blockers.Count);
-            foreach (Item blocker in Blockers)
+            foreach (var blocker in Blockers)
             {
                 writer.Write(blocker);
             }
@@ -377,14 +378,14 @@ namespace Server.Engines.ArenaSystem
             writer.Write(Banner2);
 
             writer.Write(PendingDuels.Count);
-            foreach (KeyValuePair<ArenaDuel, DateTime> kvp in PendingDuels)
+            foreach (var kvp in PendingDuels)
             {
                 kvp.Key.Serialize(writer);
                 writer.WriteDeltaTime(kvp.Value);
             }
 
             writer.Write(BookedDuels.Count);
-            foreach (ArenaDuel duel in BookedDuels)
+            foreach (var duel in BookedDuels)
             {
                 duel.Serialize(writer);
             }
@@ -458,7 +459,7 @@ namespace Server.Engines.ArenaSystem
 
             if (Stone != null)
                 Stone.Arena = this;
-
+            
             if (Manager != null)
                 Manager.Arena = this;
 
@@ -467,19 +468,6 @@ namespace Server.Engines.ArenaSystem
 
             if (Banner2 != null)
                 Banner2.Arena = this;
-
-            if (version == 0)
-            {
-                foreach (var blocker in Blockers)
-                {
-                    if (blocker != null)
-                    {
-                        blocker.Delete();
-                    }
-                }
-
-                ColUtility.Free(Blockers);
-            }
         }
     }
 
@@ -496,10 +484,10 @@ namespace Server.Engines.ArenaSystem
 
         public int CompareTo(ArenaStats stats)
         {
-            if (Ranking > stats.Ranking)
+            if(Ranking > stats.Ranking)
                 return -1;
 
-            if (Ranking < stats.Ranking)
+            if(Ranking < stats.Ranking)
                 return 1;
 
             return 0;

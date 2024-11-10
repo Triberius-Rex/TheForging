@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -10,7 +11,6 @@ namespace Server.Mobiles
         {
             Name = "Pyre";
             Hue = 0x489;
-            Body = 0x5;
 
             FightMode = FightMode.Closest;
 
@@ -40,39 +40,45 @@ namespace Server.Mobiles
 
             Fame = 21000;
             Karma = -21000;
-			
-			Tamable = false;
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
 
             SetWeaponAbility(WeaponAbility.BleedAttack);
             SetWeaponAbility(WeaponAbility.ParalyzingBlow);
         }
 
-        public override bool GivesMLMinorArtifact => true;
+        public override bool GivesMLMinorArtifact
+        {
+            get { return true; }
+        }
 
         public Pyre(Serial serial)
             : base(serial)
         {
         }
-        public override bool CanBeParagon => false;
-        public override void OnDeath(Container c)
+		public override bool CanBeParagon { get { return false; } }
+        public override void OnDeath( Container c )
         {
-            base.OnDeath(c);
+            base.OnDeath( c );
 
-            if (Paragon.ChestChance > Utility.RandomDouble())
-                c.DropItem(new ParagonChest(Name, 5));
+            if ( Paragon.ChestChance > Utility.RandomDouble() )
+            c.DropItem( new ParagonChest( Name, 5 ) );
+
         }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 3);
-            AddLoot(LootPack.ArcanistScrolls);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -80,11 +86,6 @@ namespace Server.Mobiles
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-
-            if (version == 0)
-            {
-                Body = 0x5;
-            }
         }
     }
 }

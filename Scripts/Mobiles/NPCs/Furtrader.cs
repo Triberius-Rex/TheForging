@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Mobiles
@@ -9,11 +10,11 @@ namespace Server.Mobiles
         public Furtrader()
             : base("the furtrader")
         {
-            SetSkill(SkillName.Camping, 55.0, 78.0);
+            this.SetSkill(SkillName.Camping, 55.0, 78.0);
             //SetSkill( SkillName.Alchemy, 60.0, 83.0 );
-            SetSkill(SkillName.AnimalLore, 85.0, 100.0);
-            SetSkill(SkillName.Cooking, 45.0, 68.0);
-            SetSkill(SkillName.Tracking, 36.0, 68.0);
+            this.SetSkill(SkillName.AnimalLore, 85.0, 100.0);
+            this.SetSkill(SkillName.Cooking, 45.0, 68.0);
+            this.SetSkill(SkillName.Tracking, 36.0, 68.0);
         }
 
         public Furtrader(Serial serial)
@@ -21,17 +22,23 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBFurtrader());
+            this.m_SBInfos.Add(new SBFurtrader());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,6 @@
+using Server;
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseComplexFood : Food
@@ -30,10 +33,10 @@ namespace Server.Items
             : base(id)
         {
             Stackable = false;
-            Weight = 1.0;
+            this.Weight = 1.0;
 
             m_Pieces = Pieces;
-            FillFactor = m_Pieces;
+            this.FillFactor = m_Pieces;
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -72,7 +75,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write(m_Pieces);
         }
 
@@ -87,17 +90,17 @@ namespace Server.Items
 
     public class SweetPotatoPie : BaseComplexFood
     {
-        public override int LabelNumber => 1153514;  // sweet potato pie
+        public override int LabelNumber { get { return 1153514; } } // sweet potato pie
 
-        public override Food Piece => new SliceOfPie();
-        public override int Pieces => 6;
+        public override Food Piece { get { return new SliceOfPie(); } }
+        public override int Pieces { get { return 6; } }
 
         [Constructable]
         public SweetPotatoPie()
             : base(19469)
         {
             Stackable = false;
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public override void OnChanged()
@@ -115,7 +118,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -129,15 +132,15 @@ namespace Server.Items
     [Flipable(19459, 19560)]
     public class SliceOfPie : Food
     {
-        public override int LabelNumber => 1153519;  // slice of pie
+        public override int LabelNumber { get { return 1153519; } } // slice of pie
 
         [Constructable]
         public SliceOfPie()
             : base(19459)
         {
             Stackable = false;
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public SliceOfPie(Serial serial)
@@ -149,7 +152,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -162,15 +165,15 @@ namespace Server.Items
 
     public class MashedSweetPotatoes : Food
     {
-        public override int LabelNumber => 1153516;  // mashed sweet potatoes
+        public override int LabelNumber { get { return 1153516; } } // mashed sweet potatoes
 
         [Constructable]
         public MashedSweetPotatoes()
             : base(19461)
         {
             Stackable = false;
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public MashedSweetPotatoes(Serial serial)
@@ -182,7 +185,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -196,17 +199,17 @@ namespace Server.Items
     [Flipable(19371, 19372)]
     public class BasketOfRolls : BaseComplexFood
     {
-        public override int LabelNumber => 1153518;  // basket of rolls
+        public override int LabelNumber { get { return 1153518; } } // basket of rolls
 
-        public override Food Piece => new DinnerRoll();
-        public override int Pieces => 13;
+        public override Food Piece { get { return new DinnerRoll(); } }
+        public override int Pieces { get { return 13; } }
 
         [Constructable]
         public BasketOfRolls()
             : base(19371)
         {
             Stackable = false;
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public BasketOfRolls(Serial serial)
@@ -218,7 +221,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -231,14 +234,14 @@ namespace Server.Items
 
     public class DinnerRoll : Food
     {
-        public override int LabelNumber => 1153520;  // dinner roll
+        public override int LabelNumber { get { return 1153520; } } // dinner roll
 
         [Constructable]
         public DinnerRoll()
             : base(2538)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public DinnerRoll(Serial serial)
@@ -250,7 +253,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -264,7 +267,7 @@ namespace Server.Items
     [Flipable(18824, 18831)]
     public class TurkeyPlatter : BaseComplexFood
     {
-        public override int LabelNumber => 1153517;  // turkey platter
+        public override int LabelNumber { get { return 1153517; } } // turkey platter
 
         public override Food Piece
         {
@@ -283,14 +286,14 @@ namespace Server.Items
             }
         }
 
-        public override int Pieces => 8;
+        public override int Pieces { get { return 8; } }
 
         [Constructable]
         public TurkeyPlatter()
             : base(18824)
         {
             Stackable = false;
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public TurkeyPlatter(Serial serial)
@@ -302,7 +305,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -315,14 +318,14 @@ namespace Server.Items
 
     public class TurkeyDinner : Food
     {
-        public override int LabelNumber => 1153532;  // Turkey Dinner
+        public override int LabelNumber { get { return 1153532; } } // Turkey Dinner
 
         [Constructable]
         public TurkeyDinner()
             : base(2479)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public TurkeyDinner(Serial serial)
@@ -334,7 +337,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -348,14 +351,14 @@ namespace Server.Items
     [Flipable(2487, 2488)]
     public class RoastDuck : Food
     {
-        public override int LabelNumber => 1153505;  // Roast Duck
+        public override int LabelNumber { get { return 1153505; } } // Roast Duck
 
         [Constructable]
         public RoastDuck()
             : base(2487)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public RoastDuck(Serial serial)
@@ -367,7 +370,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -381,14 +384,14 @@ namespace Server.Items
     [Flipable(2487, 2488)]
     public class RoastTurkey : Food
     {
-        public override int LabelNumber => 1153507;  // Roast Turkey
+        public override int LabelNumber { get { return 1153507; } } // Roast Turkey
 
         [Constructable]
         public RoastTurkey()
             : base(2487)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public RoastTurkey(Serial serial)
@@ -400,7 +403,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -414,14 +417,14 @@ namespace Server.Items
     [Flipable(2487, 2488)]
     public class RoastChicken : Food
     {
-        public override int LabelNumber => 1153506;  // Roast Turkey
+        public override int LabelNumber { get { return 1153506; } } // Roast Turkey
 
         [Constructable]
         public RoastChicken()
             : base(2487)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public RoastChicken(Serial serial)
@@ -433,7 +436,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -446,14 +449,14 @@ namespace Server.Items
 
     public class TurkeyLeg : Food
     {
-        public override int LabelNumber => 1153508;  // turkey leg
+        public override int LabelNumber { get { return 1153508; } } // turkey leg
 
         [Constructable]
         public TurkeyLeg()
             : base(5640)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public TurkeyLeg(Serial serial)
@@ -465,7 +468,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -478,14 +481,14 @@ namespace Server.Items
 
     public class GibletGravey : Food
     {
-        public override int LabelNumber => 1153509;  // Giblet Gravey
+        public override int LabelNumber { get { return 1153509; } } // Giblet Gravey
 
         [Constructable]
         public GibletGravey()
             : base(5634)
         {
-            Weight = 1.0;
-            FillFactor = 1;
+            this.Weight = 1.0;
+            this.FillFactor = 1;
         }
 
         public GibletGravey(Serial serial)
@@ -497,7 +500,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

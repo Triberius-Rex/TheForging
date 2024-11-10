@@ -1,7 +1,8 @@
-using Server.Spells.SkillMasteries;
-using Server.Targeting;
 using System;
 using System.Collections;
+using Server.Mobiles;
+using Server.Targeting;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells.Necromancy
 {
@@ -19,9 +20,27 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.75);
-        public override double RequiredSkill => 20.0;
-        public override int RequiredMana => 13;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.75);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 20.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 13;
+            }
+        }
         public static bool RemoveCurse(Mobile m)
         {
             ExpireTimer t = (ExpireTimer)m_Table[m];
@@ -71,8 +90,6 @@ namespace Server.Spells.Necromancy
             else if (CheckHSequence(m))
             {
                 SpellHelper.Turn(Caster, m);
-
-                SpellHelper.CheckReflect(this, Caster, ref m);
 
                 ApplyEffects(m);
                 ConduitSpell.CheckAffected(Caster, m, ApplyEffects);
@@ -172,7 +189,7 @@ namespace Server.Spells.Necromancy
         {
             private readonly BloodOathSpell m_Owner;
             public InternalTarget(BloodOathSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

@@ -1,16 +1,16 @@
-using Server.Engines.CannedEvil;
-using Server.Items;
-using Server.Services.Virtues;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Server.Items;
+using Server.Engines.CannedEvil;
+using Server.Services.Virtues;
 
 namespace Server.Mobiles
 {
     public class Harrower : BaseCreature
     {
-        private readonly int m_StatCap = Config.Get("PlayerCaps.TotalStatCap", 225);
-        private static readonly SpawnEntry[] m_Entries =
+        private int m_StatCap = Config.Get("PlayerCaps.TotalStatCap", 225);
+        private static readonly SpawnEntry[] m_Entries = new SpawnEntry[]
         {
             new SpawnEntry(new Point3D(5242, 945, -40), new Point3D(1176, 2638, 0)), // Destard
             new SpawnEntry(new Point3D(5225, 798, 0), new Point3D(1176, 2638, 0)), // Destard
@@ -29,7 +29,7 @@ namespace Server.Mobiles
             new SpawnEntry(new Point3D(5579, 1858, 0), new Point3D(2499, 919, 0))// Covetous
         };
         private static readonly ArrayList m_Instances = new ArrayList();
-        private static readonly double[] m_Offsets =
+        private static readonly double[] m_Offsets = new double[]
         {
             Math.Cos(000.0 / 180.0 * Math.PI), Math.Sin(000.0 / 180.0 * Math.PI),
             Math.Cos(040.0 / 180.0 * Math.PI), Math.Sin(040.0 / 180.0 * Math.PI),
@@ -62,6 +62,8 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            VirtualArmor = 60;
+
             SetDamageType(ResistanceType.Physical, 50);
             SetDamageType(ResistanceType.Energy, 50);
 
@@ -86,31 +88,87 @@ namespace Server.Mobiles
         {
         }
 
-        public static ArrayList Instances => m_Instances;
-
-        public static bool CanSpawn => (m_Instances.Count == 0);
-
-        public Type[] UniqueList => new[] { typeof(AcidProofRobe) };
-
-        public Type[] SharedList => new[] { typeof(TheRobeOfBritanniaAri) };
-
-        public Type[] DecorativeList => new[] { typeof(EvilIdolSkull), typeof(SkullPole) };
-
-        public override bool AutoDispel => true;
-
-        public override bool Unprovokable => true;
-
-        public override Poison PoisonImmune => Poison.Lethal;
-
+        public static ArrayList Instances
+        {
+            get
+            {
+                return m_Instances;
+            }
+        }
+        public static bool CanSpawn
+        {
+            get
+            {
+                return (m_Instances.Count == 0);
+            }
+        }
+        public Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(AcidProofRobe) };
+            }
+        }
+        public Type[] SharedList
+        {
+            get
+            {
+                return new Type[] { typeof(TheRobeOfBritanniaAri) };
+            }
+        }
+        public Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[] { typeof(EvilIdolSkull), typeof(SkullPole) };
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public override int HitsMax => m_TrueForm ? 65000 : 30000;
-
+        public override int HitsMax
+        {
+            get
+            {
+                return m_TrueForm ? 65000 : 30000;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
-        public override int ManaMax => 5000;
+        public override int ManaMax
+        {
+            get
+            {
+                return 5000;
+            }
+        }
+        public override bool DisallowAllMoves
+        {
+            get
+            {
+                return m_TrueForm;
+            }
+        }
 
-        public override bool DisallowAllMoves => m_TrueForm;
-
-        public override bool TeleportsTo => true;
+        public override bool TeleportsTo { get { return true; } }
 
         public static Harrower Spawn(Point3D platLoc, Map platMap)
         {
@@ -119,10 +177,8 @@ namespace Server.Mobiles
 
             SpawnEntry entry = m_Entries[Utility.Random(m_Entries.Length)];
 
-            Harrower harrower = new Harrower
-            {
-                m_IsSpawned = true
-            };
+            Harrower harrower = new Harrower();
+            harrower.m_IsSpawned = true;
 
             m_Instances.Add(harrower);
 
@@ -191,10 +247,9 @@ namespace Server.Mobiles
                     if (!ok)
                         continue;
 
-                    HarrowerTentacles spawn = new HarrowerTentacles(this)
-                    {
-                        Team = Team
-                    };
+                    HarrowerTentacles spawn = new HarrowerTentacles(this);
+
+                    spawn.Team = Team;
 
                     spawn.MoveToWorld(new Point3D(x, y, z), map);
 
@@ -213,23 +268,37 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+
+            writer.Write((int)1); // version
 
             writer.Write(m_IsSpawned);
             writer.Write(m_TrueForm);
             writer.Write(m_GateItem);
-            writer.WriteMobileList(m_Tentacles);
+            writer.WriteMobileList<HarrowerTentacles>(m_Tentacles);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
 
-            m_IsSpawned = reader.ReadBool();
-            m_TrueForm = reader.ReadBool();
-            m_GateItem = reader.ReadItem();
-            m_Tentacles = reader.ReadStrongMobileList<HarrowerTentacles>();
+            switch ( version )
+            {
+                case 1:
+                    {
+                        m_IsSpawned = reader.ReadBool();
+                        goto case 0;
+                    }
+                case 0:
+                    {
+                        m_TrueForm = reader.ReadBool();
+                        m_GateItem = reader.ReadItem();
+                        m_Tentacles = reader.ReadStrongMobileList<HarrowerTentacles>();
+
+                        break;
+                    }
+            }
 
             if (m_IsSpawned)
                 m_Instances.Add(this);
@@ -273,14 +342,14 @@ namespace Server.Mobiles
 
                     for (int j = 0; j < pm.JusticeProtectors.Count; ++j)
                     {
-                        Mobile prot = pm.JusticeProtectors[j];
+                        Mobile prot = (Mobile)pm.JusticeProtectors[j];
 
                         if (prot.Map != m.Map || prot.Murderer || prot.Criminal || !JusticeVirtue.CheckMapRegion(m, prot))
                             continue;
 
                         int chance = 0;
 
-                        switch (VirtueHelper.GetLevel(prot, VirtueName.Justice))
+                        switch ( VirtueHelper.GetLevel(prot, VirtueName.Justice) )
                         {
                             case VirtueLevel.Seeker:
                                 chance = 60;
@@ -303,22 +372,22 @@ namespace Server.Mobiles
             }
         }
 
-        private static int RandomStatScrollLevel()
-        {
-            double random = Utility.RandomDouble();
+		private static int RandomStatScrollLevel()
+		{
+			double random = Utility.RandomDouble();
 
-            if (0.1 >= random)
-                return 25;
-            else if (0.25 >= random)
-                return 20;
-            else if (0.45 >= random)
-                return 15;
-            else if (0.70 >= random)
-                return 10;
-            return 5;
-        }
+			if (0.1 >= random)
+				return 25;
+			else if (0.25 >= random)
+				return 20;
+			else if (0.45 >= random)
+				return 15;
+			else if (0.70 >= random)
+				return 10;
+			return 5;
+		}
 
-        public override bool OnBeforeDeath()
+		public override bool OnBeforeDeath()
         {
             if (m_TrueForm)
             {
@@ -336,7 +405,9 @@ namespace Server.Mobiles
                 {
                     GivePowerScrolls();
 
-                    GoldShower.DoForHarrower(Location, Map);
+                    Map map = Map;
+
+					GoldShower.DoForHarrower(Location, Map);
 
                     m_DamageEntries = new Dictionary<Mobile, int>();
 
@@ -396,7 +467,7 @@ namespace Server.Mobiles
             else
                 m_DamageEntries.Add(from, amount);
 
-            from.SendMessage(string.Format("Total Damage: {0}", m_DamageEntries[from]));
+            from.SendMessage(String.Format("Total Damage: {0}", m_DamageEntries[from]));
         }
 
         public void AwardArtifact(Item artifact)
@@ -440,7 +511,7 @@ namespace Server.Mobiles
             if (to == null || artifact == null)
                 return;
 
-            to.PlaySound(0x5B4);
+			to.PlaySound(0x5B4);
 
             Container pack = to.Backpack;
 
@@ -473,7 +544,7 @@ namespace Server.Mobiles
                 return null;
 
             int random = Utility.Random(list.Length);
-
+			
             Type type = list[random];
 
             return Loot.Construct(type);

@@ -1,23 +1,29 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
     public class GatheringOfEvidence : BaseQuest
     {
-        public override bool DoneOnce => true;
+        public override bool DoneOnce { get { return true; } }
 
         public GatheringOfEvidence() : base()
         {
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedArcaneEssence), "Void Crystal of Corrupted Arcane Essence", 1));
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedSpiritualEssence), "Void Crystal of Corrupted Spiritual Essence", 1));
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedMysticalEssence), "Void Crystal of Corrupted Mystical Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedArcaneEssence), "Void Crystal of Corrupted Arcane Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedSpiritualEssence), "Void Crystal of Corrupted Spiritual Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedMysticalEssence), "Void Crystal of Corrupted Mystical Essence", 1));
 
-            AddReward(new BaseReward(typeof(ResonantShieldOfVengeance), "Resonant Shield of Vengeance"));
-            AddReward(new BaseReward(typeof(WindOfCorruption), "Wind of Corruption"));
+            this.AddReward(new BaseReward(typeof(ResonantShieldOfVengeance), "Resonant Shield of Vengeance"));
+            this.AddReward(new BaseReward(typeof(WindOfCorruption), "Wind of Corruption"));
         }
 
-        public override object Title => 1150316; // Gathering of Evidence (Gargoyle Rewards)
+        public override object Title
+        {
+            get
+            {
+                return 1150316; // Gathering of Evidence (Gargoyle Rewards)
+            }
+        }
 
         /*There seems to be unrest spreading among the refugees surrounding the Royal city. There are 
          * rumors of gargoyles willingly leaving their encampments and disappearing into the abyss. 
@@ -27,21 +33,45 @@ namespace Server.Engines.Quests
          * prepare a plan of action to deal with any threat they may pose. Bring back all of the following;
          * Void Crystal of Corrupted Arcane Essence, Void Crystal of Corrupted Spiritual Essence, and a 
          * Void Crystal of Corrupted Mystical Essence.*/
-        public override object Description => 1150317;
+        public override object Description
+        {
+            get
+            {
+                return 1150317;
+            }
+        }
 
-        public override object Refuse => "That's a shame.";
+        public override object Refuse
+        {
+            get
+            {
+                return "That's a shame.";
+            }
+        }
 
         //Have you retrieved the essences? We cannot prepare our strategy without solid evidence.
-        public override object Uncomplete => 1150319;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1150319;
+            }
+        }
 
         /*Well Done! This is just what we needed. We can ill afford these separatist encampments 
          * upsetting the delicate balance with the void consuming our world.*/
-        public override object Complete => 1150320;
+        public override object Complete
+        {
+            get
+            {
+                return 1150320;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -54,20 +84,26 @@ namespace Server.Engines.Quests
 
     public class GatheringProof : BaseQuest
     {
-        public override bool DoneOnce => true;
+        public override bool DoneOnce { get { return true; } }
 
         public GatheringProof()
             : base()
         {
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedArcaneEssence), "Void Crystal of Corrupted Arcane Essence", 1));
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedSpiritualEssence), "Void Crystal of Corrupted Spiritual Essence", 1));
-            AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedMysticalEssence), "Void Crystal of Corrupted Mystical Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedArcaneEssence), "Void Crystal of Corrupted Arcane Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedSpiritualEssence), "Void Crystal of Corrupted Spiritual Essence", 1));
+            this.AddObjective(new ObtainObjective(typeof(VoidCrystalOfCorruptedMysticalEssence), "Void Crystal of Corrupted Mystical Essence", 1));
 
-            AddReward(new BaseReward(typeof(ResonantShieldOfVengeanceHuman), "Resonant Shield of Vengeance"));
-            AddReward(new BaseReward(typeof(WindOfCorruptionHuman), "Wind of Corruption"));
+            this.AddReward(new BaseReward(typeof(ResonantShieldOfVengeanceHuman), "Resonant Shield of Vengeance"));
+            this.AddReward(new BaseReward(typeof(WindOfCorruptionHuman), "Wind of Corruption"));
         }
 
-        public override object Title => 1150384; // Gathering Proof (Human Rewards)
+        public override object Title
+        {
+            get
+            {
+                return 1150384; // Gathering Proof (Human Rewards)
+            }
+        }
 
         /*There seems to be unrest spreading among the refugees surrounding the Royal city. There are 
          * rumors of gargoyles willingly leaving their encampments and disappearing into the abyss. 
@@ -77,21 +113,45 @@ namespace Server.Engines.Quests
          * prepare a plan of action to deal with any threat they may pose. Bring back all of the following;
          * Void Crystal of Corrupted Arcane Essence, Void Crystal of Corrupted Spiritual Essence, and a 
          * Void Crystal of Corrupted Mystical Essence.*/
-        public override object Description => 1150317;
+        public override object Description
+        {
+            get
+            {
+                return 1150317;
+            }
+        }
 
-        public override object Refuse => "That's a shame.";
+        public override object Refuse
+        {
+            get
+            {
+                return "That's a shame.";
+            }
+        }
 
         //Have you retrieved the essences? We cannot prepare our strategy without solid evidence.
-        public override object Uncomplete => 1150319;
+        public override object Uncomplete
+        {
+            get
+            {
+                return 1150319;
+            }
+        }
 
         /*Well Done! This is just what we needed. We can ill afford these separatist encampments 
          * upsetting the delicate balance with the void consuming our world.*/
-        public override object Complete => 1150320;
+        public override object Complete
+        {
+            get
+            {
+                return 1150320;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -115,38 +175,44 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] 
                 {
                     typeof(GatheringOfEvidence)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            CantWalk = true;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.CantWalk = true;
             Race = Race.Gargoyle;
 
-            Body = 666;
+            this.Body = 666;
             Utility.AssignRandomHair(this);
             Utility.AssignRandomFacialHair(this);
         }
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            this.AddItem(new Backpack());
 
-            SetWearable(new GargishClothChest(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new GargishClothKilt(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new GargishClothLegs(), Utility.RandomNeutralHue(), 1);
-			SetWearable(new SerpentStoneStaff(), dropChance: 1);
+            this.AddItem(new GargishClothChest(Utility.RandomNeutralHue()));
+            this.AddItem(new GargishClothKilt(Utility.RandomNeutralHue()));
+            this.AddItem(new GargishClothLegs(Utility.RandomNeutralHue()));
+            this.AddItem(new SerpentStoneStaff());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -170,30 +236,36 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] 
                 {
                     typeof(GatheringProof)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Female = false;
+            this.Female = false;
             Race = Race.Human;
 
-            Body = 0x190;
+            this.Body = 0x190;
             Utility.AssignRandomHair(this);
             Utility.AssignRandomFacialHair(this);
         }
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            this.AddItem(new Backpack());
 
-            SetWearable(new Tunic(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new ShortPants(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new Boots(), dropChance: 1);
-			SetWearable(new Halberd(), dropChance: 1);
+            this.AddItem(new Tunic(Utility.RandomNeutralHue()));
+            this.AddItem(new ShortPants(Utility.RandomNeutralHue()));
+            this.AddItem(new Boots());
+            this.AddItem(new Halberd());
         }
 
         public override bool CheckTerMur()
@@ -205,7 +277,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

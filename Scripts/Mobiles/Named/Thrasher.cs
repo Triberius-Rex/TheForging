@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -35,6 +36,11 @@ namespace Server.Mobiles
             Fame = 22400;
             Karma = -22400;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetWeaponAbility(WeaponAbility.ArmorIgnore);
         }
 
@@ -43,28 +49,50 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool GivesMLMinorArtifact => true;
-        public override int Hides => 48;
-        public override int Meat => 1;
-
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 48;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 4);
-            AddLoot(LootPack.ArcanistScrolls);
-            AddLoot(LootPack.LootItem<ThrashersTail>());
+            AddLoot(LootPack.AosFilthyRich, 4);
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);		
+							
+            c.DropItem(new ThrashersTail());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

@@ -1,12 +1,13 @@
-using System.Collections.Generic;
 using Server.Mobiles;
+using System;
+using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class Focus
     {
-        private static readonly Dictionary<Mobile, FocusInfo> m_Table = new Dictionary<Mobile, FocusInfo>();
-        private static readonly int DefaultDamageBonus = -40;
+        private static Dictionary<Mobile, FocusInfo> m_Table = new Dictionary<Mobile, FocusInfo>();
+        private static int DefaultDamageBonus = -40;
 
         public static void Initialize()
         {
@@ -25,9 +26,13 @@ namespace Server.Items
             }
         }
 
+        public Focus()
+        {
+        }
+
         public static void OnLogin(LoginEventArgs e)
         {
-            PlayerMobile pm = e.Mobile as PlayerMobile;
+            var pm = e.Mobile as PlayerMobile;
 
             if (pm != null)
             {
@@ -37,7 +42,7 @@ namespace Server.Items
 
         public static void UpdateBuff(Mobile from, Mobile target = null)
         {
-            Item item = from.FindItemOnLayer(Layer.TwoHanded);
+            var item = from.FindItemOnLayer(Layer.TwoHanded);
 
             if (item == null)
             {
@@ -59,10 +64,10 @@ namespace Server.Items
                     FocusInfo info = m_Table[from];
 
                     BuffInfo.AddBuff(from, new BuffInfo(BuffIcon.RageFocusingBuff, 1151393, 1151394,
-                        string.Format("{0}\t{1}", info.Target == null ? "NONE" : info.Target.Name, info.DamageBonus)));
+                        String.Format("{0}\t{1}", info.Target == null ? "NONE" : info.Target.Name, info.DamageBonus)));
                 }
 
-                m_Table[from] = new FocusInfo(target, DefaultDamageBonus);
+                m_Table[from] = new FocusInfo(target, DefaultDamageBonus);                
             }
         }
 
@@ -101,7 +106,7 @@ namespace Server.Items
                 else
                 {
                     if (info.DamageBonus >= -50)
-                        info.DamageBonus = DefaultDamageBonus;
+                        info.DamageBonus = DefaultDamageBonus;                    
                 }
 
                 if (info.Target != defender)

@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -5,43 +6,46 @@ namespace Server.Mobiles
     [CorpseName("a relanord corpse")]
     public class Relanord : BaseVoidCreature
     {
-        public override VoidEvolution Evolution => VoidEvolution.Survival;
-        public override int Stage => 2;
+        public override VoidEvolution Evolution { get { return VoidEvolution.Survival; } }
+        public override int Stage { get { return 2; } }
 
         [Constructable]
         public Relanord()
-            : base(AIType.AI_Melee, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "relanord";
-            Body = 0x2F4;
-            Hue = 2071;
+            this.Name = "a relanord";
+            this.Body = 0x2F4;
+            this.Hue = 2071;
 
-            SetStr(700, 800);
-            SetDex(60, 100);
-            SetInt(60, 100);
+            this.SetStr(700, 800);
+            this.SetDex(60, 100);
+            this.SetInt(60, 100);
 
-            SetHits(400, 500);
+            this.SetHits(400, 500);
 
-            SetDamage(10, 15);
+            this.SetDamage(10, 15);
 
-            SetDamageType(ResistanceType.Physical, 20);
-            SetDamageType(ResistanceType.Fire, 20);
-            SetDamageType(ResistanceType.Cold, 20);
-            SetDamageType(ResistanceType.Poison, 20);
-            SetDamageType(ResistanceType.Energy, 20);
+            this.SetDamageType(ResistanceType.Physical, 20);
+            this.SetDamageType(ResistanceType.Fire, 20);
+            this.SetDamageType(ResistanceType.Cold, 20);
+            this.SetDamageType(ResistanceType.Poison, 20);
+            this.SetDamageType(ResistanceType.Energy, 20);
 
-            SetResistance(ResistanceType.Physical, 45, 60);
-            SetResistance(ResistanceType.Fire, 40, 60);
-            SetResistance(ResistanceType.Cold, 25, 35);
-            SetResistance(ResistanceType.Poison, 100);
-            SetResistance(ResistanceType.Energy, 30, 60);
+            this.SetResistance(ResistanceType.Physical, 45, 60);
+            this.SetResistance(ResistanceType.Fire, 40, 60);
+            this.SetResistance(ResistanceType.Cold, 25, 35);
+            this.SetResistance(ResistanceType.Poison, 100);
+            this.SetResistance(ResistanceType.Energy, 30, 60);
 
-            SetSkill(SkillName.MagicResist, 30.2, 50.0);
-            SetSkill(SkillName.Tactics, 40.2, 60.0);
-            SetSkill(SkillName.Wrestling, 50.2, 70.0);
+            this.SetSkill(SkillName.MagicResist, 30.2, 50.0);
+            this.SetSkill(SkillName.Tactics, 40.2, 60.0);
+            this.SetSkill(SkillName.Wrestling, 50.2, 70.0);
 
-            Fame = 10000;
-            Karma = -10000;
+            this.Fame = 10000;
+            this.Karma = -10000;
+            this.VirtualArmor = 50;
+
+            this.PackItem(new DaemonBone(15));
         }
 
         public Relanord(Serial serial)
@@ -49,16 +53,30 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-
-        public override bool BardImmune => true;
-
-        public override Poison PoisonImmune => Poison.Lethal;
-
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 1);
-            AddLoot(LootPack.LootItem<DaemonBone>(15, true));
+            this.AddLoot(LootPack.FilthyRich, 1);
         }
 
         public override int GetIdleSound()
@@ -89,13 +107,13 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 }

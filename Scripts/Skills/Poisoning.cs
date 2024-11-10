@@ -1,6 +1,6 @@
+using System;
 using Server.Items;
 using Server.Targeting;
-using System;
 
 namespace Server.SkillHandlers
 {
@@ -8,7 +8,7 @@ namespace Server.SkillHandlers
     {
         public static void Initialize()
         {
-            SkillInfo.Table[(int)SkillName.Poisoning].Callback = OnUse;
+            SkillInfo.Table[(int)SkillName.Poisoning].Callback = new SkillUseCallback(OnUse);
         }
 
         public static TimeSpan OnUse(Mobile m)
@@ -64,7 +64,15 @@ namespace Server.SkillHandlers
                     {
                         BaseWeapon weapon = (BaseWeapon)targeted;
 
-                        startTimer = (weapon.PrimaryAbility == WeaponAbility.InfectiousStrike || weapon.SecondaryAbility == WeaponAbility.InfectiousStrike);
+                        if (Core.AOS)
+                        {
+                            startTimer = (weapon.PrimaryAbility == WeaponAbility.InfectiousStrike || weapon.SecondaryAbility == WeaponAbility.InfectiousStrike);
+                        }
+                        else if (weapon.Layer == Layer.OneHanded)
+                        {
+                            // Only Bladed or Piercing weapon can be poisoned
+                            startTimer = (weapon.Type == WeaponType.Slashing || weapon.Type == WeaponType.Piercing);
+                        }
                     }
 
                     if (startTimer)
@@ -77,7 +85,10 @@ namespace Server.SkillHandlers
                     }
                     else // Target can't be poisoned
                     {
-                        from.SendLocalizedMessage(1060204); // You cannot poison that! You can only poison infectious weapons, food or drink.
+                        if (Core.AOS)
+                            from.SendLocalizedMessage(1060204); // You cannot poison that! You can only poison infectious weapons, food or drink.
+                        else
+                            from.SendLocalizedMessage(502145); // You cannot poison that! You can only poison bladed or piercing weapons, food or drink.
                     }
                 }
 

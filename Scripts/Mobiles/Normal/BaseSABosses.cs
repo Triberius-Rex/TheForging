@@ -1,13 +1,13 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     [TypeAlias("Server.Mobiles.BaseSABosses")]
     public abstract class BaseSABoss : BasePeerless
     {
-        public override bool GiveMLSpecial => false;
+        public override bool GiveMLSpecial { get { return false; } }
 
         Dictionary<Mobile, int> m_DamageEntries;
         public BaseSABoss(AIType aiType, FightMode fightMode, int rangePerception, int rangeFight, double activeSpeed, double passiveSpeed)
@@ -23,15 +23,21 @@ namespace Server.Mobiles
         public abstract Type[] UniqueSAList { get; }
         public abstract Type[] SharedSAList { get; }
 
-        public virtual bool NoGoodies => false;
+        public virtual bool NoGoodies
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        public override bool DropPrimer => false;
+        public override bool DropPrimer { get { return false; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -109,17 +115,14 @@ namespace Server.Mobiles
             if (to == null || artifact == null)
                 return;
 
+			to.PlaySound(0x5B4);
+
             Container pack = to.Backpack;
 
             if (pack == null || !pack.TryDropItem(to, artifact, false))
-            {
                 artifact.Delete();
-            }
             else
-            {
                 to.SendLocalizedMessage(1062317); // For your valor in combating the fallen beast, a special artifact has been bestowed on you.
-                to.PlaySound(0x5B4);
-            }
         }
 
         public bool IsEligible(Mobile m, Item Artifact)
@@ -163,6 +166,26 @@ namespace Server.Mobiles
             }
 
             return base.OnBeforeDeath();
+        }
+
+        public override void OnDeath(Container c)
+        {
+            if (Map == Map.Felucca || Map == Map.TerMur)
+            {
+                //TODO: Confirm SE change or AoS one too?
+                List<DamageStore> rights = GetLootingRights();
+                List<Mobile> toGive = new List<Mobile>();
+
+                for (int i = rights.Count - 1; i >= 0; --i)
+                {
+                    DamageStore ds = rights[i];
+
+                    if (ds.m_HasRight)
+                        toGive.Add(ds.m_Mobile);
+                }
+            }
+
+            base.OnDeath(c);
         }
     }
 }

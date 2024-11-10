@@ -1,4 +1,10 @@
+using System;
 using System.Linq;
+using System.Collections.Generic;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -10,7 +16,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile LastDamager { get; set; }
 
-        public override bool CanDamage => Controller == null || Controller.BeaconVulnerable;
+        public override bool CanDamage { get { return Controller == null || Controller.BeaconVulnerable; } }
 
         public PlunderBeacon(PlunderBeaconAddon controller)
         {
@@ -23,8 +29,24 @@ namespace Server.Items
             ResistBasePoison = 0;
             ResistBaseEnergy = 0;
 
-            HitsMax = 65001;
+            HitsMax = 70000;
             Hits = HitsMax;
+        }
+
+        public override void OnHalfDamage()
+        {
+            /*IPooledEnumerable eable = this.Map.GetMobilesInRange(this.Location, 20);
+
+            foreach (Mobile m in eable)
+            {
+                if (m.NetState != null)
+                    m.PrivateOverheadMessage(Server.Network.MessageType.Regular, 1154, 1154551, m.NetState); // *Minax's Beacon surges with energy into an invulnerable state! Defeat her Captains to weaken the Beacon's defenses!*
+            }
+
+            eable.Free();
+
+            if (Controller != null)
+                Timer.DelayCall(TimeSpan.FromSeconds(1), () => Controller.SpawnWave());*/
         }
 
         public override bool CheckAreaDamage(Mobile from, int amount)
@@ -48,14 +70,17 @@ namespace Server.Items
         {
             if (DamageStore != null)
             {
-                System.Collections.Generic.List<Mobile> eligables = DamageStore.Keys.Where(m => m.InRange(Location, 20)).ToList();
+                var eligables = DamageStore.Keys.Where(m => m.InRange(Location, 20)).ToList();
 
-                for (int i = 0; i < eligables.Count; i++)
+                if (eligables.Count > 0 && 0.5 > Utility.RandomDouble())
                 {
-                    Mobile winner = eligables[i];
+                    var winner = eligables[Utility.Random(eligables.Count)];
 
-                    winner.AddToBackpack(new MaritimeCargo(CargoQuality.Mythical));
-                    winner.SendLocalizedMessage(1158907); // You recover maritime trade cargo!
+                    if (winner != null)
+                    {
+                        winner.AddToBackpack(new MaritimeCargo(CargoQuality.Mythical));
+                        winner.SendLocalizedMessage(1158907); // You recover maritime trade cargo!
+                    }
                 }
             }
 
@@ -63,6 +88,16 @@ namespace Server.Items
                 Controller.OnBeaconDestroyed();
 
             return base.OnBeforeDestroyed();
+        }
+
+        public override void Delete()
+        {
+            base.Delete();
+
+            if (Controller != null && !Controller.Deleted)
+            {
+                Controller.Delete();
+            }
         }
 
         public PlunderBeacon(Serial serial)
@@ -75,7 +110,7 @@ namespace Server.Items
             base.Serialize(writer);
             writer.Write(0);
 
-            writer.WriteItem(Controller);
+            writer.WriteItem<PlunderBeaconAddon>(Controller);
         }
 
         public override void Deserialize(GenericReader reader)

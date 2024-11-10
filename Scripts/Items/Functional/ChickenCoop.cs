@@ -1,22 +1,26 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Server;
 using Server.ContextMenus;
 using Server.Gumps;
-using Server.Mobiles;
-using Server.Multis;
+using Server.Items;
 using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Multis;
 
 namespace Server.Items
 {
-    [Flipable(0x4513, 0x4514)]
+    [FlipableAttribute(0x4513, 0x4514)]
     public class ChickenCoop : Item, ISecurable, IChopable
     {
         public static readonly int MaxStables = 3;
 
-        public override int LabelNumber => 1112570;  // a chicken coop
+        public override int LabelNumber { get { return 1112570; } } // a chicken coop
 
         private SecureLevel m_Level;
-        private readonly Dictionary<Mobile, List<BaseCreature>> m_Stored = new Dictionary<Mobile, List<BaseCreature>>();
+        private Dictionary<Mobile, List<BaseCreature>> m_Stored = new Dictionary<Mobile, List<BaseCreature>>();
 
         [CommandProperty(AccessLevel.GameMaster)]
         public SecureLevel Level
@@ -25,7 +29,7 @@ namespace Server.Items
             set { m_Level = value; }
         }
 
-        public Dictionary<Mobile, List<BaseCreature>> Stored => m_Stored;
+        public Dictionary<Mobile, List<BaseCreature>> Stored { get { return m_Stored; } }
 
         [Constructable]
         public ChickenCoop()
@@ -84,8 +88,8 @@ namespace Server.Items
 
         private class StableEntry : ContextMenuEntry
         {
-            private readonly ChickenCoop m_Coop;
-            private readonly Mobile m_From;
+            private ChickenCoop m_Coop;
+            private Mobile m_From;
 
             public StableEntry(ChickenCoop coop, Mobile from)
                 : base(6126, 12)
@@ -102,8 +106,8 @@ namespace Server.Items
 
         private class ClaimAllEntry : ContextMenuEntry
         {
-            private readonly ChickenCoop m_Coop;
-            private readonly Mobile m_From;
+            private ChickenCoop m_Coop;
+            private Mobile m_From;
 
             public ClaimAllEntry(ChickenCoop coop, Mobile from)
                 : base(6127, 12)
@@ -123,7 +127,7 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return ObjectPropertyList.Enabled; } }
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -132,9 +136,9 @@ namespace Server.Items
 
         private class ClaimListGump : Gump
         {
-            private readonly ChickenCoop m_Post;
-            private readonly Mobile m_From;
-            private readonly List<BaseCreature> m_List;
+            private ChickenCoop m_Post;
+            private Mobile m_From;
+            private List<BaseCreature> m_List;
 
             public ClaimListGump(ChickenCoop post, Mobile from, List<BaseCreature> list)
                 : base(50, 50)
@@ -160,7 +164,7 @@ namespace Server.Items
                         continue;
 
                     AddButton(15, 39 + (i * 20), 10006, 10006, i + 1, GumpButtonType.Reply, 0);
-                    AddHtml(32, 35 + (i * 20), 275, 18, string.Format("<BASEFONT COLOR=#C0C0EE>{0}</BASEFONT>", pet.Name), false, false);
+                    AddHtml(32, 35 + (i * 20), 275, 18, String.Format("<BASEFONT COLOR=#C0C0EE>{0}</BASEFONT>", pet.Name), false, false);
                 }
             }
 
@@ -181,7 +185,7 @@ namespace Server.Items
 
         private class StableTarget : Target
         {
-            private readonly ChickenCoop m_Post;
+            private ChickenCoop m_Post;
 
             public StableTarget(ChickenCoop post)
                 : base(12, false, TargetFlags.None)
@@ -213,11 +217,7 @@ namespace Server.Items
 
                 if (pet == null || pet.Deleted)
                 {
-                    if (pet != null)
-                    {
-                        pet.IsStabled = false;
-                    }
-
+                    pet.IsStabled = false;
                     stabled.RemoveAt(i);
                     --i;
                     continue;
@@ -287,7 +287,7 @@ namespace Server.Items
 
             foreach (List<BaseCreature> bcList in m_Stored.Values)
             {
-                if (bcList != null)
+                if(bcList != null)
                     count += bcList.Count;
             }
 
@@ -311,10 +311,12 @@ namespace Server.Items
             {
                 from.SendLocalizedMessage(502673); // I can not stable summoned creatures.
             }
+            #region Mondain's Legacy
             else if (pet.Allured)
             {
                 from.SendLocalizedMessage(1048053); // You can't stable that!
             }
+            #endregion
             else if (pet.Body.IsHuman)
             {
                 from.SendLocalizedMessage(502672); // HA HA HA! Sorry, I am not an inn.
@@ -338,7 +340,8 @@ namespace Server.Items
 
                 pet.IsStabled = true;
 
-                pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully happy
+                if (Core.SE)
+                    pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully happy
 
                 if (!m_Stored.ContainsKey(from))
                     m_Stored.Add(from, new List<BaseCreature>());
@@ -366,11 +369,7 @@ namespace Server.Items
 
                 if (pet == null || pet.Deleted)
                 {
-                    if (pet != null)
-                    {
-                        pet.IsStabled = false;
-                    }
-
+                    pet.IsStabled = false;
                     stabled.RemoveAt(i);
                     --i;
                     continue;
@@ -392,7 +391,8 @@ namespace Server.Items
 
                     pet.IsStabled = false;
 
-                    pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully Happy
+                    if (Core.SE)
+                        pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully Happy
 
                     stabled.RemoveAt(i);
                     --i;
@@ -426,7 +426,7 @@ namespace Server.Items
             return IsLockedDown;
         }
 
-        public override bool HandlesOnSpeech => true;
+        public override bool HandlesOnSpeech { get { return true; } }
 
         public override void OnSpeech(SpeechEventArgs e)
         {
@@ -457,7 +457,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             writer.Write((int)m_Level);
             writer.Write(m_Stored.Count);
@@ -466,7 +466,7 @@ namespace Server.Items
                 writer.Write(kvp.Key);
                 writer.Write(kvp.Value.Count);
 
-                foreach (BaseCreature bc in kvp.Value)
+                foreach(BaseCreature bc in kvp.Value)
                     writer.Write(bc);
             }
         }
@@ -476,6 +476,9 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
+
+            if (Weight == 1)
+                Weight = 20;
 
             m_Level = (SecureLevel)reader.ReadInt();
 
@@ -496,7 +499,7 @@ namespace Server.Items
 
                     if (chicken != null && chicken is BaseCreature)
                     {
-                        BaseCreature bc = chicken as BaseCreature;
+                        var bc = chicken as BaseCreature;
                         bc.IsStabled = true;
                         list.Add(bc);
                     }

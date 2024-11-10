@@ -1,20 +1,23 @@
-﻿using Server.Gumps;
+﻿using System;
+using Server;
+using Server.Gumps;
 using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Engines.Points
 {
-    public class PointExchanceStone : Item
-    {
-        public override int LabelNumber => 1158449;  // Cleanup Point Exchange
-        public override bool ForceShowProperties => true;
+	public class PointExchanceStone : Item
+	{
+		public override int LabelNumber { get { return 1158449; } } // Cleanup Point Exchange
+        public override bool ForceShowProperties { get { return true; } }
 
-        [Constructable]
-        public PointExchanceStone()
+		[Constructable]
+		public PointExchanceStone()
             : base(0xEDD)
-        {
-            Hue = 1037;
+		{
+			Hue = 1037;
             Movable = false;
-        }
+		}
 
         public override void OnDoubleClick(Mobile m)
         {
@@ -34,13 +37,13 @@ namespace Server.Engines.Points
             }
             else
             {
-                m.LocalOverheadMessage(Network.MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
+                m.LocalOverheadMessage(Server.Network.MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
             }
         }
 
         private class InternalGump : BaseGump
         {
-            public CleanUpBritanniaData System => PointsSystem.CleanUpBritannia;
+            public CleanUpBritanniaData System { get { return PointsSystem.CleanUpBritannia; } }
 
             public InternalGump(PlayerMobile pm)
                 : base(pm, 100, 100)
@@ -87,22 +90,22 @@ namespace Server.Engines.Points
         }
 
         public PointExchanceStone(Serial serial)
-            : base(serial)
-        {
-        }
+			: base( serial )
+		{
+		}
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
 
-            writer.Write(0);
-        }
+			writer.Write( (int) 0 );
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
 
-            int version = reader.ReadInt();
-        }
-    }
+			int version = reader.ReadInt();
+		}
+	}
 }

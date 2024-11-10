@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using System.Collections;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -41,16 +42,14 @@ namespace Server.Mobiles
             ControlSlots = 4;
             MinTameSkill = 98.7;
 
+            if (Utility.RandomDouble() < .33)
+                PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
+
+            if (Core.ML && Utility.RandomDouble() < .33)
+                PackItem(Engines.Plants.Seed.RandomPeculiarSeed(4));
+
             SetWeaponAbility(WeaponAbility.Dismount);
             SetSpecialAbility(SpecialAbility.GraspingClaw);
-        }
-
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.FilthyRich, 3);
-            AddLoot(LootPack.Gems, 4);
-            AddLoot(LootPack.PeculiarSeed4);
-            AddLoot(LootPack.BonsaiSeed);
         }
 
         public Hiryu(Serial serial)
@@ -58,12 +57,48 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool StatLossAfterTame => true;
-        public override int TreasureMapLevel => 5;
-        public override int Meat => 16;
-        public override int Hides => 60;
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override bool CanAngerOnTame => true;
+        public override bool StatLossAfterTame
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 60;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override bool CanAngerOnTame
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override WeaponAbility GetWeaponAbility()
         {
             return WeaponAbility.Dismount;
@@ -94,15 +129,21 @@ namespace Server.Mobiles
             return 0x4FB;
         }
 
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.FilthyRich, 3);
+            AddLoot(LootPack.Gems, 4);
+        }
+
         public override void OnAfterTame(Mobile tamer)
         {
-            if (Owners.Count == 0)
+            if (Owners.Count == 0 && PetTrainingHelper.Enabled)
             {
                 RawStr = (int)Math.Max(1, RawStr * 0.5);
                 RawDex = (int)Math.Max(1, RawDex * 0.5);
 
-                HitsMaxSeed = (int)Math.Max(1, HitsMaxSeed * 0.5);
-                Hits = HitsMaxSeed;
+                HitsMaxSeed = RawStr;
+                Hits = RawStr;
 
                 StamMaxSeed = RawDex;
                 Stam = RawDex;
@@ -116,13 +157,44 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(3);
+            writer.Write((int)3);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0)
+                Timer.DelayCall(TimeSpan.Zero, delegate { Hue = GetHue(); });
+
+            if (version <= 1)
+                Timer.DelayCall(TimeSpan.Zero, delegate
+                {
+                    if (InternalItem != null)
+                    {
+                        InternalItem.Hue = Hue;
+                    }
+                });
+
+            if (version < 2)
+            {
+                for (int i = 0; i < Skills.Length; ++i)
+                {
+                    Skills[i].Cap = Math.Max(100.0, Skills[i].Cap * 0.9);
+
+                    if (Skills[i].Base > Skills[i].Cap)
+                    {
+                        Skills[i].Base = Skills[i].Cap;
+                    }
+                }
+            }
+
+            if (version < 3)
+            {
+                SetWeaponAbility(WeaponAbility.Dismount);
+                SetSpecialAbility(SpecialAbility.GraspingClaw);
+            }
         }
 
         private static int GetHue()
@@ -178,7 +250,7 @@ namespace Server.Mobiles
                 return 0x848D;
             else if (rand <= 74)
                 return 0x847F;
-
+			
             return 0;
         }
     }

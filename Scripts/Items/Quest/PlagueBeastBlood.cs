@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -9,7 +9,7 @@ namespace Server.Items
         public PlagueBeastBlood()
             : base(0x122C, 0)
         {
-            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(1.5), 3, Hemorrhage);
+            this.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(1.5), 3, new TimerCallback(Hemorrhage));
         }
 
         public PlagueBeastBlood(Serial serial)
@@ -17,42 +17,54 @@ namespace Server.Items
         {
         }
 
-        public bool Patched => ItemID == 0x1765;
-        public bool Starting => ItemID == 0x122C;
+        public bool Patched
+        {
+            get
+            {
+                return this.ItemID == 0x1765;
+            }
+        }
+        public bool Starting
+        {
+            get
+            {
+                return this.ItemID == 0x122C;
+            }
+        }
         public override void OnAfterDelete()
         {
-            if (m_Timer != null && m_Timer.Running)
-                m_Timer.Stop();
+            if (this.m_Timer != null && this.m_Timer.Running)
+                this.m_Timer.Stop();
         }
 
         public override bool OnBandage(Mobile from)
         {
-            if (IsAccessibleTo(from) && !Patched)
+            if (this.IsAccessibleTo(from) && !this.Patched)
             {
-                if (m_Timer != null && m_Timer.Running)
-                    m_Timer.Stop();
+                if (this.m_Timer != null && this.m_Timer.Running)
+                    this.m_Timer.Stop();
 
-                if (Starting)
+                if (this.Starting)
                 {
-                    X += 2;
-                    Y -= 9;
+                    this.X += 2;
+                    this.Y -= 9;
 
-                    if (Organ is PlagueBeastRubbleOrgan)
-                        Y -= 5;
-                    else if (Organ is PlagueBeastBackupOrgan)
-                        X += 7;
+                    if (this.Organ is PlagueBeastRubbleOrgan)
+                        this.Y -= 5;
+                    else if (this.Organ is PlagueBeastBackupOrgan)
+                        this.X += 7;
                 }
                 else
                 {
-                    X -= 4;
-                    Y -= 2;
+                    this.X -= 4;
+                    this.Y -= 2;
                 }
 
-                ItemID = 0x1765;
+                this.ItemID = 0x1765;
 
-                if (Owner != null)
+                if (this.Owner != null)
                 {
-                    Container pack = Owner.Backpack;
+                    Container pack = this.Owner.Backpack;
 
                     if (pack != null)
                     {
@@ -66,7 +78,7 @@ namespace Server.Items
                     }
                 }
 
-                PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071916); // * You patch up the wound with a bandage *
+                this.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071916); // * You patch up the wound with a bandage *
 
                 return true;
             }
@@ -90,29 +102,29 @@ namespace Server.Items
 
         private void Hemorrhage()
         {
-            if (Patched)
+            if (this.Patched)
                 return;
 
-            if (Owner != null)
-                Owner.PlaySound(0x25);
+            if (this.Owner != null)
+                this.Owner.PlaySound(0x25);
 
-            if (ItemID == 0x122A)
+            if (this.ItemID == 0x122A)
             {
-                if (Owner != null)
+                if (this.Owner != null)
                 {
-                    Owner.Unfreeze();
-                    Owner.Kill();
+                    this.Owner.Unfreeze();
+                    this.Owner.Kill();
                 }
             }
             else
             {
-                if (Starting)
+                if (this.Starting)
                 {
-                    X += 8;
-                    Y -= 10;
+                    this.X += 8;
+                    this.Y -= 10;
                 }
 
-                ItemID--;
+                this.ItemID--;
             }
         }
     }

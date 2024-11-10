@@ -1,12 +1,14 @@
+using System;
+
 namespace Server.Items
 {
     public class TribalBerry : Item, ICommodity
     {
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+		TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
-        public override int LabelNumber => 1040001; // tribal berry
-
+        public override int LabelNumber { get { return 1040001; } }// tribal berry
+		
         [Constructable]
         public TribalBerry()
             : this(1)
@@ -26,12 +28,12 @@ namespace Server.Items
         public TribalBerry(Serial serial)
             : base(serial)
         {
-        }
-
+        }       
+		
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

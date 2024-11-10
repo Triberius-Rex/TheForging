@@ -1,5 +1,6 @@
-using Server.Network;
+using System;
 using System.Collections.Generic;
+using Server.Network;
 
 namespace Server.Gumps
 {
@@ -37,7 +38,7 @@ namespace Server.Gumps
 
             AddButton(10, 294, 0xFB1, 0xFB2, 0, GumpButtonType.Reply, 0);
             AddHtmlLocalized(45, 296, 450, 20, 1060051, 0x7FFF, false, false); // CANCEL
-
+			
             if (title > 0)
                 AddHtmlLocalized(14, 12, 273, 20, title, 0x7FFF, false, false);
             else
@@ -49,17 +50,17 @@ namespace Server.Gumps
             {
                 AddButton(19, 49 + i * 24, 0x845, 0x846, m_Options[i].ID, GumpButtonType.Reply, 0);
 
-                if (m_Options[i].Cliloc.Number > 0)
+                if(m_Options[i].Cliloc.Number > 0)
                     AddHtmlLocalized(44, 47 + i * 24, 213, 20, m_Options[i].Cliloc.Number, 0x7FFF, false, false);
                 else
-                    AddHtml(44, 47 + i * 24, 213, 20, string.Format("<basefont color=#FFFFFF>{0}", m_Options[i].Text), false, false);
+                    AddHtml(44, 47 + i * 24, 213, 20, String.Format("<basefont color=#FFFFFF>{0}", m_Options[i].Text), false, false);
             }
         }
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             if (m_Option != null && Contains(info.ButtonID))
-                m_Option.OnOptionSelected(sender.Mobile, info.ButtonID);
+                m_Option.OnOptionSelected(sender.Mobile, info.ButtonID);			
         }
 
         private bool Contains(int chosen)
@@ -88,7 +89,7 @@ namespace Server.Gumps
         }
 
         public AddonOptionGump(IRewardOption option, int title)
-            : this(option, title, 300, 180)
+            : this(option, title, 300, 80)
         {
         }
 
@@ -105,7 +106,7 @@ namespace Server.Gumps
             AddBackground(0, 0, bgw, bgh, 0xA28);
 
             if (title > 0)
-                AddHtmlLocalized(30, 30, 240, 20, 1113302, string.Format("#{0}", title), 0x0, false, false); // <CENTER>~1_VAL~</CENTER>
+                AddHtmlLocalized(30, 30, 240, 20, 1113302, String.Format("#{0}", title), 0x0, false, false); // <CENTER>~1_VAL~</CENTER>
             else
                 AddHtmlLocalized(30, 30, 240, 20, 1113302, "#1080392", 0x0, false, false); // Select your choice from the menu below.
 
@@ -116,7 +117,7 @@ namespace Server.Gumps
                 if (m_Options[i].Cliloc.Number > 0)
                     AddHtmlLocalized(70, 70 + i * 20, 150, 20, m_Options[i].Cliloc.Number, 0x0, false, false);
                 else
-                    AddHtml(70, 70 + i * 20, 150, 20, string.Format("<basefont color=#000000>{0}", m_Options[i].Text), false, false);
+                    AddHtml(70, 70 + i * 20, 150, 20, String.Format("<basefont color=#000000>{0}", m_Options[i].Text), false, false);
             }
         }
 
@@ -157,6 +158,11 @@ namespace Server.Gumps
 
     public class RewardOptionList : List<RewardOption>
     {
+        public RewardOptionList()
+            : base()
+        {
+        }
+
         public void Add(int id, TextDefinition cliloc)
         {
             Add(new RewardOption(id, cliloc, null));

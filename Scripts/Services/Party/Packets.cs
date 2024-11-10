@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Engines.PartySystem
@@ -7,12 +8,12 @@ namespace Server.Engines.PartySystem
         public PartyEmptyList(Mobile m)
             : base(0xBF)
         {
-            EnsureCapacity(7);
+            this.EnsureCapacity(7);
 
-            m_Stream.Write((short)0x0006);
-            m_Stream.Write((byte)0x02);
-            m_Stream.Write((byte)0);
-            m_Stream.Write(m.Serial);
+            this.m_Stream.Write((short)0x0006);
+            this.m_Stream.Write((byte)0x02);
+            this.m_Stream.Write((byte)0);
+            this.m_Stream.Write((int)m.Serial);
         }
     }
 
@@ -21,14 +22,14 @@ namespace Server.Engines.PartySystem
         public PartyMemberList(Party p)
             : base(0xBF)
         {
-            EnsureCapacity(7 + p.Count * 4);
+            this.EnsureCapacity(7 + p.Count * 4);
 
-            m_Stream.Write((short)0x0006);
-            m_Stream.Write((byte)0x01);
-            m_Stream.Write((byte)p.Count);
+            this.m_Stream.Write((short)0x0006);
+            this.m_Stream.Write((byte)0x01);
+            this.m_Stream.Write((byte)p.Count);
 
             for (int i = 0; i < p.Count; ++i)
-                m_Stream.Write(p[i].Mobile.Serial);
+                this.m_Stream.Write((int)p[i].Mobile.Serial);
         }
     }
 
@@ -37,16 +38,16 @@ namespace Server.Engines.PartySystem
         public PartyRemoveMember(Mobile removed, Party p)
             : base(0xBF)
         {
-            EnsureCapacity(11 + p.Count * 4);
+            this.EnsureCapacity(11 + p.Count * 4);
 
-            m_Stream.Write((short)0x0006);
-            m_Stream.Write((byte)0x02);
-            m_Stream.Write((byte)p.Count);
+            this.m_Stream.Write((short)0x0006);
+            this.m_Stream.Write((byte)0x02);
+            this.m_Stream.Write((byte)p.Count);
 
-            m_Stream.Write(removed.Serial);
+            this.m_Stream.Write((int)removed.Serial);
 
             for (int i = 0; i < p.Count; ++i)
-                m_Stream.Write(p[i].Mobile.Serial);
+                this.m_Stream.Write((int)p[i].Mobile.Serial);
         }
     }
 
@@ -58,12 +59,12 @@ namespace Server.Engines.PartySystem
             if (text == null)
                 text = "";
 
-            EnsureCapacity(12 + text.Length * 2);
+            this.EnsureCapacity(12 + text.Length * 2);
 
-            m_Stream.Write((short)0x0006);
-            m_Stream.Write((byte)(toAll ? 0x04 : 0x03));
-            m_Stream.Write(from.Serial);
-            m_Stream.WriteBigUniNull(text);
+            this.m_Stream.Write((short)0x0006);
+            this.m_Stream.Write((byte)(toAll ? 0x04 : 0x03));
+            this.m_Stream.Write((int)from.Serial);
+            this.m_Stream.WriteBigUniNull(text);
         }
     }
 
@@ -72,11 +73,11 @@ namespace Server.Engines.PartySystem
         public PartyInvitation(Mobile leader)
             : base(0xBF)
         {
-            EnsureCapacity(10);
+            this.EnsureCapacity(10);
 
-            m_Stream.Write((short)0x0006);
-            m_Stream.Write((byte)0x07);
-            m_Stream.Write(leader.Serial);
+            this.m_Stream.Write((short)0x0006);
+            this.m_Stream.Write((byte)0x07);
+            this.m_Stream.Write((int)leader.Serial);
         }
     }
 }

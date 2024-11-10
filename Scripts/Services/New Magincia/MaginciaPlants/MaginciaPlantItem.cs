@@ -1,12 +1,13 @@
-using Server.Network;
+using Server;
 using System;
+using Server.Network;
 
 namespace Server.Engines.Plants
 {
     public class MaginciaPlantItem : PlantItem
     {
-        public override bool MaginciaPlant => true;
-        public override int BowlOfDirtID => 2323;
+        public override bool MaginciaPlant { get { return true; } }
+        public override int BowlOfDirtID { get { return 2323; } }
         public override int GreenBowlID
         {
             get
@@ -18,9 +19,9 @@ namespace Server.Engines.Plants
             }
         }
 
-        public override int ContainerLocalization => 1150436;  // mound of dirt
-        public override int OnPlantLocalization => 1150442;  // You plant the seed in the mound of dirt.
-        public override int CantUseLocalization => 501648;  // You cannot use this unless you are the owner.
+        public override int ContainerLocalization { get { return 1150436; } } // mound of dirt
+        public override int OnPlantLocalization { get { return 1150442; } } // You plant the seed in the mound of dirt.
+        public override int CantUseLocalization { get { return 501648; } } // You cannot use this unless you are the owner.
 
         public override int LabelNumber
         {
@@ -58,7 +59,13 @@ namespace Server.Engines.Plants
         public DateTime SetToDecorative { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public override bool ValidGrowthLocation => RootParent == null && !Movable;
+        public override bool ValidGrowthLocation
+        {
+            get
+            {
+                return RootParent == null && !Movable;
+            }
+        }
 
         [Constructable]
         public MaginciaPlantItem()
@@ -107,7 +114,7 @@ namespace Server.Engines.Plants
         {
             base.Die();
 
-            Timer.DelayCall(TimeSpan.FromMinutes(Utility.RandomMinMax(2, 5)), Delete);
+            Timer.DelayCall(TimeSpan.FromMinutes(Utility.RandomMinMax(2, 5)), new TimerCallback(Delete));
         }
 
         public override void Delete()
@@ -140,7 +147,7 @@ namespace Server.Engines.Plants
 
         public void StartTimer()
         {
-            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(2), Delete);
+            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(2), new TimerCallback(Delete));
         }
 
         public override bool PlantSeed(Mobile from, Seed seed)
@@ -212,7 +219,7 @@ namespace Server.Engines.Plants
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(ContractTime);
             writer.Write(Owner);

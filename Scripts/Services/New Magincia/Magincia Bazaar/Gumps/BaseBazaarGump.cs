@@ -1,9 +1,13 @@
+using System;
+using Server;
 using Server.Gumps;
+using Server.Mobiles;
+using Server.Network;
 
 namespace Server.Engines.NewMagincia
 {
-    public class BaseBazaarGump : Gump
-    {
+	public class BaseBazaarGump : Gump
+	{
         public const int RedColor = 0xB22222;
         public const int BlueColor = 0x000080;
         public const int OrangeColor = 0x804000;
@@ -21,13 +25,13 @@ namespace Server.Engines.NewMagincia
         public const int GrayColor16 = 0xC618;
 
         public const int LabelHueBlue = 0xCC;
-
+		
         public BaseBazaarGump() : this(520, 700)
         {
         }
 
-        public BaseBazaarGump(int width, int height) : base(100, 100)
-        {
+		public BaseBazaarGump(int width, int height) : base(100, 100)
+		{
             AddBackground(0, 0, width, height, 9300);
 
             if (!(this is CommodityTargetGump))
@@ -35,36 +39,38 @@ namespace Server.Engines.NewMagincia
                 AddButton(width - 40, height - 30, 4020, 4022, 0, GumpButtonType.Reply, 0);
                 AddHtmlLocalized(width - 150, height - 30, 100, 20, 1114514, "#1060675", 0x0, false, false); // CLOSE
             }
-        }
-
-        protected string Color(string str, int color)
-        {
-            return string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, str);
-        }
+		}
+		
+		protected string Color(string str, int color)
+		{
+			return String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, str);
+		}
 
         protected string FormatAmt(int amount)
-        {
-            return amount.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-        }
+		{
+            if (amount == 0)
+                return "0";
+			return amount.ToString("###,###,###");
+		}
 
         protected string FormatStallName(string str)
         {
-            return string.Format("<DIV ALIGN=CENTER><i>{0}</i></DIV>", str);
+            return String.Format("<DIV ALIGN=CENTER><i>{0}</i></DIV>", str);
         }
 
         protected string FormatBrokerName(string str)
         {
-            return string.Format("<DIV ALIGN=CENTER>{0}</DIV>", str);
+            return String.Format("<DIV ALIGN=CENTER>{0}</DIV>", str);
         }
 
         protected string AlignRight(string str)
         {
-            return string.Format("<DIV ALIGN=RIGHT>{0}</DIV>", str);
+            return String.Format("<DIV ALIGN=RIGHT>{0}</DIV>", str);
         }
 
         protected string AlignLeft(string str)
         {
-            return string.Format("<DIV ALIGN=LEFT>{0}</DIV>", str);
+            return String.Format("<DIV ALIGN=LEFT>{0}</DIV>", str);
         }
-    }
+	}
 }

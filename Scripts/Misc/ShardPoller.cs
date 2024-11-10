@@ -1,10 +1,10 @@
-using Server.Gumps;
-using Server.Network;
-using Server.Prompts;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
+using Server.Gumps;
+using Server.Network;
+using Server.Prompts;
 
 namespace Server.Misc
 {
@@ -21,11 +21,11 @@ namespace Server.Misc
         public ShardPoller()
             : base(0x1047)
         {
-            m_Duration = TimeSpan.FromHours(24.0);
-            m_Options = new ShardPollOption[0];
-            m_Addresses = new IPAddress[0];
+            this.m_Duration = TimeSpan.FromHours(24.0);
+            this.m_Options = new ShardPollOption[0];
+            this.m_Addresses = new IPAddress[0];
 
-            Movable = false;
+            this.Movable = false;
         }
 
         public ShardPoller(Serial serial)
@@ -37,22 +37,22 @@ namespace Server.Misc
         {
             get
             {
-                return m_Options;
+                return this.m_Options;
             }
             set
             {
-                m_Options = value;
+                this.m_Options = value;
             }
         }
         public IPAddress[] Addresses
         {
             get
             {
-                return m_Addresses;
+                return this.m_Addresses;
             }
             set
             {
-                m_Addresses = value;
+                this.m_Addresses = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
@@ -60,11 +60,11 @@ namespace Server.Misc
         {
             get
             {
-                return m_Title;
+                return this.m_Title;
             }
             set
             {
-                m_Title = ShardPollPrompt.UrlToHref(value);
+                this.m_Title = ShardPollPrompt.UrlToHref(value);
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
@@ -72,11 +72,11 @@ namespace Server.Misc
         {
             get
             {
-                return m_Duration;
+                return this.m_Duration;
             }
             set
             {
-                m_Duration = value;
+                this.m_Duration = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
@@ -84,11 +84,11 @@ namespace Server.Misc
         {
             get
             {
-                return m_StartTime;
+                return this.m_StartTime;
             }
             set
             {
-                m_StartTime = value;
+                this.m_StartTime = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
@@ -96,21 +96,20 @@ namespace Server.Misc
         {
             get
             {
-                if (m_StartTime == DateTime.MinValue || !m_Active)
+                if (this.m_StartTime == DateTime.MinValue || !this.m_Active)
                     return TimeSpan.Zero;
 
                 try
                 {
-                    TimeSpan ts = (m_StartTime + m_Duration) - DateTime.UtcNow;
+                    TimeSpan ts = (this.m_StartTime + this.m_Duration) - DateTime.UtcNow;
 
                     if (ts < TimeSpan.Zero)
                         return TimeSpan.Zero;
 
                     return ts;
                 }
-                catch (Exception e)
+                catch
                 {
-                    Diagnostics.ExceptionLogging.LogException(e);
                     return TimeSpan.Zero;
                 }
             }
@@ -120,18 +119,18 @@ namespace Server.Misc
         {
             get
             {
-                return m_Active;
+                return this.m_Active;
             }
             set
             {
-                if (m_Active == value)
+                if (this.m_Active == value)
                     return;
 
-                m_Active = value;
+                this.m_Active = value;
 
-                if (m_Active)
+                if (this.m_Active)
                 {
-                    m_StartTime = DateTime.UtcNow;
+                    this.m_StartTime = DateTime.UtcNow;
                     m_ActivePollers.Add(this);
                 }
                 else
@@ -140,17 +139,23 @@ namespace Server.Misc
                 }
             }
         }
-        public override string DefaultName => "shard poller";
+        public override string DefaultName
+        {
+            get
+            {
+                return "shard poller";
+            }
+        }
         public static void Initialize()
         {
-            EventSink.Login += EventSink_Login;
+            EventSink.Login += new LoginEventHandler(EventSink_Login);
         }
 
         public bool HasAlreadyVoted(NetState ns)
         {
-            for (int i = 0; i < m_Options.Length; ++i)
+            for (int i = 0; i < this.m_Options.Length; ++i)
             {
-                if (m_Options[i].HasAlreadyVoted(ns))
+                if (this.m_Options[i].HasAlreadyVoted(ns))
                     return true;
             }
 
@@ -164,30 +169,30 @@ namespace Server.Misc
 
         public void RemoveOption(ShardPollOption option)
         {
-            int index = Array.IndexOf(m_Options, option);
+            int index = Array.IndexOf(this.m_Options, option);
 
             if (index < 0)
                 return;
 
-            ShardPollOption[] old = m_Options;
-            m_Options = new ShardPollOption[old.Length - 1];
+            ShardPollOption[] old = this.m_Options;
+            this.m_Options = new ShardPollOption[old.Length - 1];
 
             for (int i = 0; i < index; ++i)
-                m_Options[i] = old[i];
+                this.m_Options[i] = old[i];
 
-            for (int i = index; i < m_Options.Length; ++i)
-                m_Options[i] = old[i + 1];
+            for (int i = index; i < this.m_Options.Length; ++i)
+                this.m_Options[i] = old[i + 1];
         }
 
         public void AddOption(ShardPollOption option)
         {
-            ShardPollOption[] old = m_Options;
-            m_Options = new ShardPollOption[old.Length + 1];
+            ShardPollOption[] old = this.m_Options;
+            this.m_Options = new ShardPollOption[old.Length + 1];
 
             for (int i = 0; i < old.Length; ++i)
-                m_Options[i] = old[i];
+                this.m_Options[i] = old[i];
 
-            m_Options[old.Length] = option;
+            this.m_Options[old.Length] = option;
         }
 
         public void SendQueuedPoll_Callback(object state)
@@ -209,17 +214,17 @@ namespace Server.Misc
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Title);
-            writer.Write(m_Duration);
-            writer.Write(m_StartTime);
-            writer.Write(m_Active);
+            writer.Write(this.m_Title);
+            writer.Write(this.m_Duration);
+            writer.Write(this.m_StartTime);
+            writer.Write(this.m_Active);
 
-            writer.Write(m_Options.Length);
+            writer.Write(this.m_Options.Length);
 
-            for (int i = 0; i < m_Options.Length; ++i)
-                m_Options[i].Serialize(writer);
+            for (int i = 0; i < this.m_Options.Length; ++i)
+                this.m_Options[i].Serialize(writer);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -228,21 +233,21 @@ namespace Server.Misc
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_Title = reader.ReadString();
-                        m_Duration = reader.ReadTimeSpan();
-                        m_StartTime = reader.ReadDateTime();
-                        m_Active = reader.ReadBool();
+                        this.m_Title = reader.ReadString();
+                        this.m_Duration = reader.ReadTimeSpan();
+                        this.m_StartTime = reader.ReadDateTime();
+                        this.m_Active = reader.ReadBool();
 
-                        m_Options = new ShardPollOption[reader.ReadInt()];
+                        this.m_Options = new ShardPollOption[reader.ReadInt()];
 
-                        for (int i = 0; i < m_Options.Length; ++i)
-                            m_Options[i] = new ShardPollOption(reader);
+                        for (int i = 0; i < this.m_Options.Length; ++i)
+                            this.m_Options[i] = new ShardPollOption(reader);
 
-                        if (m_Active)
+                        if (this.m_Active)
                             m_ActivePollers.Add(this);
 
                         break;
@@ -254,7 +259,7 @@ namespace Server.Misc
         {
             base.OnDelete();
 
-            Active = false;
+            this.Active = false;
         }
 
         private static void EventSink_Login(LoginEventArgs e)
@@ -312,26 +317,26 @@ namespace Server.Misc
         private IPAddress[] m_Voters;
         public ShardPollOption(string title)
         {
-            m_Title = title;
-            m_LineBreaks = GetBreaks(m_Title);
-            m_Voters = new IPAddress[0];
+            this.m_Title = title;
+            this.m_LineBreaks = this.GetBreaks(this.m_Title);
+            this.m_Voters = new IPAddress[0];
         }
 
         public ShardPollOption(GenericReader reader)
         {
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_Title = reader.ReadString();
-                        m_LineBreaks = GetBreaks(m_Title);
+                        this.m_Title = reader.ReadString();
+                        this.m_LineBreaks = this.GetBreaks(this.m_Title);
 
-                        m_Voters = new IPAddress[reader.ReadInt()];
+                        this.m_Voters = new IPAddress[reader.ReadInt()];
 
-                        for (int i = 0; i < m_Voters.Length; ++i)
-                            m_Voters[i] = Utility.Intern(reader.ReadIPAddress());
+                        for (int i = 0; i < this.m_Voters.Length; ++i)
+                            this.m_Voters[i] = Utility.Intern(reader.ReadIPAddress());
 
                         break;
                     }
@@ -342,25 +347,37 @@ namespace Server.Misc
         {
             get
             {
-                return m_Title;
+                return this.m_Title;
             }
             set
             {
-                m_Title = value;
-                m_LineBreaks = GetBreaks(m_Title);
+                this.m_Title = value;
+                this.m_LineBreaks = this.GetBreaks(this.m_Title);
             }
         }
-        public int LineBreaks => m_LineBreaks;
-        public int Votes => m_Voters.Length;
+        public int LineBreaks
+        {
+            get
+            {
+                return this.m_LineBreaks;
+            }
+        }
+        public int Votes
+        {
+            get
+            {
+                return this.m_Voters.Length;
+            }
+        }
         public IPAddress[] Voters
         {
             get
             {
-                return m_Voters;
+                return this.m_Voters;
             }
             set
             {
-                m_Voters = value;
+                this.m_Voters = value;
             }
         }
         public bool HasAlreadyVoted(NetState ns)
@@ -370,9 +387,9 @@ namespace Server.Misc
 
             IPAddress ipAddress = ns.Address;
 
-            for (int i = 0; i < m_Voters.Length; ++i)
+            for (int i = 0; i < this.m_Voters.Length; ++i)
             {
-                if (Utility.IPMatchClassC(m_Voters[i], ipAddress))
+                if (Utility.IPMatchClassC(this.m_Voters[i], ipAddress))
                     return true;
             }
 
@@ -384,18 +401,18 @@ namespace Server.Misc
             if (ns == null)
                 return;
 
-            IPAddress[] old = m_Voters;
-            m_Voters = new IPAddress[old.Length + 1];
+            IPAddress[] old = this.m_Voters;
+            this.m_Voters = new IPAddress[old.Length + 1];
 
             for (int i = 0; i < old.Length; ++i)
-                m_Voters[i] = old[i];
+                this.m_Voters[i] = old[i];
 
-            m_Voters[old.Length] = ns.Address;
+            this.m_Voters[old.Length] = ns.Address;
         }
 
         public int ComputeHeight()
         {
-            int height = m_LineBreaks * 18;
+            int height = this.m_LineBreaks * 18;
 
             if (height > 30)
                 return height;
@@ -423,14 +440,14 @@ namespace Server.Misc
 
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Title);
+            writer.Write(this.m_Title);
 
-            writer.Write(m_Voters.Length);
+            writer.Write(this.m_Voters.Length);
 
-            for (int i = 0; i < m_Voters.Length; ++i)
-                writer.Write(m_Voters[i]);
+            for (int i = 0; i < this.m_Voters.Length; ++i)
+                writer.Write(this.m_Voters[i]);
         }
     }
 
@@ -444,14 +461,14 @@ namespace Server.Misc
         public ShardPollGump(Mobile from, ShardPoller poller, bool editing, Queue<ShardPoller> polls)
             : base(50, 50)
         {
-            m_From = from;
-            m_Poller = poller;
-            m_Editing = editing;
-            m_Polls = polls;
+            this.m_From = from;
+            this.m_Poller = poller;
+            this.m_Editing = editing;
+            this.m_Polls = polls;
 
-            Closable = false;
+            this.Closable = false;
 
-            AddPage(0);
+            this.AddPage(0);
 
             int totalVotes = 0;
             int totalOptionHeight = 0;
@@ -470,10 +487,10 @@ namespace Server.Misc
 
             int height = 115 + totalOptionHeight;
 
-            AddBackground(1, 1, 398, height - 2, 3600);
-            AddAlphaRegion(16, 15, 369, height - 31);
+            this.AddBackground(1, 1, 398, height - 2, 3600);
+            this.AddAlphaRegion(16, 15, 369, height - 31);
 
-            AddItem(308, 30, 0x1E5E);
+            this.AddItem(308, 30, 0x1E5E);
 
             string title;
 
@@ -482,18 +499,18 @@ namespace Server.Misc
             else
                 title = "Shard Poll";
 
-            AddHtml(22, 22, 294, 20, Color(Center(title), LabelColor32), false, false);
+            this.AddHtml(22, 22, 294, 20, this.Color(this.Center(title), LabelColor32), false, false);
 
             if (editing)
             {
-                AddHtml(22, 22, 294, 20, Color(string.Format("{0} total", totalVotes), LabelColor32), false, false);
-                AddButton(287, 23, 0x2622, 0x2623, 2, GumpButtonType.Reply, 0);
+                this.AddHtml(22, 22, 294, 20, this.Color(String.Format("{0} total", totalVotes), LabelColor32), false, false);
+                this.AddButton(287, 23, 0x2622, 0x2623, 2, GumpButtonType.Reply, 0);
             }
 
-            AddHtml(22, 50, 294, 40, Color(poller.Title, 0x99CC66), false, false);
+            this.AddHtml(22, 50, 294, 40, this.Color(poller.Title, 0x99CC66), false, false);
 
-            AddImageTiled(32, 88, 264, 1, 9107);
-            AddImageTiled(42, 90, 264, 1, 9157);
+            this.AddImageTiled(32, 88, 264, 1, 9107);
+            this.AddImageTiled(42, 90, 264, 1, 9157);
 
             int y = 100;
 
@@ -506,7 +523,7 @@ namespace Server.Misc
                 {
                     double perc = option.Votes / (double)totalVotes;
 
-                    text = string.Format("[{1}: {2}%] {0}", text, option.Votes, (int)(perc * 100));
+                    text = String.Format("[{1}: {2}%] {0}", text, option.Votes, (int)(perc * 100));
                 }
 
                 int optHeight = option.ComputeHeight();
@@ -514,11 +531,11 @@ namespace Server.Misc
                 y += optHeight / 2;
 
                 if (isViewingResults)
-                    AddImage(24, y - 15, 0x25FE);
+                    this.AddImage(24, y - 15, 0x25FE);
                 else
-                    AddRadio(24, y - 15, 0x25F9, 0x25FC, false, 1 + i);
+                    this.AddRadio(24, y - 15, 0x25F9, 0x25FC, false, 1 + i);
 
-                AddHtml(60, y - (9 * option.LineBreaks), 250, 18 * option.LineBreaks, Color(text, LabelColor32), false, false);
+                this.AddHtml(60, y - (9 * option.LineBreaks), 250, 18 * option.LineBreaks, this.Color(text, LabelColor32), false, false);
 
                 y += optHeight / 2;
                 y += 5;
@@ -526,41 +543,47 @@ namespace Server.Misc
 
             if (editing && !isViewingResults)
             {
-                AddRadio(24, y + 15 - 15, 0x25F9, 0x25FC, false, 1 + poller.Options.Length);
-                AddHtml(60, y + 15 - 9, 250, 18, Color("Create new option.", 0x99CC66), false, false);
+                this.AddRadio(24, y + 15 - 15, 0x25F9, 0x25FC, false, 1 + poller.Options.Length);
+                this.AddHtml(60, y + 15 - 9, 250, 18, this.Color("Create new option.", 0x99CC66), false, false);
             }
 
-            AddButton(314, height - 73, 247, 248, 1, GumpButtonType.Reply, 0);
-            AddButton(314, height - 47, 242, 241, 0, GumpButtonType.Reply, 0);
+            this.AddButton(314, height - 73, 247, 248, 1, GumpButtonType.Reply, 0);
+            this.AddButton(314, height - 47, 242, 241, 0, GumpButtonType.Reply, 0);
         }
 
-        public bool Editing => m_Editing;
+        public bool Editing
+        {
+            get
+            {
+                return this.m_Editing;
+            }
+        }
         public void QueuePoll(ShardPoller poller)
         {
-            if (m_Polls == null)
-                m_Polls = new Queue<ShardPoller>(4);
+            if (this.m_Polls == null)
+                this.m_Polls = new Queue<ShardPoller>(4);
 
-            m_Polls.Enqueue(poller);
+            this.m_Polls.Enqueue(poller);
         }
 
         public string Center(string text)
         {
-            return string.Format("<CENTER>{0}</CENTER>", text);
+            return String.Format("<CENTER>{0}</CENTER>", text);
         }
 
         public string Color(string text, int color)
         {
-            return string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
+            return String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
         }
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
-            if (m_Polls != null && m_Polls.Count > 0)
+            if (this.m_Polls != null && this.m_Polls.Count > 0)
             {
-                ShardPoller poller = m_Polls.Dequeue();
+                ShardPoller poller = this.m_Polls.Dequeue();
 
                 if (poller != null)
-                    Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerStateCallback(poller.SendQueuedPoll_Callback), new object[] { m_From, m_Polls });
+                    Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerStateCallback(poller.SendQueuedPoll_Callback), new object[] { this.m_From, this.m_Polls });
             }
 
             if (info.ButtonID == 1)
@@ -573,39 +596,39 @@ namespace Server.Misc
                 int switched = switches[0] - 1;
                 ShardPollOption opt = null;
 
-                if (switched >= 0 && switched < m_Poller.Options.Length)
-                    opt = m_Poller.Options[switched];
+                if (switched >= 0 && switched < this.m_Poller.Options.Length)
+                    opt = this.m_Poller.Options[switched];
 
-                if (opt == null && !m_Editing)
+                if (opt == null && !this.m_Editing)
                     return;
 
-                if (m_Editing)
+                if (this.m_Editing)
                 {
-                    if (!m_Poller.Active)
+                    if (!this.m_Poller.Active)
                     {
-                        m_From.SendMessage("Enter a title for the option. Escape to cancel.{0}", opt == null ? "" : " Use \"DEL\" to delete.");
-                        m_From.Prompt = new ShardPollPrompt(m_Poller, opt);
+                        this.m_From.SendMessage("Enter a title for the option. Escape to cancel.{0}", opt == null ? "" : " Use \"DEL\" to delete.");
+                        this.m_From.Prompt = new ShardPollPrompt(this.m_Poller, opt);
                     }
                     else
                     {
-                        m_From.SendMessage("You may not edit an active poll. Deactivate it first.");
-                        m_From.SendGump(new ShardPollGump(m_From, m_Poller, m_Editing, m_Polls));
+                        this.m_From.SendMessage("You may not edit an active poll. Deactivate it first.");
+                        this.m_From.SendGump(new ShardPollGump(this.m_From, this.m_Poller, this.m_Editing, this.m_Polls));
                     }
                 }
                 else
                 {
-                    if (!m_Poller.Active)
-                        m_From.SendMessage("The poll has been deactivated.");
-                    else if (m_Poller.HasAlreadyVoted(sender))
-                        m_From.SendMessage("You have already voted on this poll.");
+                    if (!this.m_Poller.Active)
+                        this.m_From.SendMessage("The poll has been deactivated.");
+                    else if (this.m_Poller.HasAlreadyVoted(sender))
+                        this.m_From.SendMessage("You have already voted on this poll.");
                     else
-                        m_Poller.AddVote(sender, opt);
+                        this.m_Poller.AddVote(sender, opt);
                 }
             }
-            else if (info.ButtonID == 2 && m_Editing)
+            else if (info.ButtonID == 2 && this.m_Editing)
             {
-                m_From.SendGump(new ShardPollGump(m_From, m_Poller, m_Editing, m_Polls));
-                m_From.SendGump(new PropertiesGump(m_From, m_Poller));
+                this.m_From.SendGump(new ShardPollGump(this.m_From, this.m_Poller, this.m_Editing, this.m_Polls));
+                this.m_From.SendGump(new PropertiesGump(this.m_From, this.m_Poller));
             }
         }
     }
@@ -617,8 +640,8 @@ namespace Server.Misc
         private readonly ShardPollOption m_Option;
         public ShardPollPrompt(ShardPoller poller, ShardPollOption opt)
         {
-            m_Poller = poller;
-            m_Option = opt;
+            this.m_Poller = poller;
+            this.m_Option = opt;
         }
 
         public static string UrlToHref(string text)
@@ -626,36 +649,36 @@ namespace Server.Misc
             if (text == null)
                 return null;
 
-            return m_UrlRegex.Replace(text, UrlRegex_Match);
+            return m_UrlRegex.Replace(text, new MatchEvaluator(UrlRegex_Match));
         }
 
         public override void OnCancel(Mobile from)
         {
-            from.SendGump(new ShardPollGump(from, m_Poller, true, null));
+            from.SendGump(new ShardPollGump(from, this.m_Poller, true, null));
         }
 
         public override void OnResponse(Mobile from, string text)
         {
-            if (m_Poller.Active)
+            if (this.m_Poller.Active)
             {
                 from.SendMessage("You may not edit an active poll. Deactivate it first.");
             }
             else if (text == "DEL")
             {
-                if (m_Option != null)
-                    m_Poller.RemoveOption(m_Option);
+                if (this.m_Option != null)
+                    this.m_Poller.RemoveOption(this.m_Option);
             }
             else
             {
                 text = UrlToHref(text);
 
-                if (m_Option == null)
-                    m_Poller.AddOption(new ShardPollOption(text));
+                if (this.m_Option == null)
+                    this.m_Poller.AddOption(new ShardPollOption(text));
                 else
-                    m_Option.Title = text;
+                    this.m_Option.Title = text;
             }
 
-            from.SendGump(new ShardPollGump(from, m_Poller, true, null));
+            from.SendGump(new ShardPollGump(from, this.m_Poller, true, null));
         }
 
         private static string UrlRegex_Match(Match m)
@@ -663,11 +686,11 @@ namespace Server.Misc
             if (m.Groups[1].Success)
             {
                 if (m.Groups[2].Success)
-                    return string.Format("<a href=\"{0}\">{1}</a>", m.Groups[1].Value, m.Groups[2].Value);
+                    return String.Format("<a href=\"{0}\">{1}</a>", m.Groups[1].Value, m.Groups[2].Value);
             }
             else if (m.Groups[2].Success)
             {
-                return string.Format("<a href=\"{0}\">{0}</a>", m.Groups[2].Value);
+                return String.Format("<a href=\"{0}\">{0}</a>", m.Groups[2].Value);
             }
 
             return m.Value;

@@ -15,7 +15,7 @@ namespace Server.Items
         public StoneFaceTrap()
             : base(0x10FC)
         {
-            Light = LightType.Circle225;
+            this.Light = LightType.Circle225;
         }
 
         public StoneFaceTrap(Serial serial)
@@ -28,7 +28,7 @@ namespace Server.Items
         {
             get
             {
-                switch (ItemID)
+                switch ( this.ItemID )
                 {
                     case 0x10F5:
                     case 0x10F6:
@@ -48,32 +48,56 @@ namespace Server.Items
             }
             set
             {
-                bool breathing = Breathing;
+                bool breathing = this.Breathing;
 
-                ItemID = (breathing ? GetFireID(value) : GetBaseID(value));
+                this.ItemID = (breathing ? GetFireID(value) : GetBaseID(value));
             }
         }
         public bool Breathing
         {
             get
             {
-                return (ItemID == GetFireID(Type));
+                return (this.ItemID == GetFireID(this.Type));
             }
             set
             {
                 if (value)
-                    ItemID = GetFireID(Type);
+                    this.ItemID = GetFireID(this.Type);
                 else
-                    ItemID = GetBaseID(Type);
+                    this.ItemID = GetBaseID(this.Type);
             }
         }
-        public override bool PassivelyTriggered => true;
-        public override TimeSpan PassiveTriggerDelay => TimeSpan.Zero;
-        public override int PassiveTriggerRange => 2;
-        public override TimeSpan ResetDelay => TimeSpan.Zero;
+        public override bool PassivelyTriggered
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override TimeSpan PassiveTriggerDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
+        public override int PassiveTriggerRange
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override TimeSpan ResetDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
         public static int GetBaseID(StoneFaceTrapType type)
         {
-            switch (type)
+            switch ( type )
             {
                 case StoneFaceTrapType.NorthWestWall:
                     return 0x10F5;
@@ -88,7 +112,7 @@ namespace Server.Items
 
         public static int GetFireID(StoneFaceTrapType type)
         {
-            switch (type)
+            switch ( type )
             {
                 case StoneFaceTrapType.NorthWestWall:
                     return 0x10F7;
@@ -106,17 +130,17 @@ namespace Server.Items
             if (!from.Alive || from.IsStaff())
                 return;
 
-            Effects.PlaySound(Location, Map, 0x359);
+            Effects.PlaySound(this.Location, this.Map, 0x359);
 
-            Breathing = true;
+            this.Breathing = true;
 
-            Timer.DelayCall(TimeSpan.FromSeconds(2.0), FinishBreath);
-            Timer.DelayCall(TimeSpan.FromSeconds(1.0), TriggerDamage);
+            Timer.DelayCall(TimeSpan.FromSeconds(2.0), new TimerCallback(FinishBreath));
+            Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerCallback(TriggerDamage));
         }
 
         public virtual void FinishBreath()
         {
-            Breathing = false;
+            this.Breathing = false;
         }
 
         public virtual void TriggerDamage()
@@ -134,7 +158,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -143,7 +167,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            Breathing = false;
+            this.Breathing = false;
         }
     }
 
@@ -168,7 +192,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

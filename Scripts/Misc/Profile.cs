@@ -1,6 +1,6 @@
+using System;
 using Server.Accounting;
 using Server.Network;
-using System;
 
 namespace Server.Misc
 {
@@ -8,8 +8,8 @@ namespace Server.Misc
     {
         public static void Initialize()
         {
-            EventSink.ProfileRequest += EventSink_ProfileRequest;
-            EventSink.ChangeProfileRequest += EventSink_ChangeProfileRequest;
+            EventSink.ProfileRequest += new ProfileRequestEventHandler(EventSink_ProfileRequest);
+            EventSink.ChangeProfileRequest += new ChangeProfileRequestEventHandler(EventSink_ChangeProfileRequest);
         }
 
         public static void EventSink_ChangeProfileRequest(ChangeProfileRequestEventArgs e)
@@ -19,7 +19,7 @@ namespace Server.Misc
                 e.Beholder.SendMessage("You do not have permission to do that.");
                 return;
             }
-
+            
             Mobile from = e.Beholder;
 
             if (from.ProfileLocked)
@@ -66,7 +66,7 @@ namespace Server.Misc
         {
             if (value >= 1.0)
             {
-                op = string.Format(format, (int)value, (int)value != 1 ? "s" : "");
+                op = String.Format(format, (int)value, (int)value != 1 ? "s" : "");
                 return true;
             }
 

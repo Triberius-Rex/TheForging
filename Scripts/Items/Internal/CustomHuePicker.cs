@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -32,11 +33,11 @@ namespace Server.Items
             m_Hues = hues;
         }
 
-        public int Name => m_Name;
-        public string NameString => m_NameString;
-        public int[] Hues => m_Hues;
-        public int Item => m_Item;
-        public int ItemHues => m_ItemHues;
+        public int Name { get { return m_Name; } }
+        public string NameString { get { return m_NameString; } }
+        public int[] Hues { get { return m_Hues; } }
+        public int Item { get { return m_Item; } }
+        public int ItemHues { get { return m_ItemHues; } }
     }
 
     public class CustomHuePicker
@@ -90,29 +91,29 @@ namespace Server.Items
 
         public static readonly CustomHuePicker MetallicDyeTub = new CustomHuePicker(new CustomHueGroup[]
         {
-
+            
             new CustomHueGroup(5138, 545, new int[] { 2501, 2502, 2503, 2504, 2505, 2506, 2507, 2508, 2509, 2510, 2511, 2512 }),
-
+            
             new CustomHueGroup(5138, 550, new int[] { 2513, 2514, 2515, 2516, 2517, 2518, 2519, 2520, 2521, 2522, 2523, 2524 }),
-
+           
             new CustomHueGroup(5138, 555, new int[] { 2525, 2526, 2527, 2528, 2529, 2530, 2531, 2532, 2533, 2534, 2535, 2536 }),
-
+            
             new CustomHueGroup(5138, 560, new int[] { 2537, 2538, 2539, 2540, 2541, 2542, 2543, 2544, 2545, 2546, 2547, 2548 }),
-
+            
             new CustomHueGroup(5138, 565, new int[] { 2549, 2550, 2551, 2552, 2553, 2554, 2555, 2556, 2557, 2558, 2559, 2560 }),
-
+            
             new CustomHueGroup(5138, 570, new int[] { 2561, 2562, 2563, 2564, 2565, 2566, 2567, 2568, 2569, 2570, 2571, 2572 }),
-
+            
             new CustomHueGroup(5138, 595, new int[] { 2573, 2574, 2575, 2576, 2577, 2578, 2579, 2580, 2581, 2582, 2583, 2584 }),
-
+            
             new CustomHueGroup(5138, 601, new int[] { 2585, 2586, 2587, 2588, 2589, 2590, 2591, 2592, 2593, 2594, 2595, 2596 }),
-
+            
             new CustomHueGroup(5138, 606, new int[] { 2597, 2598, 2599, 2600, 2601, 2602, 2603, 2604, 2605, 2606, 2607, 2608 }),
-
+            
             new CustomHueGroup(5138, 726, new int[] { 2609, 2610, 2611, 2612, 2613, 2614, 2615, 2616, 2617, 2618, 2619, 2620 }),
-
+            
             new CustomHueGroup(5138, 730, new int[] { 2621, 2622, 2623, 2624, 2625, 2626, 2627, 2628, 2629, 2630, 2631, 2632 }),
-
+            
             new CustomHueGroup(5138, 735, new int[] { 2633, 2634, 2635, 2636, 2637, 2638, 2639, 2640, 2641, 2642, 2643, 2644 }),
 
             new CustomHueGroup(5138, 805, new int[] { 2651, 2652, 2653, 2654, 2655, 2656, 2657, 2658, 2659, 2660, 2661, 2662 })
@@ -144,10 +145,10 @@ namespace Server.Items
             m_TitleString = title;
         }
 
-        public bool DefaultSupported => m_DefaultSupported;
-        public CustomHueGroup[] Groups => m_Groups;
-        public int Title => m_Title;
-        public string TitleString => m_TitleString;
+        public bool DefaultSupported { get { return m_DefaultSupported; } }
+        public CustomHueGroup[] Groups { get { return m_Groups; } }
+        public int Title { get { return m_Title; } }
+        public string TitleString { get { return m_TitleString; } }
     }
 
     public class CustomHuePickerGump : Gump
@@ -179,7 +180,7 @@ namespace Server.Items
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case 1: // Okay
                     {
@@ -238,7 +239,7 @@ namespace Server.Items
                 AddButton(200, 400, 4005, 4007, 2, GumpButtonType.Reply, 0);
                 AddLabel(235, 400, 0, "DEFAULT");
             }
-        }
+        }        
 
         private void RenderCategories()
         {

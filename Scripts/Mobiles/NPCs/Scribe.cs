@@ -1,7 +1,6 @@
-using Server.Engines.BulkOrders;
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Mobiles
 {
@@ -12,8 +11,8 @@ namespace Server.Mobiles
         public Scribe()
             : base("the scribe")
         {
-            SetSkill(SkillName.EvalInt, 60.0, 83.0);
-            SetSkill(SkillName.Inscribe, 90.0, 100.0);
+            this.SetSkill(SkillName.EvalInt, 60.0, 83.0);
+            this.SetSkill(SkillName.Inscribe, 90.0, 100.0);
         }
 
         public Scribe(Serial serial)
@@ -21,23 +20,41 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.MagesGuild;
-        public override VendorShoeType ShoeType => Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.MagesGuild;
+            }
+        }
+        public override VendorShoeType ShoeType
+        {
+            get
+            {
+                return Utility.RandomBool() ? VendorShoeType.Shoes : VendorShoeType.Sandals;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBScribe(this));
+            this.m_SBInfos.Add(new SBScribe(this));
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-			SetWearable(new Robe(), Utility.RandomNeutralHue(), 1);
+            this.AddItem(new Server.Items.Robe(Utility.RandomNeutralHue()));
         }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Inscription;
+        public override BODType BODType { get { return BODType.Inscription; } }
 
         public override bool IsValidBulkOrder(Item item)
         {
@@ -61,7 +78,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

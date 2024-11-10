@@ -1,7 +1,7 @@
-using Server.Engines.CannedEvil;
-using Server.Items;
 using System;
 using System.Collections;
+using Server.Engines.CannedEvil;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -44,6 +44,8 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
+
             SetWeaponAbility(WeaponAbility.DoubleStrike);
             SetAreaEffect(AreaEffect.PoisonBreath);
         }
@@ -53,31 +55,102 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Power;
-        public override Type[] UniqueList => new[] { typeof(Pacify) };
-        public override Type[] SharedList => new[]
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Power;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(Pacify) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(BraveKnightOfTheBritannia),
                     typeof(DetectiveBoots),
                     typeof(EmbroideredOakLeafCloak),
                     typeof(LieutenantOfTheBritannianRoyalGuard)
                 };
-        public override Type[] DecorativeList => new[] { typeof(Futon), typeof(SwampTile) };
-        public override MonsterStatuetteType[] StatueTypes => new MonsterStatuetteType[] { };
-        public override int TreasureMapLevel => 5;
-        public override Poison HitPoison => Poison.Lethal;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override double HitPoisonChance => 0.8;
-        public override int Feathers => 30;
-        public override bool ShowFameTitle => false;
-        public override bool ClickTitle => false;
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[] { typeof(Futon), typeof(SwampTile) };
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[] { };
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override double HitPoisonChance
+        {
+            get
+            {
+                return 0.8;
+            }
+        }
+        public override int Feathers
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 4);
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Gems, 6);
-            AddLoot(LootPack.BonsaiSeed);
         }
 
         // TODO: Hit Lightning Area
@@ -101,7 +174,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

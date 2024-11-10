@@ -1,21 +1,22 @@
+using System;
+using System.Collections.Generic;
+using Server.Items;
+using Server.Gumps;
+using Server.Network;
 using Server.Commands;
 using Server.Engines.Quests;
-using Server.Gumps;
-using Server.Items;
-using Server.Network;
-using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
     public class HeplerPaulson : BaseVendor
     {
         private readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
 
         public override void InitSBInfo()
         {
             m_SBInfos.Add(new SBHepler());
-        }
+        }        
 
         [Constructable]
         public HeplerPaulson()
@@ -32,10 +33,10 @@ namespace Server.Mobiles
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new Shoes(), 0x737, 1);
-            SetWearable(new LongPants(), 0x1BB, 1);
-			SetWearable(new FancyShirt(), 0x535, 1);
+            AddItem(new Backpack());
+            AddItem(new Shoes(0x737));
+            AddItem(new LongPants(0x1BB));
+            AddItem(new FancyShirt(0x535));
         }
 
         public HeplerPaulson(Serial serial) : base(serial)
@@ -56,7 +57,7 @@ namespace Server.Mobiles
 
             PlayerMobile pm = (PlayerMobile)m;
 
-            if (pm.Young)
+            if(pm.Young)
             {
                 m.SendLocalizedMessage(502593); // Thou art too young to choose this fate.
                 return;
@@ -96,14 +97,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
-        }
+        }        
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
@@ -141,15 +142,15 @@ namespace Server.Mobiles
     {
         public static void Initialize()
         {
-            CommandSystem.Register("HeplerPaulson", AccessLevel.GameMaster, HeplerPaulsonGump_OnCommand);
+            CommandSystem.Register("HeplerPaulson", AccessLevel.GameMaster, new CommandEventHandler(HeplerPaulsonGump_OnCommand));
         }
 
         private static void HeplerPaulsonGump_OnCommand(CommandEventArgs e)
         {
-            SendGump(new HeplerPaulsonGump(e.Mobile as PlayerMobile));
+            BaseGump.SendGump(new HeplerPaulsonGump(e.Mobile as PlayerMobile));
         }
 
-        private static readonly PageData[] GumpInfo =
+        private static PageData[] GumpInfo =
         {
                 new PageData(1, 1154279, new SelectionEntry(1154280, 2), new SelectionEntry(1154282, 3)),
                 new PageData(2, 1154281, new SelectionEntry(1154282, 4)),
@@ -169,10 +170,10 @@ namespace Server.Mobiles
     {
         public static void Initialize()
         {
-            CommandSystem.Register("HeplerPaulsonComplete", AccessLevel.GameMaster, HeplerPaulsonCompleteGump_OnCommand);
+            CommandSystem.Register("HeplerPaulsonComplete", AccessLevel.GameMaster, new CommandEventHandler(HeplerPaulsonCompleteGump_OnCommand));
         }
 
-        private static readonly PageData[] GumpInfo =
+        private static PageData[] GumpInfo =
         {
             new PageData(1, 1154284,  new SelectionEntry(1154285, 2)),
             new PageData(2, 1154286)
@@ -180,7 +181,7 @@ namespace Server.Mobiles
 
         private static void HeplerPaulsonCompleteGump_OnCommand(CommandEventArgs e)
         {
-            SendGump(new HeplerPaulsonCompleteGump(e.Mobile as PlayerMobile));
+            BaseGump.SendGump(new HeplerPaulsonCompleteGump(e.Mobile as PlayerMobile));
         }
 
         public HeplerPaulsonCompleteGump(PlayerMobile pm)
@@ -193,20 +194,20 @@ namespace Server.Mobiles
     {
         public static void Initialize()
         {
-            CommandSystem.Register("HeplerPaulsonCollectComplete", AccessLevel.GameMaster, HeplerPaulsonCollectCompleteGump_OnCommand);
+            CommandSystem.Register("HeplerPaulsonCollectComplete", AccessLevel.GameMaster, new CommandEventHandler(HeplerPaulsonCollectCompleteGump_OnCommand));
         }
 
         private static void HeplerPaulsonCollectCompleteGump_OnCommand(CommandEventArgs e)
         {
-            SendGump(new HeplerPaulsonCollectCompleteGump(e.Mobile as PlayerMobile));
+            BaseGump.SendGump(new HeplerPaulsonCollectCompleteGump(e.Mobile as PlayerMobile));
         }
 
-        private static readonly PageData[] GumpInfo =
+        private static PageData[] GumpInfo =
         {
             new PageData(1, 1154319),
         };
 
-        public HeplerPaulsonCollectCompleteGump(PlayerMobile pm)
+        public HeplerPaulsonCollectCompleteGump(PlayerMobile pm) 
             : base(pm, 1154327, GumpInfo)
         {
         }

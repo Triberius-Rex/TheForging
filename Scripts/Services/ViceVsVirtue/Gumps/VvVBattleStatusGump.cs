@@ -1,7 +1,10 @@
-using Server.Guilds;
-using Server.Gumps;
-using Server.Mobiles;
 using System;
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Guilds;
+using Server.Network;
 using System.Collections.Generic;
 
 namespace Server.Engines.VvV
@@ -31,14 +34,14 @@ namespace Server.Engines.VvV
             List<BattleTeam> teams = new List<BattleTeam>(Battle.Teams);
             teams.Sort();
 
-            double offset = 216 / VvVBattle.ScoreToWin;
+            double offset = 216 / (double)VvVBattle.ScoreToWin; 
 
             for (int i = 0; i < teams.Count; i++)
             {
                 BattleTeam team = teams[i];
 
-                if (team.Guild != null)
-                    AddHtml(87, 115 + (31 * i), 50, 20, string.Format("<basefont color=#FFFFFF>{0}", team.Guild.Abbreviation), false, false);
+                if(team.Guild != null)
+                    AddHtml(87, 115 + (31 * i), 50, 20, String.Format("<basefont color=#FFFFFF>{0}", team.Guild.Abbreviation), false, false);
 
                 AddBackground(145, 120 + (31 * i), (int)Math.Min(216, (team.Score * offset)), 12, 30584);
 
@@ -54,7 +57,7 @@ namespace Server.Engines.VvV
                 if (i <= count - 3)
                     break;
 
-                AddHtml(98, y, 250, 16, string.Format("<basefont color=#80BFFF>{0}", Battle.Messages[i]), false, false);
+                AddHtml(98, y, 250, 16, String.Format("<basefont color=#80BFFF>{0}", Battle.Messages[i]), false, false);
 
                 y += 16;
             }
@@ -65,12 +68,12 @@ namespace Server.Engines.VvV
             {
                 BattleTeam t = Battle.GetTeam(gu);
 
-                AddHtml(87, 268, 50, 20, string.Format("<basefont color=#FFFFFF>{0}", gu.Abbreviation), false, false);
+                AddHtml(87, 268, 50, 20, String.Format("<basefont color=#FFFFFF>{0}", gu.Abbreviation), false, false);
                 AddBackground(145, 271, (int)Math.Min(216, (t.Score * offset)), 12, 30584);
             }
 
             TimeSpan left = (Battle.StartTime + TimeSpan.FromMinutes(VvVBattle.Duration)) - DateTime.UtcNow;
-            AddHtml(210, 21, 100, 20, "<basefont color=#FF0000>" + string.Format("{0:mm\\:ss}", left), false, false);
+            AddHtml(210, 21, 100, 20, "<basefont color=#FF0000>" + String.Format("{0:mm\\:ss}", left), false, false);
         }
 
         /*public void Refresh(bool recompile = true)

@@ -1,8 +1,10 @@
+using System;
+
 using Server.Mobiles;
 
 namespace Server.Engines.SorcerersDungeon
 {
-    [CorpseName("a nightmare fairy corpse")]
+    [CorpseName("a nightmare fairys corpse")]
     public class NightmareFairy : BaseCreature
     {
         [Constructable]
@@ -10,6 +12,7 @@ namespace Server.Engines.SorcerersDungeon
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a nightmare fairy";
+
             Body = 176;
             BaseSoundID = 0x467;
             Hue = 1910;
@@ -38,8 +41,8 @@ namespace Server.Engines.SorcerersDungeon
             SetSkill(SkillName.Tactics, 100.0);
             SetSkill(SkillName.Wrestling, 120);
 
-            Fame = 16000;
-            Karma = -16000;
+            Fame = 12000;
+            Karma = -12000;
 
             SetSpecialAbility(SpecialAbility.LifeLeech);
             SetSpecialAbility(SpecialAbility.LifeDrain);
@@ -50,9 +53,8 @@ namespace Server.Engines.SorcerersDungeon
         {
         }
 
-        public override bool CanFlee => false;
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Deadly;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Deadly; } }
 
         public override void GenerateLoot()
         {
@@ -62,7 +64,7 @@ namespace Server.Engines.SorcerersDungeon
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

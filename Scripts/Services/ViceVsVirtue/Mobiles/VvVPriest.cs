@@ -1,19 +1,22 @@
+using System;
+using Server;
 using Server.Items;
 using Server.Mobiles;
-using System;
+using Server.Gumps;
+using Server.Guilds;
 using System.Collections.Generic;
 
 namespace Server.Engines.VvV
 {
     public class VvVPriest : BaseVendor
     {
-        public override bool IsActiveVendor => false;
-        public override bool DisallowAllMoves => true;
-        public override bool ClickTitle => true;
-        public override bool CanTeach => false;
+        public override bool IsActiveVendor { get { return false; } }
+        public override bool DisallowAllMoves { get { return true; } }
+        public override bool ClickTitle { get { return true; } }
+        public override bool CanTeach { get { return false; } }
 
         protected List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return this.m_SBInfos; } }
         public override void InitSBInfo() { }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -25,7 +28,7 @@ namespace Server.Engines.VvV
         [Constructable]
         public VvVPriest(VvVType type, VvVBattle battle) : base(type == VvVType.Vice ? "the Priest of Vice" : "the Priest of Virtue")
         {
-            VvVType = type;
+            this.VvVType = type;
             Battle = battle;
         }
 
@@ -42,7 +45,7 @@ namespace Server.Engines.VvV
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
-            if (ViceVsVirtueSystem.Instance == null || Battle == null)
+            if(ViceVsVirtueSystem.Instance == null || Battle == null)
                 return false;
 
             VvVPlayerEntry entry = ViceVsVirtueSystem.Instance.GetPlayerEntry<VvVPlayerEntry>(from);
@@ -50,7 +53,7 @@ namespace Server.Engines.VvV
             if (from.InRange(Location, 2) && entry != null && ViceVsVirtueSystem.IsVvV(from) && dropped is VvVSigil)
             {
                 VvVSigil sigil = dropped as VvVSigil;
-                Battle.Update(null, entry, VvVType == VvVType.Vice ? UpdateType.TurnInVice : UpdateType.TurnInVirtue);
+                Battle.Update(null, entry, this.VvVType == VvVType.Vice ? UpdateType.TurnInVice : UpdateType.TurnInVirtue);
 
                 sigil.Delete();
                 Battle.Sigil = null;
@@ -61,18 +64,16 @@ namespace Server.Engines.VvV
 
         public override void InitOutfit()
         {
-            Robe robe = new Robe
-            {
-                ItemID = 19357,
-                Name = VvVType == VvVType.Virtue ? "Robe of Virtue" : "Robe of Vice"
-            };
+            Robe robe = new Robe();
+            robe.ItemID = 19357;
+            robe.Name = this.VvVType == VvVType.Virtue ? "Robe of Virtue" : "Robe of Vice";
 
             Timer.DelayCall<Item>(TimeSpan.FromSeconds(1), item =>
                 {
-                    item.Hue = VvVType == VvVType.Virtue ? ViceVsVirtueSystem.VirtueHue : ViceVsVirtueSystem.ViceHue;
+                    item.Hue = this.VvVType == VvVType.Virtue ? ViceVsVirtueSystem.VirtueHue : ViceVsVirtueSystem.ViceHue;
                 }, robe);
 
-            SetWearable(robe, VvVType == VvVType.Virtue ? ViceVsVirtueSystem.VirtueHue : ViceVsVirtueSystem.ViceHue); // TODO: Get Hues
+            SetWearable(robe, this.VvVType == VvVType.Virtue ? ViceVsVirtueSystem.VirtueHue : ViceVsVirtueSystem.ViceHue); // TODO: Get Hues
         }
 
         public VvVPriest(Serial serial)
@@ -93,7 +94,7 @@ namespace Server.Engines.VvV
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            VvVType = (VvVType)reader.ReadInt();
+            this.VvVType = (VvVType)reader.ReadInt();
         }
     }
 }

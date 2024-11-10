@@ -1,12 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Server;
+using Server.Items;
 using Server.Gumps;
 using Server.Mobiles;
-using System;
 
 namespace Server.Engines.Astronomy
 {
     public class ConstellationLedger : Item
     {
-        public override int LabelNumber => 1158520;  // Constellation Ledger
+        public override int LabelNumber { get { return 1158520; } } // Constellation Ledger
 
         [Constructable]
         public ConstellationLedger()
@@ -27,7 +32,7 @@ namespace Server.Engines.Astronomy
         {
             public int Page { get; set; }
 
-            public int Pages => (int)Math.Ceiling(AstronomySystem.DiscoveredConstellations.Count / 20.0);
+            public int Pages { get { return (int)Math.Ceiling((double)AstronomySystem.DiscoveredConstellations.Count / 20.0); } }
 
             public ConstellationLedgerGump(PlayerMobile pm)
                 : base(pm, 100, 100)
@@ -41,8 +46,8 @@ namespace Server.Engines.Astronomy
 
                 AddBackground(0, 0, 820, 620, 0x2454);
                 AddHtmlLocalized(10, 28, 800, 18, 1114513, "#1158520", 0x0, false, false); // Constellation Ledger
-                AddHtmlLocalized(295, 55, 515, 36, 1158521, string.Format("{0}\t{1}", AstronomySystem.DiscoveredConstellations.Count, AstronomySystem.MaxConstellations), 0x0, false, false); // Constellations Discovered: ~1_VAL~ / ~2_VAL~
-
+                AddHtmlLocalized(295, 55, 515, 36, 1158521, String.Format("{0}\t{1}", AstronomySystem.DiscoveredConstellations.Count, AstronomySystem.MaxConstellations), 0x0, false, false); // Constellations Discovered: ~1_VAL~ / ~2_VAL~
+                
                 AddHtmlLocalized(55, 100, 100, 36, 1114513, "#1158522", 0x0, false, false); // Constellation Name
                 AddHtmlLocalized(245, 100, 80, 36, 1114513, "#1158523", 0x0, false, false); // Astronomer
                 AddHtmlLocalized(375, 100, 80, 36, 1114513, "#1158524", 0x0, false, false); // Discovery Date
@@ -54,13 +59,13 @@ namespace Server.Engines.Astronomy
 
                 for (int i = start; i < AstronomySystem.DiscoveredConstellations.Count && i <= start + 20; i++)
                 {
-                    ConstellationInfo info = AstronomySystem.GetConstellation(AstronomySystem.DiscoveredConstellations[i]);
+                    var info = AstronomySystem.GetConstellation(AstronomySystem.DiscoveredConstellations[i]);
 
                     AddHtml(15, y, 200, 18, Color("#0040FF", info.Name), false, false);
                     AddHtml(240, y, 112, 18, Color("#0040FF", info.DiscoveredBy != null ? info.DiscoveredBy.Name : "Unknown"), false, false);
                     AddHtml(380, y, 112, 18, Color("#0040FF", info.DiscoveredOn.ToShortDateString()), false, false);
                     AddHtmlLocalized(492, y, 130, 18, AstronomySystem.TimeCoordinateLocalization(info.TimeCoordinate), 0x1F, false, false);
-                    AddHtmlLocalized(632, y, 150, 18, 1158527, string.Format("{0}\t{1}", info.CoordRA, info.CoordDEC), 0x1F, false, false); // RA ~1_VAL~  DEC ~2_VAL~
+                    AddHtmlLocalized(632, y, 150, 18, 1158527, String.Format("{0}\t{1}", info.CoordRA, info.CoordDEC), 0x1F, false, false); // RA ~1_VAL~  DEC ~2_VAL~
 
                     y += 18;
                 }
@@ -70,14 +75,14 @@ namespace Server.Engines.Astronomy
                 AddButton(460, 540, 0x607, 0x608, 3, GumpButtonType.Reply, 0);
                 AddButton(484, 540, 0x603, 0x604, 4, GumpButtonType.Reply, 0);
 
-                AddLabel(415, 570, 0, string.Format("{0}/{1}", Page + 1, Pages.ToString()));
+                AddLabel(415, 570, 0, String.Format("{0}/{1}", Page + 1, Pages.ToString()));
             }
 
             public override void OnResponse(RelayInfo info)
             {
                 switch (info.ButtonID)
                 {
-                    case 0:
+                    case 0: 
                         return;
                     case 1:
                         Page = 0;

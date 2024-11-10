@@ -1,7 +1,9 @@
+using System;
+using System.Xml;
+using System.Linq;
+
 using Server.Engines.VvV;
 using Server.Mobiles;
-using System.Linq;
-using System.Xml;
 
 namespace Server.Regions
 {
@@ -16,11 +18,11 @@ namespace Server.Regions
         {
             base.OnEnter(m);
 
-            if (ViceVsVirtueSystem.EnhancedRules &&
+            if (ViceVsVirtueSystem.EnhancedRules && 
                 IsVvVBattleRegion() &&
                 ViceVsVirtueSystem.IsVvVCombatant(m) &&
                 ViceVsVirtueSystem.Instance != null &&
-                ViceVsVirtueSystem.Instance.Battle != null &&
+                ViceVsVirtueSystem.Instance.Battle != null && 
                 ViceVsVirtueSystem.Instance.Battle.OnGoing &&
                 ViceVsVirtueSystem.Instance.Battle.Region == this)
             {

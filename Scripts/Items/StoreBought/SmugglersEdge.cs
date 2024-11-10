@@ -1,15 +1,17 @@
-using Server.Engines.Craft;
-using Server.Engines.CreatureStealing;
+using System;
+using Server;
 using Server.Mobiles;
+using Server.Engines.CreatureStealing;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefTinkering), typeof(GargishSmugglersEdge))]
     public class SmugglersEdge : ButcherKnife
     {
-        public override int LabelNumber => 1071499;  // Smuggler's Edge
-        public override bool CanFortify => false;
-        public override bool IsArtifact => true;
+        public override int LabelNumber { get { return 1071499; } } // Smuggler's Edge
+        public override bool CanFortify { get { return false; } }
+        public override bool IsArtifact { get { return true; } }
 
         [Constructable]
         public SmugglersEdge()
@@ -24,10 +26,10 @@ namespace Server.Items
                 LootType = LootType.Blessed;
         }
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
-        public override int MinDamage => 9;
-        public override int MaxDamage => 11;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
+        public override int AosMinDamage { get { return 9; } }
+        public override int AosMaxDamage { get { return 11; } }
 
         public SmugglersEdge(Serial serial)
             : base(serial)
@@ -60,21 +62,24 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0)
+                Attributes.WeaponSpeed = 30;
         }
     }
 
     public class GargishSmugglersEdge : GargishButcherKnife
     {
-        public override int LabelNumber => 1071499;  // Smuggler's Edge
-        public override bool CanFortify => false;
-        public override bool IsArtifact => true;
+        public override int LabelNumber { get { return 1071499; } } // Smuggler's Edge
+        public override bool CanFortify { get { return false; } }
+        public override bool IsArtifact { get { return true; } }
 
         [Constructable]
         public GargishSmugglersEdge()
@@ -89,10 +94,10 @@ namespace Server.Items
                 LootType = LootType.Blessed;
         }
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
-        public override int MinDamage => 9;
-        public override int MaxDamage => 11;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
+        public override int AosMinDamage { get { return 9; } }
+        public override int AosMaxDamage { get { return 11; } }
 
         public GargishSmugglersEdge(Serial serial)
             : base(serial)
@@ -125,13 +130,16 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0)
+                Attributes.WeaponSpeed = 30;
         }
     }
 }

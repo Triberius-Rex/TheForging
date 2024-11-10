@@ -1,6 +1,7 @@
-using Server.Engines.Craft;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
+using Server.Items;
 
 namespace Server.Engines.BulkOrders
 {
@@ -17,7 +18,7 @@ namespace Server.Engines.BulkOrders
             0.003000000 // Frostwood
         };
 
-        public override BODType BODType => BODType.Fletching;
+        public override BODType BODType { get { return BODType.Fletching; } }
 
         [Constructable]
         public SmallFletchingBOD()
@@ -37,7 +38,7 @@ namespace Server.Engines.BulkOrders
 
             if (entries.Length > 0)
             {
-                SmallBulkEntry entry = entries[Utility.Random(entries.Length)];
+                 SmallBulkEntry entry = entries[Utility.Random(entries.Length)];
 
                 int amountMax = Utility.RandomList(10, 15, 20);
 
@@ -50,31 +51,31 @@ namespace Server.Engines.BulkOrders
 
                 bool reqExceptional = false;
 
-                if (useMaterials)
+                if(useMaterials)
                     reqExceptional = Utility.RandomBool() || (material == BulkMaterialType.None);
 
-                Hue = 1425;
-                AmountMax = amountMax;
-                Type = entry.Type;
-                Number = entry.Number;
-                Graphic = entry.Graphic;
-                RequireExceptional = reqExceptional;
-                Material = material;
-                GraphicHue = entry.Hue;
+                this.Hue = 1425;
+                this.AmountMax = amountMax;
+                this.Type = entry.Type;
+                this.Number = entry.Number;
+                this.Graphic = entry.Graphic;
+                this.RequireExceptional = reqExceptional;
+                this.Material = material;
+                this.GraphicHue = entry.Hue;
             }
         }
 
         public SmallFletchingBOD(int amountCur, int amountMax, Type type, int number, int graphic, bool reqExceptional, BulkMaterialType mat, int hue)
         {
-            Hue = 1425;
-            AmountMax = amountMax;
-            AmountCur = amountCur;
-            Type = type;
-            Number = number;
-            Graphic = graphic;
-            RequireExceptional = reqExceptional;
-            Material = mat;
-            GraphicHue = hue;
+            this.Hue = 1425;
+            this.AmountMax = amountMax;
+            this.AmountCur = amountCur;
+            this.Type = type;
+            this.Number = number;
+            this.Graphic = graphic;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
+            this.GraphicHue = hue;
         }
 
         public SmallFletchingBOD(Serial serial)
@@ -84,13 +85,13 @@ namespace Server.Engines.BulkOrders
 
         private SmallFletchingBOD(SmallBulkEntry entry, BulkMaterialType material, int amountMax, bool reqExceptional)
         {
-            Hue = 1425;
-            AmountMax = amountMax;
-            Type = entry.Type;
-            Number = entry.Number;
-            Graphic = entry.Graphic;
-            RequireExceptional = reqExceptional;
-            Material = material;
+            this.Hue = 1425;
+            this.AmountMax = amountMax;
+            this.Type = entry.Type;
+            this.Number = entry.Number;
+            this.Graphic = entry.Graphic;
+            this.RequireExceptional = reqExceptional;
+            this.Material = material;
         }
 
         public static SmallFletchingBOD CreateRandomFor(Mobile m)
@@ -228,7 +229,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

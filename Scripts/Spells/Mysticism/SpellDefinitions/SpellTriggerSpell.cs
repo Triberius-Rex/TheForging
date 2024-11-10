@@ -1,43 +1,43 @@
-using Server.ContextMenus;
+using System;
 using Server.Gumps;
 using Server.Items;
-using Server.Network;
-using System;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Network;
 
 namespace Server.Spells.Mysticism
 {
-    public class SpellTriggerSpell : MysticSpell
-    {
-        public override SpellCircle Circle => SpellCircle.Fifth;
+	public class SpellTriggerSpell : MysticSpell
+	{
+        public override SpellCircle Circle { get { return SpellCircle.Fifth; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
-                "Spell Trigger", "In Vas Ort Ex ",
-                230,
-                9022,
-                Reagent.Garlic,
-                Reagent.MandrakeRoot,
-                Reagent.SpidersSilk,
-                Reagent.DragonBlood
-            );
+		private static SpellInfo m_Info = new SpellInfo(
+				"Spell Trigger", "In Vas Ort Ex ",
+				230,
+				9022,
+				Reagent.Garlic,
+				Reagent.MandrakeRoot,
+				Reagent.SpidersSilk,
+				Reagent.DragonBlood
+			);
 
-        public SpellTriggerSpell(Mobile caster, Item scroll) : base(caster, scroll, m_Info)
-        {
-        }
+		public SpellTriggerSpell( Mobile caster, Item scroll ) : base( caster, scroll, m_Info )
+		{
+		}
 
         public override void OnCast()
         {
             if (Caster.HasGump(typeof(SpellTriggerGump)))
                 Caster.CloseGump(typeof(SpellTriggerGump));
 
-            SpellTriggerGump gump = new SpellTriggerGump(this, Caster);
+            var gump = new SpellTriggerGump(this, Caster);
             int serial = gump.Serial;
 
             Caster.SendGump(gump);
 
             Timer.DelayCall(TimeSpan.FromSeconds(30), () =>
                 {
-                    Gump current = Caster.FindGump(typeof(SpellTriggerGump));
+                    var current = Caster.FindGump(typeof(SpellTriggerGump));
 
                     if (current != null && current.Serial == serial)
                     {
@@ -49,8 +49,8 @@ namespace Server.Spells.Mysticism
 
         private class SpellTriggerGump : Gump
         {
-            private readonly Spell m_Spell;
-            private readonly int m_Skill;
+            private Spell m_Spell;
+            private int m_Skill;
 
             public SpellTriggerGump(Spell spell, Mobile m)
                 : base(60, 36)
@@ -143,7 +143,7 @@ namespace Server.Spells.Mysticism
             }
         }
 
-        private static readonly SpellTriggerDef[] m_Definitions = new SpellTriggerDef[]
+        private static SpellTriggerDef[] m_Definitions = new SpellTriggerDef[]
             {
                 new SpellTriggerDef( 677, "Nether Bolt",        1, 1031678, 1095193, 0x2D9E ),
                 new SpellTriggerDef( 678, "Healing Stone",      1, 1031679, 1095194, 0x2D9F ),
@@ -158,24 +158,24 @@ namespace Server.Spells.Mysticism
                 new SpellTriggerDef( 688, "Bombard",            6, 1031689, 1095204, 0x2DA9 )
             };
 
-        public static SpellTriggerDef[] Definitions => m_Definitions;
+        public static SpellTriggerDef[] Definitions { get { return m_Definitions; } }
     }
 
     public class SpellTriggerDef
     {
-        private readonly int m_SpellId;
-        private readonly string m_Name;
-        private readonly int m_Rank;
-        private readonly int m_Cliloc;
-        private readonly int m_Tooltip;
-        private readonly int m_ItemId;
+        private int m_SpellId;
+        private string m_Name;
+        private int m_Rank;
+        private int m_Cliloc;
+        private int m_Tooltip;
+        private int m_ItemId;
 
-        public int SpellId => m_SpellId;
-        public string Name => m_Name;
-        public int Rank => m_Rank;
-        public int Cliloc => m_Cliloc;
-        public int Tooltip => m_Tooltip;
-        public int ItemId => m_ItemId;
+        public int SpellId { get { return m_SpellId; } }
+        public string Name { get { return m_Name; } }
+        public int Rank { get { return m_Rank; } }
+        public int Cliloc { get { return m_Cliloc; } }
+        public int Tooltip { get { return m_Tooltip; } }
+        public int ItemId { get { return m_ItemId; } }
 
         public SpellTriggerDef(int spellId, string name, int rank, int cliloc, int tooltip, int itemId)
         {
@@ -192,19 +192,19 @@ namespace Server.Spells.Mysticism
     {
         private SpellTriggerDef m_SpellDef;
 
-        public override bool Nontransferable => true;
+        public override bool Nontransferable { get { return true; } }
 
         [Constructable]
         public SpellStone(SpellTriggerDef spellDef)
             : base(spellDef.SpellId, 0x4079, 1)
         {
-            m_SpellDef = spellDef;
-            LootType = LootType.Blessed;
+            this.m_SpellDef = spellDef;
+            this.LootType = LootType.Blessed;
         }
 
         public override bool DropToWorld(Mobile from, Point3D p)
         {
-            Delete();
+            this.Delete();
             return false;
         }
 
@@ -217,7 +217,7 @@ namespace Server.Spells.Mysticism
         {
         }
 
-        private static readonly Dictionary<Mobile, DateTime> m_CooldownTable = new Dictionary<Mobile, DateTime>();
+        private static Dictionary<Mobile, DateTime> m_CooldownTable = new Dictionary<Mobile, DateTime>();
 
         public override void OnDoubleClick(Mobile from)
         {
@@ -238,10 +238,11 @@ namespace Server.Spells.Mysticism
         public void Use(Mobile from)
         {
             m_CooldownTable[from] = DateTime.UtcNow + TimeSpan.FromSeconds(300.0);
-            Timer.DelayCall(TimeSpan.FromSeconds(300.0), delegate
-            {
-                m_CooldownTable.Remove(from);
-            });
+            Timer.DelayCall(TimeSpan.FromSeconds(300.0), new TimerCallback(
+                delegate
+                {
+                    m_CooldownTable.Remove(from);
+                }));
 
             Delete();
         }
@@ -262,9 +263,9 @@ namespace Server.Spells.Mysticism
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
 
-            writer.Write(m_SpellDef.SpellId);
+            writer.Write((int)m_SpellDef.SpellId);
         }
 
         public override void Deserialize(GenericReader reader)

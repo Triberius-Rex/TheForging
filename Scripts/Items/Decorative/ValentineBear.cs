@@ -1,6 +1,6 @@
+using System;
 using Server.Gumps;
 using Server.Mobiles;
-using System;
 
 namespace Server.Items
 {
@@ -88,15 +88,15 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_OwnerName);
             writer.Write(EditEnd);
 
-            writer.Write(Lines.Length);
+            writer.Write((int)Lines.Length);
 
             for (int i = 0; i < Lines.Length; i++)
-                writer.Write(Lines[i]);
+                writer.Write((string)Lines[i]);          
         }
 
         public override void Deserialize(GenericReader reader)

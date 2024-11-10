@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a lifestealer corpse")]
@@ -43,6 +45,10 @@ namespace Server.Mobiles
 
             Fame = 9500;
             Karma = -9500;
+
+            VirtualArmor = 44;
+
+            PackNecroReg(24, 45);
         }
 
         public Lifestealer(Serial serial)
@@ -50,21 +56,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
-
-        public override int TreasureMapLevel => 4;
-        public override int Meat => 3;
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+		
+		public override int TreasureMapLevel { get { return 4; } }
+        public override int Meat { get { return 3; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 2);
-            AddLoot(LootPack.NecroRegs, 20, 45);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

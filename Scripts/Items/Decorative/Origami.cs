@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class OrigamiPaper : Item
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030288;// origami paper
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030288;
+            }
+        }// origami paper
 
         public override void OnDoubleClick(Mobile from)
         {
@@ -23,7 +31,7 @@ namespace Server.Items
             }
             else
             {
-                Delete();
+                this.Delete();
 
                 Item i = null;
 
@@ -67,7 +75,7 @@ namespace Server.Items
         public OrigamiButterfly()
             : base(0x2838)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiButterfly(Serial serial)
@@ -75,7 +83,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030296;// a delicate origami butterfly
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030296;
+            }
+        }// a delicate origami butterfly
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -97,7 +111,7 @@ namespace Server.Items
         public OrigamiSwan()
             : base(0x2839)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiSwan(Serial serial)
@@ -105,7 +119,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030297;// a delicate origami swan
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030297;
+            }
+        }// a delicate origami swan
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -127,7 +147,7 @@ namespace Server.Items
         public OrigamiFrog()
             : base(0x283A)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiFrog(Serial serial)
@@ -135,7 +155,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030298;// a delicate origami frog
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030298;
+            }
+        }// a delicate origami frog
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -157,7 +183,7 @@ namespace Server.Items
         public OrigamiShape()
             : base(0x283B)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiShape(Serial serial)
@@ -165,7 +191,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030299;// an intricate geometric origami shape
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030299;
+            }
+        }// an intricate geometric origami shape
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -187,7 +219,7 @@ namespace Server.Items
         public OrigamiSongbird()
             : base(0x283C)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiSongbird(Serial serial)
@@ -195,7 +227,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030300;// a delicate origami songbird
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030300;
+            }
+        }// a delicate origami songbird
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -217,7 +255,7 @@ namespace Server.Items
         public OrigamiFish()
             : base(0x283D)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrigamiFish(Serial serial)
@@ -225,7 +263,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1030301;// a delicate origami fish
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1030301;
+            }
+        }// a delicate origami fish
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

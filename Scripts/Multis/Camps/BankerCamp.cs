@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 
@@ -21,16 +22,16 @@ namespace Server.Multis
         {
             BaseDoor west, east;
 
-            AddItem(west = new LightWoodGate(DoorFacing.WestCW), -4, 4, 7);
-            AddItem(east = new LightWoodGate(DoorFacing.EastCCW), -3, 4, 7);
+            this.AddItem(west = new LightWoodGate(DoorFacing.WestCW), -4, 4, 7);
+            this.AddItem(east = new LightWoodGate(DoorFacing.EastCCW), -3, 4, 7);
 
             west.Link = east;
             east.Link = west;
 
-            AddItem(new Sign(SignType.Bank, SignFacing.West), -5, 5, -4);
+            this.AddItem(new Sign(SignType.Bank, SignFacing.West), -5, 5, -4);
 
-            AddMobile(new Banker(), -4, 3, 7);
-            AddMobile(new Banker(), 4, -2, 0);
+            this.AddMobile(new Banker(), -4, 3, 7);
+            this.AddMobile(new Banker(), 4, -2, 0);
 
             SetDecayTime();
         }
@@ -39,7 +40,7 @@ namespace Server.Multis
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

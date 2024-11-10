@@ -1,5 +1,5 @@
-using Server.Services.Virtues;
 using System;
+using Server.Services.Virtues;
 
 namespace Server.Items
 {
@@ -13,7 +13,11 @@ namespace Server.Items
         public DateTime HonestyPickup { get; set; }
         public bool HonestyTimerTicking { get; set; }
 
-        public override TimeSpan TickDuration => TimeSpan.FromSeconds(5);
+        public override TimeSpan TickDuration { get { return TimeSpan.FromSeconds(5); } }
+
+        public HonestyItemSocket()
+        {
+        }
 
         public void StartHonestyTimer()
         {
@@ -62,7 +66,7 @@ namespace Server.Items
         {
             if (oldSocket is HonestyItemSocket)
             {
-                HonestyItemSocket honesty = oldSocket as HonestyItemSocket;
+                var honesty = oldSocket as HonestyItemSocket;
 
                 HonestyRegion = honesty.HonestyRegion;
                 HonestyOwner = honesty.HonestyOwner;
@@ -115,12 +119,12 @@ namespace Server.Items
 
         public static void OnDropped(ContainerDroppedToEventArgs e)
         {
-            Item dropped = e.Dropped;
-            Mobile from = e.Mobile;
+            var dropped = e.Dropped;
+            var from = e.Mobile;
 
             if (dropped != null)
             {
-                HonestyItemSocket honestySocket = dropped.GetSocket<HonestyItemSocket>();
+                var honestySocket = dropped.GetSocket<HonestyItemSocket>();
 
                 if (honestySocket != null && honestySocket.HonestyPickup == DateTime.MinValue)
                 {
@@ -128,7 +132,7 @@ namespace Server.Items
                     honestySocket.StartHonestyTimer();
 
                     if (honestySocket.HonestyOwner == null)
-                        HonestyVirtue.AssignOwner(honestySocket);
+                        Server.Services.Virtues.HonestyVirtue.AssignOwner(honestySocket);
 
                     if (from != null)
                     {

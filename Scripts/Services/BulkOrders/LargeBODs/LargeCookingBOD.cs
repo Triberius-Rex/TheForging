@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Engines.BulkOrders
 {
     public class LargeCookingBOD : LargeBOD
     {
-        public override BODType BODType => BODType.Cooking;
+        public override BODType BODType { get { return BODType.Cooking; } }
 
         [Constructable]
         public LargeCookingBOD()
@@ -40,19 +41,19 @@ namespace Server.Engines.BulkOrders
                     break;
             }
 
-            Hue = 1169;
-            AmountMax = Utility.RandomList(10, 15, 20, 20);
-            Entries = entries;
-            RequireExceptional = !nonexceptional && 0.825 > Utility.RandomDouble();
+            this.Hue = 1169;
+            this.AmountMax = Utility.RandomList(10, 15, 20, 20);
+            this.Entries = entries;
+            this.RequireExceptional = !nonexceptional && 0.825 > Utility.RandomDouble();
         }
 
         public LargeCookingBOD(int amountMax, bool reqExceptional, BulkMaterialType mat, LargeBulkEntry[] entries)
         {
-            Hue = 1169;
-            AmountMax = amountMax;
-            Entries = entries;
-            RequireExceptional = reqExceptional;
-            Material = mat;
+            this.Hue = 1169;
+            this.AmountMax = amountMax;
+            this.Entries = entries;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
         }
 
         public LargeCookingBOD(Serial serial)
@@ -109,7 +110,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

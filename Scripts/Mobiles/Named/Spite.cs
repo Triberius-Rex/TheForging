@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a Spite corpse")]
@@ -37,6 +40,11 @@ namespace Server.Mobiles
             Fame = 21000;
             Karma = -21000;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetSpecialAbility(SpecialAbility.ManaDrain);
         }
 
@@ -44,22 +52,38 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
-        public override bool CanBeParagon => false;
-        public override string DefaultName => "Spite";
-        public override int DefaultHue => 0x21;
-        public override bool GivesMLMinorArtifact => true;
-
+		public override bool CanBeParagon { get { return false; } }
+        public override string DefaultName
+        {
+            get
+            {
+                return "Spite";
+            }
+        }
+        public override int DefaultHue
+        {
+            get
+            {
+                return 0x21;
+            }
+        }
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 2);
-            AddLoot(LootPack.ArcanistScrolls);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

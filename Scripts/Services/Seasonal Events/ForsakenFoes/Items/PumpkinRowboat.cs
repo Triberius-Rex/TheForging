@@ -1,25 +1,30 @@
-using Server.Items;
+using System;
+using System.Linq;
 using System.Collections.Generic;
+
+using Server;
+using Server.Items;
+using Server.Engines.PartySystem;
 
 namespace Server.Multis
 {
     public class PumpkinRowBoat : BaseBoat
     {
-        public override int NorthID => 0x50;
-        public override int EastID => 0x51;
-        public override int SouthID => 0x52;
-        public override int WestID => 0x53;
+        public override int NorthID { get { return 0x50; } }
+        public override int EastID { get { return 0x51; } }
+        public override int SouthID { get { return 0x52; } }
+        public override int WestID { get { return 0x53; } }
 
-        public override int HoldDistance => -1;
-        public override int TillerManDistance => -2;
+        public override int HoldDistance { get { return -1; } }
+        public override int TillerManDistance { get { return -2; } }
 
-        public override Point3D MarkOffset => new Point3D(0, 1, 3);
+        public override Point3D MarkOffset { get { return new Point3D(0, 1, 3); } }
 
-        public override BaseDockedBoat DockedBoat => new DockedPumpkinRowBoat(this);
+        public override BaseDockedBoat DockedBoat { get { return new DockedPumpkinRowBoat(this); } }
 
-        public override bool IsClassicBoat => false;
-        public override bool IsRowBoat => true;
-        public override bool CanLinkToLighthouse => false;
+        public override bool IsClassicBoat { get { return false; } }
+        public override bool IsRowBoat { get { return true; } }
+        public override bool CanLinkToLighthouse { get { return false; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public MooringBlock Line { get; private set; }
@@ -75,7 +80,7 @@ namespace Server.Multis
             if (Rudder == null || Rudder.Handle == null)
                 return;
 
-            switch (facing)
+            switch(facing)
             {
                 case Direction.North:
                     {
@@ -101,7 +106,7 @@ namespace Server.Multis
             if (Line != null)
                 Line.Location = new Point3D(X + (Line.X - old.X), Y + (Line.Y - old.Y), Z + (Line.Z - old.Z));
 
-            if (Rudder != null && Rudder.Handle != null)
+            if(Rudder != null && Rudder.Handle != null)
                 Rudder.Handle.Location = new Point3D(X + (Rudder.Handle.X - old.X), Y + (Rudder.Handle.Y - old.Y), Z + (Rudder.Handle.Z - old.Z));
         }
 
@@ -182,7 +187,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(Rudder);
             writer.Write(Line);
@@ -202,8 +207,8 @@ namespace Server.Multis
 
     public class PumpkinRowBoatDeed : BaseBoatDeed
     {
-        public override int LabelNumber => 1159233;  // Pumpkin Rowboat
-        public override BaseBoat Boat => new PumpkinRowBoat(BoatDirection);
+        public override int LabelNumber { get { return 1159233; } } // Pumpkin Rowboat
+        public override BaseBoat Boat { get { return new PumpkinRowBoat(BoatDirection); } }
 
         [Constructable]
         public PumpkinRowBoatDeed()
@@ -225,7 +230,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
     }
 
@@ -260,7 +265,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -275,7 +280,7 @@ namespace Server.Multis
         public PumpkinRudder(BaseBoat boat, Direction d)
             : base(boat, d)
         {
-        }
+        }       
 
         public override void SetFacing(Direction dir)
         {
@@ -307,7 +312,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -324,7 +329,7 @@ namespace Server.Multis
             {
                 X++;
                 Y++;
-            }
+            }                
         }
     }
 
@@ -372,7 +377,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -384,7 +389,7 @@ namespace Server.Multis
 
     public class DockedPumpkinRowBoat : BaseDockedBoat
     {
-        public override BaseBoat Boat => new PumpkinRowBoat(BoatDirection);
+        public override BaseBoat Boat { get { return new PumpkinRowBoat(BoatDirection); } }
 
         public DockedPumpkinRowBoat(BaseBoat boat)
             : base(0x50, Point3D.Zero, boat)
@@ -405,7 +410,7 @@ namespace Server.Multis
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
     }
 }

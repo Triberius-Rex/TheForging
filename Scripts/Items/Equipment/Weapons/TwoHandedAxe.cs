@@ -1,16 +1,17 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefBlacksmithy), typeof(DualShortAxes))]
-    [Flipable(0x1443, 0x1442)]
+    [FlipableAttribute(0x1443, 0x1442)]
     public class TwoHandedAxe : BaseAxe
     {
         [Constructable]
         public TwoHandedAxe()
             : base(0x1443)
         {
-            Weight = 8.0;
+            this.Weight = 8.0;
         }
 
         public TwoHandedAxe(Serial serial)
@@ -18,24 +19,108 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.DoubleStrike;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.ShadowStrike;
-        public override int StrengthReq => 40;
-        public override int MinDamage => 16;
-        public override int MaxDamage => 19;
-        public override float Speed => 3.50f;
-
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 90;
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.DoubleStrike;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ShadowStrike;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 19;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 3.50f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 35;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 39;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 90;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

@@ -1,13 +1,13 @@
+using System;
 using Server.Spells;
 using Server.Spells.Seventh;
-using System;
 
 namespace Server.Items
 {
     public class PendantOfKhalAnkur : GargishNecklace
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1158731;  // Pendant of Khal Ankur
+        public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1158731; } } // Pendant of Khal Ankur
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int ChargeTime { get; set; }
@@ -34,15 +34,14 @@ namespace Server.Items
             : base(0xA1C9)
         {
             Weight = 1;
-            Charges = 1;
 
+            Charges = 1;
+            //Caddellite Infused
             Attributes.BonusHits = 10;
             Attributes.BonusMana = 15;
             Attributes.EnhancePotions = 35;
             Attributes.LowerManaCost = 10;
             ArmorAttributes.MageArmor = 1;
-
-            AttachSocket(new Caddellite());
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -78,21 +77,20 @@ namespace Server.Items
                 StopTimer();
         }
 
-        public override int BasePhysicalResistance => 15;
-        public override int BaseFireResistance => 15;
-        public override int BaseColdResistance => 15;
-        public override int BasePoisonResistance => 15;
-        public override int BaseEnergyResistance => 15;
+        public override int BasePhysicalResistance { get { return 15; } }
+        public override int BaseFireResistance { get { return 15; } }
+        public override int BaseColdResistance { get { return 15; } }
+        public override int BasePoisonResistance { get { return 15; } }
+        public override int BaseEnergyResistance { get { return 15; } }
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         public override void AddWeightProperty(ObjectPropertyList list)
         {
             base.AddWeightProperty(list);
 
             list.Add(1158732, Charges.ToString()); // Meteor Breath Charges: ~1_VAL~
-            list.Add(1158662); // Caddellite Infused
         }
 
         public PendantOfKhalAnkur(Serial serial)
@@ -107,7 +105,7 @@ namespace Server.Items
             ChargeTime = 300;
 
             if (m_Timer == null || !m_Timer.Running)
-                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), Slice);
+                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), new TimerCallback(Slice));
         }
 
         public virtual void StopTimer()
@@ -134,10 +132,10 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)0);
 
-            writer.Write(m_Charges);
-            writer.Write(ChargeTime);
+            writer.Write((int)m_Charges);
+            writer.Write((int)ChargeTime);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -149,12 +147,7 @@ namespace Server.Items
             ChargeTime = reader.ReadInt();
 
             if (Parent != null && Parent is Mobile && ChargeTime > 0)
-                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), Slice);
-
-            if (version == 0)
-            {
-                AttachSocket(new Caddellite());
-            }
+                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), new TimerCallback(Slice));
         }
     }
 }

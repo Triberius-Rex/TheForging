@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Items
@@ -15,28 +16,34 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076282;// Wall Torch
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076282;
+            }
+        }// Wall Torch
         public override void OnDoubleClick(Mobile from)
         {
-            if (from.InRange(Location, 2))
+            if (from.InRange(this.Location, 2))
             {
-                switch (ItemID)
+                switch ( this.ItemID )
                 {
                     case 0x3D98:
-                        ItemID = 0x3D9B;
+                        this.ItemID = 0x3D9B;
                         break;
                     case 0x3D9B:
-                        ItemID = 0x3D98;
+                        this.ItemID = 0x3D98;
                         break;
                     case 0x3D94:
-                        ItemID = 0x3D97;
+                        this.ItemID = 0x3D97;
                         break;
                     case 0x3D97:
-                        ItemID = 0x3D94;
+                        this.ItemID = 0x3D94;
                         break;
                 }
 
-                Effects.PlaySound(Location, Map, 0x3BE);
+                Effects.PlaySound(this.Location, this.Map, 0x3BE);
             }
             else
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
@@ -62,7 +69,7 @@ namespace Server.Items
         public WallTorchAddon()
             : base()
         {
-            AddComponent(new WallTorchComponent(), 0, 0, 0);
+            this.AddComponent(new WallTorchComponent(), 0, 0, 0);
         }
 
         public WallTorchAddon(Serial serial)
@@ -70,7 +77,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new WallTorchDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new WallTorchDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -92,7 +105,7 @@ namespace Server.Items
         public WallTorchDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public WallTorchDeed(Serial serial)
@@ -100,8 +113,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new WallTorchAddon();
-        public override int LabelNumber => 1076282;// Wall Torch
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new WallTorchAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076282;
+            }
+        }// Wall Torch
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

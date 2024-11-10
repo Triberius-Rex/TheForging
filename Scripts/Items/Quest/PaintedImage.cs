@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -10,10 +11,10 @@ namespace Server.Engines.Quests.Collector
         public PaintedImage(ImageType image)
             : base(0xFF3)
         {
-            Weight = 1.0;
-            Hue = 0x8FD;
+            this.Weight = 1.0;
+            this.Hue = 0x8FD;
 
-            m_Image = image;
+            this.m_Image = image;
         }
 
         public PaintedImage(Serial serial)
@@ -26,38 +27,44 @@ namespace Server.Engines.Quests.Collector
         {
             get
             {
-                return m_Image;
+                return this.m_Image;
             }
             set
             {
-                m_Image = value;
-                InvalidateProperties();
+                this.m_Image = value;
+                this.InvalidateProperties();
             }
         }
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            ImageTypeInfo info = ImageTypeInfo.Get(m_Image);
+            ImageTypeInfo info = ImageTypeInfo.Get(this.m_Image);
             list.Add(1060847, "#1055126\t#" + info.Name); // a painted image of:
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            ImageTypeInfo info = ImageTypeInfo.Get(this.m_Image);
+            this.LabelTo(from, 1060847, "#1055126\t#" + info.Name); // a painted image of:
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                 return;
             }
 
-            from.SendGump(new InternalGump(m_Image));
+            from.SendGump(new InternalGump(this.m_Image));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.WriteEncodedInt((int)m_Image);
+            writer.WriteEncodedInt((int)this.m_Image);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -66,7 +73,7 @@ namespace Server.Engines.Quests.Collector
 
             int version = reader.ReadInt();
 
-            m_Image = (ImageType)reader.ReadEncodedInt();
+            this.m_Image = (ImageType)reader.ReadEncodedInt();
         }
 
         private class InternalGump : Gump
@@ -76,10 +83,10 @@ namespace Server.Engines.Quests.Collector
             {
                 ImageTypeInfo info = ImageTypeInfo.Get(image);
 
-                AddBackground(45, 20, 100, 100, 0xA3C);
-                AddBackground(52, 29, 86, 82, 0xBB8);
+                this.AddBackground(45, 20, 100, 100, 0xA3C);
+                this.AddBackground(52, 29, 86, 82, 0xBB8);
 
-                AddItem(info.X, info.Y, info.Figurine);
+                this.AddItem(info.X, info.Y, info.Figurine);
             }
         }
     }

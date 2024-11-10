@@ -1,13 +1,14 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     [TypeAlias("drNO.ThieveItems.SeedOflife")]
     public class SeedOfLife : Item
     {
-        private static readonly Dictionary<PlayerMobile, DateTime> SeedUsageList = new Dictionary<PlayerMobile, DateTime>();
+        private static Dictionary<PlayerMobile, DateTime> SeedUsageList = new Dictionary<PlayerMobile, DateTime>();
         private static TimeSpan Cooldown = TimeSpan.FromMinutes(10);
 
         public static void Initialize()
@@ -15,7 +16,7 @@ namespace Server.Items
             EventSink.AfterWorldSave += CheckCleanup;
         }
 
-        public override int LabelNumber => 1094937;  // seed of life
+        public override int LabelNumber { get { return 1094937; } } // seed of life
 
         [Constructable]
         public SeedOfLife()
@@ -38,7 +39,7 @@ namespace Server.Items
 
             foreach (PlayerMobile pm in SeedUsageList.Keys)
             {
-                if (SeedUsageList[pm] < DateTime.Now + Cooldown)
+               if (SeedUsageList[pm] < DateTime.Now + Cooldown)
                 {
                     toRemove.Add(pm);
                 }
@@ -76,7 +77,7 @@ namespace Server.Items
             }
             else
             {
-                by.SendLocalizedMessage(1079263, ((int)(((SeedUsageList[by] + Cooldown) - DateTime.Now).TotalSeconds)).ToString());
+                by.SendLocalizedMessage(1079263,((int)(((SeedUsageList[by] + Cooldown)-DateTime.Now).TotalSeconds)).ToString());
             }
         }
 
@@ -88,12 +89,12 @@ namespace Server.Items
             if (diff == 0)
             {
                 pm.SendLocalizedMessage(1049547); //You are already at full health 
-                return;
+                return; 
             }
             toHeal = Math.Min(toHeal, diff);
-
+            
             pm.Hits += toHeal;
-            Consume();
+            this.Consume();
 
             if (!SeedUsageList.ContainsKey(pm))
             {
@@ -101,7 +102,7 @@ namespace Server.Items
             }
             else
             {
-                SeedUsageList[pm] = DateTime.Now;
+                SeedUsageList[pm] = DateTime.Now; 
             }
             pm.SendLocalizedMessage(1095126);//The bitter seed instantly restores some of your health!
         }
@@ -116,7 +117,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

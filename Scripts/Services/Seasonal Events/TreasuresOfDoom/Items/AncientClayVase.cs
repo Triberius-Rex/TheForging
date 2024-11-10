@@ -1,12 +1,18 @@
-using Server.Engines.TreasuresOfDoom;
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.Network;
+using Server.Mobiles;
+using Server.Engines.Points;
+using Server.Engines.TreasuresOfDoom;
 using Server.SkillHandlers;
 
 namespace Server.Items
 {
     public class AncientClayVase : Item, ICarvable
     {
-        public override int LabelNumber => 1155625;  // Ancient Clay Vase
+        public override int LabelNumber { get { return 1155625; } } // Ancient Clay Vase
         public bool DoomEvent { get; set; }
 
         [Constructable]

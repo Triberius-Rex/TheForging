@@ -39,7 +39,7 @@ namespace Server.Commands.Generic
         private bool m_SupportsConditionals;
         public BaseCommandImplementor()
         {
-            m_Commands = new Dictionary<string, BaseCommand>(StringComparer.OrdinalIgnoreCase);
+            this.m_Commands = new Dictionary<string, BaseCommand>(StringComparer.OrdinalIgnoreCase);
         }
 
         public static List<BaseCommandImplementor> Implementors
@@ -59,69 +59,75 @@ namespace Server.Commands.Generic
         {
             get
             {
-                return m_SupportsConditionals;
+                return this.m_SupportsConditionals;
             }
             set
             {
-                m_SupportsConditionals = value;
+                this.m_SupportsConditionals = value;
             }
         }
         public string[] Accessors
         {
             get
             {
-                return m_Accessors;
+                return this.m_Accessors;
             }
             set
             {
-                m_Accessors = value;
+                this.m_Accessors = value;
             }
         }
         public string Usage
         {
             get
             {
-                return m_Usage;
+                return this.m_Usage;
             }
             set
             {
-                m_Usage = value;
+                this.m_Usage = value;
             }
         }
         public string Description
         {
             get
             {
-                return m_Description;
+                return this.m_Description;
             }
             set
             {
-                m_Description = value;
+                this.m_Description = value;
             }
         }
         public AccessLevel AccessLevel
         {
             get
             {
-                return m_AccessLevel;
+                return this.m_AccessLevel;
             }
             set
             {
-                m_AccessLevel = value;
+                this.m_AccessLevel = value;
             }
         }
         public CommandSupport SupportRequirement
         {
             get
             {
-                return m_SupportRequirement;
+                return this.m_SupportRequirement;
             }
             set
             {
-                m_SupportRequirement = value;
+                this.m_SupportRequirement = value;
             }
         }
-        public Dictionary<string, BaseCommand> Commands => m_Commands;
+        public Dictionary<string, BaseCommand> Commands
+        {
+            get
+            {
+                return this.m_Commands;
+            }
+        }
         public static void RegisterImplementors()
         {
             Register(new RegionCommandImplementor());
@@ -154,7 +160,7 @@ namespace Server.Commands.Generic
         public virtual void Register(BaseCommand command)
         {
             for (int i = 0; i < command.Commands.Length; ++i)
-                m_Commands[command.Commands[i]] = command;
+                this.m_Commands[command.Commands[i]] = command;
         }
 
         public bool CheckObjectTypes(Mobile from, BaseCommand command, Extensions ext, out bool items, out bool mobiles)
@@ -176,7 +182,7 @@ namespace Server.Commands.Generic
             bool condIsItem = cond.IsItem;
             bool condIsMobile = cond.IsMobile;
 
-            switch (command.ObjectTypes)
+            switch ( command.ObjectTypes )
             {
                 case ObjectTypes.All:
                 case ObjectTypes.Both:
@@ -228,14 +234,13 @@ namespace Server.Commands.Generic
             {
                 object obj = null;
 
-                Compile(from, command, ref args, ref obj);
+                this.Compile(from, command, ref args, ref obj);
 
-                RunCommand(from, obj, command, args);
+                this.RunCommand(from, obj, command, args);
             }
             catch (Exception ex)
             {
                 from.SendMessage(ex.Message);
-                Diagnostics.ExceptionLogging.LogException(ex);
             }
         }
 
@@ -272,7 +277,7 @@ namespace Server.Commands.Generic
         {
             //	try
             //	{
-            CommandEventArgs e = new CommandEventArgs(from, command.Commands[0], GenerateArgString(args), args);
+            CommandEventArgs e = new CommandEventArgs(from, command.Commands[0], this.GenerateArgString(args), args);
 
             if (!command.ValidateArgs(this, e))
                 return;
@@ -320,7 +325,7 @@ namespace Server.Commands.Generic
 
         public virtual void Process(Mobile from, BaseCommand command, string[] args)
         {
-            RunCommand(from, command, args);
+            this.RunCommand(from, command, args);
         }
 
         public virtual void Execute(CommandEventArgs e)
@@ -328,7 +333,7 @@ namespace Server.Commands.Generic
             if (e.Length >= 1)
             {
                 BaseCommand command = null;
-                m_Commands.TryGetValue(e.GetString(0), out command);
+                this.m_Commands.TryGetValue(e.GetString(0), out command);
 
                 if (command == null)
                 {
@@ -346,7 +351,7 @@ namespace Server.Commands.Generic
                     for (int i = 0; i < args.Length; ++i)
                         args[i] = oldArgs[i + 1];
 
-                    Process(e.Mobile, command, args);
+                    this.Process(e.Mobile, command, args);
                 }
             }
             else
@@ -357,11 +362,11 @@ namespace Server.Commands.Generic
 
         public void Register()
         {
-            if (m_Accessors == null)
+            if (this.m_Accessors == null)
                 return;
 
-            for (int i = 0; i < m_Accessors.Length; ++i)
-                CommandSystem.Register(m_Accessors[i], m_AccessLevel, Execute);
+            for (int i = 0; i < this.m_Accessors.Length; ++i)
+                CommandSystem.Register(this.m_Accessors[i], this.m_AccessLevel, new CommandEventHandler(Execute));
         }
     }
 }

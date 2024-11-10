@@ -1,16 +1,16 @@
-using Server.ContextMenus;
+using System;
+using System.Linq;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Multis;
-using System;
+using Server.ContextMenus;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Server.Items
 {
     public class TeleporterComponent : AddonComponent
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         public Direction _Direction { get; set; }
 
@@ -63,7 +63,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write((int)_Direction);
         }
@@ -79,7 +79,7 @@ namespace Server.Items
 
     public class SpiralStaircaseAddon : BaseAddon, ISecurable, IDyable
     {
-        public override BaseAddonDeed Deed => new SpiralStaircaseDeed();
+        public override BaseAddonDeed Deed { get { return new SpiralStaircaseDeed(); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public SecureLevel Level { get; set; }
@@ -161,8 +161,8 @@ namespace Server.Items
 
     public class SpiralStaircaseDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new SpiralStaircaseAddon(m_Topper);
-        public override int LabelNumber => 1159429;  // spiral staircase
+        public override BaseAddon Addon { get { return new SpiralStaircaseAddon(m_Topper); } }
+        public override int LabelNumber { get { return 1159429; } } // spiral staircase
 
         private bool m_Topper;
 

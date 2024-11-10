@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     [TypeAlias("Server.Items.AdmiralHeartyRum")]
     public class AdmiralsHeartyRum : BeverageBottle
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public AdmiralsHeartyRum()
             : base(BeverageType.Ale)
@@ -16,12 +18,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1063477;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1063477;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

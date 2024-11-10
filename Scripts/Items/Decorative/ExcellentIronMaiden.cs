@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ExcellentIronMaiden : Item
@@ -13,12 +15,18 @@ namespace Server.Items
         {
         }
 
-        public override double DefaultWeight => 5;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

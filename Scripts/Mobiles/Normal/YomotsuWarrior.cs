@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -36,8 +36,35 @@ namespace Server.Mobiles
             SetSkill(SkillName.Tactics, 95.1, 105.0);
             SetSkill(SkillName.Wrestling, 97.6, 107.5);
 
-            Fame = 4200;
+            Fame = 4200;	
             Karma = -4200;
+
+            PackItem(new GreenGourd());
+            PackItem(new ExecutionersAxe());
+
+            if (Utility.RandomBool())
+                PackItem(new LongPants());
+            else
+                PackItem(new ShortPants());
+
+            switch ( Utility.Random(4) )
+            {
+                case 0:
+                    PackItem(new Shoes());
+                    break;
+                case 1:
+                    PackItem(new Sandals());
+                    break;
+                case 2:
+                    PackItem(new Boots());
+                    break;
+                case 3:
+                    PackItem(new ThighBoots());
+                    break;
+            }
+
+            if (Utility.RandomDouble() < .25)
+                PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
 
             SetWeaponAbility(WeaponAbility.DoubleStrike);
         }
@@ -47,21 +74,43 @@ namespace Server.Mobiles
         {
         }
 
-        public override FoodType FavoriteFood => FoodType.Fish;
-        public override int Meat => 1;
-        public override bool CanRummageCorpses => true;
-        public override int TreasureMapLevel => 3;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Fish;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich, 2);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<GreenGourd>(1.0));
-            AddLoot(LootPack.BonsaiSeed);
         }
 
         // TODO: Throwing Dagger
-        public override void OnGaveMeleeAttack(Mobile defender)
+        public override void OnGaveMeleeAttack(Mobile defender) 
         {
             base.OnGaveMeleeAttack(defender);
 
@@ -82,7 +131,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

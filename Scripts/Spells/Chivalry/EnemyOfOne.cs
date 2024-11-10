@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Spells.Chivalry
@@ -16,19 +16,19 @@ namespace Server.Spells.Chivalry
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.5);
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromSeconds(0.5); } }
 
-        public override double RequiredSkill => 45.0;
-        public override int RequiredMana => 20;
-        public override int RequiredTithing => 10;
-        public override int MantraNumber => 1060723;  // Forul Solum
-        public override bool BlocksMovement => false;
+        public override double RequiredSkill { get { return 45.0; } }
+        public override int RequiredMana { get { return 20; } }
+        public override int RequiredTithing { get { return 10; } }
+        public override int MantraNumber { get { return 1060723; } } // Forul Solum
+        public override bool BlocksMovement { get { return false; } }
 
         public override TimeSpan GetCastDelay()
         {
             TimeSpan delay = base.GetCastDelay();
 
-            if (UnderEffect(Caster))
+            if (Core.SA && UnderEffect(Caster))
             {
                 double milliseconds = delay.TotalMilliseconds / 2;
 
@@ -40,7 +40,7 @@ namespace Server.Spells.Chivalry
 
         public override void OnCast()
         {
-            if (UnderEffect(Caster))
+            if (Core.SA && UnderEffect(Caster))
             {
                 PlayEffects();
 
@@ -53,16 +53,16 @@ namespace Server.Spells.Chivalry
                 PlayEffects();
 
                 // TODO: validate formula
-                int seconds = ComputePowerValue(1);
+                var seconds = ComputePowerValue(1);
                 Utility.FixMinMax(ref seconds, 67, 228);
 
-                TimeSpan delay = TimeSpan.FromSeconds(seconds);
+                var delay = TimeSpan.FromSeconds(seconds);
 
-                Timer timer = Timer.DelayCall(delay, RemoveEffect, Caster);
+                var timer = Timer.DelayCall(delay, RemoveEffect, Caster);
 
-                DateTime expire = DateTime.UtcNow + delay;
+                var expire = DateTime.UtcNow + delay;
 
-                EnemyOfOneContext context = new EnemyOfOneContext(Caster, timer, expire);
+                var context = new EnemyOfOneContext(Caster, timer, expire);
                 context.OnCast();
                 m_Table[Caster] = context;
             }
@@ -98,7 +98,7 @@ namespace Server.Spells.Chivalry
         {
             if (m_Table.ContainsKey(m))
             {
-                EnemyOfOneContext context = m_Table[m];
+                var context = m_Table[m];
 
                 m_Table.Remove(m);
 
@@ -141,7 +141,7 @@ namespace Server.Spells.Chivalry
             {
                 for (int i = 0; i < name.Length; i++)
                 {
-                    if (i > 0 && char.IsUpper(name[i]))
+                    if (i > 0 && Char.IsUpper(name[i]))
                     {
                         name = name.Insert(i, " ");
                         i++;
@@ -166,36 +166,36 @@ namespace Server.Spells.Chivalry
         }
     }
 
-    public class EnemyOfOneContext
-    {
-        private readonly Mobile m_Owner;
-        private Timer m_Timer;
-        private DateTime m_Expire;
-        private Type m_TargetType;
-        private int m_DamageScalar;
+	public class EnemyOfOneContext
+	{
+		private Mobile m_Owner;
+		private Timer m_Timer;
+		private DateTime m_Expire;
+		private Type m_TargetType;
+		private int m_DamageScalar;
         private string m_TypeName;
 
         private Mobile m_PlayerOrPet;
 
-        public Mobile Owner => m_Owner;
-        public Timer Timer => m_Timer;
-        public Type TargetType => m_TargetType;
-        public int DamageScalar => m_DamageScalar;
-        public string TypeName => m_TypeName;
+		public Mobile Owner { get { return m_Owner; } }
+		public Timer Timer { get { return m_Timer; } }
+		public Type TargetType { get { return m_TargetType; } }
+		public int DamageScalar { get { return m_DamageScalar; } }
+        public string TypeName { get { return m_TypeName; } }
 
-        public EnemyOfOneContext(Mobile owner, Timer timer, DateTime expire)
-        {
-            m_Owner = owner;
-            m_Timer = timer;
-            m_Expire = expire;
-            m_TargetType = null;
-            m_DamageScalar = 50;
-        }
+		public EnemyOfOneContext(Mobile owner, Timer timer, DateTime expire)
+		{
+			m_Owner = owner;
+			m_Timer = timer;
+			m_Expire = expire;
+			m_TargetType = null;
+			m_DamageScalar = 50;
+		}
 
-        public bool IsWaitingForEnemy => m_TargetType == null;
+		public bool IsWaitingForEnemy { get { return m_TargetType == null; } }
 
-        public bool IsEnemy(Mobile m)
-        {
+		public bool IsEnemy(Mobile m)
+		{
             if (m is BaseCreature && ((BaseCreature)m).GetMaster() == Owner)
             {
                 return false;
@@ -214,24 +214,24 @@ namespace Server.Spells.Chivalry
             }
 
             return false;
-        }
+		}
 
-        public void OnCast()
-        {
-            UpdateBuffInfo();
-        }
+		public void OnCast()
+		{
+			UpdateBuffInfo();
+		}
 
         private void UpdateDamage()
         {
-            int chivalry = (int)m_Owner.Skills.Chivalry.Value;
+            var chivalry = (int)m_Owner.Skills.Chivalry.Value;
             m_DamageScalar = 10 + ((chivalry - 40) * 9) / 10;
 
             if (m_PlayerOrPet != null)
                 m_DamageScalar /= 2;
         }
 
-        private void UpdateBuffInfo()
-        {
+		private void UpdateBuffInfo()
+		{
             if (m_TypeName == null)
             {
                 BuffInfo.AddBuff(m_Owner, new BuffInfo(BuffIcon.EnemyOfOne, 1075653, 1075902, m_Expire - DateTime.UtcNow, m_Owner, string.Format("{0}\t{1}", m_DamageScalar, "100"), true));
@@ -240,12 +240,12 @@ namespace Server.Spells.Chivalry
             {
                 BuffInfo.AddBuff(m_Owner, new BuffInfo(BuffIcon.EnemyOfOne, 1075653, 1075654, m_Expire - DateTime.UtcNow, m_Owner, string.Format("{0}\t{1}\t{2}\t{3}", m_DamageScalar, TypeName, ".", "100"), true));
             }
-        }
+		}
 
-        public void OnHit(Mobile defender)
-        {
-            if (m_TargetType == null)
-            {
+		public void OnHit(Mobile defender)
+		{
+			if (m_TargetType == null)
+			{
                 m_TypeName = EnemyOfOneSpell.GetTypeName(defender);
 
                 if (defender is PlayerMobile || (defender is BaseCreature && ((BaseCreature)defender).GetMaster() is PlayerMobile))
@@ -272,32 +272,32 @@ namespace Server.Spells.Chivalry
                 }
 
                 UpdateDamage();
-                DeltaEnemies();
-                UpdateBuffInfo();
-            }
-            else
+				DeltaEnemies();
+				UpdateBuffInfo();
+			}
+            else if (Core.SA)
             {
                 // Odd but OSI recalculates when the target changes...
                 UpdateDamage();
             }
-        }
+		}
 
-        public void OnRemoved()
-        {
-            if (m_Timer != null)
-                m_Timer.Stop();
+		public void OnRemoved()
+		{
+			if (m_Timer != null)
+				m_Timer.Stop();
 
-            DeltaEnemies();
+			DeltaEnemies();
 
-            BuffInfo.RemoveBuff(m_Owner, BuffIcon.EnemyOfOne);
-        }
+			BuffInfo.RemoveBuff(m_Owner, BuffIcon.EnemyOfOne);
+		}
 
-        private void DeltaEnemies()
-        {
+		private void DeltaEnemies()
+		{
             IPooledEnumerable eable = m_Owner.GetMobilesInRange(18);
 
-            foreach (Mobile m in eable)
-            {
+			foreach (Mobile m in eable)
+			{
                 if (m_PlayerOrPet != null)
                 {
                     if (m == m_PlayerOrPet)
@@ -309,9 +309,9 @@ namespace Server.Spells.Chivalry
                 {
                     m.Delta(MobileDelta.Noto);
                 }
-            }
+			}
 
             eable.Free();
-        }
-    }
+		}
+	}
 }

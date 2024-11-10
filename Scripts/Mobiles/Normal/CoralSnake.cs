@@ -1,3 +1,5 @@
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a snake corpse")]
@@ -38,6 +40,8 @@ namespace Server.Mobiles
             Fame = 300;
             Karma = -300;
 
+            VirtualArmor = 16;
+
             Tamable = false;
             ControlSlots = 1;
             MinTameSkill = 59.1;
@@ -48,18 +52,31 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lesser;
+        public override Poison PoisonImmune
+        {
+            get { return Poison.Lesser; }
+        }
 
-        public override Poison HitPoison => Poison.Deadly;
+        public override Poison HitPoison
+        {
+            get { return Poison.Deadly; }
+        }
 
-        public override int Meat => 1;
+        //public override bool DeathAdderCharmable{ get{ return true; } }
+        public override int Meat
+        {
+            get { return 1; }
+        }
 
-        public override FoodType FavoriteFood => FoodType.Eggs;
+        public override FoodType FavoriteFood
+        {
+            get { return FoodType.Eggs; }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)

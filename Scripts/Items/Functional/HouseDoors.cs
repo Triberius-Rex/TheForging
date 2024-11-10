@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Multis;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -10,7 +10,7 @@ namespace Server.Items
     {
         [Constructable]
         public MetalHouseDoor(DoorFacing facing)
-            : base(facing, 0x675 + (2 * (int)facing), 0x676 + (2 * (int)facing), 0xEC, 0xF3, GetOffset(facing))
+            : base(facing, 0x675 + (2 * (int)facing), 0x676 + (2 * (int)facing), 0xEC, 0xF3, BaseDoor.GetOffset(facing))
         {
         }
 
@@ -23,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader) // Default Deserialize method
@@ -38,7 +38,7 @@ namespace Server.Items
     {
         [Constructable]
         public DarkWoodHouseDoor(DoorFacing facing)
-            : base(facing, 0x6A5 + (2 * (int)facing), 0x6A6 + (2 * (int)facing), 0xEA, 0xF1, GetOffset(facing))
+            : base(facing, 0x6A5 + (2 * (int)facing), 0x6A6 + (2 * (int)facing), 0xEA, 0xF1, BaseDoor.GetOffset(facing))
         {
         }
 
@@ -51,7 +51,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader) // Default Deserialize method
@@ -72,7 +72,7 @@ namespace Server.Items
 
         [Constructable]
         public GenericHouseDoor(DoorFacing facing, int baseItemID, int openedSound, int closedSound, bool autoAdjust)
-            : base(facing, baseItemID + (autoAdjust ? (2 * (int)facing) : 0), baseItemID + 1 + (autoAdjust ? (2 * (int)facing) : 0), openedSound, closedSound, GetOffset(facing))
+            : base(facing, baseItemID + (autoAdjust ? (2 * (int)facing) : 0), baseItemID + 1 + (autoAdjust ? (2 * (int)facing) : 0), openedSound, closedSound, BaseDoor.GetOffset(facing))
         {
         }
 
@@ -85,7 +85,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader) // Default Deserialize method
@@ -162,6 +162,9 @@ namespace Server.Items
             if (house == null)
                 return false;
 
+            if (!house.IsAosRules)
+                return true;
+
             if (house.Public ? house.IsBanned(m) : !house.HasAccess(m))
                 return false;
 
@@ -174,13 +177,16 @@ namespace Server.Items
 
             if (house != null && house.IsFriend(from) && from.IsPlayer() && house.RefreshDecay())
                 from.SendLocalizedMessage(1043293); // Your house's age and contents have been refreshed.
+
+            if (!Core.AOS && house != null && house.Public && !house.IsFriend(from))
+                house.AddVisit(from);
         }
 
         public override bool UseLocks()
         {
             BaseHouse house = FindHouse();
 
-            return (house == null);
+            return (house == null || !house.IsAosRules);
         }
 
         public override void Use(Mobile from)
@@ -195,7 +201,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)m_Level);
 
@@ -208,7 +214,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -228,13 +234,13 @@ namespace Server.Items
 
         public override bool IsInside(Mobile from)
         {
-            int x, y, w, h;
+            int x,y,w,h;
 
             const int r = 2;
             const int bs = r * 2 + 1;
             const int ss = r + 1;
 
-            switch (m_Facing)
+            switch ( m_Facing )
             {
                 case DoorFacing.WestCW:
                 case DoorFacing.EastCCW:
@@ -243,7 +249,7 @@ namespace Server.Items
                     w = bs;
                     h = ss;
                     break;
-                case DoorFacing.EastCW:
+                case DoorFacing.EastCW: 
                 case DoorFacing.WestCCW:
                     x = -r;
                     y = 0;
@@ -264,7 +270,7 @@ namespace Server.Items
                     w = ss;
                     h = bs;
                     break;
-                //No way to test the 'insideness' of SE Sliding doors on OSI, so leaving them default to false until furthur information gained
+                    //No way to test the 'insideness' of SE Sliding doors on OSI, so leaving them default to false until furthur information gained
 
                 default:
                     return false;

@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -5,12 +6,12 @@ namespace Server.Mobiles
     [CorpseName("an anlorvaglem corpse")]
     public class Anlorvaglem : BaseVoidCreature
     {
-        public override VoidEvolution Evolution => VoidEvolution.Grouping;
-        public override int Stage => 3;
+        public override VoidEvolution Evolution { get { return VoidEvolution.Grouping; } }
+        public override int Stage { get { return 3; } }
 
         [Constructable]
         public Anlorvaglem()
-            : base(AIType.AI_Melee, 10, 1, 0.6, 1.2)
+            : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.6, 1.2)
         {
             Name = "anlorvaglem";
             Hue = 2071;
@@ -42,6 +43,10 @@ namespace Server.Mobiles
 
             Fame = 8000;
             Karma = -8000;
+
+            VirtualArmor = 48;
+
+            PackItem(new DaemonBone(30));
         }
 
         public Anlorvaglem(Serial serial)
@@ -49,30 +54,51 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
-
-        public override bool Unprovokable => true;
-
-        public override bool BardImmune => true;
-
-        public override bool ReacquireOnMovement => true;
-
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ReacquireOnMovement
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich);
-            AddLoot(LootPack.LootItem<DaemonBone>(30, true));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+			
+            int version = reader.ReadInt();
         }
     }
 }

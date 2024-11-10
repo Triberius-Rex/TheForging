@@ -1,50 +1,52 @@
-using Server.ContextMenus;
+using System;
+using Server;
 using Server.Items;
 using Server.Mobiles;
+using Server.Gumps;
 using Server.Network;
-using Server.Prompts;
-using System;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Prompts;
 
 namespace Server.Engines.NewMagincia
 {
-    public class WarehouseSuperintendent : BaseCreature
-    {
-        public override bool IsInvulnerable => true;
+	public class WarehouseSuperintendent : BaseCreature
+	{
+		public override bool IsInvulnerable { get { return true; } }
 
-        [Constructable]
-        public WarehouseSuperintendent() : base(AIType.AI_Vendor, FightMode.None, 2, 1, 0.5, 2)
-        {
-            Race = Race.Human;
+		[Constructable]
+		public WarehouseSuperintendent() : base(AIType.AI_Vendor, FightMode.None, 2, 1, 0.5, 2)
+		{
+			Race = Race.Human;
             Blessed = true;
-            Title = "The Warehouse Superintendent";
+			Title = "The Warehouse Superintendent";
 
-            if (Utility.RandomBool())
-            {
-                Female = true;
-                Body = 0x191;
-                Name = NameList.RandomName("female");
-
-				SetWearable(new Skirt(), Utility.RandomPinkHue(), 1);
-            }
-            else
-            {
-                Female = false;
-                Body = 0x190;
-                Name = NameList.RandomName("male");
-				SetWearable(new ShortPants(), Utility.RandomBlueHue(), 1);
-            }
-
-			SetWearable(new Tunic(), Utility.RandomBlueHue(), 1);
-			SetWearable(new Boots(), dropChance: 1);
-
-            Utility.AssignRandomHair(this, Utility.RandomHairHue());
-            Utility.AssignRandomFacialHair(this, Utility.RandomHairHue());
+			if(Utility.RandomBool())
+			{
+				Female = true;
+				Body = 0x191;
+				Name = NameList.RandomName( "female" );
+				
+				AddItem(new Skirt(Utility.RandomPinkHue()));
+			}
+			else
+			{
+				Female = false;
+				Body = 0x190;
+				Name = NameList.RandomName( "male" );
+				AddItem(new ShortPants(Utility.RandomBlueHue()));
+			}
+			
+			AddItem(new Tunic(Utility.RandomBlueHue()));
+			AddItem(new Boots());
+			
+			Utility.AssignRandomHair(this, Utility.RandomHairHue());
+			Utility.AssignRandomFacialHair(this, Utility.RandomHairHue());
 
             Hue = Race.RandomSkinHue();
-        }
-
-        /*public override void OnDoubleClick(Mobile from)
+		}
+		
+		/*public override void OnDoubleClick(Mobile from)
 		{
 			if(from.InRange(this.Location, 3) && from.Backpack != null)
 			{
@@ -65,7 +67,7 @@ namespace Server.Engines.NewMagincia
             if (fees < 0)
             {
                 int owed = fees * -1;
-                SayTo(from, string.Format("It looks like you owe {0}gp as back fees. How much would you like to pay now?", owed.ToString("###,###,###")));
+                SayTo(from, String.Format("It looks like you owe {0}gp as back fees. How much would you like to pay now?", owed.ToString("###,###,###")));
                 from.Prompt = new BackfeePrompt(this, entry);
                 return;
             }
@@ -88,7 +90,7 @@ namespace Server.Engines.NewMagincia
                         bc.ControlOrder = OrderType.Stay;
                         bc.Internalize();
                         bc.IsStabled = true;
-                        bc.Loyalty = MaxLoyalty; // Wonderfully happy
+                        bc.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully happy
                         from.Stabled.Add(bc);
                         bc.SetControlMaster(null);
                         bc.SummonMaster = null;
@@ -201,7 +203,7 @@ namespace Server.Engines.NewMagincia
                     }
                     else
                     {
-                        SayTo(from, string.Format("Thank you! You have a remaining balance of {0}gp as backfees!", newAmount * -1));
+                        SayTo(from, String.Format("Thank you! You have a remaining balance of {0}gp as backfees!", newAmount * -1));
                     }
                 }
                 else
@@ -211,26 +213,26 @@ namespace Server.Engines.NewMagincia
             }
 
         }
-
-        private class BackfeePrompt : Prompt
-        {
-            private readonly WarehouseSuperintendent m_Mobile;
-            private readonly StorageEntry m_Entry;
-
-            public BackfeePrompt(WarehouseSuperintendent mobile, StorageEntry entry)
-            {
-                m_Mobile = mobile;
+		
+		private class BackfeePrompt : Prompt
+		{
+			private WarehouseSuperintendent m_Mobile;
+			private StorageEntry m_Entry;
+			
+			public BackfeePrompt(WarehouseSuperintendent mobile, StorageEntry entry)
+			{
+				m_Mobile = mobile;
                 m_Entry = entry; ;
-            }
+			}
+			
+			public override void OnResponse( Mobile from, string text )
+			{
+				m_Mobile.TryPayBackfee(from, text, m_Entry);
+			}
 
-            public override void OnResponse(Mobile from, string text)
-            {
-                m_Mobile.TryPayBackfee(from, text, m_Entry);
-            }
-
-        }
-
-        /*private bool TransferItems(Mobile from, WarehouseContainer c)
+		}
+		
+		/*private bool TransferItems(Mobile from, WarehouseContainer c)
 		{
 			List<Item> items = new List<Item>(c.Items);
 			
@@ -241,74 +243,74 @@ namespace Server.Engines.NewMagincia
 			
 			return c.Items.Count == 0;
 		}*/
-
-        public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
-        {
-            base.GetContextMenuEntries(from, list);
-
-            list.Add(new ClaimStorageEntry(from, this));
-            list.Add(new ChangeMatchBidEntry(from));
-        }
-
-        private class ClaimStorageEntry : ContextMenuEntry
-        {
-            private readonly WarehouseSuperintendent m_Mobile;
-            private readonly StorageEntry m_Entry;
-
-            public ClaimStorageEntry(Mobile from, WarehouseSuperintendent mobile) : base(1150681, 3)
-            {
-                m_Mobile = mobile;
+		
+		public override void GetContextMenuEntries( Mobile from, List<ContextMenuEntry> list )
+		{
+			base.GetContextMenuEntries(from, list);
+			
+			list.Add(new ClaimStorageEntry(from, this));
+			list.Add(new ChangeMatchBidEntry(from));
+		}
+		
+		private class ClaimStorageEntry : ContextMenuEntry
+		{
+			private WarehouseSuperintendent m_Mobile;
+            private StorageEntry m_Entry;
+			
+			public ClaimStorageEntry(Mobile from, WarehouseSuperintendent mobile) : base(1150681, 3)
+			{
+				m_Mobile = mobile;
                 m_Entry = MaginciaBazaar.GetStorageEntry(from);
 
-                if (m_Entry == null)
+                if(m_Entry == null)
                     Flags |= CMEFlags.Disabled;
-            }
-
-            public override void OnClick()
-            {
-                Mobile from = Owner.From;
+			}
+			
+			public override void OnClick()
+			{
+				Mobile from = Owner.From;
 
                 if (from == null || m_Entry == null)
                     return;
 
                 m_Mobile.TryTransfer(from, m_Entry);
-            }
-        }
+			}
+		}
+		
+		private class ChangeMatchBidEntry : ContextMenuEntry
+		{
+			public ChangeMatchBidEntry(Mobile from) : base(1150587, 3)
+			{
+			}
+			
+			public override void OnClick()
+			{
+				Mobile from = Owner.From;
+				
+				if(from != null)
+					from.SendGump(new MatchBidGump(from, null));
+			}
+		}
+		
+		public WarehouseSuperintendent(Serial serial) : base(serial)
+		{
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write((int)1);
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
 
-        private class ChangeMatchBidEntry : ContextMenuEntry
-        {
-            public ChangeMatchBidEntry(Mobile from) : base(1150587, 3)
-            {
-            }
-
-            public override void OnClick()
-            {
-                Mobile from = Owner.From;
-
-                if (from != null)
-                    from.SendGump(new MatchBidGump(from, null));
-            }
-        }
-
-        public WarehouseSuperintendent(Serial serial) : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(1);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-
-            if (version == 0)
+            if(version == 0)
             {
                 Hue = Race.RandomSkinHue();
             }
-        }
-    }
+		}
+	}
 }

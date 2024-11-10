@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class MysticBook : Spellbook
@@ -12,6 +14,7 @@ namespace Server.Items
         public MysticBook(ulong content)
             : base(content, 0x2D9D)
         {
+            this.Layer = Layer.OneHanded;
         }
 
         public MysticBook(Serial serial)
@@ -19,10 +22,27 @@ namespace Server.Items
         {
         }
 
-        public override SpellbookType SpellbookType => SpellbookType.Mystic;
-        public override int BookOffset => 677;
-        public override int BookCount => 16;
-
+        public override SpellbookType SpellbookType
+        {
+            get
+            {
+                return SpellbookType.Mystic;
+            }
+        }
+        public override int BookOffset
+        {
+            get
+            {
+                return 677;
+            }
+        }
+        public override int BookCount
+        {
+            get
+            {
+                return 16;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server.Items;
+using Server.Items.Holiday;
 
 namespace Server.Mobiles
 {
@@ -10,7 +11,7 @@ namespace Server.Mobiles
         public PumpkinHead()
             : base(Utility.RandomBool() ? AIType.AI_Melee : AIType.AI_Mage, FightMode.Closest, 10, 1, 0.05, 0.1)
         {
-            Name = "Grimm";
+            Name = "a killer pumpkin";
             Body = 1246 + Utility.Random(2);
 
             BaseSoundID = 268;
@@ -44,6 +45,8 @@ namespace Server.Mobiles
 
             Fame = 5000;
             Karma = -5000;
+
+            VirtualArmor = 49;
         }
 
         public PumpkinHead(Serial serial)
@@ -51,15 +54,64 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-        public override bool BardImmune => true;
-        public override bool Unprovokable => true;
-        public override bool AreaPeaceImmune => true;
+        public override bool AutoDispel { get { return true; } }
+        public override bool BardImmune { get { return true; } }
+        public override bool Unprovokable { get { return true; } }
+        public override bool AreaPeaceImmune { get { return true; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.LootItem<WrappedCandy>(true));
-            AddLoot(LootPack.RandomLootItem(new Type[] { typeof(CarvablePlainPumpkin), typeof(CarvablePumpkinTall), typeof(CarvableGordPumpkinTall) }, 20.0, 1));
+            if (Utility.RandomDouble() < .05)
+            {
+                if (Core.TOL)
+                {
+                    switch (Utility.Random(5))
+                    {
+                        case 0:
+                            PackItem(new ObsidianSkull());
+                            break;
+                        case 1:
+                            PackItem(new CrystalSkull());
+                            break;
+                        case 2:
+                            PackItem(new JadeSkull());
+                            break;
+                        case 3:
+                            PackItem(new CarvablePumpkinTall());
+                            break;
+                        case 4:
+                            PackItem(new CarvableGordPumpkinTall());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (Utility.Random(5))
+                    {
+                        case 0:
+                            PackItem(new PaintedEvilClownMask());
+                            break;
+                        case 1:
+                            PackItem(new PaintedDaemonMask());
+                            break;
+                        case 2:
+                            PackItem(new PaintedPlagueMask());
+                            break;
+                        case 3:
+                            PackItem(new PaintedEvilJesterMask());
+                            break;
+                        case 4:
+                            PackItem(new PaintedPorcelainMask());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            PackItem(new WrappedCandy());
             AddLoot(LootPack.UltraRich, 2);
         }
 
@@ -75,12 +127,11 @@ namespace Server.Mobiles
 
         public override Item NewHarmfulItem()
         {
-            Item bad = new AcidSlime(TimeSpan.FromSeconds(10), 25, 30)
-            {
-                Name = "gooey nasty pumpkin hummus",
+            Item bad = new AcidSlime(TimeSpan.FromSeconds(10), 25, 30);
 
-                Hue = 144
-            };
+            bad.Name = "gooey nasty pumpkin hummus";
+
+            bad.Hue = 144;
 
             return bad;
         }
@@ -101,7 +152,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

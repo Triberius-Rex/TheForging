@@ -1,5 +1,6 @@
-using Server.Mobiles;
 using System;
+using Server;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -7,17 +8,23 @@ namespace Server.Items
     public class PrismOfLightAltar : PeerlessAltar
     {
         private int m_ID;
-        public override int KeyCount => 3;
-        public override MasterKey MasterKey => new PrismOfLightKey();
+        public override int KeyCount { get { return 3; } }
+        public override MasterKey MasterKey { get { return new PrismOfLightKey(); } }
         public List<Item> Pedestals = new List<Item>();
 
-        public override Type[] Keys => new Type[]
+        public override Type[] Keys
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(JaggedCrystals), typeof(BrokenCrystals), typeof(PiecesOfCrystal),
                     typeof(CrushedCrystals), typeof(ScatteredCrystals), typeof(ShatteredCrystals)
                 };
+            }
+        }
 
-        public override BasePeerless Boss => new ShimmeringEffusion();
+        public override BasePeerless Boss { get { return new ShimmeringEffusion(); } }
 
         [Constructable]
         public PrismOfLightAltar() : base(0x2206)
@@ -38,9 +45,12 @@ namespace Server.Items
             Pedestals.ForEach(x => x.Hue = ((PrismOfLightPillar)x).OrgHue);
         }
 
-        public override Rectangle2D[] BossBounds => m_Bounds;
+        public override Rectangle2D[] BossBounds
+        {
+            get { return m_Bounds; }
+        }
 
-        private readonly Rectangle2D[] m_Bounds = new Rectangle2D[]
+        private Rectangle2D[] m_Bounds = new Rectangle2D[]
         {
             new Rectangle2D(6500, 111, 45, 35),
         };
@@ -52,11 +62,11 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(Pedestals, true);
 
-            writer.Write(m_ID);
+            writer.Write((int)m_ID);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -89,7 +99,7 @@ namespace Server.Items
 
     public class PrismOfLightPillar : Container
     {
-        public override int LabelNumber => 1024643;  // pedestal
+        public override int LabelNumber { get { return 1024643; } } // pedestal
 
         private PrismOfLightAltar m_Altar;
         private int m_OrgHue;
@@ -165,12 +175,12 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_OrgHue);
+            writer.Write((int)m_OrgHue);
 
-            writer.Write(ID);
-            writer.Write(m_Altar);
+            writer.Write((int)ID);
+            writer.Write((Item)m_Altar);
         }
 
         public override void Deserialize(GenericReader reader)

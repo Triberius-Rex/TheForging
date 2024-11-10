@@ -1,4 +1,5 @@
 /* Based on Wailing Banshee, still no infos on Wight, including correct body ID */
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -25,7 +26,7 @@ namespace Server.Mobiles
 
             SetDamageType(ResistanceType.Physical, 20);
             SetDamageType(ResistanceType.Cold, 80);
-
+			
             SetResistance(ResistanceType.Physical, 35, 45);
             SetResistance(ResistanceType.Fire, 30, 40);
             SetResistance(ResistanceType.Cold, 50, 60);
@@ -43,6 +44,8 @@ namespace Server.Mobiles
             Fame = 1500;
             Karma = -1500;
 
+            VirtualArmor = 19;
+
             SetWeaponAbility(WeaponAbility.MortalStrike);
             SetWeaponAbility(WeaponAbility.ColdWind);
         }
@@ -52,7 +55,13 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool BleedImmune => true;
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -62,7 +71,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

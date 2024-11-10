@@ -1,7 +1,7 @@
-using Server.Network;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
+using Server.Network;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -22,12 +22,24 @@ namespace Server.Items
         private readonly int m_Amount;
         private CrystalRechargeInfo(Type type, int amount)
         {
-            m_Type = type;
-            m_Amount = amount;
+            this.m_Type = type;
+            this.m_Amount = amount;
         }
 
-        public Type Type => m_Type;
-        public int Amount => m_Amount;
+        public Type Type
+        {
+            get
+            {
+                return this.m_Type;
+            }
+        }
+        public int Amount
+        {
+            get
+            {
+                return this.m_Amount;
+            }
+        }
         public static CrystalRechargeInfo Get(Type type)
         {
             foreach (CrystalRechargeInfo info in Table)
@@ -55,11 +67,11 @@ namespace Server.Items
         public BroadcastCrystal(int charges)
             : base(0x1ED0)
         {
-            Light = LightType.Circle150;
+            this.Light = LightType.Circle150;
 
-            m_Charges = charges;
+            this.m_Charges = charges;
 
-            m_Receivers = new List<ReceiverCrystal>();
+            this.m_Receivers = new List<ReceiverCrystal>();
         }
 
         public BroadcastCrystal(Serial serial)
@@ -67,18 +79,24 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1060740;// communication crystal
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1060740;
+            }
+        }// communication crystal
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Active
         {
             get
             {
-                return ItemID == 0x1ECD;
+                return this.ItemID == 0x1ECD;
             }
             set
             {
-                ItemID = value ? 0x1ECD : 0x1ED0;
-                InvalidateProperties();
+                this.ItemID = value ? 0x1ECD : 0x1ED0;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -86,31 +104,55 @@ namespace Server.Items
         {
             get
             {
-                return m_Charges;
+                return this.m_Charges;
             }
             set
             {
-                m_Charges = value;
-                InvalidateProperties();
+                this.m_Charges = value;
+                this.InvalidateProperties();
             }
         }
-        public List<ReceiverCrystal> Receivers => m_Receivers;
-        public override bool HandlesOnSpeech => Active && Receivers.Count > 0 && (RootParent == null || RootParent is Mobile);
+        public List<ReceiverCrystal> Receivers
+        {
+            get
+            {
+                return this.m_Receivers;
+            }
+        }
+        public override bool HandlesOnSpeech
+        {
+            get
+            {
+                return this.Active && this.Receivers.Count > 0 && (this.RootParent == null || this.RootParent is Mobile);
+            }
+        }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            list.Add(Active ? 1060742 : 1060743); // active / inactive
+            list.Add(this.Active ? 1060742 : 1060743); // active / inactive
             list.Add(1060745); // broadcast
-            list.Add(1060741, Charges.ToString()); // charges: ~1_val~
+            list.Add(1060741, this.Charges.ToString()); // charges: ~1_val~
 
-            if (Receivers.Count > 0)
-                list.Add(1060746, Receivers.Count.ToString()); // links: ~1_val~
+            if (this.Receivers.Count > 0)
+                list.Add(1060746, this.Receivers.Count.ToString()); // links: ~1_val~
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            this.LabelTo(from, this.Active ? 1060742 : 1060743); // active / inactive
+            this.LabelTo(from, 1060745); // broadcast
+            this.LabelTo(from, 1060741, this.Charges.ToString()); // charges: ~1_val~
+
+            if (this.Receivers.Count > 0)
+                this.LabelTo(from, 1060746, this.Receivers.Count.ToString()); // links: ~1_val~
         }
 
         public override void OnSpeech(SpeechEventArgs e)
         {
-            if (!Active || Receivers.Count == 0 || (RootParent != null && !(RootParent is Mobile)))
+            if (!this.Active || this.Receivers.Count == 0 || (this.RootParent != null && !(this.RootParent is Mobile)))
                 return;
 
             if (e.Type == MessageType.Emote)
@@ -119,20 +161,20 @@ namespace Server.Items
             Mobile from = e.Mobile;
             string speech = e.Speech;
 
-            foreach (ReceiverCrystal receiver in new List<ReceiverCrystal>(Receivers))
+            foreach (ReceiverCrystal receiver in new List<ReceiverCrystal>(this.Receivers))
             {
                 if (receiver.Deleted)
                 {
-                    Receivers.Remove(receiver);
+                    this.Receivers.Remove(receiver);
                 }
-                else if (Charges > 0)
+                else if (this.Charges > 0)
                 {
                     receiver.TransmitMessage(from, speech);
-                    Charges--;
+                    this.Charges--;
                 }
                 else
                 {
-                    Active = false;
+                    this.Active = false;
                     break;
                 }
             }
@@ -140,7 +182,7 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                 return;
@@ -155,8 +197,8 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.WriteEncodedInt(m_Charges);
-            writer.WriteItemList(m_Receivers);
+            writer.WriteEncodedInt(this.m_Charges);
+            writer.WriteItemList<ReceiverCrystal>(this.m_Receivers);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -165,8 +207,8 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Charges = reader.ReadEncodedInt();
-            m_Receivers = reader.ReadStrongItemList<ReceiverCrystal>();
+            this.m_Charges = reader.ReadEncodedInt();
+            this.m_Receivers = reader.ReadStrongItemList<ReceiverCrystal>();
         }
 
         private class InternalTarget : Target
@@ -175,32 +217,32 @@ namespace Server.Items
             public InternalTarget(BroadcastCrystal crystal)
                 : base(2, false, TargetFlags.None)
             {
-                m_Crystal = crystal;
+                this.m_Crystal = crystal;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (!m_Crystal.IsAccessibleTo(from))
+                if (!this.m_Crystal.IsAccessibleTo(from))
                     return;
 
-                if (from.Map != m_Crystal.Map || !from.InRange(m_Crystal.GetWorldLocation(), 2))
+                if (from.Map != this.m_Crystal.Map || !from.InRange(this.m_Crystal.GetWorldLocation(), 2))
                 {
                     from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                     return;
                 }
 
-                if (targeted == m_Crystal)
+                if (targeted == this.m_Crystal)
                 {
-                    if (m_Crystal.Active)
+                    if (this.m_Crystal.Active)
                     {
-                        m_Crystal.Active = false;
+                        this.m_Crystal.Active = false;
                         from.SendLocalizedMessage(500672); // You turn the crystal off.
                     }
                     else
                     {
-                        if (m_Crystal.Charges > 0)
+                        if (this.m_Crystal.Charges > 0)
                         {
-                            m_Crystal.Active = true;
+                            this.m_Crystal.Active = true;
                             from.SendLocalizedMessage(500673); // You turn the crystal on.
                         }
                         else
@@ -213,11 +255,11 @@ namespace Server.Items
                 {
                     ReceiverCrystal receiver = (ReceiverCrystal)targeted;
 
-                    if (m_Crystal.Receivers.Count >= 10)
+                    if (this.m_Crystal.Receivers.Count >= 10)
                     {
                         from.SendLocalizedMessage(1010042); // This broadcast crystal is already linked to 10 receivers.
                     }
-                    else if (receiver.Sender == m_Crystal)
+                    else if (receiver.Sender == this.m_Crystal)
                     {
                         from.SendLocalizedMessage(500674); // This crystal is already linked with that crystal.
                     }
@@ -227,13 +269,13 @@ namespace Server.Items
                     }
                     else
                     {
-                        receiver.Sender = m_Crystal;
+                        receiver.Sender = this.m_Crystal;
                         from.SendLocalizedMessage(500675); // That crystal has been linked to this crystal.
                     }
                 }
                 else if (targeted == from)
                 {
-                    foreach (ReceiverCrystal receiver in new List<ReceiverCrystal>(m_Crystal.Receivers))
+                    foreach (ReceiverCrystal receiver in new List<ReceiverCrystal>(this.m_Crystal.Receivers))
                     {
                         receiver.Sender = null;
                     }
@@ -250,7 +292,7 @@ namespace Server.Items
 
                         if (info != null)
                         {
-                            if (m_Crystal.Charges >= MaxCharges)
+                            if (this.m_Crystal.Charges >= MaxCharges)
                             {
                                 from.SendLocalizedMessage(500678); // This crystal is already fully charged.
                             }
@@ -258,14 +300,14 @@ namespace Server.Items
                             {
                                 targItem.Consume();
 
-                                if (m_Crystal.Charges + info.Amount >= MaxCharges)
+                                if (this.m_Crystal.Charges + info.Amount >= MaxCharges)
                                 {
-                                    m_Crystal.Charges = MaxCharges;
+                                    this.m_Crystal.Charges = MaxCharges;
                                     from.SendLocalizedMessage(500679); // You completely recharge the crystal.
                                 }
                                 else
                                 {
-                                    m_Crystal.Charges += info.Amount;
+                                    this.m_Crystal.Charges += info.Amount;
                                     from.SendLocalizedMessage(500680); // You recharge the crystal.
                                 }
                             }
@@ -287,7 +329,7 @@ namespace Server.Items
         public ReceiverCrystal()
             : base(0x1ED0)
         {
-            Light = LightType.Circle150;
+            this.Light = LightType.Circle150;
         }
 
         public ReceiverCrystal(Serial serial)
@@ -295,18 +337,24 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1060740;// communication crystal
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1060740;
+            }
+        }// communication crystal
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Active
         {
             get
             {
-                return ItemID == 0x1ED1;
+                return this.ItemID == 0x1ED1;
             }
             set
             {
-                ItemID = value ? 0x1ED1 : 0x1ED0;
-                InvalidateProperties();
+                this.ItemID = value ? 0x1ED1 : 0x1ED0;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -314,17 +362,17 @@ namespace Server.Items
         {
             get
             {
-                return m_Sender;
+                return this.m_Sender;
             }
             set
             {
-                if (m_Sender != null)
+                if (this.m_Sender != null)
                 {
-                    m_Sender.Receivers.Remove(this);
-                    m_Sender.InvalidateProperties();
+                    this.m_Sender.Receivers.Remove(this);
+                    this.m_Sender.InvalidateProperties();
                 }
 
-                m_Sender = value;
+                this.m_Sender = value;
 
                 if (value != null)
                 {
@@ -337,34 +385,42 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(Active ? 1060742 : 1060743); // active / inactive
+            list.Add(this.Active ? 1060742 : 1060743); // active / inactive
             list.Add(1060744); // receiver
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            this.LabelTo(from, this.Active ? 1060742 : 1060743); // active / inactive
+            this.LabelTo(from, 1060744); // receiver
         }
 
         public void TransmitMessage(Mobile from, string message)
         {
-            if (!Active)
+            if (!this.Active)
                 return;
 
-            string text = string.Format("{0} says {1}", from.Name, message);
+            string text = String.Format("{0} says {1}", from.Name, message);
 
-            if (RootParent is Mobile)
+            if (this.RootParent is Mobile)
             {
-                ((Mobile)RootParent).SendMessage(0x2B2, "Crystal: " + text);
+                ((Mobile)this.RootParent).SendMessage(0x2B2, "Crystal: " + text);
             }
-            else if (RootParent is Item)
+            else if (this.RootParent is Item)
             {
-                ((Item)RootParent).PublicOverheadMessage(MessageType.Regular, 0x2B2, false, "Crystal: " + text);
+                ((Item)this.RootParent).PublicOverheadMessage(MessageType.Regular, 0x2B2, false, "Crystal: " + text);
             }
             else
             {
-                PublicOverheadMessage(MessageType.Regular, 0x2B2, false, text);
+                this.PublicOverheadMessage(MessageType.Regular, 0x2B2, false, text);
             }
         }
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                 return;
@@ -379,7 +435,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.WriteItem(m_Sender);
+            writer.WriteItem<BroadcastCrystal>(this.m_Sender);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -388,7 +444,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Sender = reader.ReadItem<BroadcastCrystal>();
+            this.m_Sender = reader.ReadItem<BroadcastCrystal>();
         }
 
         private class InternalTarget : Target
@@ -397,38 +453,38 @@ namespace Server.Items
             public InternalTarget(ReceiverCrystal crystal)
                 : base(-1, false, TargetFlags.None)
             {
-                m_Crystal = crystal;
+                this.m_Crystal = crystal;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (!m_Crystal.IsAccessibleTo(from))
+                if (!this.m_Crystal.IsAccessibleTo(from))
                     return;
 
-                if (from.Map != m_Crystal.Map || !from.InRange(m_Crystal.GetWorldLocation(), 2))
+                if (from.Map != this.m_Crystal.Map || !from.InRange(this.m_Crystal.GetWorldLocation(), 2))
                 {
                     from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                     return;
                 }
 
-                if (targeted == m_Crystal)
+                if (targeted == this.m_Crystal)
                 {
-                    if (m_Crystal.Active)
+                    if (this.m_Crystal.Active)
                     {
-                        m_Crystal.Active = false;
+                        this.m_Crystal.Active = false;
                         from.SendLocalizedMessage(500672); // You turn the crystal off.
                     }
                     else
                     {
-                        m_Crystal.Active = true;
+                        this.m_Crystal.Active = true;
                         from.SendLocalizedMessage(500673); // You turn the crystal on.
                     }
                 }
                 else if (targeted == from)
                 {
-                    if (m_Crystal.Sender != null)
+                    if (this.m_Crystal.Sender != null)
                     {
-                        m_Crystal.Sender = null;
+                        this.m_Crystal.Sender = null;
                         from.SendLocalizedMessage(1010044); // You unlink the receiver crystal.
                     }
                     else

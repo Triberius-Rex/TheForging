@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class FancyElvenTableEastAddon : BaseAddon
@@ -5,9 +7,9 @@ namespace Server.Items
         [Constructable]
         public FancyElvenTableEastAddon()
         {
-            AddComponent(new AddonComponent(0x3094), -1, 0, 0);
-            AddComponent(new AddonComponent(0x3093), 0, 0, 0);
-            AddComponent(new AddonComponent(0x3092), 1, 0, 0);
+            this.AddComponent(new AddonComponent(0x3094), -1, 0, 0);
+            this.AddComponent(new AddonComponent(0x3093), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x3092), 1, 0, 0);
         }
 
         public FancyElvenTableEastAddon(Serial serial)
@@ -15,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new FancyElvenTableEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new FancyElvenTableEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -43,8 +51,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new FancyElvenTableEastAddon();
-        public override int LabelNumber => 1073386;// hardwood table (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new FancyElvenTableEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073386;
+            }
+        }// hardwood table (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

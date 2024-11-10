@@ -1,8 +1,11 @@
+using System;
+using Server.Gumps;
+
 namespace Server.Items
 {
     public class DecorativeBlackwidowAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new DecorativeBlackwidowDeed();
+        public override BaseAddonDeed Deed { get { return new DecorativeBlackwidowDeed(); } }
 
         [Constructable]
         public DecorativeBlackwidowAddon()
@@ -22,7 +25,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -35,8 +38,8 @@ namespace Server.Items
 
     public class DecorativeBlackwidowDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new DecorativeBlackwidowAddon();
-        public override int LabelNumber => 1157897;
+        public override BaseAddon Addon { get { return new DecorativeBlackwidowAddon(); } }
+        public override int LabelNumber { get { return 1157897; } }
 
         [Constructable]
         public DecorativeBlackwidowDeed()
@@ -52,7 +55,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

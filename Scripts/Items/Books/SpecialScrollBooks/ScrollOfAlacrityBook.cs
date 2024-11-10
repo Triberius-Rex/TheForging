@@ -1,4 +1,7 @@
 using System;
+using Server;
+using Server.Gumps;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -6,12 +9,12 @@ namespace Server.Items
     [Flipable(0x9981, 0x9982)]
     public class ScrollOfAlacrityBook : BaseSpecialScrollBook
     {
-        public override Type ScrollType => typeof(ScrollOfAlacrity);
-        public override int LabelNumber => 1154321;  // Scrolls of Alacrity Book
-        public override int BadDropMessage => 1154323;  // This book only holds Scrolls of Alacrity.
-        public override int DropMessage => 1154326;     // You add the scroll to your Scrolls of Alacrity book.
-        public override int RemoveMessage => 1154322;   // You remove a Scroll of Alacrity and put it in your pack.
-        public override int GumpTitle => 1154324;   // Alacrity Scrolls
+        public override Type ScrollType { get { return typeof(ScrollOfAlacrity); } }
+        public override int LabelNumber { get { return 1154321; } } // Scrolls of Alacrity Book
+        public override int BadDropMessage { get { return 1154323; } } // This book only holds Scrolls of Alacrity.
+        public override int DropMessage { get { return 1154326; } }    // You add the scroll to your Scrolls of Alacrity book.
+        public override int RemoveMessage { get { return 1154322; } }  // You remove a Scroll of Alacrity and put it in your pack.
+        public override int GumpTitle { get { return 1154324; } }  // Alacrity Scrolls
 
         [Constructable]
         public ScrollOfAlacrityBook()
@@ -29,7 +32,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -39,8 +42,8 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
 
-        public override Dictionary<SkillCat, List<SkillName>> SkillInfo => _SkillInfo;
-        public override Dictionary<int, double> ValueInfo => _ValueInfo;
+        public override Dictionary<SkillCat, List<SkillName>> SkillInfo { get { return _SkillInfo; } }
+        public override Dictionary<int, double> ValueInfo { get { return _ValueInfo; } }
 
         public static Dictionary<SkillCat, List<SkillName>> _SkillInfo;
         public static Dictionary<int, double> _ValueInfo;
@@ -49,7 +52,7 @@ namespace Server.Items
         {
             _SkillInfo = new Dictionary<SkillCat, List<SkillName>>();
 
-            _SkillInfo[SkillCat.Miscellaneous] = new List<SkillName>() { SkillName.ArmsLore, SkillName.Begging, SkillName.Camping, SkillName.Cartography, SkillName.Forensics, SkillName.ItemID, SkillName.TasteID };
+            _SkillInfo[SkillCat.Miscellaneous] = new List<SkillName>() { SkillName.ArmsLore, SkillName.Begging, SkillName.Camping, SkillName.Cartography, SkillName.Forensics, SkillName.ItemID, SkillName.TasteID};
             _SkillInfo[SkillCat.Combat] = new List<SkillName>() { SkillName.Anatomy, SkillName.Archery, SkillName.Fencing, SkillName.Focus, SkillName.Healing, SkillName.Macing, SkillName.Parry, SkillName.Swords, SkillName.Tactics, SkillName.Throwing, SkillName.Wrestling };
             _SkillInfo[SkillCat.TradeSkills] = new List<SkillName>() { SkillName.Alchemy, SkillName.Blacksmith, SkillName.Fletching, SkillName.Carpentry, SkillName.Cooking, SkillName.Inscribe, SkillName.Lumberjacking, SkillName.Mining, SkillName.Tailoring, SkillName.Tinkering };
             _SkillInfo[SkillCat.Magic] = new List<SkillName>() { SkillName.Bushido, SkillName.Chivalry, SkillName.EvalInt, SkillName.Imbuing, SkillName.Magery, SkillName.Meditation, SkillName.Mysticism, SkillName.Necromancy, SkillName.Ninjitsu, SkillName.MagicResist, SkillName.Spellweaving, SkillName.SpiritSpeak };

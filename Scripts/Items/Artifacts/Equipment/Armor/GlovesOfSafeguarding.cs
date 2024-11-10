@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class GlovesOfSafeguarding : LeatherGloves
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public GlovesOfSafeguarding()
         {
@@ -16,12 +18,48 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1077614;// Gloves of Safeguarding
-        public override int BasePhysicalResistance => 6;
-        public override int BaseFireResistance => 6;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1077614;
+            }
+        }// Gloves of Safeguarding
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

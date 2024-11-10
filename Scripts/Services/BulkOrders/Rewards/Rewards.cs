@@ -1,5 +1,6 @@
-using Server.Items;
 using System;
+using Server.Mobiles;
+using Server.Items;
 using System.Collections.Generic;
 
 namespace Server.Engines.BulkOrders
@@ -11,20 +12,32 @@ namespace Server.Engines.BulkOrders
         private readonly int m_Points;
         private readonly Type[] m_Types;
 
-        public int Points => m_Points;
-        public Type[] Types => m_Types;
+        public int Points
+        {
+            get
+            {
+                return this.m_Points;
+            }
+        }
+        public Type[] Types
+        {
+            get
+            {
+                return this.m_Types;
+            }
+        }
 
         public RewardType(int points, params Type[] types)
         {
-            m_Points = points;
-            m_Types = types;
+            this.m_Points = points;
+            this.m_Types = types;
         }
 
         public bool Contains(Type type)
         {
-            for (int i = 0; i < m_Types.Length; ++i)
+            for (int i = 0; i < this.m_Types.Length; ++i)
             {
-                if (m_Types[i] == type)
+                if (this.m_Types[i] == type)
                     return true;
             }
 
@@ -38,9 +51,27 @@ namespace Server.Engines.BulkOrders
         private readonly ConstructCallback m_Constructor;
         private readonly int m_Type;
 
-        public int Weight => m_Weight;
-        public ConstructCallback Constructor => m_Constructor;
-        public int Type => m_Type;
+        public int Weight
+        {
+            get
+            {
+                return this.m_Weight;
+            }
+        }
+        public ConstructCallback Constructor
+        {
+            get
+            {
+                return this.m_Constructor;
+            }
+        }
+        public int Type
+        {
+            get
+            {
+                return this.m_Type;
+            }
+        }
 
         public RewardItem(int weight, ConstructCallback constructor)
             : this(weight, constructor, 0)
@@ -49,20 +80,19 @@ namespace Server.Engines.BulkOrders
 
         public RewardItem(int weight, ConstructCallback constructor, int type)
         {
-            m_Weight = weight;
-            m_Constructor = constructor;
-            m_Type = type;
+            this.m_Weight = weight;
+            this.m_Constructor = constructor;
+            this.m_Type = type;
         }
 
         public Item Construct()
         {
             try
             {
-                return m_Constructor(m_Type);
+                return this.m_Constructor(this.m_Type);
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
                 return null;
             }
         }
@@ -73,7 +103,7 @@ namespace Server.Engines.BulkOrders
         public ConstructCallback Constructor { get; set; }
         public int RewardType { get; set; }
 
-        public BODCollectionItem(int itemID, TextDefinition tooltip, int hue, double points, ConstructCallback constructor, int type = 0)
+        public BODCollectionItem(int itemID, int tooltip, int hue, double points, ConstructCallback constructor, int type = 0)
             : base(null, itemID, tooltip, hue, points, false)
         {
             Constructor = constructor;
@@ -86,32 +116,44 @@ namespace Server.Engines.BulkOrders
         private readonly int m_Points;
         private readonly RewardItem[] m_Items;
 
-        public int Points => m_Points;
-        public RewardItem[] Items => m_Items;
+        public int Points
+        {
+            get
+            {
+                return this.m_Points;
+            }
+        }
+        public RewardItem[] Items
+        {
+            get
+            {
+                return this.m_Items;
+            }
+        }
 
         public RewardGroup(int points, params RewardItem[] items)
         {
-            m_Points = points;
-            m_Items = items;
+            this.m_Points = points;
+            this.m_Items = items;
         }
 
         public RewardItem AcquireItem()
         {
-            if (m_Items.Length == 0)
+            if (this.m_Items.Length == 0)
                 return null;
-            else if (m_Items.Length == 1)
-                return m_Items[0];
+            else if (this.m_Items.Length == 1)
+                return this.m_Items[0];
 
             int totalWeight = 0;
 
-            for (int i = 0; i < m_Items.Length; ++i)
-                totalWeight += m_Items[i].Weight;
+            for (int i = 0; i < this.m_Items.Length; ++i)
+                totalWeight += this.m_Items[i].Weight;
 
             int randomWeight = Utility.Random(totalWeight);
 
-            for (int i = 0; i < m_Items.Length; ++i)
+            for (int i = 0; i < this.m_Items.Length; ++i)
             {
-                RewardItem item = m_Items[i];
+                RewardItem item = this.m_Items[i];
 
                 if (randomWeight < item.Weight)
                     return item;
@@ -131,11 +173,11 @@ namespace Server.Engines.BulkOrders
         {
             get
             {
-                return m_Groups;
+                return this.m_Groups;
             }
             set
             {
-                m_Groups = value;
+                this.m_Groups = value;
             }
         }
 
@@ -147,51 +189,51 @@ namespace Server.Engines.BulkOrders
 
         public virtual int ComputeFame(SmallBOD bod)
         {
-            int points = ComputePoints(bod) / 50;
+            int points = this.ComputePoints(bod) / 50;
 
             return points * points;
         }
 
         public virtual int ComputeFame(LargeBOD bod)
         {
-            int points = ComputePoints(bod) / 50;
+            int points = this.ComputePoints(bod) / 50;
 
             return points * points;
         }
 
         public virtual int ComputePoints(SmallBOD bod)
         {
-            return ComputePoints(bod.AmountMax, bod.RequireExceptional, bod.Material, 1, bod.Type);
+            return this.ComputePoints(bod.AmountMax, bod.RequireExceptional, bod.Material, 1, bod.Type);
         }
 
         public virtual int ComputePoints(LargeBOD bod)
         {
             Type type = bod.Entries == null || bod.Entries.Length == 0 ? null : bod.Entries[0].Details.Type;
 
-            return ComputePoints(bod.AmountMax, bod.RequireExceptional, bod.Material, bod.Entries.Length, type);
+            return this.ComputePoints(bod.AmountMax, bod.RequireExceptional, bod.Material, bod.Entries.Length, type);
         }
 
         public virtual int ComputeGold(SmallBOD bod)
         {
-            return ComputeGold(bod.AmountMax, bod.RequireExceptional, bod.Material, 1, bod.Type);
+            return this.ComputeGold(bod.AmountMax, bod.RequireExceptional, bod.Material, 1, bod.Type);
         }
 
         public virtual int ComputeGold(LargeBOD bod)
         {
-            return ComputeGold(bod.AmountMax, bod.RequireExceptional, bod.Material, bod.Entries.Length, bod.Entries[0].Details.Type);
+            return this.ComputeGold(bod.AmountMax, bod.RequireExceptional, bod.Material, bod.Entries.Length, bod.Entries[0].Details.Type);
         }
 
         public virtual RewardGroup LookupRewards(int points)
         {
-            for (int i = m_Groups.Length - 1; i >= 1; --i)
+            for (int i = this.m_Groups.Length - 1; i >= 1; --i)
             {
-                RewardGroup group = m_Groups[i];
+                RewardGroup group = this.m_Groups[i];
 
                 if (points >= group.Points)
                     return group;
             }
 
-            return m_Groups[0];
+            return this.m_Groups[0];
         }
 
         public virtual int LookupTypePoints(RewardType[] types, Type type)
@@ -261,6 +303,10 @@ namespace Server.Engines.BulkOrders
         {
             return new WoodsmansTalisman((CraftResource)type);
         }
+
+        public RewardCalculator()
+        {
+        }
     }
 
     #region Smith Rewards
@@ -315,7 +361,7 @@ namespace Server.Engines.BulkOrders
             }
             else
             {
-                Groups = new RewardGroup[]
+                this.Groups = new RewardGroup[]
                 {
                     new RewardGroup(0, new RewardItem(1, SturdyShovel)),
                     new RewardGroup(25, new RewardItem(1, SturdyPickaxe)),
@@ -345,24 +391,22 @@ namespace Server.Engines.BulkOrders
         }
 
         #region Constructors
-        private static readonly ConstructCallback SmithHammer = CreateSmithHammer;
-        private static readonly ConstructCallback SturdyShovel = CreateSturdyShovel;
-        private static readonly ConstructCallback SturdyPickaxe = CreateSturdyPickaxe;
-        private static readonly ConstructCallback MiningGloves = CreateMiningGloves;
-        private static readonly ConstructCallback GargoylesPickaxe = CreateGargoylesPickaxe;
-        private static readonly ConstructCallback ProspectorsTool = CreateProspectorsTool;
-        private static readonly ConstructCallback PowderOfTemperament = CreatePowderOfTemperament;
-        private static readonly ConstructCallback RunicHammer = CreateRunicHammer;
-        private static readonly ConstructCallback PowerScroll = CreatePowerScroll;
-        private static readonly ConstructCallback ColoredAnvil = CreateColoredAnvil;
-        private static readonly ConstructCallback AncientHammer = CreateAncientHammer;
+        private static readonly ConstructCallback SmithHammer = new ConstructCallback(CreateSmithHammer);
+        private static readonly ConstructCallback SturdyShovel = new ConstructCallback(CreateSturdyShovel);
+        private static readonly ConstructCallback SturdyPickaxe = new ConstructCallback(CreateSturdyPickaxe);
+        private static readonly ConstructCallback MiningGloves = new ConstructCallback(CreateMiningGloves);
+        private static readonly ConstructCallback GargoylesPickaxe = new ConstructCallback(CreateGargoylesPickaxe);
+        private static readonly ConstructCallback ProspectorsTool = new ConstructCallback(CreateProspectorsTool);
+        private static readonly ConstructCallback PowderOfTemperament = new ConstructCallback(CreatePowderOfTemperament);
+        private static readonly ConstructCallback RunicHammer = new ConstructCallback(CreateRunicHammer);
+        private static readonly ConstructCallback PowerScroll = new ConstructCallback(CreatePowerScroll);
+        private static readonly ConstructCallback ColoredAnvil = new ConstructCallback(CreateColoredAnvil);
+        private static readonly ConstructCallback AncientHammer = new ConstructCallback(CreateAncientHammer);
 
         private static Item CreateSmithHammer(int type)
         {
-            SmithHammer hammer = new SmithHammer
-            {
-                UsesRemaining = 250
-            };
+            var hammer = new SmithHammer();
+            hammer.UsesRemaining = 250;
 
             return hammer;
         }
@@ -407,7 +451,7 @@ namespace Server.Engines.BulkOrders
         private static Item CreateRunicHammer(int type)
         {
             if (type >= 1 && type <= 8)
-                return new RunicHammer(CraftResource.Iron + type, 55 - (type * 5));
+                return new RunicHammer(CraftResource.Iron + type, Core.AOS ? (55 - (type * 5)) : 50);
 
             throw new InvalidOperationException();
         }
@@ -471,7 +515,7 @@ namespace Server.Engines.BulkOrders
                 points += 200;
 
             if (itemCount > 1)
-                points += LookupTypePoints(m_Types, type);
+                points += this.LookupTypePoints(this.m_Types, type);
 
             if (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite)
                 points += 200 + (50 * (material - BulkMaterialType.DullCopper));
@@ -578,7 +622,7 @@ namespace Server.Engines.BulkOrders
             // Loop through the RewardTypes defined earlier and find the correct one.
             for (typeIdx = 0; typeIdx < 7; ++typeIdx)
             {
-                if (m_Types[typeIdx].Contains(type))
+                if (this.m_Types[typeIdx].Contains(type))
                     break;
             }
 
@@ -600,9 +644,9 @@ namespace Server.Engines.BulkOrders
 
             int[][][] goldTable = m_GoldTable;
 
-            int typeIndex = ComputeType(type, itemCount);
+            int typeIndex = this.ComputeType(type, itemCount);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (material - BulkMaterialType.DullCopper) : 0;
+            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
 
             if (exceptional)
                 typeIndex++;
@@ -654,7 +698,7 @@ namespace Server.Engines.BulkOrders
             }
             else
             {
-                Groups = new RewardGroup[]
+                this.Groups = new RewardGroup[]
                 {
                     new RewardGroup(0, new RewardItem(1, Cloth, 0)),
                     new RewardGroup(50, new RewardItem(1, Cloth, 1)),
@@ -676,23 +720,21 @@ namespace Server.Engines.BulkOrders
         }
 
         #region Constructors
-        private static readonly ConstructCallback SewingKit = CreateSewingKit;
-        private static readonly ConstructCallback Cloth = CreateCloth;
-        private static readonly ConstructCallback Sandals = CreateSandals;
-        private static readonly ConstructCallback StretchedHide = CreateStretchedHide;
-        private static readonly ConstructCallback RunicKit = CreateRunicKit;
-        private static readonly ConstructCallback Tapestry = CreateTapestry;
-        private static readonly ConstructCallback PowerScroll = CreatePowerScroll;
-        private static readonly ConstructCallback BearRug = CreateBearRug;
-        private static readonly ConstructCallback ClothingBlessDeed = CreateCBD;
-        private static readonly ConstructCallback CraftsmanTalisman = CreateCraftsmanTalisman;
+        private static readonly ConstructCallback SewingKit = new ConstructCallback(CreateSewingKit);
+        private static readonly ConstructCallback Cloth = new ConstructCallback(CreateCloth);
+        private static readonly ConstructCallback Sandals = new ConstructCallback(CreateSandals);
+        private static readonly ConstructCallback StretchedHide = new ConstructCallback(CreateStretchedHide);
+        private static readonly ConstructCallback RunicKit = new ConstructCallback(CreateRunicKit);
+        private static readonly ConstructCallback Tapestry = new ConstructCallback(CreateTapestry);
+        private static readonly ConstructCallback PowerScroll = new ConstructCallback(CreatePowerScroll);
+        private static readonly ConstructCallback BearRug = new ConstructCallback(CreateBearRug);
+        private static readonly ConstructCallback ClothingBlessDeed = new ConstructCallback(CreateCBD);
+        private static readonly ConstructCallback CraftsmanTalisman = new ConstructCallback(CreateCraftsmanTalisman);
 
         private static Item CreateSewingKit(int type)
         {
-            SewingKit kit = new SewingKit
-            {
-                UsesRemaining = 250
-            };
+            var kit = new SewingKit();
+            kit.UsesRemaining = 250;
 
             return kit;
         }
@@ -711,10 +753,8 @@ namespace Server.Engines.BulkOrders
         {
             if (type >= 0 && type < m_ClothHues.Length)
             {
-                UncutCloth cloth = new UncutCloth(100)
-                {
-                    Hue = m_ClothHues[type][Utility.Random(m_ClothHues[type].Length)]
-                };
+                UncutCloth cloth = new UncutCloth(100);
+                cloth.Hue = m_ClothHues[type][Utility.Random(m_ClothHues[type].Length)];
                 return cloth;
             }
 
@@ -735,7 +775,7 @@ namespace Server.Engines.BulkOrders
 
         private static Item CreateStretchedHide(int type)
         {
-            switch (Utility.Random(4))
+            switch ( Utility.Random(4) )
             {
                 default:
                 case 0:
@@ -751,7 +791,7 @@ namespace Server.Engines.BulkOrders
 
         private static Item CreateTapestry(int type)
         {
-            switch (Utility.Random(4))
+            switch ( Utility.Random(4) )
             {
                 default:
                 case 0:
@@ -767,7 +807,7 @@ namespace Server.Engines.BulkOrders
 
         private static Item CreateBearRug(int type)
         {
-            switch (Utility.Random(4))
+            switch ( Utility.Random(4) )
             {
                 default:
                 case 0:
@@ -894,6 +934,58 @@ namespace Server.Engines.BulkOrders
             }
         };
 
+        private static readonly int[][][] m_OldGoldTable = new int[][][]
+        {
+            new int[][] // 1-part (regular)
+            {
+                new int[] { 150, 150, 300, 300 },
+                new int[] { 225, 225, 450, 450 },
+                new int[] { 300, 400, 600, 750 }
+            },
+            new int[][] // 1-part (exceptional)
+            {
+                new int[] { 300, 300, 600, 600 },
+                new int[] { 450, 450, 900, 900 },
+                new int[] { 600, 750, 1200, 1800 }
+            },
+            new int[][] // 4-part (regular)
+            {
+                new int[] { 3000, 3000, 4000, 4000 },
+                new int[] { 4500, 4500, 6000, 6000 },
+                new int[] { 6000, 8000, 8000, 10000 }
+            },
+            new int[][] // 4-part (exceptional)
+            {
+                new int[] { 4000, 4000, 5000, 5000 },
+                new int[] { 6000, 6000, 7500, 7500 },
+                new int[] { 8000, 10000, 10000, 15000 }
+            },
+            new int[][] // 5-part (regular)
+            {
+                new int[] { 4000, 4000, 5000, 5000 },
+                new int[] { 6000, 6000, 7500, 7500 },
+                new int[] { 8000, 10000, 10000, 15000 }
+            },
+            new int[][] // 5-part (exceptional)
+            {
+                new int[] { 5000, 5000, 7500, 7500 },
+                new int[] { 7500, 7500, 11250, 11250 },
+                new int[] { 10000, 15000, 15000, 20000 }
+            },
+            new int[][] // 6-part (regular)
+            {
+                new int[] { 5000, 5000, 7500, 7500 },
+                new int[] { 7500, 7500, 11250, 11250 },
+                new int[] { 10000, 15000, 15000, 20000 }
+            },
+            new int[][] // 6-part (exceptional)
+            {
+                new int[] { 7500, 7500, 10000, 10000 },
+                new int[] { 11250, 11250, 15000, 15000 },
+                new int[] { 15000, 20000, 20000, 30000 }
+            }
+        };
+
         public override int ComputeGold(int quantity, bool exceptional, BulkMaterialType material, int itemCount, Type type)
         {
             int gold = 0;
@@ -903,7 +995,7 @@ namespace Server.Engines.BulkOrders
                 return gold;
             }
 
-            int[][][] goldTable = m_AosGoldTable;
+            int[][][] goldTable = (Core.AOS ? m_AosGoldTable : m_OldGoldTable);
 
             int typeIndex = ((itemCount == 6 ? 3 : itemCount == 5 ? 2 : itemCount == 4 ? 1 : 0) * 2) + (exceptional ? 1 : 0);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
@@ -918,7 +1010,7 @@ namespace Server.Engines.BulkOrders
         }
     }
     #endregion
-
+     
     #region Tinkering Rewards
     public sealed class TinkeringRewardCalculator : RewardCalculator
     {
@@ -958,10 +1050,8 @@ namespace Server.Engines.BulkOrders
 
         private static Item TinkerTools(int type)
         {
-            BaseTool tool = new TinkerTools
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new TinkerTools();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1092,7 +1182,7 @@ namespace Server.Engines.BulkOrders
 
             int typeIndex = ((itemCount == 6 ? 3 : itemCount == 5 ? 2 : itemCount == 4 ? 1 : 0) * 2) + (exceptional ? 1 : 0);
             int quanIndex = (quantity == 20 ? 2 : quantity == 15 ? 1 : 0);
-            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (material - BulkMaterialType.DullCopper) : 0;
+            int mtrlIndex = (material >= BulkMaterialType.DullCopper && material <= BulkMaterialType.Valorite) ? 1 + (int)(material - BulkMaterialType.DullCopper) : 0;
 
             gold = goldTable[typeIndex][quanIndex][mtrlIndex];
 
@@ -1144,10 +1234,8 @@ namespace Server.Engines.BulkOrders
 
         private static Item DovetailSaw(int type)
         {
-            BaseTool tool = new DovetailSaw
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new DovetailSaw();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1155,7 +1243,7 @@ namespace Server.Engines.BulkOrders
         private static Item RunicMalletAndChisel(int type)
         {
             if (type >= 1 && type <= 8)
-                return new RunicMalletAndChisel(CraftResource.Iron + type, 55 - (type * 5));
+                return new RunicMalletAndChisel(CraftResource.Iron + type, Core.AOS ? (55 - (type * 5)) : 50);
 
             return null;
         }
@@ -1197,7 +1285,7 @@ namespace Server.Engines.BulkOrders
             switch (material)
             {
                 case BulkMaterialType.None: break;
-                case BulkMaterialType.OakWood: points += 300; break;
+                case BulkMaterialType.OakWood: points += 300;  break;
                 case BulkMaterialType.AshWood: points += 350; break;
                 case BulkMaterialType.YewWood: points += 400; break;
                 case BulkMaterialType.Heartwood: points += 450; break;
@@ -1206,12 +1294,12 @@ namespace Server.Engines.BulkOrders
             }
 
             if (itemCount > 1)
-                points += LookupTypePoints(m_Types, type);
+                points += this.LookupTypePoints(m_Types, type);
 
             return points;
         }
 
-        private readonly RewardType[] m_Types =
+        private RewardType[] m_Types =
         {
             new RewardType(250, typeof(TallCabinet), typeof(ShortCabinet)),
             new RewardType(250, typeof(RedArmoire), typeof(ElegantArmoire), typeof(MapleArmoire), typeof(CherryArmoire)),
@@ -1326,10 +1414,8 @@ namespace Server.Engines.BulkOrders
 
         private static Item ScribesPen(int type)
         {
-            BaseTool tool = new ScribesPen
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new ScribesPen();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1360,12 +1446,12 @@ namespace Server.Engines.BulkOrders
                 points += 50;
 
             if (itemCount > 1)
-                points += LookupTypePoints(m_Types, type);
+                points += this.LookupTypePoints(m_Types, type);
 
             return points;
         }
 
-        private readonly RewardType[] m_Types =
+        private RewardType[] m_Types =
         {
             new RewardType(200, typeof(ClumsyScroll), typeof(FeeblemindScroll), typeof(WeakenScroll)),
             new RewardType(300, typeof(CurseScroll), typeof(GreaterHealScroll), typeof(RecallScroll)),
@@ -1451,10 +1537,8 @@ namespace Server.Engines.BulkOrders
 
         private static Item Skillet(int type)
         {
-            BaseTool tool = new Skillet
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new Skillet();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1495,12 +1579,12 @@ namespace Server.Engines.BulkOrders
                 points += 200;
 
             if (itemCount > 1)
-                points += LookupTypePoints(m_Types, type);
+                points += this.LookupTypePoints(m_Types, type);
 
             return points;
         }
 
-        private readonly RewardType[] m_Types =
+        private RewardType[] m_Types =
         {
             new RewardType(200, typeof(SweetCocoaButter), typeof(SackFlour), typeof(Dough)),
             new RewardType(250, typeof(UnbakedFruitPie), typeof(UnbakedPeachCobbler), typeof(UnbakedApplePie), typeof(UnbakedPumpkinPie)),
@@ -1591,10 +1675,8 @@ namespace Server.Engines.BulkOrders
 
         private static Item FletcherTools(int type)
         {
-            BaseTool tool = new FletcherTools
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new FletcherTools();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1646,12 +1728,12 @@ namespace Server.Engines.BulkOrders
             }
 
             if (itemCount > 1)
-                points += LookupTypePoints(m_Types, type);
+                points += this.LookupTypePoints(m_Types, type);
 
             return points;
         }
 
-        private readonly RewardType[] m_Types =
+        private RewardType[] m_Types =
         {
             new RewardType(200, typeof(Arrow), typeof(Bolt)),
             new RewardType(300, typeof(Bow), typeof(CompositeBow), typeof(Yumi)),
@@ -1755,10 +1837,8 @@ namespace Server.Engines.BulkOrders
         #region Constructors
         private static Item MortarAndPestle(int type)
         {
-            BaseTool tool = new MortarPestle
-            {
-                UsesRemaining = 250
-            };
+            BaseTool tool = new MortarPestle();
+            tool.UsesRemaining = 250;
 
             return tool;
         }
@@ -1800,7 +1880,7 @@ namespace Server.Engines.BulkOrders
 
             if (itemCount == 3)
             {
-                if (type == typeof(RefreshPotion) || type == typeof(HealPotion) || type == typeof(CurePotion))
+                if(type == typeof(RefreshPotion) || type == typeof(HealPotion) || type == typeof(CurePotion))
                     points += 250;
                 else
                     points += 300;
@@ -1845,7 +1925,7 @@ namespace Server.Engines.BulkOrders
         public override int ComputeGold(int quantity, bool exceptional, BulkMaterialType material, int itemCount, Type type)
         {
             int gold = 0;
-
+            
             if (itemCount == 1 && BulkOrderSystem.NewSystemEnabled && BulkOrderSystem.ComputeGold(type, quantity, out gold))
             {
                 return gold;

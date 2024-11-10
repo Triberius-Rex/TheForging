@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.BulkOrders
 {
@@ -42,7 +42,7 @@ namespace Server.Engines.BulkOrders
         {
             int version = reader.ReadEncodedInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2:
                     {
@@ -77,16 +77,76 @@ namespace Server.Engines.BulkOrders
             }
         }
 
-        public Type ItemType => m_ItemType;
-        public bool RequireExceptional => m_RequireExceptional;
-        public BODType DeedType => m_DeedType;
-        public BulkMaterialType Material => m_Material;
-        public int AmountCur => m_AmountCur;
-        public int AmountMax => m_AmountMax;
-        public int Number => m_Number;
-        public int Graphic => m_Graphic;
-        public int Hue => m_Hue;
-        public GemType GemType => m_GemType;
+        public Type ItemType
+        {
+            get
+            {
+                return m_ItemType;
+            }
+        }
+        public bool RequireExceptional
+        {
+            get
+            {
+                return m_RequireExceptional;
+            }
+        }
+        public BODType DeedType
+        {
+            get
+            {
+                return m_DeedType;
+            }
+        }
+        public BulkMaterialType Material
+        {
+            get
+            {
+                return m_Material;
+            }
+        }
+        public int AmountCur
+        {
+            get
+            {
+                return m_AmountCur;
+            }
+        }
+        public int AmountMax
+        {
+            get
+            {
+                return m_AmountMax;
+            }
+        }
+        public int Number
+        {
+            get
+            {
+                return m_Number;
+            }
+        }
+        public int Graphic
+        {
+            get
+            {
+                return m_Graphic;
+            }
+        }
+        public int Hue
+        {
+            get
+            {
+                return m_Hue;
+            }
+        }
+        public GemType GemType
+        {
+            get
+            {
+                return m_GemType;
+            }
+        }
         public int Price
         {
             get
@@ -127,15 +187,15 @@ namespace Server.Engines.BulkOrders
 
             writer.Write(m_ItemType == null ? null : m_ItemType.FullName);
 
-            writer.Write(m_RequireExceptional);
+            writer.Write((bool)m_RequireExceptional);
 
             writer.WriteEncodedInt((int)m_DeedType);
             writer.WriteEncodedInt((int)m_Material);
-            writer.WriteEncodedInt(m_AmountCur);
-            writer.WriteEncodedInt(m_AmountMax);
-            writer.WriteEncodedInt(m_Number);
-            writer.WriteEncodedInt(m_Graphic);
-            writer.WriteEncodedInt(m_Price);
+            writer.WriteEncodedInt((int)m_AmountCur);
+            writer.WriteEncodedInt((int)m_AmountMax);
+            writer.WriteEncodedInt((int)m_Number);
+            writer.WriteEncodedInt((int)m_Graphic);
+            writer.WriteEncodedInt((int)m_Price);
         }
     }
 }

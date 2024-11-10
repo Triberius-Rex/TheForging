@@ -1,8 +1,10 @@
+using Server;
+
 namespace Server.Items
 {
     public class DetectiveCredentials : BaseNecklace
     {
-        public override int LabelNumber => 1158641;  // RBG Detective Branch Official Credential
+        public override int LabelNumber { get { return 1158641; } } // RBG Detective Branch Official Credential
 
         [Constructable]
         public DetectiveCredentials()
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

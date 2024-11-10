@@ -1,6 +1,8 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x13ec, 0x13ed)]
+    [FlipableAttribute(0x13ec, 0x13ed)]
     public class RingmailChest : BaseArmor
     {
         [Constructable]
@@ -15,19 +17,94 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 3;
-        public override int BaseColdResistance => 1;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 3;
-        public override int InitMinHits => 40;
-        public override int InitMaxHits => 50;
-        public override int StrReq => 40;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Ringmail;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 50;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int OldDexBonus
+        {
+            get
+            {
+                return -2;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 22;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Ringmail;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

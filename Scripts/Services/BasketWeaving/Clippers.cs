@@ -1,12 +1,13 @@
 #region References
+using System;
+using System.Collections.Generic;
+using Server.Gumps;
+using Server.Network;
 using Server.ContextMenus;
 using Server.Engines.Craft;
 using Server.Engines.Plants;
-using Server.Gumps;
 using Server.Mobiles;
-using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
 #endregion
 
 namespace Server.Items
@@ -14,7 +15,7 @@ namespace Server.Items
     [Flipable(0x0DFC, 0x0DFD)]
     public class Clippers : BaseTool
     {
-        public override int LabelNumber => 1112117;  // clippers
+        public override int LabelNumber { get { return 1112117; } } // clippers
 
         [Constructable]
         public Clippers()
@@ -145,9 +146,15 @@ namespace Server.Items
             : base(serial)
         { }
 
-        public virtual PlantHue PlantHue => PlantHue.None;
+        public virtual PlantHue PlantHue { get { return PlantHue.None; } }
 
-        public override CraftSystem CraftSystem => DefTinkering.CraftSystem;
+        public override CraftSystem CraftSystem
+        {
+            get
+            {
+                return DefTinkering.CraftSystem;
+            }
+        }
 
         public void ConsumeUse(Mobile from)
         {
@@ -239,7 +246,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -252,8 +259,8 @@ namespace Server.Items
 
     public class TopiaryGump : Gump
     {
-        readonly PlantItem m_plant;
-        readonly Clippers m_clippers;
+        PlantItem m_plant;
+        Clippers m_clippers;
 
         public TopiaryGump(PlantItem plant, Clippers clippers) : base(0, 0)
         {

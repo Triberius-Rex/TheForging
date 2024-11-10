@@ -2,15 +2,15 @@ using System;
 
 namespace Server.Items
 {
-    [Flipable(0x13FD, 0x13FC)]
+    [FlipableAttribute(0x13FD, 0x13FC)]
     public class HeavyCrossbow : BaseRanged
     {
         [Constructable]
         public HeavyCrossbow()
             : base(0x13FD)
         {
-            Weight = 9.0;
-            Layer = Layer.TwoHanded;
+            this.Weight = 9.0;
+            this.Layer = Layer.TwoHanded;
         }
 
         public HeavyCrossbow(Serial serial)
@@ -18,28 +18,136 @@ namespace Server.Items
         {
         }
 
-        public override int EffectID => 0x1BFE;
-        public override Type AmmoType => typeof(Bolt);
-        public override Item Ammo => new Bolt();
-        public override WeaponAbility PrimaryAbility => WeaponAbility.MovingShot;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.Dismount;
-        public override int StrengthReq => 80;
-        public override int MinDamage => 20;
-        public override int MaxDamage => 24;
-        public override float Speed => 5.00f;
-
-        public override int DefMaxRange => 8;
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 100;
+        public override int EffectID
+        {
+            get
+            {
+                return 0x1BFE;
+            }
+        }
+        public override Type AmmoType
+        {
+            get
+            {
+                return typeof(Bolt);
+            }
+        }
+        public override Item Ammo
+        {
+            get
+            {
+                return new Bolt();
+            }
+        }
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.MovingShot;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.Dismount;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 80;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return Core.ML ? 20 : 20;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return Core.ML ? 24 : 24;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 22;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 5.00f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 11;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 56;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int DefMaxRange
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

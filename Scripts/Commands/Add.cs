@@ -1,9 +1,9 @@
-using Server.Items;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Server.Items;
+using Server.Targeting;
 using CPA = Server.CommandPropertyAttribute;
 
 namespace Server.Commands
@@ -19,17 +19,17 @@ namespace Server.Commands
         private static readonly object[] m_ParseArgs = new object[1];
         private static readonly Type[] m_SignedNumerics = new Type[]
         {
-            typeof(long),
-            typeof(int),
-            typeof(short),
-            typeof(sbyte)
+            typeof(Int64),
+            typeof(Int32),
+            typeof(Int16),
+            typeof(SByte)
         };
         private static readonly Type[] m_UnsignedNumerics = new Type[]
         {
-            typeof(ulong),
-            typeof(uint),
-            typeof(ushort),
-            typeof(byte)
+            typeof(UInt64),
+            typeof(UInt32),
+            typeof(UInt16),
+            typeof(Byte)
         };
 
         private enum TileZType
@@ -40,17 +40,17 @@ namespace Server.Commands
         }
         public static void Initialize()
         {
-            CommandSystem.Register("Tile", AccessLevel.GameMaster, Tile_OnCommand);
-            CommandSystem.Register("TileRXYZ", AccessLevel.GameMaster, TileRXYZ_OnCommand);
-            CommandSystem.Register("TileXYZ", AccessLevel.GameMaster, TileXYZ_OnCommand);
-            CommandSystem.Register("TileZ", AccessLevel.GameMaster, TileZ_OnCommand);
-            CommandSystem.Register("TileAvg", AccessLevel.GameMaster, TileAvg_OnCommand);
+            CommandSystem.Register("Tile", AccessLevel.GameMaster, new CommandEventHandler(Tile_OnCommand));
+            CommandSystem.Register("TileRXYZ", AccessLevel.GameMaster, new CommandEventHandler(TileRXYZ_OnCommand));
+            CommandSystem.Register("TileXYZ", AccessLevel.GameMaster, new CommandEventHandler(TileXYZ_OnCommand));
+            CommandSystem.Register("TileZ", AccessLevel.GameMaster, new CommandEventHandler(TileZ_OnCommand));
+            CommandSystem.Register("TileAvg", AccessLevel.GameMaster, new CommandEventHandler(TileAvg_OnCommand));
 
-            CommandSystem.Register("Outline", AccessLevel.GameMaster, Outline_OnCommand);
-            CommandSystem.Register("OutlineRXYZ", AccessLevel.GameMaster, OutlineRXYZ_OnCommand);
-            CommandSystem.Register("OutlineXYZ", AccessLevel.GameMaster, OutlineXYZ_OnCommand);
-            CommandSystem.Register("OutlineZ", AccessLevel.GameMaster, OutlineZ_OnCommand);
-            CommandSystem.Register("OutlineAvg", AccessLevel.GameMaster, OutlineAvg_OnCommand);
+            CommandSystem.Register("Outline", AccessLevel.GameMaster, new CommandEventHandler(Outline_OnCommand));
+            CommandSystem.Register("OutlineRXYZ", AccessLevel.GameMaster, new CommandEventHandler(OutlineRXYZ_OnCommand));
+            CommandSystem.Register("OutlineXYZ", AccessLevel.GameMaster, new CommandEventHandler(OutlineXYZ_OnCommand));
+            CommandSystem.Register("OutlineZ", AccessLevel.GameMaster, new CommandEventHandler(OutlineZ_OnCommand));
+            CommandSystem.Register("OutlineAvg", AccessLevel.GameMaster, new CommandEventHandler(OutlineAvg_OnCommand));
         }
 
         public static void Invoke(Mobile from, Point3D start, Point3D end, string[] args)
@@ -403,9 +403,9 @@ namespace Server.Commands
 
                 return objectCount;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Diagnostics.ExceptionLogging.LogException(e);
+                Console.WriteLine(ex);
                 return 0;
             }
         }
@@ -590,7 +590,7 @@ namespace Server.Commands
             TileState ts = (TileState)state;
             bool mapAvg = false;
 
-            switch (ts.m_ZType)
+            switch ( ts.m_ZType )
             {
                 case TileZType.Fixed:
                     {
@@ -610,7 +610,7 @@ namespace Server.Commands
         private static void Internal_OnCommand(CommandEventArgs e, bool outline)
         {
             if (e.Length >= 1)
-                BoundingBoxPicker.Begin(e.Mobile, TileBox_Callback, new TileState(TileZType.Start, 0, e.Arguments, outline));
+                BoundingBoxPicker.Begin(e.Mobile, new BoundingBoxCallback(TileBox_Callback), new TileState(TileZType.Start, 0, e.Arguments, outline));
             else
                 e.Mobile.SendMessage("Format: {0} <type> [params] [set {{<propertyName> <value> ...}}]", outline ? "Outline" : "Tile");
         }
@@ -627,7 +627,7 @@ namespace Server.Commands
                 for (int i = 0; i < subArgs.Length; ++i)
                     subArgs[i] = e.Arguments[i + 5];
 
-                Invoke(e.Mobile, p, p2, subArgs, null, outline, false);
+                Add.Invoke(e.Mobile, p, p2, subArgs, null, outline, false);
             }
             else
             {
@@ -647,7 +647,7 @@ namespace Server.Commands
                 for (int i = 0; i < subArgs.Length; ++i)
                     subArgs[i] = e.Arguments[i + 5];
 
-                Invoke(e.Mobile, p, p2, subArgs, null, outline, false);
+                Add.Invoke(e.Mobile, p, p2, subArgs, null, outline, false);
             }
             else
             {
@@ -664,7 +664,7 @@ namespace Server.Commands
                 for (int i = 0; i < subArgs.Length; ++i)
                     subArgs[i] = e.Arguments[i + 1];
 
-                BoundingBoxPicker.Begin(e.Mobile, TileBox_Callback, new TileState(TileZType.Fixed, e.GetInt32(0), subArgs, outline));
+                BoundingBoxPicker.Begin(e.Mobile, new BoundingBoxCallback(TileBox_Callback), new TileState(TileZType.Fixed, e.GetInt32(0), subArgs, outline));
             }
             else
             {
@@ -675,7 +675,7 @@ namespace Server.Commands
         private static void InternalAvg_OnCommand(CommandEventArgs e, bool outline)
         {
             if (e.Length >= 1)
-                BoundingBoxPicker.Begin(e.Mobile, TileBox_Callback, new TileState(TileZType.MapAverage, 0, e.Arguments, outline));
+                BoundingBoxPicker.Begin(e.Mobile, new BoundingBoxCallback(TileBox_Callback), new TileState(TileZType.MapAverage, 0, e.Arguments, outline));
             else
                 e.Mobile.SendMessage("Format: {0}Avg <type> [params] [set {{<propertyName> <value> ...}}]", outline ? "Outline" : "Tile");
         }
@@ -686,7 +686,7 @@ namespace Server.Commands
             public AddTarget(string[] args)
                 : base(-1, true, TargetFlags.None)
             {
-                m_Args = args;
+                this.m_Args = args;
             }
 
             protected override void OnTarget(Mobile from, object o)
@@ -701,7 +701,7 @@ namespace Server.Commands
                         p = ((Mobile)p).Location;
 
                     Point3D point = new Point3D(p);
-                    Add.Invoke(from, point, point, m_Args);
+                    Add.Invoke(from, point, point, this.m_Args);
                 }
             }
         }
@@ -714,10 +714,10 @@ namespace Server.Commands
             public readonly bool m_Outline;
             public TileState(TileZType zType, int fixedZ, string[] args, bool outline)
             {
-                m_ZType = zType;
-                m_FixedZ = fixedZ;
-                m_Args = args;
-                m_Outline = outline;
+                this.m_ZType = zType;
+                this.m_FixedZ = fixedZ;
+                this.m_Args = args;
+                this.m_Outline = outline;
             }
         }
     }

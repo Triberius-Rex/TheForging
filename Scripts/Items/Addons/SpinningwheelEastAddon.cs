@@ -24,13 +24,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new SpinningwheelEastDeed();
-        public bool Spinning => m_Timer != null;
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new SpinningwheelEastDeed();
+            }
+        }
+        public bool Spinning
+        {
+            get
+            {
+                return m_Timer != null;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -42,7 +54,7 @@ namespace Server.Items
 
         public override void OnComponentLoaded(AddonComponent c)
         {
-            switch (c.ItemID)
+            switch ( c.ItemID )
             {
                 case 0x1016:
                 case 0x101A:
@@ -60,7 +72,7 @@ namespace Server.Items
 
             foreach (AddonComponent c in Components)
             {
-                switch (c.ItemID)
+                switch ( c.ItemID )
                 {
                     case 0x1015:
                     case 0x1019:
@@ -81,7 +93,7 @@ namespace Server.Items
 
             foreach (AddonComponent c in Components)
             {
-                switch (c.ItemID)
+                switch ( c.ItemID )
                 {
                     case 0x1016:
                     case 0x101A:
@@ -131,13 +143,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new SpinningwheelEastAddon();
-        public override int LabelNumber => 1044341;// spining wheel (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new SpinningwheelEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044341;
+            }
+        }// spining wheel (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

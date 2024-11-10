@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -50,17 +51,17 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
-        public override bool CanBeParagon => false;
-        public override bool GivesMLMinorArtifact => true;
-
-        public override void OnDeath(Container c)
+		public override bool CanBeParagon { get { return false; } }
+        public override bool GivesMLMinorArtifact{get{ return true; } }
+		
+		public override void OnDeath( Container c )
         {
-            base.OnDeath(c);
+            base.OnDeath( c );
 
-            if (Paragon.ChestChance > Utility.RandomDouble())
-                c.DropItem(new ParagonChest(Name, 5));
+            if ( Paragon.ChestChance > Utility.RandomDouble() )
+            c.DropItem( new ParagonChest( Name, 5 ) );
         }
-
+        
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 3);
@@ -70,7 +71,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

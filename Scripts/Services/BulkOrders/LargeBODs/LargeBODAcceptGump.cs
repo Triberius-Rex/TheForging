@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -58,6 +59,7 @@ namespace Server.Engines.BulkOrders
                 if (deed.Material != BulkMaterialType.None)
                 {
                     AddHtmlLocalized(40, y, 350, 20, SmallBODGump.GetMaterialNumberFor(deed.Material), 0x7FFF, false, false); // All items must be made with x material.
+                    y += 24;
                 }
             }
 

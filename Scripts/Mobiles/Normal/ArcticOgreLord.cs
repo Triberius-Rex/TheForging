@@ -1,6 +1,10 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a frozen ogre lord's corpse")]
+    [TypeAlias("Server.Mobiles.ArticOgreLord")]
     public class ArcticOgreLord : BaseCreature
     {
         [Constructable]
@@ -33,6 +37,10 @@ namespace Server.Mobiles
 
             Fame = 15000;
             Karma = -15000;
+
+            VirtualArmor = 50;
+
+            PackItem(new Club());
         }
 
         public ArcticOgreLord(Serial serial)
@@ -40,10 +48,16 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Regular;
-
-        public override int TreasureMapLevel => 3;
-
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Regular;
+            }
+        }
+        
+		public override int TreasureMapLevel { get { return 3; } }
+		
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich);
@@ -53,7 +67,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

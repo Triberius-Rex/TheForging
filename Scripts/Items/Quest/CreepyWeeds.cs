@@ -1,6 +1,10 @@
-using Server.Mobiles;
-using Server.Network;
 using System;
+using Server;
+using Server.Network;
+using Server.Regions;
+using Server.Mobiles;
+using Server.Items;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -14,7 +18,7 @@ namespace Server.Items
             Weight = 1;
             Movable = false;
 
-            Timer.DelayCall(TimeSpan.FromMinutes(10.0), delegate ()
+            Timer.DelayCall(TimeSpan.FromMinutes(10.0), delegate()
             {
                 Delete();
             });
@@ -54,34 +58,36 @@ namespace Server.Items
                     case 4:
                         new Ballem().MoveToWorld(loc, map);
                         break;
-                    case 5:
-                    case 10:
-                    case 15:
-                        if (Utility.RandomDouble() < 0.20)
+                    case 5: case 10: case 15:
+						if (Utility.RandomDouble() < 0.20)
                         {
                             from.AddToBackpack(new FNPitchfork());
 
-                            from.SendLocalizedMessage(1113516); // You find Farmer Nash's pitchfork under one of the brambles of weeds.
+                            from.SendMessage("You find Farmer Nash's pitchfork under one of the brambles of weeds. You pick up the pitchfork and put it in your backpack."); 
                         }
-                        break;
-                }
-            }
+						break;
+                  }
+             }
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
+
             writer.WriteEncodedInt(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadEncodedInt();
         }
 
         protected virtual bool CheckUse(Mobile from)
         {
+            PlayerMobile pm = from as PlayerMobile;
+
             if (Deleted || !IsAccessibleTo(from))
             {
                 return false;

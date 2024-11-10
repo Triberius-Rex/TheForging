@@ -1,17 +1,17 @@
+using System;
 using Server.ContextMenus;
 using Server.Engines.Quests.Collector;
 using Server.Engines.Quests.Hag;
-using Server.Gumps;
 using Server.Network;
-using System;
 using System.Collections.Generic;
+using Server.Gumps;
 
 namespace Server.Items
 {
     public class StrangeContraptionComponent : AddonComponent
     {
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties { get { return true; } }
+        
         public StrangeContraptionComponent(int id, int hue = 0)
             : base(id)
         {
@@ -95,7 +95,7 @@ namespace Server.Items
                         {
                             m_Mobile.SendLocalizedMessage(1055142, "", 0x59); // You do not have the necessary ingredients. The contraptions rumbles angrily but does nothing.
                         }
-                    }
+                    }                    
                 }
                 else
                 {
@@ -124,16 +124,19 @@ namespace Server.Items
 
         public static void Initialize()
         {
-            if (InstanceTram == null)
+            if (Core.T2A)
             {
-                StrangeContraptionAddon item = new StrangeContraptionAddon();
-                item.MoveToWorld(new Point3D(5668, 1925, 0), Map.Trammel);
-            }
+                if (InstanceTram == null)
+                {
+                    StrangeContraptionAddon item = new StrangeContraptionAddon();
+                    item.MoveToWorld(new Point3D(5668, 1925, 0), Map.Trammel);
+                }
 
-            if (InstanceFel == null)
-            {
-                StrangeContraptionAddon item = new StrangeContraptionAddon();
-                item.MoveToWorld(new Point3D(5668, 1925, 0), Map.Felucca);
+                if (InstanceFel == null)
+                {
+                    StrangeContraptionAddon item = new StrangeContraptionAddon();
+                    item.MoveToWorld(new Point3D(5668, 1925, 0), Map.Felucca);
+                }
             }
         }
 
@@ -164,7 +167,7 @@ namespace Server.Items
             AddComponent(new StrangeContraptionComponent(2643), 1, 0, 3);
             AddComponent(new StrangeContraptionComponent(6434), 2, 0, 1);
             AddComponent(new StrangeContraptionComponent(4758, 1545), -1, 0, 0);
-            AddComponent(new StrangeContraptionComponent(4272, 1545), -1, 0, 1);
+            AddComponent(new StrangeContraptionComponent(4272, 1545), - 1, 0, 1);
             AddComponent(new StrangeContraptionComponent(6039, 999), 2, 0, 20);
             AddComponent(new StrangeContraptionComponent(6040, 999), 1, 0, 20);
         }
@@ -195,7 +198,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -203,13 +206,20 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            if (Map == Map.Trammel)
+            if (Core.T2A)
             {
-                InstanceTram = this;
+                if (Map == Map.Trammel)
+                {
+                    InstanceTram = this;
+                }
+                else if (Map == Map.Felucca)
+                {
+                    InstanceFel = this;
+                }
             }
-            else if (Map == Map.Felucca)
+            else
             {
-                InstanceFel = this;
+                Delete();
             }
         }
     }

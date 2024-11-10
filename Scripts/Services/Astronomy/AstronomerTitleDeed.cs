@@ -1,8 +1,10 @@
-﻿namespace Server.Items
+﻿using Server;
+
+namespace Server.Items
 {
     public class AstronomerTitleDeed : BaseRewardTitleDeed
     {
-        public override TextDefinition Title => 1158523;  // Astronomer
+        public override TextDefinition Title { get { return 1158523; } } // Astronomer
 
         public AstronomerTitleDeed()
         {

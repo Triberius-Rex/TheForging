@@ -1,17 +1,17 @@
+using System;
 using Server.Accounting;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
 using Server.Targeting;
-using System;
 using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class PetWhistle : Item
     {
-        public override int LabelNumber => 1126239;  // whistle
+        public override int LabelNumber { get { return 1126239; } } // whistle
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextLinkedTime { get; set; }
@@ -23,7 +23,7 @@ namespace Server.Items
         public BaseCreature PetLinked { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsUsable => NextLinkedTime < DateTime.UtcNow;
+        public bool IsUsable { get { return NextLinkedTime < DateTime.UtcNow; } }
 
         [Constructable]
         public PetWhistle()
@@ -154,14 +154,14 @@ namespace Server.Items
                         }
                         else
                         {
-                            if ((DateTime.UtcNow - _Item.NextLinkedTime).Seconds > 60)
+                            if ((DateTime.UtcNow -_Item.NextLinkedTime).Seconds > 60)
                             {
                                 from.SendLocalizedMessage(1159391); // You must wait ~1_minutes~ minutes before you can link another pet to this whistle.
                             }
                             else
                             {
                                 from.SendLocalizedMessage(1159392); // You must wait ~1_seconds~ seconds before you can link another pet to this whistle.
-                            }
+                            }                            
                         }
                     }
                     else
@@ -209,7 +209,7 @@ namespace Server.Items
 
             public override void OnResponse(NetState sender, RelayInfo info)
             {
-                if (_Item.Deleted || _Item.PetLinked == null)
+                if (_Item.Deleted ||_Item.PetLinked == null)
                     return;
 
                 Mobile m = sender.Mobile;
@@ -244,7 +244,7 @@ namespace Server.Items
                         break;
                 }
             }
-        }
+        }        
 
         public override void Serialize(GenericWriter writer)
         {

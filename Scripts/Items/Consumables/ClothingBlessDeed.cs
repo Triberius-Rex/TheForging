@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items
@@ -8,12 +9,12 @@ namespace Server.Items
         public ClothingBlessTarget(ClothingBlessDeed deed)
             : base(1, false, TargetFlags.None)
         {
-            m_Deed = deed;
+            this.m_Deed = deed;
         }
 
         protected override void OnTarget(Mobile from, object target) // Override the protected OnTarget() for our feature
         {
-            if (m_Deed.Deleted || m_Deed.RootParent != from)
+            if (this.m_Deed.Deleted || this.m_Deed.RootParent != from)
                 return;
 
             if (target is BaseClothing)
@@ -34,7 +35,7 @@ namespace Server.Items
                 {
                     from.SendLocalizedMessage(1045113); // That item is already blessed
                 }
-                else if (item.LootType != LootType.Regular || (Siege.SiegeShard && SkillHandlers.Imbuing.GetTotalMods(item) > 0) || item.NegativeAttributes.Prized > 0)
+                else if (item.LootType != LootType.Regular || (Siege.SiegeShard && Server.SkillHandlers.Imbuing.GetTotalMods(item) > 0) || item.NegativeAttributes.Prized > 0)
                 {
                     from.SendLocalizedMessage(1045114); // You can not bless that item
                 }
@@ -47,7 +48,7 @@ namespace Server.Items
                     item.LootType = LootType.Blessed;
                     from.SendLocalizedMessage(1010026); // You bless the item....
 
-                    m_Deed.Delete(); // Delete the bless deed
+                    this.m_Deed.Delete(); // Delete the bless deed
                 }
             }
             else
@@ -59,8 +60,8 @@ namespace Server.Items
 
     public class ClothingBlessDeed : Item // Create the item class which is derived from the base item class
     {
-        public override int LabelNumber => 1041008;  // A clothing bless deed
-
+		public override int LabelNumber { get { return 1041008; } } // A clothing bless deed
+		
         [Constructable]
         public ClothingBlessDeed()
             : base(0x14F0)
@@ -74,25 +75,31 @@ namespace Server.Items
         {
         }
 
-        public override bool DisplayLootType => true;
+        public override bool DisplayLootType
+        {
+            get
+            {
+                return Core.AOS;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
 
             int version = reader.ReadInt();
         }
 
         public override void OnDoubleClick(Mobile from) // Override double click of the deed to call our target
         {
-            if (!IsChildOf(from.Backpack)) // Make sure its in their pack
+            if (!this.IsChildOf(from.Backpack)) // Make sure its in their pack
             {
                 from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
             }

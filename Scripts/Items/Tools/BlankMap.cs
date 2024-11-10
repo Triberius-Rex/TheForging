@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class BlankMap : MapItem
@@ -14,14 +16,14 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            SendLocalizedMessageTo(from, 500208); // It appears to be blank.
+            this.SendLocalizedMessageTo(from, 500208); // It appears to be blank.
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

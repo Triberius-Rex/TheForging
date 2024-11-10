@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Bone : Item, ICommodity
@@ -12,9 +14,9 @@ namespace Server.Items
         public Bone(int amount)
             : base(0xf7e)
         {
-            Stackable = true;
-            Amount = amount;
-            Weight = 1.0;
+            this.Stackable = true;
+            this.Amount = amount;
+            this.Weight = 1.0;
         }
 
         public Bone(Serial serial)
@@ -22,13 +24,25 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description
+        {
+            get
+            {
+                return this.LabelNumber;
+            }
+        }
+        bool ICommodity.IsDeedable
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

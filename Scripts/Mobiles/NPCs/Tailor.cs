@@ -1,39 +1,57 @@
-using Server.Engines.BulkOrders;
 using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Mobiles
 {
     public class Tailor : BaseVendor
     {
         private readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
 
-        public override NpcGuild NpcGuild => NpcGuild.TailorsGuild;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.TailorsGuild;
+            }
+        }
 
         [Constructable]
         public Tailor()
             : base("the tailor")
         {
-            SetSkill(SkillName.Tailoring, 64.0, 100.0);
+            this.SetSkill(SkillName.Tailoring, 64.0, 100.0);
         }
 
         public override void InitSBInfo()
         {
-            if (!IsStygianVendor)
-            {
-                m_SBInfos.Add(new SBTailor());
+            if(!IsStygianVendor)
+            { 
+                this.m_SBInfos.Add(new SBTailor());
             }
             else
             {
-                m_SBInfos.Add(new SBSATailor());
+                this.m_SBInfos.Add(new SBSATailor());
             }
         }
 
-        public override VendorShoeType ShoeType => Utility.RandomBool() ? VendorShoeType.Sandals : VendorShoeType.Shoes;
+        public override VendorShoeType ShoeType
+        {
+            get
+            {
+                return Utility.RandomBool() ? VendorShoeType.Sandals : VendorShoeType.Shoes;
+            }
+        }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Tailor;
+        public override BODType BODType { get { return BODType.Tailor; } }
 
         public override Item CreateBulkOrder(Mobile from, bool fromContextMenu)
         {
@@ -79,7 +97,7 @@ namespace Server.Mobiles
 
         public override void OnSuccessfulBulkOrderReceive(Mobile from)
         {
-            if (from is PlayerMobile)
+            if (Core.SE && from is PlayerMobile)
                 ((PlayerMobile)from).NextTailorBulkOrder = TimeSpan.Zero;
         }
 
@@ -94,7 +112,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

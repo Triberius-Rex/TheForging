@@ -1,8 +1,11 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class AncientParchment : Item
     {
-        public override int LabelNumber => 1155627;  // Ancient Parchment
+        public override int LabelNumber { get { return 1155627; } } // Ancient Parchment
 
         [Constructable]
         public AncientParchment()
@@ -23,7 +26,7 @@ namespace Server.Items
         {
             if (IsChildOf(m.Backpack))
             {
-                m.PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 1155628, m.NetState); // *The parchment appears heavily worn and in need of restoration by a skilled Scribe...*
+                m.PrivateOverheadMessage(Server.Network.MessageType.Regular, 0x3B2, 1155628, m.NetState); // *The parchment appears heavily worn and in need of restoration by a skilled Scribe...*
             }
         }
 

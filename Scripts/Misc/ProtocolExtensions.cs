@@ -1,7 +1,7 @@
+using System;
 using Server.Engines.PartySystem;
 using Server.Guilds;
 using Server.Network;
-using System;
 
 namespace Server.Misc
 {
@@ -10,10 +10,10 @@ namespace Server.Misc
         private static readonly PacketHandler[] m_Handlers = new PacketHandler[0x100];
         public static void Initialize()
         {
-            PacketHandlers.Register(0xF0, 0, false, DecodeBundledPacket);
+            PacketHandlers.Register(0xF0, 0, false, new OnPacketReceive(DecodeBundledPacket));
 
-            Register(0x00, true, QueryPartyLocations);
-            Register(0x01, true, QueryGuildsLocations);
+            Register(0x00, true, new OnPacketReceive(QueryPartyLocations));
+            Register(0x01, true, new OnPacketReceive(QueryGuildsLocations));
         }
 
         public static void QueryPartyLocations(NetState state, PacketReader pvSrc)
@@ -93,9 +93,9 @@ namespace Server.Misc
         public ProtocolExtension(int packetID, int capacity)
             : base(0xF0)
         {
-            EnsureCapacity(4 + capacity);
+            this.EnsureCapacity(4 + capacity);
 
-            m_Stream.Write((byte)packetID);
+            this.m_Stream.Write((byte)packetID);
         }
     }
 
@@ -106,7 +106,7 @@ namespace Server.Misc
         {
             for (int i = 0; i < party.Members.Count; ++i)
             {
-                PartyMemberInfo pmi = party.Members[i];
+                PartyMemberInfo pmi = (PartyMemberInfo)party.Members[i];
 
                 if (pmi == null || pmi.Mobile == from)
                     continue;
@@ -116,13 +116,13 @@ namespace Server.Misc
                 if (Utility.InUpdateRange(from, mob) && from.CanSee(mob))
                     continue;
 
-                m_Stream.Write(mob.Serial);
-                m_Stream.Write((short)mob.X);
-                m_Stream.Write((short)mob.Y);
-                m_Stream.Write((byte)(mob.Map == null ? 0 : mob.Map.MapID));
+                this.m_Stream.Write((int)mob.Serial);
+                this.m_Stream.Write((short)mob.X);
+                this.m_Stream.Write((short)mob.Y);
+                this.m_Stream.Write((byte)(mob.Map == null ? 0 : mob.Map.MapID));
             }
 
-            m_Stream.Write(0);
+            this.m_Stream.Write((int)0);
         }
     }
 
@@ -131,7 +131,7 @@ namespace Server.Misc
         public AckGuildsLocations() : base(0x02, 5)
         {
             m_Stream.Write((byte)0);
-            m_Stream.Write(0);
+            m_Stream.Write((int)0);
         }
 
         public AckGuildsLocations(Mobile from, Guild guild, bool locations) : base(0x02, ((guild.Members.Count - 1) * (locations ? 10 : 4)) + 5)
@@ -148,7 +148,7 @@ namespace Server.Misc
                 if (locations && Utility.InUpdateRange(from, mob) && from.CanSee(mob))
                     continue;
 
-                m_Stream.Write(mob.Serial);
+                m_Stream.Write((int)mob.Serial);
 
                 if (locations)
                 {
@@ -163,7 +163,7 @@ namespace Server.Misc
                 }
             }
 
-            m_Stream.Write(0);
+            m_Stream.Write((int)0);
         }
     }
 }

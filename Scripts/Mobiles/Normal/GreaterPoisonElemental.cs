@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -9,7 +10,7 @@ namespace Server.Mobiles
         public GreaterPoisonElemental()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "greater poison elemental";
+            Name = "Greater Poison Elemental";
             Body = 162;
             BaseSoundID = 263;
 
@@ -45,6 +46,11 @@ namespace Server.Mobiles
 
             Fame = 12500;
             Karma = -12500;
+
+            VirtualArmor = 70;
+
+            PackItem(new Nightshade(4));
+            PackItem(new LesserPoisonPotion());
         }
 
         public GreaterPoisonElemental(Serial serial)
@@ -52,32 +58,60 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Poison.Lethal;
-        public override double HitPoisonChance => 0.75;
-        public override int TreasureMapLevel => 5;
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override double HitPoisonChance
+        {
+            get
+            {
+                return 0.75;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.MedScrolls);
-            AddLoot(LootPack.LootItem<Nightshade>(4, true));
-            AddLoot(LootPack.LootItem<LesserPoisonPotion>(true));
         }
 
         public override void OnDeath(Container c)
         {
             base.OnDeath(c);
 
-            if (Utility.RandomDouble() < 0.03)
-                c.DropItem(new LuckyCoin());
+            if (Utility.RandomDouble() < 0.03)            
+                c.DropItem(new LuckyCoin());           
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

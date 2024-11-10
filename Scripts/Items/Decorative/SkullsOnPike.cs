@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     /* 
     first seen halloween 2009.  subsequently in 2010, 
@@ -17,12 +19,18 @@
         {
         }
 
-        public override double DefaultWeight => 1;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

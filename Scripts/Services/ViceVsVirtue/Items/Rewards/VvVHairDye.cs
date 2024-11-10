@@ -1,12 +1,18 @@
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Items;
+
 namespace Server.Engines.VvV
 {
-    public class VvVHairDye : Item
-    {
+	public class VvVHairDye : Item
+	{
         public override int LabelNumber
         {
             get
             {
-                if (Hue == ViceVsVirtueSystem.VirtueHue)
+                if (this.Hue == ViceVsVirtueSystem.VirtueHue)
                     return 1155538;
 
                 return 1155539;
@@ -26,8 +32,8 @@ namespace Server.Engines.VvV
             {
                 if (ViceVsVirtueSystem.IsVvV(m))
                 {
-                    m.HairHue = Hue;
-                    m.FacialHairHue = Hue;
+                    m.HairHue = this.Hue;
+                    m.FacialHairHue = this.Hue;
 
                     Delete();
                     m.PlaySound(0x4E);
@@ -48,19 +54,19 @@ namespace Server.Engines.VvV
 
         public VvVHairDye(Serial serial)
             : base(serial)
-        {
-        }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
-    }
+		{
+		}
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+		}
+	}
 }

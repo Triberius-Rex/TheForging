@@ -1,12 +1,16 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x903, 0x406E)]
+    // Based off a WarMace
+    [FlipableAttribute(0x903, 0x406E)]
     public class DiscMace : BaseBashing
     {
         [Constructable]
         public DiscMace()
             : base(0x903)
         {
+            //Weight = 17.0;
         }
 
         public DiscMace(Serial serial)
@@ -14,20 +18,105 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.ArmorIgnore;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.Disarm;
-        public override int StrengthReq => 45;
-        public override int MinDamage => 11;
-        public override int MaxDamage => 15;
-        public override float Speed => 2.75f;
-
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 110;
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ArmorIgnore;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.Disarm;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 11;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 26;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 2.75f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 32;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 110;
+            }
+        }
+        
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+        public override bool CanBeWornByGargoyles { get { return true; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

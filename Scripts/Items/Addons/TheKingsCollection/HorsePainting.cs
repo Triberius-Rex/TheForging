@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -32,12 +33,12 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new HorsePaintingDeed();
+        public override BaseAddonDeed Deed { get { return new HorsePaintingDeed(); } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,7 +50,7 @@ namespace Server.Items
 
     public class HorsePaintingDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1154186;  // Horse Painting
+        public override int LabelNumber { get { return 1154186; } } // Horse Painting
 
         private DirectionType _Direction;
 
@@ -92,12 +93,12 @@ namespace Server.Items
                 base.OnDoubleClick(from);
         }
 
-        public override BaseAddon Addon => new HorsePaintingAddon(_Direction);
-
+        public override BaseAddon Addon { get { return new HorsePaintingAddon(_Direction); } }
+                
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

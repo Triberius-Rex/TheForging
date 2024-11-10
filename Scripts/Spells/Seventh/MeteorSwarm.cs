@@ -1,14 +1,16 @@
-using Server.Items;
-using Server.Mobiles;
-using Server.Targeting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using Server.Targeting;
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Spells.Seventh
 {
     public class MeteorSwarmSpell : MagerySpell
     {
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
         public Item Item { get; set; }
 
         private static readonly SpellInfo m_Info = new SpellInfo(
@@ -40,8 +42,20 @@ namespace Server.Spells.Seventh
             return base.GetMana();
         }
 
-        public override SpellCircle Circle => SpellCircle.Seventh;
-        public override bool DelayedDamage => true;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Seventh;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this, Item);
@@ -73,26 +87,40 @@ namespace Server.Spells.Seventh
                 if (p is Item)
                     p = ((Item)p).GetWorldLocation();
 
-                System.Collections.Generic.List<IDamageable> targets = AcquireIndirectTargets(p, 2).ToList();
-                int count = Math.Max(1, targets.Count);
+                var targets = AcquireIndirectTargets(p, 2).ToList();
+                var count = Math.Max(1, targets.Count);
 
                 if (count > 0)
                 {
                     Effects.PlaySound(p, Caster.Map, 0x160);
                 }
 
-                foreach (IDamageable id in targets)
+                foreach (var id in targets)
                 {
                     Mobile m = id as Mobile;
-                    double damage = GetNewAosDamage(51, 1, 5, id is PlayerMobile, id);
+                    double damage;
 
-                    if (count > 2)
+                    if (Core.AOS)
+                        damage = GetNewAosDamage(51, 1, 5, id is PlayerMobile, id);
+                    else
+                        damage = Utility.Random(27, 22);
+
+                    if (Core.AOS && count > 2)
                         damage = (damage * 2) / count;
+                    else if (!Core.AOS)
+                        damage /= count;
+
+                    if (!Core.AOS && m != null && CheckResisted(m))
+                    {
+                        damage *= 0.5;
+
+                        m.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                    }
 
                     IDamageable source = Caster;
                     IDamageable target = id;
 
-                    if (SpellHelper.CheckReflect(this, ref source, ref target))
+                    if (SpellHelper.CheckReflect((int)Circle, ref source, ref target, SpellDamageType))
                     {
                         Timer.DelayCall(TimeSpan.FromSeconds(.5), () =>
                         {
@@ -123,7 +151,7 @@ namespace Server.Spells.Seventh
             private readonly Item m_Item;
 
             public InternalTarget(MeteorSwarmSpell owner, Item item)
-                : base(10, true, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, true, TargetFlags.None)
             {
                 m_Owner = owner;
                 m_Item = item;

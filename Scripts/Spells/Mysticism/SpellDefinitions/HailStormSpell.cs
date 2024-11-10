@@ -1,17 +1,22 @@
-using Server.Mobiles;
-using Server.Targeting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Spells;
+using Server.Targeting;
 
 namespace Server.Spells.Mysticism
 {
     public class HailStormSpell : MysticSpell
     {
-        public override SpellCircle Circle => SpellCircle.Seventh;
-        public override bool DelayedDamage => false;
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override SpellCircle Circle { get { return SpellCircle.Seventh; } }
+        public override bool DelayedDamage { get { return true; } }
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Hail Storm", "Kal Des Ylem",
                 230,
                 9022,
@@ -54,12 +59,12 @@ namespace Server.Spells.Mysticism
                             x >= effectArea.X + effectArea.Width - 1 && y >= effectArea.Y + effectArea.Height - 1 ||
                             y >= effectArea.Y + effectArea.Height - 1 && x == effectArea.X ||
                             y == effectArea.Y && x >= effectArea.X + effectArea.Width - 1)
-                            continue;
+                                continue;
 
                         IPoint3D pnt = new Point3D(x, y, p.Z);
                         SpellHelper.GetSurfaceTop(ref pnt);
 
-                        Timer.DelayCall(TimeSpan.FromMilliseconds(Utility.RandomMinMax(100, 300)), point =>
+                        Timer.DelayCall<Point3D>(TimeSpan.FromMilliseconds(Utility.RandomMinMax(100, 300)), point =>
                             {
                                 Effects.SendLocationEffect(point, map, 0x3779, 12, 11, 0x63, 0);
                             },
@@ -67,10 +72,10 @@ namespace Server.Spells.Mysticism
                     }
                 }
 
-                System.Collections.Generic.List<IDamageable> list = AcquireIndirectTargets(p, 2).ToList();
+                var list = AcquireIndirectTargets(p, 2).ToList();
                 int count = list.Count;
 
-                foreach (IDamageable id in list)
+                foreach (var id in list)
                 {
                     if (id.Deleted)
                         continue;
@@ -83,7 +88,7 @@ namespace Server.Spells.Mysticism
                     Caster.DoHarmful(id);
                     SpellHelper.Damage(this, id, damage, 0, 0, 100, 0, 0);
 
-                    Effects.SendTargetParticles(id, 0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255, 0);
+                    Server.Effects.SendTargetParticles(id, 0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255, 0);
                 }
 
                 ColUtility.Free(list);
@@ -94,7 +99,7 @@ namespace Server.Spells.Mysticism
 
         public class InternalTarget : Target
         {
-            private readonly HailStormSpell m_Owner;
+            private HailStormSpell m_Owner;
 
             public InternalTarget(HailStormSpell owner)
                 : base(10, true, TargetFlags.None)

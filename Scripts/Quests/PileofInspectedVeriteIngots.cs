@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class PileofInspectedVeriteIngots : Item
     {
-        public override int LabelNumber => 1113029; // Pile of Inspected Verite Ingots
-
         [Constructable]
         public PileofInspectedVeriteIngots()
             : base(0x1BEA)
         {
-            Hue = CraftResources.GetHue(CraftResource.Verite);
+            this.Name = "Pile of Inspected Agapite Ingots";
+
+            this.Hue = 2207;
         }
 
         public PileofInspectedVeriteIngots(Serial serial)
@@ -20,7 +22,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

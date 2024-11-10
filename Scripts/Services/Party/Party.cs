@@ -1,8 +1,9 @@
-using Server.Commands;
-using Server.Network;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
+using Server.Commands;
+using Server.Factions;
+using Server.Network;
+using Server.Targeting;
 
 namespace Server.Engines.PartySystem
 {
@@ -24,11 +25,41 @@ namespace Server.Engines.PartySystem
             m_Members.Add(new PartyMemberInfo(leader));
         }
 
-        public int Count => m_Members.Count;
-        public bool Active => m_Members.Count > 1;
-        public Mobile Leader => m_Leader;
-        public List<PartyMemberInfo> Members => m_Members;
-        public List<Mobile> Candidates => m_Candidates;
+        public int Count
+        {
+            get
+            {
+                return m_Members.Count;
+            }
+        }
+        public bool Active
+        {
+            get
+            {
+                return m_Members.Count > 1;
+            }
+        }
+        public Mobile Leader
+        {
+            get
+            {
+                return m_Leader;
+            }
+        }
+        public List<PartyMemberInfo> Members
+        {
+            get
+            {
+                return m_Members;
+            }
+        }
+        public List<Mobile> Candidates
+        {
+            get
+            {
+                return m_Candidates;
+            }
+        }
         public PartyMemberInfo this[int index]
         {
             get
@@ -49,16 +80,16 @@ namespace Server.Engines.PartySystem
         }
         public static void Initialize()
         {
-            EventSink.Logout += EventSink_Logout;
-            EventSink.Login += EventSink_Login;
-            EventSink.PlayerDeath += EventSink_PlayerDeath;
+            EventSink.Logout += new LogoutEventHandler(EventSink_Logout);
+            EventSink.Login += new LoginEventHandler(EventSink_Login);
+            EventSink.PlayerDeath += new PlayerDeathEventHandler(EventSink_PlayerDeath);
 
-            CommandSystem.Register("ListenToParty", AccessLevel.GameMaster, ListenToParty_OnCommand);
+            CommandSystem.Register("ListenToParty", AccessLevel.GameMaster, new CommandEventHandler(ListenToParty_OnCommand));
         }
 
         public static void ListenToParty_OnCommand(CommandEventArgs e)
         {
-            e.Mobile.BeginTarget(-1, false, TargetFlags.None, ListenToParty_OnTarget);
+            e.Mobile.BeginTarget(-1, false, TargetFlags.None, new TargetCallback(ListenToParty_OnTarget));
             e.Mobile.SendMessage("Target a partied player.");
         }
 
@@ -66,7 +97,7 @@ namespace Server.Engines.PartySystem
         {
             if (obj is Mobile)
             {
-                Party p = Get((Mobile)obj);
+                Party p = Party.Get((Mobile)obj);
 
                 if (p == null)
                 {
@@ -88,7 +119,7 @@ namespace Server.Engines.PartySystem
         public static void EventSink_PlayerDeath(PlayerDeathEventArgs e)
         {
             Mobile from = e.Mobile;
-            Party p = Get(from);
+            Party p = Party.Get(from);
 
             if (p != null)
             {
@@ -99,14 +130,14 @@ namespace Server.Engines.PartySystem
                 else if (m == null)
                     p.SendPublicMessage(from, "I was killed !!");
                 else
-                    p.SendPublicMessage(from, string.Format("I was killed by {0} !!", m.Name));
+                    p.SendPublicMessage(from, String.Format("I was killed by {0} !!", m.Name));
             }
         }
 
         public static void EventSink_Login(LoginEventArgs e)
         {
             Mobile from = e.Mobile;
-            Party p = Get(from);
+            Party p = Party.Get(from);
 
             if (p != null)
                 new RejoinTimer(from).Start();
@@ -117,7 +148,7 @@ namespace Server.Engines.PartySystem
         public static void EventSink_Logout(LogoutEventArgs e)
         {
             Mobile from = e.Mobile;
-            Party p = Get(from);
+            Party p = Party.Get(from);
 
             if (p != null)
                 p.Remove(from);
@@ -135,7 +166,17 @@ namespace Server.Engines.PartySystem
 
         public static void Invite(Mobile from, Mobile target)
         {
-            Party p = Get(from);
+            Faction ourFaction = Faction.Find(from);
+            Faction theirFaction = Faction.Find(target);
+
+            if (ourFaction != null && theirFaction != null && ourFaction != theirFaction)
+            {
+                from.SendLocalizedMessage(1008088); // You cannot have players from opposing factions in the same party!
+                target.SendLocalizedMessage(1008093); // The party cannot have members from opposing factions.
+                return;
+            }
+
+            Party p = Party.Get(from);
 
             if (p == null)
                 from.Party = p = new Party(from);
@@ -168,7 +209,7 @@ namespace Server.Engines.PartySystem
 
                 for (int i = 0; i < m_Members.Count; ++i)
                 {
-                    Mobile f = m_Members[i].Mobile;
+                    Mobile f = ((PartyMemberInfo)m_Members[i]).Mobile;
 
                     f.Send(memberList);
 
@@ -200,6 +241,12 @@ namespace Server.Engines.PartySystem
 
         public void OnAccept(Mobile from, bool force)
         {
+            Faction ourFaction = Faction.Find(m_Leader);
+            Faction theirFaction = Faction.Find(from);
+
+            if (!force && ourFaction != null && theirFaction != null && ourFaction != theirFaction)
+                return;
+
             //  : joined the party.
             SendToAll(new MessageLocalizedAffix(Serial.MinusOne, -1, MessageType.Label, 0x3B2, 3, 1008094, "", AffixType.Prepend | AffixType.System, from.Name, ""));
 
@@ -278,7 +325,7 @@ namespace Server.Engines.PartySystem
                 }
             }
 
-            Spells.SkillMasteries.SkillMasterySpell.OnPartyRemoved(m, m_Members == null || m_Members.Count == 0);
+            Server.Spells.SkillMasteries.SkillMasterySpell.OnPartyRemoved(m, m_Members == null || m_Members.Count == 0);
         }
 
         public bool Contains(Mobile m)
@@ -417,7 +464,7 @@ namespace Server.Engines.PartySystem
         }
 
         private void SendToStaffMessage(Mobile from, string text)
-        {
+        { 
             Packet p = null;
 
             foreach (NetState ns in from.GetClientsInRange(8))
@@ -438,7 +485,7 @@ namespace Server.Engines.PartySystem
 
         private void SendToStaffMessage(Mobile from, string format, params object[] args)
         {
-            SendToStaffMessage(from, string.Format(format, args));
+            SendToStaffMessage(from, String.Format(format, args));
         }
 
         private class RejoinTimer : Timer
@@ -452,7 +499,7 @@ namespace Server.Engines.PartySystem
 
             protected override void OnTick()
             {
-                Party p = Get(m_Mobile);
+                Party p = Party.Get(m_Mobile);
 
                 if (p == null)
                     return;
@@ -475,7 +522,7 @@ namespace Server.Engines.PartySystem
                         m_Mobile.Send(new MobileStatusCompact(m.CanBeRenamedBy(m_Mobile), m));
                         m_Mobile.Send(new MobileAttributesN(m));
 
-                        if (m_Mobile.NetState != null && m_Mobile.NetState.IsEnhancedClient)
+                        if(m_Mobile.NetState != null && m_Mobile.NetState.IsEnhancedClient)
                             Waypoints.Create(m_Mobile, m, WaypointType.PartyMember);
                     }
                 }

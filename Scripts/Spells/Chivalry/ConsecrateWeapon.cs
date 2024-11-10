@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Spells.Chivalry
 {
@@ -11,28 +11,64 @@ namespace Server.Spells.Chivalry
             -1,
             9002);
 
-        private static readonly Dictionary<Mobile, ConsecratedWeaponContext> m_Table = new Dictionary<Mobile, ConsecratedWeaponContext>();
+        private static Dictionary<Mobile, ConsecratedWeaponContext> m_Table = new Dictionary<Mobile, ConsecratedWeaponContext>();
 
         public ConsecrateWeaponSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.5);
-        public override double RequiredSkill => 15.0;
-        public override int RequiredMana => 10;
-        public override int RequiredTithing => 10;
-        public override int MantraNumber => 1060720;// Consecrus Arma
-        public override bool BlocksMovement => false;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 15.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int RequiredTithing
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int MantraNumber
+        {
+            get
+            {
+                return 1060720;
+            }
+        }// Consecrus Arma
+        public override bool BlocksMovement
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void OnCast()
         {
-            BaseWeapon weapon = Caster.Weapon as BaseWeapon;
+            BaseWeapon weapon = this.Caster.Weapon as BaseWeapon;
 
             if (Caster.Player && (weapon == null || weapon is Fists))
             {
-                Caster.SendLocalizedMessage(501078); // You must be holding a weapon.
+                this.Caster.SendLocalizedMessage(501078); // You must be holding a weapon.
             }
-            else if (CheckSequence())
+            else if (this.CheckSequence())
             {
                 /* Temporarily enchants the weapon the caster is currently wielding.
                 * The type of damage the weapon inflicts when hitting a target will
@@ -41,7 +77,7 @@ namespace Server.Spells.Chivalry
                 */
                 int itemID, soundID;
 
-                switch (weapon.Skill)
+                switch ( weapon.Skill )
                 {
                     case SkillName.Macing:
                         itemID = 0xFB4;
@@ -57,19 +93,19 @@ namespace Server.Spells.Chivalry
                         break;
                 }
 
-                Caster.PlaySound(0x20C);
-                Caster.PlaySound(soundID);
-                Caster.FixedParticles(0x3779, 1, 30, 9964, 3, 3, EffectLayer.Waist);
+                this.Caster.PlaySound(0x20C);
+                this.Caster.PlaySound(soundID);
+                this.Caster.FixedParticles(0x3779, 1, 30, 9964, 3, 3, EffectLayer.Waist);
 
-                IEntity from = new Entity(Serial.Zero, new Point3D(Caster.X, Caster.Y, Caster.Z), Caster.Map);
-                IEntity to = new Entity(Serial.Zero, new Point3D(Caster.X, Caster.Y, Caster.Z + 50), Caster.Map);
+                IEntity from = new Entity(Serial.Zero, new Point3D(this.Caster.X, this.Caster.Y, this.Caster.Z), this.Caster.Map);
+                IEntity to = new Entity(Serial.Zero, new Point3D(this.Caster.X, this.Caster.Y, this.Caster.Z + 50), this.Caster.Map);
                 Effects.SendMovingParticles(from, to, itemID, 1, 0, false, false, 33, 3, 9501, 1, 0, EffectLayer.Head, 0x100);
 
-                double seconds = ComputePowerValue(20);
+                double seconds = this.ComputePowerValue(20);
 
                 // TODO: Should caps be applied?
 
-                int pkarma = Caster.Karma;
+                int pkarma = this.Caster.Karma;
 
                 if (pkarma > 5000)
                     seconds = 11.0;
@@ -107,14 +143,14 @@ namespace Server.Spells.Chivalry
                 }
 
                 weapon.ConsecratedContext = context;
-                context.Timer = Timer.DelayCall(duration, RemoveEffects, Caster);
+                context.Timer = Timer.DelayCall<Mobile>(duration, RemoveEffects, Caster);
 
                 m_Table[Caster] = context;
 
-                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ConsecrateWeapon, 1151385, 1151386, duration, Caster, string.Format("{0}\t{1}", context.ConsecrateProcChance, context.ConsecrateDamageBonus)));
+                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ConsecrateWeapon, 1151385, 1151386, duration, Caster, String.Format("{0}\t{1}", context.ConsecrateProcChance, context.ConsecrateDamageBonus)));
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public static bool IsUnderEffects(Mobile m)
@@ -126,7 +162,7 @@ namespace Server.Spells.Chivalry
         {
             if (m_Table.ContainsKey(m))
             {
-                ConsecratedWeaponContext context = m_Table[m];
+                var context = m_Table[m];
 
                 context.Expire();
 
@@ -146,7 +182,7 @@ namespace Server.Spells.Chivalry
         {
             get
             {
-                if (Owner.Skills.Chivalry.Value >= 80)
+                if (!Core.SA || Owner.Skills.Chivalry.Value >= 80)
                 {
                     return 100;
                 }
@@ -159,11 +195,14 @@ namespace Server.Spells.Chivalry
         {
             get
             {
-                double value = Owner.Skills.Chivalry.Value;
-
-                if (value >= 90)
+                if (Core.SA)
                 {
-                    return (int)Math.Truncate((value - 90) / 2);
+                    double value = Owner.Skills.Chivalry.Value;
+
+                    if (value >= 90)
+                    {
+                        return (int)Math.Truncate((value - 90) / 2);
+                    }
                 }
 
                 return 0;

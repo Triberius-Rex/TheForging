@@ -1,7 +1,7 @@
-using Server.Engines.Quests;
+using System;
 using Server.Items;
 using Server.Network;
-using System;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
@@ -11,7 +11,7 @@ namespace Server.Mobiles
         private DateTime m_NextWoolTime;
         [Constructable]
         public Sheep()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a sheep";
             Body = 0xCF;
@@ -37,6 +37,8 @@ namespace Server.Mobiles
             Fame = 300;
             Karma = 0;
 
+            VirtualArmor = 6;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 11.1;
@@ -60,10 +62,34 @@ namespace Server.Mobiles
                 Body = (DateTime.UtcNow >= m_NextWoolTime) ? 0xCF : 0xDF;
             }
         }
-        public override int Meat => 3;
-        public override MeatType MeatType => MeatType.LambLeg;
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
-        public override int Wool => (Body == 0xCF ? 3 : 0);
+        public override int Meat
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override MeatType MeatType
+        {
+            get
+            {
+                return MeatType.LambLeg;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+            }
+        }
+        public override int Wool
+        {
+            get
+            {
+                return (Body == 0xCF ? 3 : 0);
+            }
+        }
         public bool Carve(Mobile from, Item item)
         {
             if (DateTime.UtcNow < m_NextWoolTime)
@@ -79,11 +105,11 @@ namespace Server.Mobiles
             if (from is PlayerMobile)
             {
                 PlayerMobile player = (PlayerMobile)from;
-                foreach (BaseQuest quest in player.Quests)
+                foreach(BaseQuest quest in player.Quests)
                 {
-                    if (quest is ShearingKnowledgeQuest)
+                    if(quest is ShearingKnowledgeQuest)
                     {
-                        if (!quest.Completed &&
+                        if(!quest.Completed && 
                             (from.Map == Map.Trammel || from.Map == Map.Felucca))
                         {
                             from.AddToBackpack(new BritannianWool(1));
@@ -108,7 +134,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.WriteDeltaTime(m_NextWoolTime);
         }
@@ -119,7 +145,7 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {

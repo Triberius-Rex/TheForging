@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -10,10 +11,22 @@ namespace Server.Items
         public int MaxQuantity { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual bool IsEmpty => (m_Quantity <= 0);
+        public virtual bool IsEmpty
+        {
+            get
+            {
+                return (m_Quantity <= 0);
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual bool IsFull => (m_Quantity >= MaxQuantity);
+        public virtual bool IsFull
+        {
+            get
+            {
+                return (m_Quantity >= MaxQuantity);
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public virtual int Quantity
@@ -27,7 +40,7 @@ namespace Server.Items
                 if (value != m_Quantity)
                 {
                     m_Quantity = (value < 1) ? 0 : (value > MaxQuantity) ? MaxQuantity : value;
-
+                    
                     ItemID = (IsEmpty) ? Item_ID : FullItem_ID;
                 }
             }
@@ -57,10 +70,10 @@ namespace Server.Items
             base.Serialize(writer);
             writer.Write(0);
 
-            writer.Write(m_Quantity);
-            writer.Write(Item_ID);
-            writer.Write(FullItem_ID);
-            writer.Write(MaxQuantity);
+            writer.Write((int)m_Quantity);
+            writer.Write((int)Item_ID);
+            writer.Write((int)FullItem_ID);
+            writer.Write((int)MaxQuantity);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -100,12 +113,12 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new WashBasinDeed();
+        public override BaseAddonDeed Deed { get { return new WashBasinDeed(); } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -117,8 +130,8 @@ namespace Server.Items
 
     public class WashBasinDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1158966;  // Wash Basin
-
+        public override int LabelNumber { get { return 1158966; } } // Wash Basin
+        
         public override BaseAddon Addon
         {
             get
@@ -173,7 +186,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

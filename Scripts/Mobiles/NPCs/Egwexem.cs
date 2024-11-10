@@ -1,34 +1,76 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
 {
     public class RumorsAboundQuest : BaseQuest
-    {
+    { 
         public RumorsAboundQuest()
             : base()
         {
             AddObjective(new DeliverObjective(typeof(EgwexemWrit), "Egwexem's Writ", 1, typeof(Naxatilor), "Naxatilor"));
 
-            AddReward(new BaseReward(1112731));
+            AddReward(new BaseReward(1112731)); 
         }
 
-        public override TimeSpan RestartDelay => TimeSpan.FromHours(12);
+        public override TimeSpan RestartDelay
+        {
+            get
+            {
+                return TimeSpan.FromHours(12);
+            }
+        }
 
-        public override bool DoneOnce => true;
+        public override bool DoneOnce
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         /* Rumors Abound */
-        public override object Title => 1112514;
-        public override object Description => 1112515;
-        public override object Refuse => 1112516;
-        public override object Uncomplete => "You never spoke to Naxatillor yet! Go to him!";
+        public override object Title
+        {
+            get
+            {
+                return 1112514;
+            }
+        }
+        public override object Description
+        {
+            get
+            {
+                return 1112515;
+            }
+        }
+        public override object Refuse
+        {
+            get
+            {
+                return 1112516;
+            }
+        }
+        public override object Uncomplete
+        {
+            get
+            {
+                return "You never spoke to Naxatillor yet! Go to him!";
+            }
+        }
 
-        public override object Complete => 1112518;
+        public override object Complete
+        {
+            get
+            {
+                return 1112518;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -52,14 +94,20 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(RumorsAboundQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
             InitStats(100, 100, 25);
-
+			
             Female = false;
             CantWalk = true;
             Body = 666;
@@ -69,17 +117,17 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new GargishClothChest(), dropChance: 1);
-            SetWearable(new GargishClothKilt(), dropChance: 1);
-            SetWearable(new GargishClothLegs(), Utility.RandomNeutralHue(), 1);
+            AddItem(new Backpack());
+            AddItem(new GargishClothChest());
+            AddItem(new GargishClothKilt());
+            AddItem(new GargishClothLegs(Utility.RandomNeutralHue()));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -104,12 +152,18 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override int LabelNumber => 1112520;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1112520;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

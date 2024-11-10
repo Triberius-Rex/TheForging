@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class InspectedKegofTotalRefreshment : Item
@@ -6,9 +8,9 @@ namespace Server.Items
         public InspectedKegofTotalRefreshment()
             : base(0x1940)
         {
-            Name = "Inspected Keg of Total Refreshment";
+            this.Name = "Inspected Keg of Total Refreshment";
 
-            Hue = 2418;
+            this.Hue = 2418;
         }
 
         public InspectedKegofTotalRefreshment(Serial serial)
@@ -20,7 +22,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

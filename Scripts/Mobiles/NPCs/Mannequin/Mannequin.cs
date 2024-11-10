@@ -1,21 +1,20 @@
-using Server.ContextMenus;
-using Server.Gumps;
+using System;
 using Server.Items;
 using Server.Multis;
 using Server.Network;
-using Server.Targeting;
-using Server.Misc;
-using System;
+using Server.ContextMenus;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Gumps;
+using Server.Targeting;
 
 namespace Server.Mobiles
 {
     public class Mannequin : BaseCreature
     {
-        public override bool NoHouseRestrictions => true;
-        public override bool ClickTitle => false;
-        public override bool IsInvulnerable => true;
+        public override bool NoHouseRestrictions { get { return true; } }
+        public override bool ClickTitle { get { return false; } }
+        public override bool IsInvulnerable { get { return true; } }
 
         public Mobile Owner { get; set; }
         public string Description { get; set; }
@@ -46,10 +45,10 @@ namespace Server.Mobiles
 
         public bool IsOwner(Mobile m)
         {
-            if (m == Owner || m.AccessLevel >= AccessLevel.GameMaster)
+            if (m.AccessLevel >= AccessLevel.GameMaster)
                 return true;
 
-            return AccountHandler.CheckAccount(m, Owner);
+            return m == Owner;
         }
 
         public override bool CanBeDamaged()
@@ -96,6 +95,10 @@ namespace Server.Mobiles
             }
         }
 
+        public override void OnAosSingleClick(Mobile from)
+        {
+        }
+
         public override void OnDoubleClick(Mobile from)
         {
             DisplayPaperdollTo(from);
@@ -132,11 +135,11 @@ namespace Server.Mobiles
             }
         }
 
-        private readonly List<Layer> SameLayers = new List<Layer>
+        private List<Layer> SameLayers = new List<Layer>()
         {
             Layer.FirstValid,
             Layer.OneHanded,
-            Layer.TwoHanded
+            Layer.TwoHanded,
         };
 
         public bool CheckSameLayer(Item i1, Item i2)
@@ -161,108 +164,55 @@ namespace Server.Mobiles
 
         public static List<ValuedProperty> FindItemsProperty(List<Item> item)
         {
-            List<Type> ll = new List<Type>();
-
-            var rs = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
-
-            for (var index = 0; index < rs.Length; index++)
-            {
-                var r = rs[index];
-
-                if (r.FullName != null && r.FullName.Contains("MannequinProperty") && r.IsClass && !r.IsAbstract)
-                {
-                    ll.Add(r);
-                }
-            }
+            var ll = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+              .ToList().Where(r => r.FullName.Contains("MannequinProperty") && r.IsClass == true && r.IsAbstract == false).ToList();
 
             List<ValuedProperty> cat = new List<ValuedProperty>();
 
-            for (var index = 0; index < ll.Count; index++)
+            ll.ForEach(x =>
             {
-                var x = ll[index];
+                var CI = Activator.CreateInstance(Type.GetType(x.FullName));
 
-                object CI = Activator.CreateInstance(Type.GetType(x.FullName));
-
-                if (CI is ValuedProperty p && (p.Matches(item) || p.AlwaysVisible))
+                if (CI is ValuedProperty)
                 {
-                    cat.Add(p);
+                    ValuedProperty p = CI as ValuedProperty;
+
+                    if (p.Matches(item) || p.AlwaysVisible)
+                        cat.Add(p);
                 }
-            }
+            });
 
             return cat;
         }
 
         public static List<ValuedProperty> FindItemProperty(Item item, bool visible = false)
         {
-            List<Type> ll = new List<Type>();
-
-            var rs = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
-
-            for (var index = 0; index < rs.Length; index++)
-            {
-                var r = rs[index];
-
-                if (r.FullName != null && r.FullName.Contains("MannequinProperty") && r.IsClass && !r.IsAbstract)
-                {
-                    ll.Add(r);
-                }
-            }
+            var ll = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+              .ToList().Where(r => r.FullName.Contains("MannequinProperty") && r.IsClass == true && r.IsAbstract == false).ToList();
 
             List<ValuedProperty> cat = new List<ValuedProperty>();
 
-            for (var index = 0; index < ll.Count; index++)
+            ll.ForEach(x =>
             {
-                var x = ll[index];
+                var CI = Activator.CreateInstance(Type.GetType(x.FullName));
 
-                object CI = Activator.CreateInstance(Type.GetType(x.FullName));
-
-                if (CI is ValuedProperty p && (p.Matches(item) || visible && p.AlwaysVisible))
+                if (CI is ValuedProperty)
                 {
-                    cat.Add(p);
+                    ValuedProperty p = CI as ValuedProperty;
+
+                    if (p.Matches(item) || visible && p.AlwaysVisible)
+                        cat.Add(p);
                 }
-            }
+            });
 
             return cat.OrderByDescending(x => x.Hue).ToList();
-        }
-
-        public static List<ValuedProperty> FindMagicalItemProperty(Item item)
-        {
-            List<Type> ll = new List<Type>();
-
-            var rs = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
-
-            for (var index = 0; index < rs.Length; index++)
-            {
-                var r = rs[index];
-
-                if (r.FullName != null && r.FullName.Contains("MannequinProperty") && r.IsClass && !r.IsAbstract)
-                {
-                    ll.Add(r);
-                }
-            }
-
-            List<ValuedProperty> cat = new List<ValuedProperty>();
-
-            for (var index = 0; index < ll.Count; index++)
-            {
-                var x = ll[index];
-
-                object CI = Activator.CreateInstance(Type.GetType(x.FullName));
-
-                if (CI is ValuedProperty p && p.Matches(item) && p.IsMagical)
-                {
-                    cat.Add(p);
-                }
-            }
-
-            return cat;
         }
 
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
             base.GetContextMenuEntries(from, list);
 
-            if (IsOwner(from))
+            if (IsOwner(Owner))
             {
                 if (from.Alive && from.InRange(this, 2))
                 {
@@ -277,7 +227,7 @@ namespace Server.Mobiles
 
                 if (from.Alive && from.InRange(this, 2))
                 {
-                    if (from.Race == Race || from.Race == Race.Elf && Race == Race.Human || from.Race == Race.Human && Race == Race.Elf)
+                    if (from.Race == Race || (from.Race == Race.Elf && Race == Race.Human || from.Race == Race.Human && Race == Race.Elf))
                     {
                         list.Add(new SwitchClothesEntry(from, this));
                     }
@@ -297,17 +247,15 @@ namespace Server.Mobiles
 
             if (house != null)
             {
-                List<Item> toAdd = new List<Item>(mobile.Items.Where(IsEquipped));
+                List<Item> toAdd = new List<Item>(mobile.Items.Where(i => IsEquipped(i)));
 
                 if (mobile.Backpack != null)
                 {
                     toAdd.AddRange(mobile.Backpack.Items);
                 }
 
-                for (var index = 0; index < toAdd.Count; index++)
+                foreach (var item in toAdd)
                 {
-                    Item item = toAdd[index];
-
                     house.DropToMovingCrate(item);
                 }
 
@@ -326,7 +274,7 @@ namespace Server.Mobiles
 
         private class ViewSuitsEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
+            private Mobile _From;
             private readonly Mannequin _Mannequin;
 
             public ViewSuitsEntry(Mobile from, Mannequin m)
@@ -344,7 +292,7 @@ namespace Server.Mobiles
 
         private class CompareWithItemInSlotEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
+            private Mobile _From;
             private readonly Mannequin _Mannequin;
 
             public CompareWithItemInSlotEntry(Mobile from, Mannequin m)
@@ -372,22 +320,14 @@ namespace Server.Mobiles
 
                 protected override void OnTarget(Mobile from, object targeted)
                 {
-                    if (targeted is Item item)
-                    {
-                        from.SendGump(new MannequinCompareGump(_Mannequin, item));
-                    }
-                    else
-                    {
-                        from.SendLocalizedMessage(1149667); // Invalid target.
-                    }
-
+                    from.SendGump(new MannequinCompareGump(_Mannequin, (Item)targeted));
                 }
             }
         }
 
         private class ViewSuitsSelectItemEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
+            private Mobile _From;
             private readonly Mannequin _Mannequin;
 
             public ViewSuitsSelectItemEntry(Mobile from, Mannequin m)
@@ -415,15 +355,15 @@ namespace Server.Mobiles
 
                 protected override void OnTarget(Mobile from, object targeted)
                 {
-                    if (targeted is Item item)
-                        from.SendGump(new MannequinStatsGump(_Mannequin, item));
+                    if (targeted is Item)
+                        from.SendGump(new MannequinStatsGump(_Mannequin, (Item)targeted));
                 }
             }
         }
 
         private class AddDescriptionEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
+            private Mobile _From;
             private readonly Mannequin _Mannequin;
 
             public AddDescriptionEntry(Mobile from, Mannequin m)
@@ -440,7 +380,7 @@ namespace Server.Mobiles
 
             private class DescriptionGump : Gump
             {
-                private readonly Mannequin _Mannequin;
+                private Mannequin _Mannequin;
 
                 public DescriptionGump(Mannequin mann)
                     : base(0, 0)
@@ -487,7 +427,7 @@ namespace Server.Mobiles
 
         private class CustomizeBodyEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
+            private Mobile _From;
             private readonly Mobile _Mannequin;
 
             public CustomizeBodyEntry(Mobile from, Mobile m)
@@ -506,7 +446,7 @@ namespace Server.Mobiles
         private class SwitchClothesEntry : ContextMenuEntry
         {
             private readonly Mobile _From;
-            private readonly Mannequin _Mannequin;
+            private Mannequin _Mannequin;
 
             public SwitchClothesEntry(Mobile from, Mannequin m)
                 : base(1151606, 2)
@@ -517,58 +457,29 @@ namespace Server.Mobiles
 
             public override void OnClick()
             {
-                if (!_From.HasTrade)
-                {
-                    _Mannequin.SwitchClothes(_From, _Mannequin);
-                }
-                else
-                {
-                    _From.SendLocalizedMessage(1004041); // You can't do that while you have a trade pending.
-                }
+                _Mannequin.SwitchClothes(_From, _Mannequin);
             }
         }
 
         public static bool IsEquipped(Item item)
         {
-            return item != null && item.Parent is Mobile mobile && mobile.FindItemOnLayer(item.Layer) == item &&
+            return item != null && item.Parent is Mobile && ((Mobile)item.Parent).FindItemOnLayer(item.Layer) == item &&
                    item.Layer != Layer.Mount && item.Layer != Layer.Bank &&
                    item.Layer != Layer.Invalid && item.Layer != Layer.Backpack && !(item is Backpack);
         }
 
         public void SwitchClothes(Mobile from, Mobile m)
         {
-            List<Item> MobileItems = new List<Item>();
-            foreach (var item in from.Items.Where(IsEquipped))
-            {
-                MobileItems.Add(item);
-            }
+            List<Item> MobileItems = from.Items.Where(x => IsEquipped(x)).ToList();
+            List<Item> MannequinItems = m.Items.Where(x => IsEquipped(x)).ToList();
 
-            List<Item> MannequinItems = new List<Item>();
-            foreach (var item in m.Items.Where(IsEquipped))
-            {
-                MannequinItems.Add(item);
-            }
-
-            for (var index = 0; index < MannequinItems.Count; index++)
-            {
-                var mannequinItem = MannequinItems[index];
-
-                m.RemoveItem(mannequinItem);
-            }
-
-            for (var index = 0; index < MobileItems.Count; index++)
-            {
-                var mobileItem = MobileItems[index];
-
-                from.RemoveItem(mobileItem);
-            }
+            MannequinItems.ForEach(x => m.RemoveItem(x));
+            MobileItems.ForEach(x => from.RemoveItem(x));
 
             List<Item> ExceptItems = new List<Item>();
 
-            for (var index = 0; index < MannequinItems.Count; index++)
+            MannequinItems.ForEach(x =>
             {
-                var x = MannequinItems[index];
-
                 if (x.CanEquip(from))
                 {
                     from.EquipItem(x);
@@ -577,12 +488,10 @@ namespace Server.Mobiles
                 {
                     ExceptItems.Add(x);
                 }
-            }
+            });
 
-            for (var index = 0; index < MobileItems.Count; index++)
+            MobileItems.ForEach(x =>
             {
-                var x = MobileItems[index];
-
                 if (x.CanEquip(m))
                 {
                     m.EquipItem(x);
@@ -591,17 +500,11 @@ namespace Server.Mobiles
                 {
                     ExceptItems.Add(x);
                 }
-            }
+            });
 
             if (ExceptItems.Count > 0)
             {
-                for (var index = 0; index < ExceptItems.Count; index++)
-                {
-                    var x = ExceptItems[index];
-
-                    from.AddToBackpack(x);
-                }
-
+                ExceptItems.ForEach(x => from.AddToBackpack(x));
                 from.SendLocalizedMessage(1151641, ExceptItems.Count.ToString(), 0x22); // ~1_COUNT~ items could not be swapped between you and the mannequin. These items are now in your backpack, or on the floor at your feet if your backpack is too full to hold them.
             }
 
@@ -610,8 +513,8 @@ namespace Server.Mobiles
 
         private class RotateEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
-            private readonly Mobile _Mannequin;
+            private Mobile _From;
+            private Mobile _Mannequin;
 
             public RotateEntry(Mobile from, Mobile m)
                 : base(1151586, 2)
@@ -636,8 +539,8 @@ namespace Server.Mobiles
 
         private class RedeedEntry : ContextMenuEntry
         {
-            private readonly Mobile _From;
-            private readonly Mobile _Mannequin;
+            private Mobile _From;
+            private Mobile _Mannequin;
 
             public RedeedEntry(Mobile from, Mobile m)
                 : base(1151601, 2)
@@ -648,19 +551,8 @@ namespace Server.Mobiles
 
             public override void OnClick()
             {
-                List<Item> mannequinItems = new List<Item>();
-
-                foreach (var item in _Mannequin.Items.Where(IsEquipped))
-                {
-                    mannequinItems.Add(item);
-                }
-
-                for (var index = 0; index < mannequinItems.Count; index++)
-                {
-                    var x = mannequinItems[index];
-
-                    _From.AddToBackpack(x);
-                }
+                List<Item> mannequinItems = _Mannequin.Items.Where(x => IsEquipped(x)).ToList();
+                mannequinItems.ForEach(x => _From.AddToBackpack(x));
 
                 _Mannequin.Delete();
 
@@ -675,8 +567,8 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
-
+            writer.Write((int)1); // version
+            
             writer.Write(Description);
             writer.Write(Owner);
         }
@@ -691,23 +583,25 @@ namespace Server.Mobiles
                 case 1:
                     {
                         Description = reader.ReadString();
+
                         goto case 0;
                     }
                 case 0:
                     {
                         Owner = reader.ReadMobile();
+
                         break;
                     }
-            }
+            }            
         }
     }
 
-
+    
 
     [Flipable(0x14F0, 0x14EF)]
     public class MannequinDeed : Item
     {
-        public override int LabelNumber => 1151602;  // Mannequin Deed
+        public override int LabelNumber { get { return 1151602; } } // Mannequin Deed
 
         [Constructable]
         public MannequinDeed()
@@ -732,7 +626,7 @@ namespace Server.Mobiles
                     if (house.Owner == from || house.IsCoOwner(from))
                     {
                         from.SendLocalizedMessage(1151657); // Where do you wish to place this?
-                        from.Target = new PlaceTarget(this);
+                        from.Target = new PlaceTarget(this);                       
                     }
                     else
                     {
@@ -753,13 +647,13 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 }

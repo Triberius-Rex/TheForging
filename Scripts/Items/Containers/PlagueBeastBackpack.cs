@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -17,7 +18,7 @@ namespace Server.Items
         public PlagueBeastBackpack()
             : base(0x261B)
         {
-            Layer = Layer.Backpack;
+            this.Layer = Layer.Backpack;
         }
 
         public PlagueBeastBackpack(Serial serial)
@@ -25,53 +26,77 @@ namespace Server.Items
         {
         }
 
-        public override int DefaultMaxWeight => 0;
-        public override int DefaultMaxItems => 0;
-        public override int DefaultGumpID => 0x2A63;
-        public override int DefaultDropSound => 0x23F;
+        public override int DefaultMaxWeight
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int DefaultMaxItems
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x2A63;
+            }
+        }
+        public override int DefaultDropSound
+        {
+            get
+            {
+                return 0x23F;
+            }
+        }
         public void Initialize()
         {
-            AddInnard(0x1CF6, 0x0, 227, 128);
-            AddInnard(0x1D10, 0x0, 251, 128);
-            AddInnard(0x1FBE, 0x21, 240, 83);
+            this.AddInnard(0x1CF6, 0x0, 227, 128);
+            this.AddInnard(0x1D10, 0x0, 251, 128);
+            this.AddInnard(0x1FBE, 0x21, 240, 83);
 
-            AddInnard(new PlagueBeastHeart(), 229, 104);
+            this.AddInnard(new PlagueBeastHeart(), 229, 104);
 
-            AddInnard(0x1D06, 0x0, 283, 91);
-            AddInnard(0x1FAF, 0x21, 315, 107);
-            AddInnard(0x1FB9, 0x21, 289, 87);
-            AddInnard(0x9E7, 0x21, 304, 96);
-            AddInnard(0x1B1A, 0x66D, 335, 102);
-            AddInnard(0x1D10, 0x0, 338, 146);
-            AddInnard(0x1FB3, 0x21, 358, 167);
-            AddInnard(0x1D0B, 0x0, 357, 155);
-            AddInnard(0x9E7, 0x21, 339, 184);
-            AddInnard(0x1B1A, 0x66D, 157, 172);
-            AddInnard(0x1D11, 0x0, 147, 157);
-            AddInnard(0x1FB9, 0x21, 121, 131);
-            AddInnard(0x9E7, 0x21, 166, 176);
-            AddInnard(0x1D0B, 0x0, 122, 138);
-            AddInnard(0x1D0D, 0x0, 118, 150);
-            AddInnard(0x1FB3, 0x21, 97, 123);
-            AddInnard(0x1D08, 0x0, 115, 113);
-            AddInnard(0x9E7, 0x21, 109, 109);
-            AddInnard(0x9E7, 0x21, 91, 122);
-            AddInnard(0x9E7, 0x21, 94, 160);
-            AddInnard(0x1B19, 0x66D, 170, 121);
-            AddInnard(0x1FAF, 0x21, 161, 111);
-            AddInnard(0x1D0B, 0x0, 158, 112);
-            AddInnard(0x9E7, 0x21, 159, 101);
-            AddInnard(0x1D10, 0x0, 132, 177);
-            AddInnard(0x1D0E, 0x0, 110, 178);
-            AddInnard(0x1FB3, 0x21, 95, 194);
-            AddInnard(0x1FAF, 0x21, 154, 203);
-            AddInnard(0x1B1A, 0x66D, 110, 237);
-            AddInnard(0x9E7, 0x21, 111, 171);
-            AddInnard(0x9E7, 0x21, 90, 197);
-            AddInnard(0x9E7, 0x21, 166, 205);
-            AddInnard(0x9E7, 0x21, 96, 242);
-            AddInnard(0x1D10, 0x0, 334, 196);
-            AddInnard(0x1D0B, 0x0, 322, 270);
+            this.AddInnard(0x1D06, 0x0, 283, 91);
+            this.AddInnard(0x1FAF, 0x21, 315, 107);
+            this.AddInnard(0x1FB9, 0x21, 289, 87);
+            this.AddInnard(0x9E7, 0x21, 304, 96);
+            this.AddInnard(0x1B1A, 0x66D, 335, 102);
+            this.AddInnard(0x1D10, 0x0, 338, 146);
+            this.AddInnard(0x1FB3, 0x21, 358, 167);
+            this.AddInnard(0x1D0B, 0x0, 357, 155);
+            this.AddInnard(0x9E7, 0x21, 339, 184);
+            this.AddInnard(0x1B1A, 0x66D, 157, 172);
+            this.AddInnard(0x1D11, 0x0, 147, 157);
+            this.AddInnard(0x1FB9, 0x21, 121, 131);
+            this.AddInnard(0x9E7, 0x21, 166, 176);
+            this.AddInnard(0x1D0B, 0x0, 122, 138);
+            this.AddInnard(0x1D0D, 0x0, 118, 150);
+            this.AddInnard(0x1FB3, 0x21, 97, 123);
+            this.AddInnard(0x1D08, 0x0, 115, 113);
+            this.AddInnard(0x9E7, 0x21, 109, 109);
+            this.AddInnard(0x9E7, 0x21, 91, 122);
+            this.AddInnard(0x9E7, 0x21, 94, 160);
+            this.AddInnard(0x1B19, 0x66D, 170, 121);
+            this.AddInnard(0x1FAF, 0x21, 161, 111);
+            this.AddInnard(0x1D0B, 0x0, 158, 112);
+            this.AddInnard(0x9E7, 0x21, 159, 101);
+            this.AddInnard(0x1D10, 0x0, 132, 177);
+            this.AddInnard(0x1D0E, 0x0, 110, 178);
+            this.AddInnard(0x1FB3, 0x21, 95, 194);
+            this.AddInnard(0x1FAF, 0x21, 154, 203);
+            this.AddInnard(0x1B1A, 0x66D, 110, 237);
+            this.AddInnard(0x9E7, 0x21, 111, 171);
+            this.AddInnard(0x9E7, 0x21, 90, 197);
+            this.AddInnard(0x9E7, 0x21, 166, 205);
+            this.AddInnard(0x9E7, 0x21, 96, 242);
+            this.AddInnard(0x1D10, 0x0, 334, 196);
+            this.AddInnard(0x1D0B, 0x0, 322, 270);
 
             List<PlagueBeastOrgan> organs = new List<PlagueBeastOrgan>();
             PlagueBeastOrgan organ;
@@ -83,7 +108,7 @@ namespace Server.Items
                 if (i == 5)
                     random = 0;
 
-                switch (random)
+                switch ( random )
                 {
                     default:
                     case 0:
@@ -98,12 +123,12 @@ namespace Server.Items
                 }
 
                 organs.Add(organ);
-                AddInnard(organ, m_Positions[random, i, 0], m_Positions[random, i, 1]);
+                this.AddInnard(organ, m_Positions[random, i, 0], m_Positions[random, i, 1]);
             }
 
             organ = new PlagueBeastBackupOrgan();
             organs.Add(organ);
-            AddInnard(organ, 129, 214);
+            this.AddInnard(organ, 129, 214);
 
             for (int i = 0; i < m_BrainHues.Length; i++)
             {
@@ -115,7 +140,7 @@ namespace Server.Items
 
             organs.Clear();
 
-            AddInnard(new PlagueBeastMainOrgan(), 240, 161);
+            this.AddInnard(new PlagueBeastMainOrgan(), 240, 161);
         }
 
         public override bool TryDropItem(Mobile from, Item dropped, bool sendFullMessage)
@@ -128,16 +153,16 @@ namespace Server.Items
 
         public override bool OnDragDropInto(Mobile from, Item item, Point3D p)
         {
-            if (IsAccessibleTo(from) && (item is PlagueBeastInnard || item is PlagueBeastGland))
+            if (this.IsAccessibleTo(from) && (item is PlagueBeastInnard || item is PlagueBeastGland))
             {
                 Rectangle2D ir = ItemBounds.Table[item.ItemID];
                 int x, y;
                 int cx = p.X + ir.X + ir.Width / 2;
                 int cy = p.Y + ir.Y + ir.Height / 2;
 
-                for (int i = Items.Count - 1; i >= 0; i--)
+                for (int i = this.Items.Count - 1; i >= 0; i--)
                 {
-                    PlagueBeastComponent innard = Items[i] as PlagueBeastComponent;
+                    PlagueBeastComponent innard = this.Items[i] as PlagueBeastComponent;
 
                     if (innard != null)
                     {
@@ -162,14 +187,14 @@ namespace Server.Items
 
         public void AddInnard(int itemID, int hue, int x, int y)
         {
-            AddInnard(new PlagueBeastInnard(itemID, hue), x, y);
+            this.AddInnard(new PlagueBeastInnard(itemID, hue), x, y);
         }
 
         public void AddInnard(PlagueBeastInnard innard, int x, int y)
         {
-            AddItem(innard);
+            this.AddItem(innard);
             innard.Location = new Point3D(x, y, 0);
-            innard.Map = Map;
+            innard.Map = this.Map;
         }
 
         public override void Serialize(GenericWriter writer)

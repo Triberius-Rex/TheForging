@@ -2,7 +2,9 @@
 /// Created by Mitty ////
 //////////////////////// 
 
-namespace Server.Items
+using System;
+
+namespace Server.Items 
 {
     public class NaxMarker : Item
     {
@@ -10,12 +12,12 @@ namespace Server.Items
         public NaxMarker()
             : base(0x176B)
         {
-            Weight = 0;
-            Name = "Nax Marker";
-            Hue = 0;
-            LootType = LootType.Blessed;
-            Movable = false;
-            Visible = false;
+            this.Weight = 0;
+            this.Name = "Nax Marker";
+            this.Hue = 0;
+            this.LootType = LootType.Blessed;
+            this.Movable = false;
+            this.Visible = false;
         }
 
         public NaxMarker(Serial serial)
@@ -26,7 +28,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

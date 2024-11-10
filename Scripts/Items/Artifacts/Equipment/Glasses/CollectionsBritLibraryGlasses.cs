@@ -1,18 +1,19 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefTinkering), typeof(GargishMaceAndShieldGlasses))]
     public class MaceAndShieldGlasses : Glasses
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public MaceAndShieldGlasses()
             : base()
         {
-            Hue = 0x1DD;
+            Hue = 0x1DD;		
             Attributes.BonusStr = 10;
-            Attributes.BonusDex = 5;
+            Attributes.BonusDex = 5;		
             WeaponAttributes.HitLowerDefend = 30;
         }
 
@@ -21,32 +22,80 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073381;// Mace and Shield Reading Glasses
-        public override int BasePhysicalResistance => 25;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073381;
+            }
+        }// Mace and Shield Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 25;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }
 
     public class GargishMaceAndShieldGlasses : GargishGlasses
     {
-        public override bool IsArtifact => true;
+        public override bool IsArtifact { get { return true; } }
         [Constructable]
         public GargishMaceAndShieldGlasses()
         {
@@ -61,19 +110,67 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073381;// Mace and Shield Reading Glasses
-        public override int BasePhysicalResistance => 25;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073381;
+            }
+        }// Mace and Shield Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 25;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -91,7 +188,7 @@ namespace Server.Items
         public GlassesOfTheArts()
             : base()
         {
-            Hue = 0x73;
+            Hue = 0x73;	
             Attributes.BonusInt = 5;
             Attributes.BonusStr = 5;
             Attributes.BonusHits = 15;
@@ -102,25 +199,73 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073363;// Reading Glasses of the Arts
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 8;
-        public override int BaseColdResistance => 8;
-        public override int BasePoisonResistance => 4;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073363;
+            }
+        }// Reading Glasses of the Arts
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }
@@ -141,19 +286,67 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073363;// Reading Glasses of the Arts
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 8;
-        public override int BaseColdResistance => 8;
-        public override int BasePoisonResistance => 4;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073363;
+            }
+        }// Reading Glasses of the Arts
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -178,25 +371,73 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073362;// Reading Glasses of the Trades
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073362;
+            }
+        }// Reading Glasses of the Trades
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }
@@ -215,19 +456,67 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073362;// Reading Glasses of the Trades
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073362;
+            }
+        }// Reading Glasses of the Trades
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -244,7 +533,7 @@ namespace Server.Items
         [Constructable]
         public WizardsCrystalGlasses()
         {
-            Hue = 0x2B0;
+            Hue = 0x2B0;	
             Attributes.BonusMana = 10;
             Attributes.RegenMana = 3;
             Attributes.SpellDamage = 15;
@@ -255,25 +544,73 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073374;// Wizard's Crystal Reading Glasses
-        public override int BasePhysicalResistance => 5;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073374;
+            }
+        }// Wizard's Crystal Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }
@@ -294,19 +631,67 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073374;// Wizard's Crystal Reading Glasses
-        public override int BasePhysicalResistance => 5;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 5;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073374;
+            }
+        }// Wizard's Crystal Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -334,25 +719,73 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073373;// Treasures and Trinkets Reading Glasses
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073373;
+            }
+        }// Treasures and Trinkets Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }
@@ -373,19 +806,67 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073373;// Treasures and Trinkets Reading Glasses
-        public override int BasePhysicalResistance => 10;
-        public override int BaseFireResistance => 10;
-        public override int BaseColdResistance => 10;
-        public override int BasePoisonResistance => 10;
-        public override int BaseEnergyResistance => 10;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073373;
+            }
+        }// Treasures and Trinkets Reading Glasses
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

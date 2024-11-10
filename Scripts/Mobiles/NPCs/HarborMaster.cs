@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Items;
 using Server.Multis;
 using Server.Network;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Server.Mobiles
 {
@@ -15,7 +15,7 @@ namespace Server.Mobiles
 
         [Constructable]
         public HarborMaster()
-            : base(AIType.AI_Melee, FightMode.None, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.None, 10, 1, 0.2, 0.4)
         {
             InitStats(31, 41, 51);
 
@@ -38,12 +38,14 @@ namespace Server.Mobiles
                 Title = "the Harbor Master";
             }
 
-            SetWearable(new Shirt(), Utility.RandomDyedHue(), 1);
-            SetWearable(new LongPants(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new Boots(), dropChance: 1);
-            SetWearable(new QuarterStaff(), dropChance: 1);
+            AddItem(new Shirt(Utility.RandomDyedHue()));
+            AddItem(new Boots());
+            AddItem(new LongPants(Utility.RandomNeutralHue()));
+            AddItem(new QuarterStaff());
 
             Utility.AssignRandomHair(this);
+
+            PackGold(250, 300);
         }
 
         public HarborMaster(Serial serial)
@@ -51,14 +53,14 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanTeach => false;
-        public override bool ClickTitle => false;
+        public override bool CanTeach { get { return false; } }
+        public override bool ClickTitle { get { return false; } }
 
         public override void AddCustomContextEntries(Mobile from, List<ContextMenuEntry> list)
         {
             base.AddCustomContextEntries(from, list);
 
-            if (from.Alive)
+            if (Core.HS && from.Alive)
             {
                 list.Add(new ShipRecallRuneEntry(from, this));
 
@@ -81,7 +83,7 @@ namespace Server.Mobiles
                 m_Vendor = vendor;
             }
 
-            private static readonly Type[] m_ShipTypes = new Type[]
+            private static Type[] m_ShipTypes = new Type[]
             {
                 typeof(TokunoGalleon),  typeof(GargishGalleon),
                 typeof(OrcishGalleon),  typeof(BritannianShip)
@@ -97,7 +99,7 @@ namespace Server.Mobiles
                 if (m_Vendor == null || m_Vendor.Deleted)
                     return;
 
-                BaseBoat boat = BaseBoat.GetBoat(m_From);
+                var boat = BaseBoat.GetBoat(m_From);
 
                 if (boat != null)
                 {
@@ -113,14 +115,13 @@ namespace Server.Mobiles
                         else
                         {
                             KeyType[] Types = Enum.GetValues(typeof(KeyType)).Cast<KeyType>().ToArray();
-                            Key packKey = new Key(Types[Utility.Random(Types.Length)], boat.PPlank.KeyValue, boat)
-                            {
-                                MaxRange = 10,
-                                Name = "a ship key"
-                            };
+                            Key packKey = new Key(Types[Utility.Random(Types.Length)], boat.PPlank.KeyValue, boat);
+
+                            packKey.MaxRange = 10;
+                            packKey.Name = "a ship key";
 
                             m_From.AddToBackpack(packKey);
-                        }
+                        }                        
                     }
                     else
                     {
@@ -186,7 +187,7 @@ namespace Server.Mobiles
                         }
                     case 1:
                         {
-                            BaseBoat boat = BaseBoat.GetBoat(from);
+                            var boat = BaseBoat.GetBoat(from);
 
                             if (boat != null && !_Table.ContainsKey(from))
                             {
@@ -243,7 +244,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,6 +1,8 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0xE87, 0xE88)]
+    [FlipableAttribute(0xE87, 0xE88)]
     public class Pitchfork : BaseSpear
     {
         [Constructable]
@@ -15,19 +17,101 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.BleedAttack;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.Dismount;
-        public override int StrengthReq => 55;
-        public override int MinDamage => 12;
-        public override int MaxDamage => 15;
-        public override float Speed => 2.50f;
-
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 60;
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.BleedAttack;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.Dismount;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 55;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 43;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 2.50f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 60;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a fire daemon corpse")]
@@ -41,19 +43,21 @@ namespace Server.Mobiles
             Fame = 15000;
             Karma = -15000;
 
+            VirtualArmor = 58;
+
             SetSpecialAbility(SpecialAbility.DragonBreath);
             SetAreaEffect(AreaEffect.AuraDamage);
-        }
+        }        
 
         public FireDaemon(Serial serial)
             : base(serial)
         {
         }
 
-        public override bool CanRummageCorpses => true;
-        public override Poison PoisonImmune => Poison.Regular;
-        public override int TreasureMapLevel => 4;
-        public override int Meat => 1;
+        public override bool CanRummageCorpses { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Regular; } }
+        public override int TreasureMapLevel { get { return 4; } }
+        public override int Meat { get { return 1; } }
 
         public void AuraEffect(Mobile m)
         {
@@ -69,7 +73,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

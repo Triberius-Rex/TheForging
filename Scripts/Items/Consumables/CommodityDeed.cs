@@ -1,5 +1,5 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -15,8 +15,8 @@ namespace Server.Items
         {
             int amount = cont.GetAmount(type, recurse);
 
-            Item[] deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
-            foreach (CommodityDeed deed in deeds)
+            var deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
+            foreach(CommodityDeed deed in deeds)
             {
                 if (deed.Commodity == null)
                     continue;
@@ -31,7 +31,7 @@ namespace Server.Items
         {
             int amount = cont.GetAmount(types, recurse);
 
-            Item[] deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
+            var deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
             foreach (CommodityDeed deed in deeds)
             {
                 if (deed.Commodity == null)
@@ -53,10 +53,10 @@ namespace Server.Items
         {
             int left = amount;
 
-            Item[] items = cont.FindItemsByType(type, recurse);
-            foreach (Item item in items)
+            var items = cont.FindItemsByType(type, recurse);
+            foreach(Item item in items)
             {
-                if (item.Amount <= left)
+                if(item.Amount <= left)
                 {
                     left -= item.Amount;
                     item.Delete();
@@ -72,14 +72,14 @@ namespace Server.Items
             if (!includeDeeds)
                 return amount - left;
 
-            Item[] deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
-            foreach (CommodityDeed deed in deeds)
+            var deeds = cont.FindItemsByType(typeof(CommodityDeed), recurse);
+            foreach(CommodityDeed deed in deeds)
             {
                 if (deed.Commodity == null)
                     continue;
                 if (deed.Commodity.GetType() != type)
                     continue;
-                if (deed.Commodity.Amount <= left)
+                if(deed.Commodity.Amount <= left)
                 {
                     left -= deed.Commodity.Amount;
                     deed.Delete();
@@ -131,21 +131,6 @@ namespace Server.Items
             {
                 list.Add(1047016);
             }
-            else if(Commodity is ICommodity c)
-            {
-            	if (c.Description.Number > 0)
-	            {
-	                list.Add(1115599, string.Format("{0}\t#{1}", Commodity.Amount, c.Description.Number));
-	            }
-	            else if (c.Description.String != null)
-	            {
-	                list.Add(1115599, string.Format("{0}\t{1}", Commodity.Amount, c.Description.String));
-	            }
-	            else
-	            {
-	                list.Add(1115599, string.Format("{0}\t#{1}", Commodity.Amount, Commodity.LabelNumber));
-	            }
-            }
             else
             {
                 list.Add(1115599, string.Format("{0}\t#{1}", Commodity.Amount, Commodity.LabelNumber));
@@ -175,7 +160,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(Commodity);
         }
@@ -187,7 +172,7 @@ namespace Server.Items
 
             Commodity = reader.ReadItem();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
@@ -267,7 +252,14 @@ namespace Server.Items
                 }
                 else
                 {
-                    number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                    if (Core.ML)
+                    {
+                        number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                    }
+                    else
+                    {
+                        number = 1047024; // To claim the resources ....
+                    }
                 }
             }
             else if (cox != null && !cox.IsSecure)
@@ -276,7 +268,14 @@ namespace Server.Items
             }
             else if ((box == null || !IsChildOf(box)) && cox == null && hold == null)
             {
-                number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                if (Core.ML)
+                {
+                    number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                }
+                else
+                {
+                    number = 1047026; // That must be in your bank box to use it.
+                }
             }
             else
             {
@@ -331,7 +330,14 @@ namespace Server.Items
                     }
                     else
                     {
-                        number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                        if (Core.ML)
+                        {
+                            number = 1080526; // That must be in your bank box or commodity deed box to use it.
+                        }
+                        else
+                        {
+                            number = 1047026; // That must be in your bank box to use it.
+                        }
                     }
                 }
                 else

@@ -1,10 +1,10 @@
 #region References
+using System;
+
 using Server.Items;
 using Server.Misc;
-using Server.Mobiles;
 using Server.Network;
 using Server.Targeting;
-using System;
 #endregion
 
 namespace Server.SkillHandlers
@@ -57,7 +57,7 @@ namespace Server.SkillHandlers
                     {
                         number = 500398; // Perhaps just asking would work better.
                     }
-                    else if (!targ.Body.IsHuman || targeted is PlayerVendor || targeted is PlayerBarkeeper) // Make sure the NPC is human and not a player controlled vendor.
+                    else if (!targ.Body.IsHuman) // Make sure the NPC is human
                     {
                         number = 500399; // There is little chance of getting money from that!
                     }
@@ -71,6 +71,10 @@ namespace Server.SkillHandlers
                         {
                             number = 500402; // You are too far away to beg from her.
                         }
+                    }
+                    else if (!Core.ML && from.Mounted) // If we're on a mount, who would give us money? TODO: guessed it's removed since ML
+                    {
+                        number = 500404; // They seem unwilling to give you any money.
                     }
                     else
                     {

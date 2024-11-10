@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -29,11 +30,13 @@ namespace Server.Mobiles
             SetResistance(ResistanceType.Cold, 40, 50);
             SetResistance(ResistanceType.Poison, 10, 20);
             SetResistance(ResistanceType.Energy, 10, 20);
-
+			
             SetSkill(SkillName.Swords, 99.0);
 
             Fame = 3400;
             Karma = -3400;
+
+            VirtualArmor = 30;
 
             Tamable = true;
             ControlSlots = 1;
@@ -47,9 +50,27 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Canine;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Canine;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -60,7 +81,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

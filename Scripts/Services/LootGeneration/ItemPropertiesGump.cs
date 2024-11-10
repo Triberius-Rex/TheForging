@@ -1,9 +1,11 @@
-using Server.Commands;
-using Server.Items;
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Items;
+using Server.Commands;
+using Server.Mobiles;
 
 namespace Server.Gumps
 {
@@ -13,7 +15,7 @@ namespace Server.Gumps
         {
             CommandSystem.Register("ItemProps", AccessLevel.GameMaster, e =>
             {
-                SendGump(new ItemPropertiesGump((PlayerMobile)e.Mobile));
+                BaseGump.SendGump(new ItemPropertiesGump((PlayerMobile)e.Mobile));
             });
         }
 
@@ -45,11 +47,11 @@ namespace Server.Gumps
             AddBackground(0, 0, 900, 600, 0x2454);
             AddPage(0);
 
-            AddHtml(0, 5, 900, 20, string.Format("Item Properties: {0}", Filter.ToString()), false, false);
+            AddHtml(0, 5, 900, 20, String.Format("Item Properties: {0}", Filter.ToString()), false, false);
             AddHtml(275, 15, 625, 20, Center("Item Description: (Imbuing/Runic Cap) - (Loot Cap) [Scale]"), false, false);
 
             AddButton(5, 550, 4005, 4007, 1, GumpButtonType.Reply, 0);
-            AddHtml(40, 550, 200, 20, string.Format("Filter: {0}", Filter.ToString()), false, false);
+            AddHtml(40, 550, 200, 20, String.Format("Filter: {0}", Filter.ToString()), false, false);
 
             //
             AddButton(105, 575, TypeFilter == ItemType.Melee ? 4006 : 4005, 4007, 2, GumpButtonType.Reply, 0);
@@ -91,7 +93,7 @@ namespace Server.Gumps
 
             for (int i = 0; i < Infos.Count; i++)
             {
-                ItemPropertyInfo info = Infos[i];
+                var info = Infos[i];
                 int scale = info.Scale;
 
                 //AddLabel(5, y, 0, info.Attribute.ToString());
@@ -125,11 +127,11 @@ namespace Server.Gumps
 
         private void LoadTypeInfo(ItemType type, ItemPropertyInfo info, int scale, int x, int y)
         {
-            PropInfo typeInfo = info.GetItemTypeInfo(type);
+            var typeInfo = info.GetItemTypeInfo(type);
 
             if (typeInfo != null)
             {
-                AddLabel(x, y, TypeFilter == type ? 0x9E : 0, string.Format("{0}-{1}[{2}]", typeInfo.StandardMax, typeInfo.LootMax, typeInfo.Scale > 1 ? typeInfo.Scale.ToString() : scale.ToString()));
+                AddLabel(x, y, TypeFilter == type ? 0x9E : 0, String.Format("{0}-{1}[{2}]", typeInfo.StandardMax, typeInfo.LootMax, typeInfo.Scale > 1 ? typeInfo.Scale.ToString() : scale.ToString()));
             }
             else
             {
@@ -141,7 +143,7 @@ namespace Server.Gumps
         {
             if (TypeFilter > ItemType.Invalid)
             {
-                foreach (int i in ItemPropertyInfo.LootTable[TypeFilter])
+                foreach (var i in ItemPropertyInfo.LootTable[TypeFilter])
                 {
                     yield return ItemPropertyInfo.GetInfo(i);
                 }
@@ -149,7 +151,7 @@ namespace Server.Gumps
                 yield break;
             }
 
-            foreach (ItemPropertyInfo info in ItemPropertyInfo.Table.Values)
+            foreach (var info in ItemPropertyInfo.Table.Values)
             {
                 switch (Filter)
                 {
@@ -268,9 +270,9 @@ namespace Server.Gumps
 
                 if (id >= 0 && id < Infos.Count)
                 {
-                    ItemPropertyInfo propInfo = Infos[id];
+                    var propInfo = Infos[id];
 
-                    SendGump(new InfoSpecificGump(User, propInfo, TypeFilter));
+                    BaseGump.SendGump(new InfoSpecificGump(User, propInfo, TypeFilter));
                 }
             }
         }
@@ -317,9 +319,9 @@ namespace Server.Gumps
 
             int y = 210;
 
-            foreach (object i in Enum.GetValues(typeof(ItemType)))
+            foreach (var i in Enum.GetValues(typeof(ItemType)))
             {
-                ItemType type = (ItemType)i;
+                var type = (ItemType)i;
 
                 if (type == ItemType.Invalid || (ItemType != ItemType.Invalid && type != ItemType))
                 {
@@ -327,7 +329,7 @@ namespace Server.Gumps
                 }
 
                 AddLabel(5, y, 0, type.ToString());
-                PropInfo typeInfo = Info.GetItemTypeInfo(type);
+                var typeInfo = Info.GetItemTypeInfo(type);
 
                 if (typeInfo != null)
                 {
@@ -337,7 +339,7 @@ namespace Server.Gumps
 
                     if (typeInfo.PowerfulLootRange != null)
                     {
-                        string str = string.Empty;
+                        var str = String.Empty;
 
                         for (int j = 0; j < typeInfo.PowerfulLootRange.Length; j++)
                         {
@@ -345,11 +347,11 @@ namespace Server.Gumps
 
                             if (j == typeInfo.PowerfulLootRange.Length - 1)
                             {
-                                str += string.Format(" {0}", v.ToString());
+                                str += String.Format(" {0}", v.ToString());
                             }
                             else
                             {
-                                str += string.Format(" {0},", v.ToString());
+                                str += String.Format(" {0},", v.ToString());
                             }
                         }
 
@@ -368,5 +370,5 @@ namespace Server.Gumps
                 y += 20;
             }
         }
-    }
+    }   
 }

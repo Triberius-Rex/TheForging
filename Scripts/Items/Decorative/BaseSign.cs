@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseSign : Item
@@ -5,7 +7,7 @@ namespace Server.Items
         public BaseSign(int dispID)
             : base(dispID)
         {
-            Movable = false;
+            this.Movable = false;
         }
 
         public BaseSign(Serial serial)
@@ -17,7 +19,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)

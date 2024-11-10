@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -11,7 +12,7 @@ namespace Server.Mobiles
         {
             ActiveSpeed = 0.1;
             PassiveSpeed = 0.2;
-
+		
             Name = "Coil";
 
             Hue = 0x3F;
@@ -21,7 +22,7 @@ namespace Server.Mobiles
             SetDex(202, 283);
             SetInt(88, 142);
 
-            SetHits(1079, 1166);
+            SetHits(628, 1291);
 
             SetDamage(19, 28);
 
@@ -43,6 +44,14 @@ namespace Server.Mobiles
             Fame = 17500;
             Karma = -17500;
 
+            PackGem(2);
+            PackItem(new Bone());
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetWeaponAbility(WeaponAbility.MortalStrike);
         }
 
@@ -51,30 +60,55 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DeathAdderCharmable => false;
-        public override Poison HitPoison => Poison.Lethal;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override bool GivesMLMinorArtifact => true;
-        public override int Hides => 48;
-        public override int Meat => 1;
-
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 48;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 3);
-            AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<Bone>(false, true));
-            AddLoot(LootPack.ArcanistScrolls);
+            AddLoot(LootPack.AosUltraRich, 3);
         }
 
         public override void OnDeath(Container c)
         {
-            base.OnDeath(c);
-
+            base.OnDeath(c);		
+			
             c.DropItem(new CoilsFang());
-
+			
             if (Utility.RandomDouble() < 0.025)
             {
-                switch (Utility.Random(5))
+                switch( Utility.Random(5) )
                 {
                     case 0:
                         c.DropItem(new AssassinChest());
@@ -98,14 +132,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

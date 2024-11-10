@@ -1,15 +1,15 @@
-using Server.ContextMenus;
+using System;
 using Server.Gumps;
 using Server.Multis;
-using Server.Network;
-using System;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Network;
 
 namespace Server.Items
 {
     public class SpikedEggNog : Item, ISecurable
     {
-        public override int LabelNumber => 1157647;  // Spiked Egg Nog
+        public override int LabelNumber { get { return 1157647; } } // Spiked Egg Nog
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextUseTime { get; set; }
@@ -74,7 +74,7 @@ namespace Server.Items
                 return;
             }
 
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Bleed, 1075829, 1075830, TimeSpan.FromSeconds(12), m, string.Format("{0}\t{1}\t{2}", "1", "10", "2")));
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Bleed, 1075829, 1075830, TimeSpan.FromSeconds(12), m, String.Format("{0}\t{1}\t{2}", "1", "10", "2")));
 
             m_Timer = new BleedTimer(m, this);
             m_Timer.Start();
@@ -102,10 +102,8 @@ namespace Server.Items
                 m.PlaySound(0x133);
                 AOS.Damage(m, Utility.Random(1, 10), false, 0, 0, 0, 0, 100);
 
-                Blood blood = new Blood
-                {
-                    ItemID = Utility.Random(0x122A, 5)
-                };
+                Blood blood = new Blood();
+                blood.ItemID = Utility.Random(0x122A, 5);
                 blood.MoveToWorld(m.Location, m.Map);
             }
             else
@@ -119,7 +117,7 @@ namespace Server.Items
             private readonly Mobile m_Mobile;
             private readonly SpikedEggNog m_Item;
             private int m_Count;
-            private readonly int m_MaxCount;
+            private int m_MaxCount;
 
             public BleedTimer(Mobile m, SpikedEggNog item)
                 : base(TimeSpan.FromSeconds(2.0), TimeSpan.FromSeconds(2.0))
@@ -162,7 +160,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(NextUseTime);
             writer.Write((int)Level);

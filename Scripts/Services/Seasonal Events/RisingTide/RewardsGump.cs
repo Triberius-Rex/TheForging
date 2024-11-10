@@ -1,15 +1,18 @@
-using Server.Engines.Points;
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
+using System;
 using System.Collections.Generic;
+
+using Server;
+using Server.Items;
+using Server.Gumps;
+using Server.Mobiles;
+using Server.Engines.Points;
 
 namespace Server.Engines.RisingTide
 {
     public class RisingTideRewardGump : BaseRewardGump
     {
-        public override int PointsName => 1158916;  // Your Doubloons
-        public override int RewardLabel => 1158917;  // What ye buyin' Matey?
+        public override int PointsName { get { return 1158916; } } // Your Doubloons
+        public override int RewardLabel { get { return 1158917; } } // What ye buyin' Matey?
 
         public RisingTideRewardGump(Mobile owner, PlayerMobile user)
             : base(owner, user, Rewards, 1158918)

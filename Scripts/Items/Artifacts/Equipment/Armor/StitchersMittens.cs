@@ -1,12 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class StitchersMittens : LeafGloves
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1072932;// Stitcher's Mittens
-        public override int BasePhysicalResistance => 20;
-        public override int BaseColdResistance => 20;
-
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public StitchersMittens()
         {
@@ -21,15 +19,38 @@ namespace Server.Items
         {
         }
 
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072932;
+            }
+        }// Stitcher's Mittens
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 20;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
+
             writer.WriteEncodedInt(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadEncodedInt();
         }
     }

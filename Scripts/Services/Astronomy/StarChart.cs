@@ -1,9 +1,13 @@
-﻿using Server.Engines.Astronomy;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Server;
+using Server.Mobiles;
+using Server.Engines.Astronomy;
+using Server.Targeting;
 using Server.Engines.Craft;
 using Server.Gumps;
-using Server.Mobiles;
-using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
@@ -45,7 +49,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime ChartedOn { get { return _ChartedOn; } set { _ChartedOn = value; } }
 
-        public override int LabelNumber => _Constellation == -1 ? 1158743 : 1158493;  // An Indecipherable Star Chart : Star Chart
+        public override int LabelNumber { get { return _Constellation == -1 ? 1158743 : 1158493; } } // An Indecipherable Star Chart : Star Chart
 
         [Constructable]
         public StarChart()
@@ -69,9 +73,9 @@ namespace Server.Items
                 {
                     if (!Deleted && IsChildOf(from.Backpack) && targeted is PersonalTelescope)
                     {
-                        PersonalTelescope tele = (PersonalTelescope)targeted;
+                        var tele = (PersonalTelescope)targeted;
 
-                        ConstellationInfo constellation = AstronomySystem.GetConstellation(tele.TimeCoordinate, tele.RA, tele.DEC);
+                        var constellation = AstronomySystem.GetConstellation(tele.TimeCoordinate, tele.RA, tele.DEC);
 
                         if (constellation != null)
                         {
@@ -127,22 +131,22 @@ namespace Server.Items
 
             public override void AddGumpLayout()
             {
-                ConstellationInfo info = AstronomySystem.GetConstellation(Chart.Constellation);
+                var info = AstronomySystem.GetConstellation(Chart.Constellation);
 
                 AddPage(0);
 
                 AddBackground(0, 0, 454, 350, 0x24AE);
                 AddHtmlLocalized(32, 68, 112, 36, 1158505, false, false); // Constellation Name:
-                AddHtml(154, 68, 300, 36, Color("#0040FF", string.IsNullOrEmpty(Chart.ConstellationName) ? "This constellation has not yet been named" : Chart.ConstellationName), false, false);
+                AddHtml(154, 68, 300, 36, Color("#0040FF", String.IsNullOrEmpty(Chart.ConstellationName) ? "This constellation has not yet been named" : Chart.ConstellationName), false, false);
 
                 AddHtmlLocalized(32, 104, 75, 36, 1158502, false, false); // Charted By:
-                AddHtml(112, 104, 50, 36, Color("#0040FF", Chart.ChartedBy == null ? string.Empty : Chart.ChartedBy.Name), false, false);
+                AddHtml(112, 104, 50, 36, Color("#0040FF", Chart.ChartedBy == null ? String.Empty : Chart.ChartedBy.Name), false, false);
 
                 AddHtmlLocalized(32, 140, 75, 36, 1158503, false, false); // Charted On:
                 AddHtml(112, 140, 80, 36, Color("#0040FF", Chart.ChartedOn.ToShortDateString()), false, false);
 
                 AddHtmlLocalized(32, 176, 125, 18, 1158504, false, false); // Time-Coordinate:
-                AddHtmlLocalized(47, 199, 60, 36, AstronomySystem.TimeCoordinateLocalization(info.TimeCoordinate), 0x1F, false, false);
+                AddHtmlLocalized(47, 199, 60, 36, AstronomySystem.TimeCoordinateLocalization(info.TimeCoordinate), 0x1F, false, false); 
 
                 AddHtmlLocalized(157, 199, 20, 36, 1158489, false, false); // RA
                 AddHtml(182, 199, 20, 36, Color("#0040FF", info.CoordRA.ToString()), false, false);
@@ -151,7 +155,7 @@ namespace Server.Items
                 AddHtml(272, 199, 50, 36, Color("#0040FF", info.CoordDEC.ToString()), false, false);
 
                 AddBackground(32, 253, 343, 22, 0x2486);
-                AddTextEntry(34, 255, 339, 18, 0, 1, string.Empty, 34);
+                AddTextEntry(34, 255, 339, 18, 0, 1, String.Empty, 34);
 
                 AddButton(375, 245, 0x232C, 0x232D, 1, GumpButtonType.Reply, 0);
             }
@@ -164,9 +168,9 @@ namespace Server.Items
 
                     if (relay != null && relay.Text != null)
                     {
-                        string text = relay.Text;
+                        var text = relay.Text;
 
-                        if (Guilds.BaseGuildGump.CheckProfanity(text) &&
+                        if (Server.Guilds.BaseGuildGump.CheckProfanity(text) &&
                             !AstronomySystem.CheckNameExists(text) &&
                             text.Length > 0 &&
                             text.Length < 37)

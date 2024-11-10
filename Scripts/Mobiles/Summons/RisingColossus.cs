@@ -6,8 +6,8 @@ namespace Server.Mobiles
     public class RisingColossus : BaseCreature
     {
         private int m_DispelDifficulty;
-        public override double DispelDifficulty => m_DispelDifficulty;
-        public override double DispelFocus => 45.0;
+        public override double DispelDifficulty { get { return m_DispelDifficulty; } }
+        public override double DispelFocus { get { return 45.0; } }
 
         [Constructable]
         public RisingColossus(Mobile m, double baseskill, double boostskill)
@@ -47,6 +47,7 @@ namespace Server.Mobiles
             SetSkill(SkillName.Mysticism, m.Skills[SkillName.Mysticism].Value);
             SetSkill(SkillName.Focus, m.Skills[SkillName.Focus].Value);
 
+            VirtualArmor = 58;
             ControlSlots = 5;
 
             m_DispelDifficulty = 91 + (int)((baseskill * 83) / 5.2);
@@ -60,14 +61,12 @@ namespace Server.Mobiles
             return (m.Int + m.Skills[SkillName.Magery].Value) / Math.Max(GetDistanceToSqrt(m), 1.0);
         }
 
-        public override bool AlwaysMurderer => true;
-
-        public override bool BleedImmune => true;
-
-        public override Poison PoisonImmune => Poison.Lethal;
-
-        public RisingColossus(Serial serial) : base(serial)
+        public override bool AlwaysMurderer
         {
+            get
+            {
+                return true;
+            }
         }
 
         public override int GetAttackSound()
@@ -80,18 +79,25 @@ namespace Server.Mobiles
             return 0x629;
         }
 
+        public override bool BleedImmune { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+
+        public RisingColossus(Serial serial) : base(serial)
+        {
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_DispelDifficulty);
+            writer.Write((int)m_DispelDifficulty);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
             m_DispelDifficulty = reader.ReadInt();
         }

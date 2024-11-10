@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 using Server.Network;
 using Server.Targeting;
@@ -19,74 +20,80 @@ namespace Server.Spells.Fourth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fourth;
-
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fourth;
+            }
+        }
+        
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(Mobile m)
         {
-            if (!Caster.CanSee(m))
+            if (!this.Caster.CanSee(m))
             {
-                Caster.SendLocalizedMessage(500237); // Target can not be seen.
+                this.Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
             else if (m is BaseCreature && ((BaseCreature)m).IsAnimatedDead)
             {
-                Caster.SendLocalizedMessage(1061654); // You cannot heal that which is not alive.
+                this.Caster.SendLocalizedMessage(1061654); // You cannot heal that which is not alive.
             }
             else if (m.IsDeadBondedPet)
             {
-                Caster.SendLocalizedMessage(1060177); // You cannot heal a creature that is already dead!
+                this.Caster.SendLocalizedMessage(1060177); // You cannot heal a creature that is already dead!
             }
-            else if (m is IRepairableMobile && ((IRepairableMobile)m).RepairResource != typeof(Items.Bandage))
+            else if (m is IRepairableMobile)
             {
-                Caster.LocalOverheadMessage(MessageType.Regular, 0x3B2, 500951); // You cannot heal that.
+                this.Caster.LocalOverheadMessage(MessageType.Regular, 0x3B2, 500951); // You cannot heal that.
             }
-            else if (m.Poisoned || Items.MortalStrike.IsWounded(m))
+            else if (m.Poisoned || Server.Items.MortalStrike.IsWounded(m))
             {
-                Caster.LocalOverheadMessage(MessageType.Regular, 0x22, (Caster == m) ? 1005000 : 1010398);
+                this.Caster.LocalOverheadMessage(MessageType.Regular, 0x22, (this.Caster == m) ? 1005000 : 1010398);
             }
-            else if (CheckBSequence(m))
+            else if (this.CheckBSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
                 // Algorithm: (40% of magery) + (1-10)
 
-                int toHeal = (int)(Caster.Skills[SkillName.Magery].Value * 0.4);
+                int toHeal = (int)(this.Caster.Skills[SkillName.Magery].Value * 0.4);
                 toHeal += Utility.Random(1, 10);
 
                 //m.Heal( toHeal, Caster );
-                SpellHelper.Heal(toHeal, m, Caster);
+                SpellHelper.Heal(toHeal, m, this.Caster);
 
                 m.FixedParticles(0x376A, 9, 32, 5030, EffectLayer.Waist);
                 m.PlaySound(0x202);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
         {
             private readonly GreaterHealSpell m_Owner;
             public InternalTarget(GreaterHealSpell owner)
-                : base(10, false, TargetFlags.Beneficial)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Beneficial)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is Mobile)
                 {
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
                 }
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

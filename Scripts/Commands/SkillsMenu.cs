@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Targeting;
 
@@ -12,7 +13,7 @@ namespace Server.Commands
 
         public static void Register()
         {
-            CommandSystem.Register("Skills", AccessLevel.Counselor, Skills_OnCommand);
+            CommandSystem.Register("Skills", AccessLevel.Counselor, new CommandEventHandler(Skills_OnCommand));
         }
 
         [Usage("Skills")]

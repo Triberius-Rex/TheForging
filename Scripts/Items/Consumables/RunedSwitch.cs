@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items
@@ -16,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072896;// runed switch
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072896;
+            }
+        }// runed switch
         public override void OnDoubleClick(Mobile from)
         {
             if (IsChildOf(from.Backpack))
@@ -32,7 +39,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -70,17 +77,9 @@ namespace Server.Items
                     else
                         from.SendLocalizedMessage(1075099); // You cannot recharge that item until all of its current charges have been used.
                 }
-                else if (o is HarvestersAxe || o is GargishHarvestersAxe)
+                else if (o is HarvestersAxe)
                 {
-                    if (o is HarvestersAxe)
-                    {
-                        ((HarvestersAxe)o).Charges = 1000;
-                    }
-                    else if (o is GargishHarvestersAxe)
-                    {
-                        ((GargishHarvestersAxe)o).Charges = 1000;
-                    }
-
+                    ((HarvestersAxe)o).Charges = 1000;
                     from.SendLocalizedMessage(1075100); // The item has been recharged.
                     m_Item.Delete();
                 }

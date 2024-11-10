@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -39,6 +39,11 @@ namespace Server.Mobiles
 
             Fame = 10000;
             Karma = -10000;
+
+            VirtualArmor = 22;
+
+            if (Utility.RandomDouble() < 0.1)
+                PackItem(new ArcaneGem());
         }
 
         public JukaWarrior(Serial serial)
@@ -46,15 +51,32 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool CanRummageCorpses => true;
-        public override int Meat => 1;
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Average);
             AddLoot(LootPack.Meager);
             AddLoot(LootPack.Gems, 1);
-            AddLoot(LootPack.LootItem<ArcaneGem>(10.0));
         }
 
         public override int GetIdleSound()
@@ -84,7 +106,7 @@ namespace Server.Mobiles
             if (0.2 < Utility.RandomDouble())
                 return;
 
-            switch (Utility.Random(3))
+            switch ( Utility.Random(3) )
             {
                 case 0:
                     {
@@ -110,7 +132,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

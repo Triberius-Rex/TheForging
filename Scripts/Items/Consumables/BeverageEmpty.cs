@@ -1,13 +1,15 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x1f81, 0x1f82, 0x1f83, 0x1f84)]
+    [FlipableAttribute(0x1f81, 0x1f82, 0x1f83, 0x1f84)]
     public class Glass : Item
     {
         [Constructable]
         public Glass()
             : base(0x1f81)
         {
-            Weight = 0.1;
+            this.Weight = 0.1;
         }
 
         public Glass(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -36,7 +38,7 @@ namespace Server.Items
         public GlassBottle()
             : base(0xe2b)
         {
-            Weight = 0.3;
+            this.Weight = 0.3;
         }
 
         public GlassBottle(Serial serial)
@@ -48,7 +50,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

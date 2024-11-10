@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -11,28 +12,28 @@ namespace Server.Engines.Help
         public PageResponseGump(Mobile from, string name, string text)
             : base(0, 0)
         {
-            m_From = from;
-            m_Name = name;
-            m_Text = text;
+            this.m_From = from;
+            this.m_Name = name;
+            this.m_Text = text;
 
-            AddBackground(50, 25, 540, 430, 2600);
+            this.AddBackground(50, 25, 540, 430, 2600);
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddHtmlLocalized(150, 40, 360, 40, 1062610, false, false); // <CENTER><U>Ultima Online Help Response</U></CENTER>
+            this.AddHtmlLocalized(150, 40, 360, 40, 1062610, false, false); // <CENTER><U>Ultima Online Help Response</U></CENTER>
 
-            AddHtml(80, 90, 480, 290, string.Format("{0} tells {1}: {2}", name, from.Name, text), true, true);
+            this.AddHtml(80, 90, 480, 290, String.Format("{0} tells {1}: {2}", name, from.Name, text), true, true);
 
-            AddHtmlLocalized(80, 390, 480, 40, 1062611, false, false); // Clicking the OKAY button will remove the reponse you have received.
-            AddButton(400, 417, 2074, 2075, 1, GumpButtonType.Reply, 0); // OKAY
+            this.AddHtmlLocalized(80, 390, 480, 40, 1062611, false, false); // Clicking the OKAY button will remove the reponse you have received.
+            this.AddButton(400, 417, 2074, 2075, 1, GumpButtonType.Reply, 0); // OKAY
 
-            AddButton(475, 417, 2073, 2072, 0, GumpButtonType.Reply, 0); // CANCEL
+            this.AddButton(475, 417, 2073, 2072, 0, GumpButtonType.Reply, 0); // CANCEL
         }
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
             if (info.ButtonID != 1)
-                m_From.SendGump(new MessageSentGump(m_From, m_Name, m_Text));
+                this.m_From.SendGump(new MessageSentGump(this.m_From, this.m_Name, this.m_Text));
         }
     }
 }

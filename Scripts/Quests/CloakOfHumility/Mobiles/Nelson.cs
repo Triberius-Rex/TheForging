@@ -1,11 +1,12 @@
-using Server.Engines.Quests;
+using System;
 using Server.Items;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
     public class Nelson : HumilityQuestMobile
     {
-        public override int Greeting => 1075749;
+        public override int Greeting { get { return 1075749; } }
 
         [Constructable]
         public Nelson()
@@ -20,30 +21,30 @@ namespace Server.Mobiles
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Female = false;
-            Race = Race.Human;
-            Body = 0x190;
+            this.Female = false;
+            this.Race = Race.Human;
+            this.Body = 0x190;
 
-            Hue = Race.RandomSkinHue();
-            HairItemID = Race.RandomHair(false);
-            HairHue = Race.RandomHairHue();
+            this.Hue = Race.RandomSkinHue();
+            this.HairItemID = Race.RandomHair(false);
+            this.HairHue = Race.RandomHairHue();
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-            SetWearable(new Robe(), Utility.RandomGreenHue(), 1);
-			SetWearable(new ShepherdsCrook(), dropChance: 1);
+            AddItem(new Server.Items.Robe(Utility.RandomGreenHue()));
+            AddItem(new Server.Items.ShepherdsCrook());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

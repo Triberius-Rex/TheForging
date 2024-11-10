@@ -1,13 +1,13 @@
+using System;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 using System.Collections.Generic;
 
 namespace Server.Spells.Mysticism
 {
     public class SpellPlagueSpell : MysticSpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Spell Plague", "Vas Rel Jux Ort",
                 230,
                 9022,
@@ -17,7 +17,7 @@ namespace Server.Spells.Mysticism
                 Reagent.SulfurousAsh
             );
 
-        public override SpellCircle Circle => SpellCircle.Seventh;
+        public override SpellCircle Circle { get { return SpellCircle.Seventh; } }
 
         public SpellPlagueSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
@@ -47,7 +47,7 @@ namespace Server.Spells.Mysticism
             }
             else if (CheckHSequence(m))
             {
-                SpellHelper.CheckReflect(this, Caster, ref m);
+                SpellHelper.CheckReflect((int)Circle, Caster, ref m);
 
                 SpellHelper.Turn(Caster, m);
 
@@ -69,7 +69,7 @@ namespace Server.Spells.Mysticism
             FinishSequence();
         }
 
-        private static readonly Dictionary<Mobile, List<SpellPlagueTimer>> m_Table = new Dictionary<Mobile, List<SpellPlagueTimer>>();
+        private static Dictionary<Mobile, List<SpellPlagueTimer>> m_Table = new Dictionary<Mobile, List<SpellPlagueTimer>>();
 
         public static bool HasSpellPlague(Mobile from)
         {
@@ -120,100 +120,28 @@ namespace Server.Spells.Mysticism
 
         public static void DoExplosion(Mobile from, Mobile caster, bool initial, int amount)
         {
-            double damage = BonusDamage(caster) + Utility.RandomMinMax(22, 24);
+            double prim = caster.Skills[SkillName.Mysticism].Value;
+            double sec = caster.Skills[SkillName.Imbuing].Value;
 
-            if (initial)
-            {
-                var sdiBonus = SpellHelper.GetSpellDamageBonus(caster, from, SkillName.Mysticism, from is PlayerMobile);
+            if (caster.Skills[SkillName.Focus].Value > sec)
+                sec = caster.Skills[SkillName.Focus].Value;
 
-                damage *= (100 + sdiBonus);
-                damage /= 100;
-            }
-            else
-            {
-                switch (amount)
-                {
-                    default: break;
-                    case 0: 
-                    case 1: damage /= 2; break;
-                    case 2: damage /= 1.66; break;
-                    case 3: damage /= 1.33; break;
-                }
-            }
+            int damage = (int)((prim + sec) / 12) + Utility.RandomMinMax(1, 6);
+
+            if (amount > 1)
+                damage /= amount;
 
             from.PlaySound(0x658);
 
             from.FixedParticles(0x375A, 1, 17, 9919, 1161, 7, EffectLayer.Waist);
             from.FixedParticles(0x3728, 1, 13, 9502, 1161, 7, (EffectLayer)255);
 
-            SpellHelper.Damage(null, TimeSpan.Zero, from, caster, (int)damage, 0, 0, 0, 0, 0, DFAlgorithm.Standard, 100, 0);
-        }
+            int sdiBonus = SpellHelper.GetSpellDamageBonus(caster, from, SkillName.Mysticism, from is PlayerMobile);
 
-        public static int BonusDamage(Mobile caster)
-        {
-            var skill = Math.Max(caster.Skills[SkillName.Focus].Value, caster.Skills[SkillName.Imbuing].Value);
+            damage *= (100 + sdiBonus);
+            damage /= 100;
 
-            if (skill <= 20)
-            {
-                return 0;
-            }
-
-            if (skill <= 25)
-            {
-                return 2;
-            }
-
-            if (skill <= 30)
-            {
-                return 4;
-            }
-
-            if (skill <= 35)
-            {
-                return 7;
-            }
-
-            if (skill <= 40)
-            {
-                return 9;
-            }
-
-            if (skill <= 50)
-            {
-                return 13;
-            }
-
-            if (skill <= 60)
-            {
-                return 18;
-            }
-
-            if (skill <= 70)
-            {
-                return 22;
-            }
-
-            if (skill <= 80)
-            {
-                return 28;
-            }
-
-            if (skill <= 90)
-            {
-                return 32;
-            }
-
-            if (skill <= 100)
-            {
-                return 37;
-            }
-
-            if (skill <= 110)
-            {
-                return 41;
-            }
-
-            return 46;
+            SpellHelper.Damage(null, TimeSpan.Zero, from, caster, damage, 0, 0, 0, 0, 0, DFAlgorithm.Standard, 100, 0);
         }
 
         public static void RemoveFromList(Mobile from)
@@ -281,12 +209,12 @@ namespace Server.Spells.Mysticism
 
     public class SpellPlagueTimer : Timer
     {
-        private readonly Mobile m_Caster;
-        private readonly Mobile m_Owner;
+        private Mobile m_Caster;
+        private Mobile m_Owner;
         private int m_Amount;
         private DateTime m_NextUse;
 
-        public Mobile Caster => m_Caster;
+        public Mobile Caster { get { return m_Caster; } }
         public int Amount
         {
             get { return m_Amount; }
@@ -308,7 +236,7 @@ namespace Server.Spells.Mysticism
             m_Owner = owner;
             m_Amount = 0;
             m_NextUse = DateTime.UtcNow;
-            Start();
+            this.Start();
         }
 
         protected override void OnTick()
@@ -318,7 +246,7 @@ namespace Server.Spells.Mysticism
 
         private void EndTimer()
         {
-            Stop();
+            this.Stop();
             SpellPlagueSpell.RemoveFromList(m_Owner);
         }
     }

@@ -18,8 +18,8 @@ namespace Server.Items
         public TrainingDummy(int itemID)
             : base(itemID)
         {
-            m_MinSkill = -25.0;
-            m_MaxSkill = +25.0;
+            this.m_MinSkill = -25.0;
+            this.m_MaxSkill = +25.0;
         }
 
         public TrainingDummy(Serial serial)
@@ -32,11 +32,11 @@ namespace Server.Items
         {
             get
             {
-                return m_MinSkill;
+                return this.m_MinSkill;
             }
             set
             {
-                m_MinSkill = value;
+                this.m_MinSkill = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -44,55 +44,61 @@ namespace Server.Items
         {
             get
             {
-                return m_MaxSkill;
+                return this.m_MaxSkill;
             }
             set
             {
-                m_MaxSkill = value;
+                this.m_MaxSkill = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Swinging => (m_Timer != null);
+        public bool Swinging
+        {
+            get
+            {
+                return (this.m_Timer != null);
+            }
+        }
         public virtual void UpdateItemID()
         {
-            int baseItemID = (ItemID / 2) * 2;
+            int baseItemID = (this.ItemID / 2) * 2;
 
-            ItemID = baseItemID + (Swinging ? 1 : 0);
+            this.ItemID = baseItemID + (this.Swinging ? 1 : 0);
         }
 
         public virtual void BeginSwing()
         {
-            if (m_Timer != null)
-                m_Timer.Stop();
+            if (this.m_Timer != null)
+                this.m_Timer.Stop();
 
-            m_Timer = new InternalTimer(this);
-            m_Timer.Start();
+            this.m_Timer = new InternalTimer(this);
+            this.m_Timer.Start();
         }
 
         public virtual void EndSwing()
         {
-            if (m_Timer != null)
-                m_Timer.Stop();
+            if (this.m_Timer != null)
+                this.m_Timer.Stop();
 
-            m_Timer = null;
+            this.m_Timer = null;
 
-            UpdateItemID();
+            this.UpdateItemID();
         }
 
         public void OnHit()
         {
-            UpdateItemID();
-            Effects.PlaySound(GetWorldLocation(), Map, Utility.RandomList(0x3A4, 0x3A6, 0x3A9, 0x3AE, 0x3B4, 0x3B6));
+            this.UpdateItemID();
+            Effects.PlaySound(this.GetWorldLocation(), this.Map, Utility.RandomList(0x3A4, 0x3A6, 0x3A9, 0x3AE, 0x3B4, 0x3B6));
         }
 
         public void Use(Mobile from, BaseWeapon weapon)
         {
-            BeginSwing();
+            this.BeginSwing();
 
-            from.Direction = from.GetDirectionTo(GetWorldLocation());
+            from.Direction = from.GetDirectionTo(this.GetWorldLocation());
             weapon.PlaySwingAnimation(from);
 
-            from.CheckSkill(weapon.Skill, m_MinSkill, m_MaxSkill);
+            from.CheckSkill(weapon.Skill, this.m_MinSkill, this.m_MaxSkill);
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -100,27 +106,27 @@ namespace Server.Items
             BaseWeapon weapon = from.Weapon as BaseWeapon;
 
             if (weapon is BaseRanged)
-                SendLocalizedMessageTo(from, 501822); // You can't practice ranged weapons on this.
-            else if (weapon == null || !from.InRange(GetWorldLocation(), weapon.MaxRange))
-                SendLocalizedMessageTo(from, 501816); // You are too far away to do that.
-            else if (Swinging)
-                SendLocalizedMessageTo(from, 501815); // You have to wait until it stops swinging.
-            else if (from.Skills[weapon.Skill].Base >= m_MaxSkill)
-                SendLocalizedMessageTo(from, 501828); // Your skill cannot improve any further by simply practicing with a dummy.
+                this.SendLocalizedMessageTo(from, 501822); // You can't practice ranged weapons on this.
+            else if (weapon == null || !from.InRange(this.GetWorldLocation(), weapon.MaxRange))
+                this.SendLocalizedMessageTo(from, 501816); // You are too far away to do that.
+            else if (this.Swinging)
+                this.SendLocalizedMessageTo(from, 501815); // You have to wait until it stops swinging.
+            else if (from.Skills[weapon.Skill].Base >= this.m_MaxSkill)
+                this.SendLocalizedMessageTo(from, 501828); // Your skill cannot improve any further by simply practicing with a dummy.
             else if (from.Mounted)
-                SendLocalizedMessageTo(from, 501829); // You can't practice on this while on a mount.
+                this.SendLocalizedMessageTo(from, 501829); // You can't practice on this while on a mount.
             else
-                Use(from, weapon);
+                this.Use(from, weapon);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_MinSkill);
-            writer.Write(m_MaxSkill);
+            writer.Write(this.m_MinSkill);
+            writer.Write(this.m_MaxSkill);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -129,24 +135,24 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_MinSkill = reader.ReadDouble();
-                        m_MaxSkill = reader.ReadDouble();
+                        this.m_MinSkill = reader.ReadDouble();
+                        this.m_MaxSkill = reader.ReadDouble();
 
-                        if (m_MinSkill == 0.0 && m_MaxSkill == 30.0)
+                        if (this.m_MinSkill == 0.0 && this.m_MaxSkill == 30.0)
                         {
-                            m_MinSkill = -25.0;
-                            m_MaxSkill = +25.0;
+                            this.m_MinSkill = -25.0;
+                            this.m_MaxSkill = +25.0;
                         }
 
                         break;
                     }
             }
 
-            UpdateItemID();
+            this.UpdateItemID();
         }
 
         private class InternalTimer : Timer
@@ -156,18 +162,18 @@ namespace Server.Items
             public InternalTimer(TrainingDummy dummy)
                 : base(TimeSpan.FromSeconds(0.25), TimeSpan.FromSeconds(2.75))
             {
-                m_Dummy = dummy;
-                Priority = TimerPriority.FiftyMS;
+                this.m_Dummy = dummy;
+                this.Priority = TimerPriority.FiftyMS;
             }
 
             protected override void OnTick()
             {
-                if (m_Delay)
-                    m_Dummy.OnHit();
+                if (this.m_Delay)
+                    this.m_Dummy.OnHit();
                 else
-                    m_Dummy.EndSwing();
+                    this.m_Dummy.EndSwing();
 
-                m_Delay = !m_Delay;
+                this.m_Delay = !this.m_Delay;
             }
         }
     }
@@ -177,7 +183,7 @@ namespace Server.Items
         [Constructable]
         public TrainingDummyEastAddon()
         {
-            AddComponent(new TrainingDummy(0x1074), 0, 0, 0);
+            this.AddComponent(new TrainingDummy(0x1074), 0, 0, 0);
         }
 
         public TrainingDummyEastAddon(Serial serial)
@@ -185,12 +191,18 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new TrainingDummyEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new TrainingDummyEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -213,13 +225,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new TrainingDummyEastAddon();
-        public override int LabelNumber => 1044335;// training dummy (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new TrainingDummyEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044335;
+            }
+        }// training dummy (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -235,7 +259,7 @@ namespace Server.Items
         [Constructable]
         public TrainingDummySouthAddon()
         {
-            AddComponent(new TrainingDummy(0x1070), 0, 0, 0);
+            this.AddComponent(new TrainingDummy(0x1070), 0, 0, 0);
         }
 
         public TrainingDummySouthAddon(Serial serial)
@@ -243,12 +267,18 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new TrainingDummySouthDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new TrainingDummySouthDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -271,13 +301,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new TrainingDummySouthAddon();
-        public override int LabelNumber => 1044336;// training dummy (south)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new TrainingDummySouthAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044336;
+            }
+        }// training dummy (south)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

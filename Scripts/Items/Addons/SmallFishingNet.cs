@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x1EA3, 0x1EA4)]
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076286;// Small Fish Net
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076286;
+            }
+        }// Small Fish Net
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -35,7 +43,7 @@ namespace Server.Items
         public SmallFishingNetAddon()
             : base()
         {
-            AddComponent(new SmallFishingNetComponent(), 0, 0, 0);
+            this.AddComponent(new SmallFishingNetComponent(), 0, 0, 0);
         }
 
         public SmallFishingNetAddon(Serial serial)
@@ -43,7 +51,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new SmallFishingNetDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new SmallFishingNetDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -65,7 +79,7 @@ namespace Server.Items
         public SmallFishingNetDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public SmallFishingNetDeed(Serial serial)
@@ -73,8 +87,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new SmallFishingNetAddon();
-        public override int LabelNumber => 1076286;// Small Fish Net
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new SmallFishingNetAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076286;
+            }
+        }// Small Fish Net
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

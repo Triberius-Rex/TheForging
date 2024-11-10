@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -12,39 +12,49 @@ namespace Server.Mobiles
         public Kraken()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            m_NextWaterBall = DateTime.UtcNow;
+            this.m_NextWaterBall = DateTime.UtcNow;
 
-            Name = "a kraken";
-            Body = 77;
-            BaseSoundID = 353;
+            this.Name = "a kraken";
+            this.Body = 77;
+            this.BaseSoundID = 353;
 
-            SetStr(756, 780);
-            SetDex(226, 245);
-            SetInt(26, 40);
+            this.SetStr(756, 780);
+            this.SetDex(226, 245);
+            this.SetInt(26, 40);
 
-            SetHits(454, 468);
-            SetMana(0);
+            this.SetHits(454, 468);
+            this.SetMana(0);
 
-            SetDamage(19, 33);
+            this.SetDamage(19, 33);
 
-            SetDamageType(ResistanceType.Physical, 70);
-            SetDamageType(ResistanceType.Cold, 30);
+            this.SetDamageType(ResistanceType.Physical, 70);
+            this.SetDamageType(ResistanceType.Cold, 30);
 
-            SetResistance(ResistanceType.Physical, 45, 55);
-            SetResistance(ResistanceType.Fire, 30, 40);
-            SetResistance(ResistanceType.Cold, 30, 40);
-            SetResistance(ResistanceType.Poison, 20, 30);
-            SetResistance(ResistanceType.Energy, 10, 20);
+            this.SetResistance(ResistanceType.Physical, 45, 55);
+            this.SetResistance(ResistanceType.Fire, 30, 40);
+            this.SetResistance(ResistanceType.Cold, 30, 40);
+            this.SetResistance(ResistanceType.Poison, 20, 30);
+            this.SetResistance(ResistanceType.Energy, 10, 20);
 
-            SetSkill(SkillName.MagicResist, 15.1, 20.0);
-            SetSkill(SkillName.Tactics, 45.1, 60.0);
-            SetSkill(SkillName.Wrestling, 45.1, 60.0);
+            this.SetSkill(SkillName.MagicResist, 15.1, 20.0);
+            this.SetSkill(SkillName.Tactics, 45.1, 60.0);
+            this.SetSkill(SkillName.Wrestling, 45.1, 60.0);
 
-            Fame = 11000;
-            Karma = -11000;
+            this.Fame = 11000;
+            this.Karma = -11000;
 
-            CanSwim = true;
-            CantWalk = true;
+            this.VirtualArmor = 50;
+
+            this.CanSwim = true;
+            this.CantWalk = true;
+
+            //Rope is supposed to be a rare drop.  ref UO Guide Kraken
+            if (Utility.RandomDouble() < .05)
+            {
+                Rope rope = new Rope();
+                rope.ItemID = 0x14F8;
+                this.PackItem(rope);
+            }                       
         }
 
         public Kraken(Serial serial)
@@ -52,16 +62,16 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel => 4;
+        public override int TreasureMapLevel { get { return 4; } }
 
         public override void OnActionCombat()
         {
-            Mobile combatant = Combatant as Mobile;
+            Mobile combatant = this.Combatant as Mobile;
 
-            if (combatant == null || combatant.Deleted || combatant.Map != Map || !InRange(combatant, 12) || !CanBeHarmful(combatant) || !InLOS(combatant))
+            if (combatant == null || combatant.Deleted || combatant.Map != this.Map || !this.InRange(combatant, 12) || !this.CanBeHarmful(combatant) || !this.InLOS(combatant))
                 return;
 
-            if (DateTime.UtcNow >= m_NextWaterBall)
+            if (DateTime.UtcNow >= this.m_NextWaterBall)
             {
                 double damage = combatant.Hits * 0.3;
 
@@ -70,8 +80,8 @@ namespace Server.Mobiles
                 else if (damage > 40.0)
                     damage = 40.0;
 
-                DoHarmful(combatant);
-                MovingParticles(combatant, 0x36D4, 5, 0, false, false, 195, 0, 9502, 3006, 0, 0, 0);
+                this.DoHarmful(combatant);
+                this.MovingParticles(combatant, 0x36D4, 5, 0, false, false, 195, 0, 9502, 3006, 0, 0, 0);
                 AOS.Damage(combatant, this, (int)damage, 100, 0, 0, 0, 0);
 
                 if (combatant is PlayerMobile && combatant.Mount != null)
@@ -85,14 +95,13 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Rich);
-            AddLoot(LootPack.LootItem<Rope>(5.0));
+            this.AddLoot(LootPack.Rich);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,12 @@
+using System;
+using Server.Mobiles;
+using Server;
+
 namespace Server.Items
 {
     public class XenrrFishingPole : FishingPole
     {
-        public override bool IsArtifact => true;
+        public override bool IsArtifact { get { return true; } }
 
         public override bool OnEquip(Mobile from)
         {
@@ -57,7 +61,7 @@ namespace Server.Items
                 m.FixedParticles(0x3728, 1, 13, 5042, EffectLayer.Waist);
             }
         }
-        public override int LabelNumber => 1095066;
+        public override int LabelNumber { get { return 1095066; } }
 
         [Constructable]
         public XenrrFishingPole()
@@ -76,7 +80,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -93,7 +97,7 @@ namespace Server.Items
 
             if (Parent is Mobile)
             {
-                Mobile m = (Mobile)Parent;
+                var m = (Mobile)Parent;
 
                 Timer.DelayCall(() =>
                 {

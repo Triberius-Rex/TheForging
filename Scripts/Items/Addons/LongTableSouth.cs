@@ -1,8 +1,11 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class LongTableSouthAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new LongTableSouthDeed();
+        public override BaseAddonDeed Deed { get { return new LongTableSouthDeed(); } }
 
         [Constructable]
         public LongTableSouthAddon()
@@ -19,7 +22,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -31,8 +34,8 @@ namespace Server.Items
 
     public class LongTableSouthDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new LongTableSouthAddon();
-        public override int LabelNumber => 1111781;  // long table (south)
+        public override BaseAddon Addon { get { return new LongTableSouthAddon(); } }
+        public override int LabelNumber { get { return 1111781; } } // long table (south)
 
         [Constructable]
         public LongTableSouthDeed()
@@ -47,7 +50,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

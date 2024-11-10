@@ -9,11 +9,11 @@ namespace Server.Items
         public ShojiLantern()
             : base(0x24BC)
         {
-            Movable = true;
-            Duration = TimeSpan.Zero; // Never burnt out
-            Burning = false;
-            Light = LightType.Circle150;
-            Weight = 3.0;
+            this.Movable = true;
+            this.Duration = TimeSpan.Zero; // Never burnt out
+            this.Burning = false;
+            this.Light = LightType.Circle150;
+            this.Weight = 3.0;
         }
 
         public ShojiLantern(Serial serial)
@@ -21,12 +21,24 @@ namespace Server.Items
         {
         }
 
-        public override int LitItemID => 0x24BB;
-        public override int UnlitItemID => 0x24BC;
+        public override int LitItemID
+        {
+            get
+            {
+                return 0x24BB;
+            }
+        }
+        public override int UnlitItemID
+        {
+            get
+            {
+                return 0x24BC;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

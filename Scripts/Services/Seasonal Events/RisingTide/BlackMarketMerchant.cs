@@ -1,6 +1,9 @@
-using Server.Engines.Points;
+using System;
+
+using Server;
 using Server.Items;
 using Server.Mobiles;
+using Server.Engines.Points;
 
 namespace Server.Engines.RisingTide
 {
@@ -8,14 +11,14 @@ namespace Server.Engines.RisingTide
     {
         public static BlackMarketMerchant InstanceTram { get; set; }
         public static BlackMarketMerchant InstanceFel { get; set; }
-        public static Point3D SpawnLocation => new Point3D(2719, 2187, 0);
+        public static Point3D SpawnLocation { get { return new Point3D(2719, 2187, 0); } }
 
-        public override int TitleLocalization => 1158918;  // Maritime Black Market
-        public override int CancelLocalization => 1158911; 	// Bring me maritime trade cargo and I will pay you in doubloons!
-        public override int TurnInLocalization => 1158912;  // Sell Maritime Trade Cargo
-        public override int ClaimLocalization => 1158913;  // Buy Pirate Loot
+        public override int TitleLocalization { get { return 1158918; } } // Maritime Black Market
+        public override int CancelLocalization { get { return 1158911; } }	// Bring me maritime trade cargo and I will pay you in doubloons!
+        public override int TurnInLocalization { get { return 1158912; } } // Sell Maritime Trade Cargo
+        public override int ClaimLocalization { get { return 1158913; } } // Buy Pirate Loot
 
-        public override bool IsShrineHealer => false;
+        public override bool IsShrineHealer { get { return false; } }
 
         [Constructable]
         public BlackMarketMerchant() : base("the Pirate")

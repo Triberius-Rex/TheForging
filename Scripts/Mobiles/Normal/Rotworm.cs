@@ -1,6 +1,8 @@
-using Server.Engines.Quests;
-using Server.Items;
+using Server;
 using System;
+using System.Collections.Generic;
+using Server.Items;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
@@ -39,6 +41,8 @@ namespace Server.Mobiles
             Fame = 500;
             Karma = -500;
 
+            PackBodyPartOrBones();
+
             SetSpecialAbility(SpecialAbility.BloodDisease);
         }
 
@@ -53,14 +57,13 @@ namespace Server.Mobiles
         public override int GetHurtSound() { return 0x62C; }
         public override int GetDeathSound() { return 0x62B; }
 
-        public override int Meat => 2;
-        public override MeatType MeatType => MeatType.Rotworm;
-        public override FoodType FavoriteFood => FoodType.Fish;
+        public override int Meat { get { return 2; } }
+        public override MeatType MeatType { get { return MeatType.Rotworm; } }
+        public override FoodType FavoriteFood { get { return FoodType.Fish; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
-            AddLoot(LootPack.BodyPartsAndBones);
         }
 
         public override void OnKilledBy(Mobile mob)
@@ -86,15 +89,13 @@ namespace Server.Mobiles
             CandlewoodTorch torch = m.FindItemOnLayer(Layer.TwoHanded) as CandlewoodTorch;
 
             if (torch != null && torch.Burning)
-            {
-                ForceFleeUntil = DateTime.UtcNow + TimeSpan.FromSeconds(5.0);
-            }
+                BeginFlee(TimeSpan.FromSeconds(5.0));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

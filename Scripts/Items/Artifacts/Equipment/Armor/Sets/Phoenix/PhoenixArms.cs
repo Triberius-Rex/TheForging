@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class PhoenixArms : RingmailArms
@@ -6,7 +8,7 @@ namespace Server.Items
         public PhoenixArms()
         {
             Hue = 0x8E;
-            LootType = LootType.Blessed;
+			LootType = LootType.Blessed;     
         }
 
         public PhoenixArms(Serial serial)
@@ -14,13 +16,19 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041607;// ringmail sleeves of the phoenix
-
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041607;
+            }
+        }// ringmail sleeves of the phoenix
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

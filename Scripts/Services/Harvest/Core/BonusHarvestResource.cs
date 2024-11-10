@@ -7,58 +7,64 @@ namespace Server.Engines.Harvest
         private readonly TextDefinition m_SuccessMessage;
         private Type m_Type;
         private double m_ReqSkill, m_Chance;
-        public BonusHarvestResource(double reqSkill, double chance, TextDefinition message, Type type)
-            : this(reqSkill, chance, message, type, null)
-        { }
+		public BonusHarvestResource(double reqSkill, double chance, TextDefinition message, Type type)
+			: this(reqSkill, chance, message, type, null)
+		{ }
         public BonusHarvestResource(double reqSkill, double chance, TextDefinition message, Type type, Map requiredMap)
         {
-            m_ReqSkill = reqSkill;
+            this.m_ReqSkill = reqSkill;
 
-            m_Chance = chance;
-            m_Type = type;
-            m_SuccessMessage = message;
-            RequiredMap = requiredMap;
+            this.m_Chance = chance;
+            this.m_Type = type;
+            this.m_SuccessMessage = message;
+			RequiredMap = requiredMap;
         }
 
-        public Map RequiredMap { get; private set; }
+		public Map RequiredMap { get; private set; }
 
         public Type Type
         {
             get
             {
-                return m_Type;
+                return this.m_Type;
             }
             set
             {
-                m_Type = value;
+                this.m_Type = value;
             }
         }
         public double ReqSkill
         {
             get
             {
-                return m_ReqSkill;
+                return this.m_ReqSkill;
             }
             set
             {
-                m_ReqSkill = value;
+                this.m_ReqSkill = value;
             }
         }
         public double Chance
         {
             get
             {
-                return m_Chance;
+                return this.m_Chance;
             }
             set
             {
-                m_Chance = value;
+                this.m_Chance = value;
             }
         }
-        public TextDefinition SuccessMessage => m_SuccessMessage;
+        public TextDefinition SuccessMessage
+        {
+            get
+            {
+                return this.m_SuccessMessage;
+            }
+        }
         public void SendSuccessTo(Mobile m)
         {
-            TextDefinition.SendMessageTo(m, m_SuccessMessage);
+            TextDefinition.SendMessageTo(m, this.m_SuccessMessage);
         }
     }
 }

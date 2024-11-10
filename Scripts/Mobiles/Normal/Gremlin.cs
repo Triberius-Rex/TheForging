@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -10,7 +11,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Archer, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a gremlin";
-            Body = 724;
+            Body = 724; 
 
             SetStr(106);
             SetDex(130);
@@ -32,7 +33,9 @@ namespace Server.Mobiles
             SetSkill(SkillName.MagicResist, 82.5);
             SetSkill(SkillName.Tactics, 65.3);
 
-            SetWearable(new Bow(), dropChance: 1);
+            AddItem(new Bow());
+            PackItem(new Arrow(Utility.RandomMinMax(60, 80)));
+            PackItem(new Apple(5));
         }
 
         public Gremlin(Serial serial)
@@ -43,15 +46,20 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
-            AddLoot(LootPack.LootItem<Arrow>(60, 80));
-            AddLoot(LootPack.LootItem<Apple>(5));
-            AddLoot(LootPack.LootItem<LuckyCoin>(1.0));
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (Utility.RandomDouble() < 0.01)
+                c.DropItem(new LuckyCoin());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

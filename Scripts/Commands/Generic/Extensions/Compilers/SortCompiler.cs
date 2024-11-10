@@ -14,11 +14,11 @@ namespace Server.Commands.Generic
         {
             get
             {
-                return m_Property;
+                return this.m_Property;
             }
             set
             {
-                m_Property = value;
+                this.m_Property = value;
             }
         }
 
@@ -26,11 +26,11 @@ namespace Server.Commands.Generic
         {
             get
             {
-                return (m_Order > 0);
+                return (this.m_Order > 0);
             }
             set
             {
-                m_Order = (value ? +1 : -1);
+                this.m_Order = (value ? +1 : -1);
             }
         }
 
@@ -38,11 +38,11 @@ namespace Server.Commands.Generic
         {
             get
             {
-                return (m_Order < 0);
+                return (this.m_Order < 0);
             }
             set
             {
-                m_Order = (value ? -1 : +1);
+                this.m_Order = (value ? -1 : +1);
             }
         }
 
@@ -50,22 +50,22 @@ namespace Server.Commands.Generic
         {
             get
             {
-                return Math.Sign(m_Order);
+                return Math.Sign(this.m_Order);
             }
             set
             {
-                m_Order = Math.Sign(value);
+                this.m_Order = Math.Sign(value);
 
-                if (m_Order == 0)
+                if (this.m_Order == 0)
                     throw new InvalidOperationException("Sign cannot be zero.");
             }
         }
 
         public OrderInfo(Property property, bool isAscending)
         {
-            m_Property = property;
+            this.m_Property = property;
 
-            IsAscending = isAscending;
+            this.IsAscending = isAscending;
         }
     }
 
@@ -146,7 +146,7 @@ namespace Server.Commands.Generic
                     emitter.Chain(prop);
 
                     bool couldCompare =
-                        emitter.CompareTo(sign, delegate ()
+                        emitter.CompareTo(sign, delegate()
                         {
                             emitter.LoadLocal(b);
                             emitter.Chain(prop);

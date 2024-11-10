@@ -1,6 +1,7 @@
+using System;
 using Server.Engines.CannedEvil;
 using Server.Items;
-using System;
+using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
@@ -40,6 +41,8 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            VirtualArmor = 80;
+
             SetSpecialAbility(SpecialAbility.Webbing);
 
             ForceActiveSpeed = 0.3;
@@ -51,13 +54,55 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Venom;
-        public override Type[] UniqueList => new[] { typeof(Calm) };
-        public override Type[] SharedList => new[] { typeof(OblivionsNeedle), typeof(ANecromancerShroud) };
-        public override Type[] DecorativeList => new[] { typeof(Web), typeof(MonsterStatuette) };
-        public override MonsterStatuetteType[] StatueTypes => new[] { MonsterStatuetteType.Spider };
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Poison.Lethal;
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Venom;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(Calm) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[] { typeof(OblivionsNeedle), typeof(ANecromancerShroud) };
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[] { typeof(Web), typeof(MonsterStatuette) };
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[] { MonsterStatuetteType.Spider };
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 4);
@@ -66,7 +111,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

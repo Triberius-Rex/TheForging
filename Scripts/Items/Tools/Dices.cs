@@ -1,8 +1,9 @@
-using Server.ContextMenus;
+using System;
+using Server.Network;
 using Server.Gumps;
 using Server.Multis;
-using Server.Network;
 using System.Collections.Generic;
+using Server.ContextMenus;
 
 namespace Server.Items
 {
@@ -52,16 +53,16 @@ namespace Server.Items
             int one = Utility.Random(1, 6);
             int two = Utility.Random(1, 6);
 
-            SendLocalizedMessage(MessageType.Emote, 1042713, AffixType.Prepend, from.Name + " ", ""); // The first die rolls to a stop and shows:
-            SendLocalizedMessage(MessageType.Regular, 1042714, AffixType.Append, " " + one.ToString(), ""); // The first die rolls to a stop and shows:
-            SendLocalizedMessage(MessageType.Regular, 1042715, AffixType.Append, " " + two.ToString(), ""); // The second die stops and shows:
-            SendLocalizedMessage(MessageType.Regular, 1042716, AffixType.Append, " " + (one + two).ToString(), ""); // Total for this roll:
+            this.SendLocalizedMessage(MessageType.Emote, 1042713, AffixType.Prepend, from.Name + " ", ""); // The first die rolls to a stop and shows:
+            this.SendLocalizedMessage(MessageType.Regular, 1042714, AffixType.Append, " " + one.ToString(), ""); // The first die rolls to a stop and shows:
+            this.SendLocalizedMessage(MessageType.Regular, 1042715, AffixType.Append, " " + two.ToString(), ""); // The second die stops and shows:
+            this.SendLocalizedMessage(MessageType.Regular, 1042716, AffixType.Append, " " + (one + two).ToString(), ""); // Total for this roll:
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write((int)Level);
         }
@@ -70,8 +71,15 @@ namespace Server.Items
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
-			
-			Level = (SecureLevel)reader.ReadInt();            
+
+            if (version > 0)
+            {
+                Level = (SecureLevel)reader.ReadInt();
+            }
+            else
+            {
+                Level = SecureLevel.Friends;
+            }
         }
     }
 }

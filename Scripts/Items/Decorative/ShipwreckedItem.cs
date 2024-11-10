@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public interface IShipwreckedItem
@@ -14,12 +16,17 @@ namespace Server.Items
         {
             m_IsBarnacleItem = barnacle;
 
-            int weight = ItemData.Weight;
+            int weight = this.ItemData.Weight;
 
             if (weight >= 255 || weight <= 0)
                 weight = 1;
 
-            Weight = weight;
+            this.Weight = weight;
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            this.LabelTo(from, 1050039, String.Format("#{0}\t#1041645", this.LabelNumber));
         }
 
         public override void AddNameProperties(ObjectPropertyList list)
@@ -27,9 +34,9 @@ namespace Server.Items
             if (m_IsBarnacleItem)
             {
                 if (LabelNumber > 0)
-                    list.Add(1151075, string.Format("#{0}", LabelNumber)); //barnacle covered ~1_token~
+                    list.Add(1151075, String.Format("#{0}", LabelNumber)); //barnacle covered ~1_token~
                 else
-                    list.Add(1151075, ItemData.Name); //barnacle covered ~1_token~
+                    list.Add(1151075, this.ItemData.Name); //barnacle covered ~1_token~
 
                 list.Add(1041645); // recovered from a shipwreck
             }
@@ -68,7 +75,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
             writer.Write(m_IsBarnacleItem);
         }
 
@@ -90,12 +97,12 @@ namespace Server.Items
 
         public bool Dye(Mobile from, DyeTub sender)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return false;
 
-            if (ItemID >= 0x13A4 && ItemID <= 0x13AE)
+            if (this.ItemID >= 0x13A4 && this.ItemID <= 0x13AE)
             {
-                Hue = sender.DyedHue;
+                this.Hue = sender.DyedHue;
                 return true;
             }
 

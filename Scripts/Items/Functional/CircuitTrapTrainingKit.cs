@@ -1,24 +1,26 @@
+using System;
+using System.Collections.Generic;
+
 using Server.Gumps;
 using Server.Mobiles;
 using Server.SkillHandlers;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class CircuitTrapTrainingKit : Item, ICircuitTrap, IRemoveTrapTrainingKit
     {
-        public override int LabelNumber => 1159014;  // Circuit Trap Training Kit
+        public override int LabelNumber { get { return 1159014; } } // Circuit Trap Training Kit
 
-        public int GumpTitle => 1159005;  // <center>Trap Disarm Mechanism</center>
-        public int GumpDescription => 1159006;  // // <center>disarm the trap</center>
+        public int GumpTitle { get { return 1159005; } } // <center>Trap Disarm Mechanism</center>
+        public int GumpDescription { get { return 1159006; } } // // <center>disarm the trap</center>
 
         private CircuitCount _Count;
-        public CircuitCount Count => _Count;
+        public CircuitCount Count { get { return _Count; } }
 
         public List<int> Path { get; set; } = new List<int>();
         public List<int> Progress { get; set; } = new List<int>();
 
-        public bool CanDecipher => false;
+        public bool CanDecipher { get { return false; } }
 
         [Constructable]
         public CircuitTrapTrainingKit()
@@ -40,7 +42,7 @@ namespace Server.Items
             {
                 if (Path == null || Path.Count == 0)
                 {
-                    double skill = m.Skills[SkillName.RemoveTrap].Base;
+                    var skill = m.Skills[SkillName.RemoveTrap].Base;
 
                     if (skill < 80.0)
                     {
@@ -107,9 +109,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(1); // version
-
-            writer.Write((int)_Count);
+            writer.WriteEncodedInt(0); // version
 
             writer.Write(Path.Count);
             for (int i = 0; i < Path.Count; i++)
@@ -130,32 +130,18 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            switch (version)
+            var count = reader.ReadInt();
+
+            for (int i = 0; i < count; i++)
             {
-                case 1:
-                    _Count = (CircuitCount)reader.ReadInt();
-                    goto case 0;
-                case 0:
-                    int count = reader.ReadInt();
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        Path.Add(reader.ReadInt());
-                    }
-
-                    count = reader.ReadInt();
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        Progress.Add(reader.ReadInt());
-                    }
-                    break;
+                Path.Add(reader.ReadInt());
             }
 
-            if (version == 0)
+            count = reader.ReadInt();
+
+            for (int i = 0; i < count; i++)
             {
-                Path.Clear();
-                Progress.Clear();
+                Progress.Add(reader.ReadInt());
             }
         }
     }

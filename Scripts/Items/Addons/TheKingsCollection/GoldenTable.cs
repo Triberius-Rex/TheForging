@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -38,12 +39,12 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new GoldenTableDeed();
+        public override BaseAddonDeed Deed { get { return new GoldenTableDeed(); } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -55,7 +56,7 @@ namespace Server.Items
 
     public class GoldenTableDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1154150;  // Golden Table
+        public override int LabelNumber { get { return 1154150; } } // Golden Table
 
         private DirectionType _Direction;
 
@@ -98,12 +99,12 @@ namespace Server.Items
                 base.OnDoubleClick(from);
         }
 
-        public override BaseAddon Addon => new GoldenTableAddon(_Direction);
-
+        public override BaseAddon Addon { get { return new GoldenTableAddon(_Direction); } }
+                
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

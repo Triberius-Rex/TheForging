@@ -1,8 +1,8 @@
+using System;
 using Server.Mobiles;
 using Server.Multis;
 using Server.Spells;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
@@ -54,7 +54,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041079;// a special fishing net
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041079;
+            }
+        }// a special fishing net
         [CommandProperty(AccessLevel.GameMaster)]
         public bool InUse
         {
@@ -67,7 +73,13 @@ namespace Server.Items
                 m_InUse = value;
             }
         }
-        public virtual bool RequireDeepWater => true;
+        public virtual bool RequireDeepWater
+        {
+            get
+            {
+                return true;
+            }
+        }
         public static bool FullValidation(Map map, int x, int y)
         {
             bool valid = ValidateDeepWater(map, x, y);
@@ -98,7 +110,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(m_InUse);
         }
@@ -109,7 +121,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -134,7 +146,7 @@ namespace Server.Items
             else if (IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(1010484); // Where do you wish to use the net?
-                from.BeginTarget(-1, true, TargetFlags.None, OnTarget);
+                from.BeginTarget(-1, true, TargetFlags.None, new TargetCallback(OnTarget));
             }
             else
             {
@@ -183,7 +195,14 @@ namespace Server.Items
 
                 SpellHelper.Turn(from, p);
 
-                from.Animate(AnimationType.Attack, 6);
+                if (Core.SA)
+                {
+                    from.Animate(AnimationType.Attack, 6);
+                }
+                else
+                {
+                    from.Animate(12, 5, 1, true, false, 0);
+                }
 
                 Effects.SendLocationEffect(p, map, 0x352D, 16, 4);
                 Effects.PlaySound(p, map, 0x364);
@@ -231,7 +250,7 @@ namespace Server.Items
 
                 LandTile t = map.Tiles.GetLandTile(tx, ty);
 
-                if (t.Z == p.Z && ((t.ID >= 0xA8 && t.ID <= 0xAB) || (t.ID >= 0x136 && t.ID <= 0x137)) && !SpellHelper.CheckMulti(new Point3D(tx, ty, p.Z), map))
+                if (t.Z == p.Z && ((t.ID >= 0xA8 && t.ID <= 0xAB) || (t.ID >= 0x136 && t.ID <= 0x137)) && !Spells.SpellHelper.CheckMulti(new Point3D(tx, ty, p.Z), map))
                 {
                     x = tx;
                     y = ty;
@@ -243,7 +262,7 @@ namespace Server.Items
 
             if (spawn is Kraken && 0.35 < Utility.RandomDouble())
                 spawn.PackItem(new MessageInABottle(map == Map.Felucca ? Map.Felucca : Map.Trammel));
-
+            
         }
 
         protected virtual void FinishEffect(Point3D p, Map map, Mobile from)
@@ -256,7 +275,7 @@ namespace Server.Items
             {
                 BaseCreature spawn;
 
-                switch (Utility.Random(4))
+                switch ( Utility.Random(4) )
                 {
                     default:
                     case 0:
@@ -342,7 +361,7 @@ namespace Server.Items
                     {
                         int x, y;
 
-                        switch (Utility.Random(8))
+                        switch ( Utility.Random(8) )
                         {
                             default:
                             case 0:
@@ -411,12 +430,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1063451;// a fabled fishing net
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1063451;
+            }
+        }// a fabled fishing net
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

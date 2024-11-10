@@ -1,19 +1,19 @@
-using Server.ContextMenus;
-using Server.Gumps;
-using Server.Items;
+using System;
 using Server.Multis;
 using Server.Network;
-using System;
+using Server.Items;
+using Server.Gumps;
+using Server.ContextMenus;
 using System.Collections.Generic;
 
 namespace Server.Engines.VeteranRewards
 {
     public class EnchantedGraniteCartComponent : LocalizedAddonComponent, IDyable
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int RewardCount => ((EnchantedGraniteCartAddon)Addon).RewardCount;
+        public int RewardCount { get { return ((EnchantedGraniteCartAddon)Addon).RewardCount; } }
 
         public EnchantedGraniteCartComponent(int id)
             : base(id, 1126338) // cart
@@ -112,7 +112,7 @@ namespace Server.Engines.VeteranRewards
 
             switch (type)
             {
-                case DirectionType.South:
+                case DirectionType.South:  
                     AddComponent(new EnchantedGraniteCartComponent(0xA54B), 0, 0, 0);
                     AddComponent(new AddonComponent(0xA54D), 1, 1, 0);
                     break;
@@ -144,7 +144,7 @@ namespace Server.Engines.VeteranRewards
 
         private class InternalTimer : Timer
         {
-            private readonly EnchantedGraniteCartAddon i_item;
+            private EnchantedGraniteCartAddon i_item;
 
             public InternalTimer(EnchantedGraniteCartAddon item)
                 : base(TimeSpan.FromMinutes(10.0), TimeSpan.FromMinutes(10.0))
@@ -215,7 +215,7 @@ namespace Server.Engines.VeteranRewards
                                     from.AddToBackpack(granite);
                                     RewardCount -= 2;
                                 }
-                            }
+                            }                            
                         }
                         else
                         {
@@ -251,7 +251,7 @@ namespace Server.Engines.VeteranRewards
             writer.Write(m_RewardCount);
             writer.Write(NextUse);
             writer.Write((int)Level);
-            writer.Write(IsRewardItem);
+            writer.Write((bool)IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -271,7 +271,7 @@ namespace Server.Engines.VeteranRewards
 
     public class EnchantedGraniteCartAddonDeed : BaseAddonDeed, IRewardItem, IRewardOption
     {
-        public override int LabelNumber => 1159422;  // Enchanted Granite Cart
+        public override int LabelNumber { get { return 1159422; } } // Enchanted Granite Cart
 
         public override BaseAddon Addon
         {
@@ -341,7 +341,7 @@ namespace Server.Engines.VeteranRewards
 
             if (!Deleted)
                 base.OnDoubleClick(from);
-        }
+        }        
 
         public EnchantedGraniteCartAddonDeed(Serial serial)
             : base(serial)
@@ -353,7 +353,7 @@ namespace Server.Engines.VeteranRewards
             base.Serialize(writer);
             writer.Write(0); // Version
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)

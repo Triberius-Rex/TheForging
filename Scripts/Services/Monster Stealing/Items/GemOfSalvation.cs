@@ -1,14 +1,14 @@
-using Server.Gumps;
+using System;
+using Server.Gumps; 
 using Server.Mobiles;
 using Server.Network;
-using System;
 
 namespace Server.Items
 {
     [TypeAlias("drNO.ThieveItems.GemOfSalvation")]
     public class GemOfSalvation : Item
     {
-        public override int LabelNumber => 1094939;  // Gem of Salvation
+        public override int LabelNumber { get { return 1094939; } } // Gem of Salvation
 
         [Constructable]
         public GemOfSalvation()
@@ -20,12 +20,12 @@ namespace Server.Items
 
         public static void Initialize()
         {
-            EventSink.PlayerDeath += PlayerDeath;
+            EventSink.PlayerDeath += new PlayerDeathEventHandler(PlayerDeath);
         }
 
         public static void PlayerDeath(PlayerDeathEventArgs args)
         {
-            PlayerMobile pm = (PlayerMobile)args.Mobile;
+            PlayerMobile pm = (PlayerMobile)args.Mobile;           
 
             if (pm != null && pm.Backpack != null)
             {
@@ -49,7 +49,7 @@ namespace Server.Items
                             pm.CloseGump(typeof(ResurrectGump));
                             pm.SendGump(new GemResurrectGump(pm, gem));
                         }
-                    });
+                    });                    
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -74,8 +74,8 @@ namespace Server.Items
 
     public class GemResurrectGump : ResurrectGump
     {
-        private readonly GemOfSalvation m_Gem;
-        private readonly PlayerMobile m_Mobile;
+        private GemOfSalvation m_Gem;
+        private PlayerMobile m_Mobile;
 
         public GemResurrectGump(PlayerMobile pm, GemOfSalvation gem)
             : base(pm, ResurrectMessage.GemOfSalvation)

@@ -1,6 +1,6 @@
+using System;
 using Server.Engines.CannedEvil;
 using Server.Items;
-using System;
 
 namespace Server.Mobiles
 {
@@ -44,6 +44,8 @@ namespace Server.Mobiles
 
             Fame = 22500;
             Karma = 22500;
+
+            VirtualArmor = 100;
         }
 
         public LordOaks(Serial serial)
@@ -51,9 +53,25 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Enlightenment;
-        public override Type[] UniqueList => new[] { typeof(OrcChieftainHelm) };
-        public override Type[] SharedList => new[]
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Enlightenment;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(OrcChieftainHelm) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(RoyalGuardSurvivalKnife),
                     typeof(DjinnisRing),
@@ -62,21 +80,79 @@ namespace Server.Mobiles
                     typeof(DetectiveBoots),
                     typeof(TheMostKnowledgePerson)
                 };
-        public override Type[] DecorativeList => new[]
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(WaterTile),
                     typeof(WindSpirit),
                     typeof(Pier),
                 };
-        public override MonsterStatuetteType[] StatueTypes => new MonsterStatuetteType[] { };
-        public override bool AutoDispel => true;
-        public override bool CanFly => true;
-        public override bool Unprovokable => true;
-        public override bool Uncalmable => true;
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[] { };
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool CanFly
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool Uncalmable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Fey;
+        public override TribeType Tribe { get { return TribeType.Fey; } }
 
-        public override Poison PoisonImmune => Poison.Deadly;
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Deadly;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 5);
@@ -95,11 +171,10 @@ namespace Server.Mobiles
 
             for (int i = 0; i < newPixies; ++i)
             {
-                Pixie pixie = new Pixie
-                {
-                    Team = Team,
-                    FightMode = FightMode.Closest
-                };
+                Pixie pixie = new Pixie();
+
+                pixie.Team = Team;
+                pixie.FightMode = FightMode.Closest;
 
                 bool validLocation = false;
                 Point3D loc = Location;
@@ -230,7 +305,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_Queen);
             writer.Write(m_SpawnedQueen);
@@ -242,7 +317,7 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {

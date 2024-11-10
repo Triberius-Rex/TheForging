@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class OrdersFromMinax : Item
@@ -6,7 +8,7 @@ namespace Server.Items
         public OrdersFromMinax()
             : base(0x2279)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public OrdersFromMinax(Serial serial)
@@ -14,12 +16,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074639;// Orders from Minax
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074639;
+            }
+        }// Orders from Minax
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

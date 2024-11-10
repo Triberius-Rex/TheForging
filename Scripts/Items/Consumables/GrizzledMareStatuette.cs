@@ -1,10 +1,11 @@
+using System;
 using Server.Mobiles;
 
 namespace Server.Items
 {
     public class GrizzledMareStatuette : BaseImprisonedMobile
     {
-        public override int LabelNumber => 1074475;  // Grizzled Mare Statuette
+        public override int LabelNumber { get { return 1074475; } } // Grizzled Mare Statuette
 
         [Constructable]
         public GrizzledMareStatuette()
@@ -17,18 +18,24 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override BaseCreature Summon => new GrizzledMare();
+        
+        public override BaseCreature Summon
+        {
+            get
+            {
+                return new GrizzledMare();
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
-            base.Serialize(writer);
-            writer.Write(0); // version
+            base.Serialize(writer);			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
-            base.Deserialize(reader);
+            base.Deserialize(reader);			
             int version = reader.ReadInt();
         }
     }
@@ -46,7 +53,7 @@ namespace Server.Mobiles
 
         [Constructable]
         public GrizzledMare(string name)
-            : base(name, 793, 0x3EBB, AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(name, 793, 0x3EBB, AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             SetStr(100);
             SetDex(80);
@@ -86,18 +93,18 @@ namespace Server.Mobiles
         {
         }
 
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override bool DeleteOnRelease => true;
+        public override FoodType FavoriteFood { get { return FoodType.Meat; } }
+        public override bool DeleteOnRelease { get { return true; } }
 
         public override void Serialize(GenericWriter writer)
         {
-            base.Serialize(writer);
-            writer.Write(2); // version
+            base.Serialize(writer);			
+            writer.Write((int)2); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
-            base.Deserialize(reader);
+            base.Deserialize(reader);			
             int version = reader.ReadInt();
 
             if (version < 2)

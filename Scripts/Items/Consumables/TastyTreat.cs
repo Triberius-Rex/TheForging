@@ -1,7 +1,8 @@
-﻿using Server.Mobiles;
-using Server.Targeting;
+﻿using Server;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -9,12 +10,12 @@ namespace Server.Items
     {
         public static Dictionary<BaseCreature, DateTime> m_Table = new Dictionary<BaseCreature, DateTime>();
 
-        public override int LabelNumber => 1112774;
+        public override int LabelNumber { get { return 1112774; } }
 
-        public virtual double Bonus => 0.05;
-        public virtual TimeSpan Duration => TimeSpan.FromMinutes(20);
-        public virtual TimeSpan CoolDown => TimeSpan.FromMinutes(2);
-        public virtual int DamageBonus => 0;
+        public virtual double Bonus { get { return 0.05; } }
+        public virtual TimeSpan Duration { get { return TimeSpan.FromMinutes(20); } }
+        public virtual TimeSpan CoolDown { get { return TimeSpan.FromMinutes(2); } }
+        public virtual int DamageBonus { get { return 0; } }
 
         [Constructable]
         public TastyTreat()
@@ -93,25 +94,25 @@ namespace Server.Items
         }
 
         public bool DoEffects(BaseCreature bc)
-        {
-            string modName = Serial.ToString();
+		{
+			string modName = Serial.ToString();
 
             bc.AddStatMod(new StatMod(StatType.Str, bc.Serial + "Str", (int)(bc.RawStr * Bonus), Duration));
             bc.AddStatMod(new StatMod(StatType.Int, bc.Serial + "Int", (int)(bc.RawInt * Bonus), Duration));
             bc.AddStatMod(new StatMod(StatType.Dex, bc.Serial + "Dex", (int)(bc.RawDex * Bonus), Duration));
 
-            bc.PlaySound(0x1EA);
-            bc.FixedParticles(0x373A, 10, 15, 5018, EffectLayer.Waist);
+			bc.PlaySound( 0x1EA );
+			bc.FixedParticles( 0x373A, 10, 15, 5018, EffectLayer.Waist );
 
             bc.TempDamageBonus = DamageBonus;
             bc.Loyalty = BaseCreature.MaxLoyalty;
 
-            m_Table.Add(bc, DateTime.UtcNow);
+			m_Table.Add(bc, DateTime.UtcNow);
             Timer.DelayCall(Duration + CoolDown, new TimerStateCallback(RemoveInfluence), bc);
 
-            Consume();
+			Consume();
             return true;
-        }
+		}
 
         public static bool UnderInfluence(BaseCreature bc)
         {
@@ -136,7 +137,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -156,7 +157,13 @@ namespace Server.Items
         /* DO NOT USE! Only used in serialization of tasty treats that originally derived from Item */
         private bool m_InheritsItem;
 
-        protected bool InheritsItem => m_InheritsItem;
+        protected bool InheritsItem
+        {
+            get
+            {
+                return this.m_InheritsItem;
+            }
+        }
         #endregion
     }
 }

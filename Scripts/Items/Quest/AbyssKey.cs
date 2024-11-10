@@ -10,12 +10,12 @@ namespace Server.Items
         public AbyssKey(int itemID)
             : base(itemID)
         {
-            LootType = LootType.Blessed;
-
-            if (Lifespan > 0)
+            this.LootType = LootType.Blessed;
+		
+            if (this.Lifespan > 0)
             {
-                m_Lifespan = Lifespan;
-                StartTimer();
+                this.m_Lifespan = this.Lifespan;
+                this.StartTimer();
             }
         }
 
@@ -24,86 +24,92 @@ namespace Server.Items
         {
         }
 
-        public virtual int Lifespan => 0;
+        public virtual int Lifespan
+        {
+            get
+            {
+                return 0;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public int TimeLeft
         {
             get
             {
-                return m_Lifespan;
+                return this.m_Lifespan;
             }
             set
             {
-                m_Lifespan = value;
-                InvalidateProperties();
+                this.m_Lifespan = value;
+                this.InvalidateProperties();
             }
         }
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
-
-            if (Lifespan > 0)
-                list.Add(1072517, m_Lifespan.ToString()); // Lifespan: ~1_val~ seconds
+			
+            if (this.Lifespan > 0)
+                list.Add(1072517, this.m_Lifespan.ToString()); // Lifespan: ~1_val~ seconds
         }
 
         public virtual void StartTimer()
         {
-            if (m_Timer != null)
+            if (this.m_Timer != null)
                 return;
-
-            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), Slice);
-            m_Timer.Priority = TimerPriority.OneSecond;
+				
+            this.m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), new TimerCallback(Slice));
+            this.m_Timer.Priority = TimerPriority.OneSecond;
         }
 
         public virtual void StopTimer()
         {
-            if (m_Timer != null)
-                m_Timer.Stop();
+            if (this.m_Timer != null)
+                this.m_Timer.Stop();
 
-            m_Timer = null;
+            this.m_Timer = null;
         }
 
         public virtual void Slice()
         {
-            m_Lifespan -= 10;
-
-            InvalidateProperties();
-
-            if (m_Lifespan <= 0)
-                Decay();
+            this.m_Lifespan -= 10;
+			
+            this.InvalidateProperties();
+			
+            if (this.m_Lifespan <= 0)
+                this.Decay();
         }
 
         public virtual void Decay()
         {
-            if (RootParent is Mobile)
+            if (this.RootParent is Mobile)
             {
-                Mobile parent = (Mobile)RootParent;
-
-                if (Name == null)
-                    parent.SendLocalizedMessage(1072515, "#" + LabelNumber); // The ~1_name~ expired...
+                Mobile parent = (Mobile)this.RootParent;
+				
+                if (this.Name == null)
+                    parent.SendLocalizedMessage(1072515, "#" + this.LabelNumber); // The ~1_name~ expired...
                 else
-                    parent.SendLocalizedMessage(1072515, Name); // The ~1_name~ expired...
-
+                    parent.SendLocalizedMessage(1072515, this.Name); // The ~1_name~ expired...
+					
                 Effects.SendLocationParticles(EffectItem.Create(parent.Location, parent.Map, EffectItem.DefaultDuration), 0x3728, 8, 20, 5042);
                 Effects.PlaySound(parent.Location, parent.Map, 0x201);
             }
             else
             {
-                Effects.SendLocationParticles(EffectItem.Create(Location, Map, EffectItem.DefaultDuration), 0x3728, 8, 20, 5042);
-                Effects.PlaySound(Location, Map, 0x201);
+                Effects.SendLocationParticles(EffectItem.Create(this.Location, this.Map, EffectItem.DefaultDuration), 0x3728, 8, 20, 5042);
+                Effects.PlaySound(this.Location, this.Map, 0x201);
             }
-
-            StopTimer();
-            Delete();
+			
+            this.StopTimer();
+            this.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
-
-            writer.Write(m_Lifespan);
+            writer.Write((int)0); // version
+			
+            writer.Write((int)this.m_Lifespan);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -111,10 +117,10 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-
-            m_Lifespan = reader.ReadInt();
-
-            StartTimer();
+			
+            this.m_Lifespan = reader.ReadInt();
+			
+            this.StartTimer();
         }
     }
 }

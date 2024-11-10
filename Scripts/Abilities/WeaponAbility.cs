@@ -1,23 +1,55 @@
+using System;
+using System.Collections;
+
 using Server.Network;
 using Server.Spells;
 using Server.Spells.SkillMasteries;
-using System;
-using System.Collections;
 
 namespace Server.Items
 {
     public abstract class WeaponAbility
     {
-        public virtual int BaseMana => 0;
+        public virtual int BaseMana
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-        public virtual int AccuracyBonus => 0;
+        public virtual int AccuracyBonus
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public virtual double DamageScalar
+        {
+            get
+            {
+                return 1.0;
+            }
+        }
 
-        public virtual double DamageScalar => 1.0;
+        public virtual bool RequiresSE
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        /// <summary>
-        ///		Return false to make this special ability consume no ammo from ranged weapons
-        /// </summary>
-        public virtual bool ConsumeAmmo => true;
+		/// <summary>
+		///		Return false to make this special ability consume no ammo from ranged weapons
+		/// </summary>
+		public virtual bool ConsumeAmmo
+		{
+			get
+			{
+				return true;
+			}
+		}
 
         public virtual void OnHit(Mobile attacker, Mobile defender, int damage)
         {
@@ -63,9 +95,9 @@ namespace Server.Items
             BaseWeapon weapon = from.Weapon as BaseWeapon;
 
             if (weapon != null && (weapon.PrimaryAbility == this || weapon.PrimaryAbility == Bladeweave))
-                return 30.0;
+                return Core.TOL ? 30.0 : 70.0;
             else if (weapon != null && (weapon.SecondaryAbility == this || weapon.SecondaryAbility == Bladeweave))
-                return 60.0;
+                return Core.TOL ? 60.0 : 90.0;
 
             return 200.0;
         }
@@ -88,12 +120,12 @@ namespace Server.Items
 
             double scalar = 1.0;
 
-            if (!Spells.Necromancy.MindRotSpell.GetMindRotScalar(from, ref scalar))
+            if (!Server.Spells.Necromancy.MindRotSpell.GetMindRotScalar(from, ref scalar))
             {
                 scalar = 1.0;
             }
 
-            if (Spells.Mysticism.PurgeMagicSpell.IsUnderCurseEffects(from))
+            if (Server.Spells.Mysticism.PurgeMagicSpell.IsUnderCurseEffects(from))
             {
                 scalar += .5;
             }
@@ -124,9 +156,9 @@ namespace Server.Items
 
             double reqSkill = GetRequiredSkill(from);
             double reqSecondarySkill = GetRequiredSecondarySkill(from);
-            SkillName secondarySkill = GetSecondarySkill(from);
+            SkillName secondarySkill = Core.TOL ? GetSecondarySkill(from) : SkillName.Tactics;
 
-            if (from.Skills[secondarySkill].Base < reqSecondarySkill)
+            if (Core.ML && from.Skills[secondarySkill].Base < reqSecondarySkill)
             {
                 int loc = GetSkillLocalization(secondarySkill);
 
@@ -150,7 +182,14 @@ namespace Server.Items
                 return true;
             /* </UBWS> */
 
-            from.SendLocalizedMessage(1060182, reqSkill.ToString()); // You need ~1_SKILL_REQUIREMENT~ weapon skill to perform that attack
+            if (reqSecondarySkill != 0.0 && !Core.TOL)
+            {
+                from.SendLocalizedMessage(1079308, reqSkill.ToString()); // You need ~1_SKILL_REQUIREMENT~ weapon and tactics skill to perform that attack
+            }
+            else
+            {
+                from.SendLocalizedMessage(1060182, reqSkill.ToString()); // You need ~1_SKILL_REQUIREMENT~ weapon skill to perform that attack
+            }
 
             return false;
         }
@@ -159,12 +198,12 @@ namespace Server.Items
         {
             switch (skill)
             {
-                default: return 1157351;
-                // You need ~1_SKILL_REQUIREMENT~ weapon and tactics skill to perform that attack                                                             
-                // You need ~1_SKILL_REQUIREMENT~ tactics skill to perform that attack
+                default: return Core.TOL ? 1157351 : 1079308;
+                    // You need ~1_SKILL_REQUIREMENT~ weapon and tactics skill to perform that attack                                                             
+                    // You need ~1_SKILL_REQUIREMENT~ tactics skill to perform that attack
                 case SkillName.Bushido:
                 case SkillName.Ninjitsu: return 1063347;
-                // You need ~1_SKILL_REQUIREMENT~ Bushido or Ninjitsu skill to perform that attack!
+                    // You need ~1_SKILL_REQUIREMENT~ Bushido or Ninjitsu skill to perform that attack!
                 case SkillName.Poisoning: return 1060184;
                     // You lack the required poisoning to perform that attack
             }
@@ -224,7 +263,7 @@ namespace Server.Items
 
         public virtual bool Validate(Mobile from)
         {
-            if (!from.Player && CheckMana(from, false))
+            if (!from.Player && (!Core.TOL || CheckMana(from, false)))
                 return true;
 
             NetState state = from.NetState;
@@ -232,13 +271,19 @@ namespace Server.Items
             if (state == null)
                 return false;
 
+            if (RequiresSE && !state.SupportsExpansion(Expansion.SE))
+            {
+                from.SendLocalizedMessage(1063456); // You must upgrade to Samurai Empire in order to use that ability.
+                return false;
+            }
+
             if (Spells.Bushido.HonorableExecution.IsUnderPenalty(from) || Spells.Ninjitsu.AnimalForm.UnderTransformation(from))
             {
                 from.SendLocalizedMessage(1063024); // You cannot perform this special move right now.
                 return false;
             }
 
-            if (from.Spell != null)
+            if (Core.ML && from.Spell != null)
             {
                 from.SendLocalizedMessage(1063024); // You cannot perform this special move right now.
                 return false;
@@ -281,15 +326,27 @@ namespace Server.Items
             new ForceOfNature(),
             new InfusedThrow(),
             new MysticArc(),
-            null,
+            new Disrobe(),
             new ColdWind()
         };
 
-        public static WeaponAbility[] Abilities => m_Abilities;
+        public static WeaponAbility[] Abilities
+        {
+            get
+            {
+                return m_Abilities;
+            }
+        }
 
         private static readonly Hashtable m_Table = new Hashtable();
 
-        public static Hashtable Table => m_Table;
+        public static Hashtable Table
+        {
+            get
+            {
+                return m_Table;
+            }
+        }
 
         public static readonly WeaponAbility ArmorIgnore = m_Abilities[1];
         public static readonly WeaponAbility BleedAttack = m_Abilities[2];
@@ -326,7 +383,7 @@ namespace Server.Items
         public static readonly WeaponAbility InfusedThrow = m_Abilities[30];
         public static readonly WeaponAbility MysticArc = m_Abilities[31];
 
-        public static readonly WeaponAbility Empty = m_Abilities[32];
+        public static readonly WeaponAbility Disrobe = m_Abilities[32];
         public static readonly WeaponAbility ColdWind = m_Abilities[33];
 
         public static bool IsWeaponAbility(Mobile m, WeaponAbility a)
@@ -342,10 +399,22 @@ namespace Server.Items
             return (weapon != null && (weapon.PrimaryAbility == a || weapon.SecondaryAbility == a));
         }
 
-        public virtual bool ValidatesDuringHit => true;
+        public virtual bool ValidatesDuringHit
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public static WeaponAbility GetCurrentAbility(Mobile m)
         {
+            if (!Core.AOS)
+            {
+                ClearCurrentAbility(m);
+                return null;
+            }
+
             WeaponAbility a = (WeaponAbility)m_Table[m];
 
             if (!IsWeaponAbility(m, a))
@@ -365,6 +434,12 @@ namespace Server.Items
 
         public static bool SetCurrentAbility(Mobile m, WeaponAbility a)
         {
+            if (!Core.AOS)
+            {
+                ClearCurrentAbility(m);
+                return false;
+            }
+
             if (!IsWeaponAbility(m, a))
             {
                 ClearCurrentAbility(m);
@@ -397,13 +472,17 @@ namespace Server.Items
         {
             m_Table.Remove(m);
 
-            if (m.NetState != null)
+            if (Core.AOS && m.NetState != null)
                 m.Send(ClearWeaponAbility.Instance);
         }
 
         public static void Initialize()
         {
-            EventSink.SetAbility += EventSink_SetAbility;
+            EventSink.SetAbility += new SetAbilityEventHandler(EventSink_SetAbility);
+        }
+
+        public WeaponAbility()
+        {
         }
 
         private static void EventSink_SetAbility(SetAbilityEventArgs e)
@@ -465,7 +544,13 @@ namespace Server.Items
         {
             private readonly Timer m_Timer;
 
-            public Timer Timer => m_Timer;
+            public Timer Timer
+            {
+                get
+                {
+                    return m_Timer;
+                }
+            }
 
             public WeaponAbilityContext(Timer timer)
             {

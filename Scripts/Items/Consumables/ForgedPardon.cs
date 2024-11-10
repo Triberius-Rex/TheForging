@@ -1,14 +1,17 @@
-using System;
+﻿using System;
+using Server;
+using Server.Gumps;
+using Server.Network;
 using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class ForgedPardon : Item
     {
-        public static Dictionary<Mobile, DateTime> Table => m_Table;
-        private static readonly Dictionary<Mobile, DateTime> m_Table = new Dictionary<Mobile, DateTime>();
+        public static Dictionary<Mobile, DateTime> Table { get { return m_Table; } }
+        private static Dictionary<Mobile, DateTime> m_Table = new Dictionary<Mobile, DateTime>();
 
-        public override int LabelNumber => 1116234;
+        public override int LabelNumber { get { return 1116234; } }
 
         [Constructable]
         public ForgedPardon()
@@ -41,7 +44,7 @@ namespace Server.Items
                 from.SendLocalizedMessage(1116587); //You must wait 24 hours before using another forged pardon.
                 return false;
             }
-            if (Spells.SpellHelper.CheckCombat(from))
+            if (Server.Spells.SpellHelper.CheckCombat(from))
             {
                 from.SendLocalizedMessage(1116588); //You cannot use a forged pardon while in combat.
                 return false;
@@ -70,7 +73,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -81,7 +84,7 @@ namespace Server.Items
 
         public static void Save(GenericWriter writer)
         {
-            writer.Write(0);
+            writer.Write((int)0);
 
             Defrag();
             writer.Write(m_Table.Count);

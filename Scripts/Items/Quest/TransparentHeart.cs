@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class TransparentHeart : GoldEarrings
@@ -6,9 +8,9 @@ namespace Server.Items
         public TransparentHeart()
             : base()
         {
-            LootType = LootType.Blessed;
-            Weight = 1;
-            Hue = 0x4AB;
+            this.LootType = LootType.Blessed;
+            this.Weight = 1;
+            this.Hue = 0x4AB;
         }
 
         public TransparentHeart(Serial serial)
@@ -16,12 +18,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1075400;// Transparent Heart
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1075400;
+            }
+        }// Transparent Heart
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

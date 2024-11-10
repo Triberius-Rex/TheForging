@@ -1,8 +1,8 @@
+using System;
+using System.Collections;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells.Seventh;
-using System;
-using System.Collections;
 
 namespace Server.Spells.Fifth
 {
@@ -34,7 +34,13 @@ namespace Server.Spells.Fifth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fifth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fifth;
+            }
+        }
         public static bool StopTimer(Mobile m)
         {
             Timer t = (Timer)m_Timers[m];
@@ -51,14 +57,19 @@ namespace Server.Spells.Fifth
 
         public override bool CheckCast()
         {
-            if (!Caster.CanBeginAction(typeof(IncognitoSpell)))
+            if (Factions.Sigil.ExistsOn(this.Caster))
             {
-                Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
+                this.Caster.SendLocalizedMessage(1010445); // You cannot incognito if you have a sigil
                 return false;
             }
-            else if (Caster.BodyMod == 183 || Caster.BodyMod == 184)
+            else if (!this.Caster.CanBeginAction(typeof(IncognitoSpell)))
             {
-                Caster.SendLocalizedMessage(1042402); // You cannot use incognito while wearing body paint
+                this.Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
+                return false;
+            }
+            else if (this.Caster.BodyMod == 183 || this.Caster.BodyMod == 184)
+            {
+                this.Caster.SendLocalizedMessage(1042402); // You cannot use incognito while wearing body paint
                 return false;
             }
 
@@ -67,32 +78,36 @@ namespace Server.Spells.Fifth
 
         public override void OnCast()
         {
-            if (!Caster.CanBeginAction(typeof(IncognitoSpell)))
+            if (Factions.Sigil.ExistsOn(this.Caster))
             {
-                Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
+                this.Caster.SendLocalizedMessage(1010445); // You cannot incognito if you have a sigil
             }
-            else if (Caster.BodyMod == 183 || Caster.BodyMod == 184)
+            else if (!this.Caster.CanBeginAction(typeof(IncognitoSpell)))
             {
-                Caster.SendLocalizedMessage(1042402); // You cannot use incognito while wearing body paint
+                this.Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
             }
-            else if (DisguiseTimers.IsDisguised(Caster))
+            else if (this.Caster.BodyMod == 183 || this.Caster.BodyMod == 184)
             {
-                Caster.SendLocalizedMessage(1061631); // You can't do that while disguised.
+                this.Caster.SendLocalizedMessage(1042402); // You cannot use incognito while wearing body paint
             }
-            else if (!Caster.CanBeginAction(typeof(PolymorphSpell)) || Caster.IsBodyMod)
+            else if (DisguiseTimers.IsDisguised(this.Caster))
             {
-                DoFizzle();
+                this.Caster.SendLocalizedMessage(1061631); // You can't do that while disguised.
             }
-            else if (CheckSequence())
+            else if (!this.Caster.CanBeginAction(typeof(PolymorphSpell)) || this.Caster.IsBodyMod)
             {
-                if (Caster.BeginAction(typeof(IncognitoSpell)))
+                this.DoFizzle();
+            }
+            else if (this.CheckSequence())
+            {
+                if (this.Caster.BeginAction(typeof(IncognitoSpell)))
                 {
-                    DisguiseTimers.StopTimer(Caster);
+                    DisguiseTimers.StopTimer(this.Caster);
 
-                    Caster.HueMod = Caster.Race.RandomSkinHue();
-                    Caster.NameMod = Caster.Female ? NameList.RandomName("female") : NameList.RandomName("male");
+                    this.Caster.HueMod = this.Caster.Race.RandomSkinHue();
+                    this.Caster.NameMod = this.Caster.Female ? NameList.RandomName("female") : NameList.RandomName("male");
 
-                    PlayerMobile pm = Caster as PlayerMobile;
+                    PlayerMobile pm = this.Caster as PlayerMobile;
 
                     if (pm != null && pm.Race != null)
                     {
@@ -101,36 +116,36 @@ namespace Server.Spells.Fifth
                         pm.FacialHairHue = pm.Race.RandomHairHue();
                     }
 
-                    Caster.FixedParticles(0x373A, 10, 15, 5036, EffectLayer.Head);
-                    Caster.PlaySound(0x3BD);
+                    this.Caster.FixedParticles(0x373A, 10, 15, 5036, EffectLayer.Head);
+                    this.Caster.PlaySound(0x3BD);
 
-                    BaseArmor.ValidateMobile(Caster);
-                    BaseClothing.ValidateMobile(Caster);
+                    BaseArmor.ValidateMobile(this.Caster);
+                    BaseClothing.ValidateMobile(this.Caster);
 
-                    StopTimer(Caster);
+                    StopTimer(this.Caster);
 
-                    int timeVal = ((6 * Caster.Skills.Magery.Fixed) / 50) + 1;
+                    int timeVal = ((6 * this.Caster.Skills.Magery.Fixed) / 50) + 1;
 
                     if (timeVal > 144)
                         timeVal = 144;
 
                     TimeSpan length = TimeSpan.FromSeconds(timeVal);
 
-                    Timer t = new InternalTimer(Caster, length);
+                    Timer t = new InternalTimer(this.Caster, length);
 
-                    m_Timers[Caster] = t;
+                    m_Timers[this.Caster] = t;
 
                     t.Start();
 
-                    BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.Incognito, 1075819, length, Caster));
+                    BuffInfo.AddBuff(this.Caster, new BuffInfo(BuffIcon.Incognito, 1075819, length, this.Caster));
                 }
                 else
                 {
-                    Caster.SendLocalizedMessage(1079022); // You're already incognitoed!
+                    this.Caster.SendLocalizedMessage(1079022); // You're already incognitoed!
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTimer : Timer
@@ -139,7 +154,7 @@ namespace Server.Spells.Fifth
             public InternalTimer(Mobile owner, TimeSpan length)
                 : base(length)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
 
                 /*
                 int val = ((6 * owner.Skills.Magery.Fixed) / 50) + 1;
@@ -149,23 +164,23 @@ namespace Server.Spells.Fifth
 
                 Delay = TimeSpan.FromSeconds( val );
                 * */
-                Priority = TimerPriority.OneSecond;
+                this.Priority = TimerPriority.OneSecond;
             }
 
             protected override void OnTick()
             {
-                if (!m_Owner.CanBeginAction(typeof(IncognitoSpell)))
+                if (!this.m_Owner.CanBeginAction(typeof(IncognitoSpell)))
                 {
-                    if (m_Owner is PlayerMobile)
-                        ((PlayerMobile)m_Owner).SetHairMods(-1, -1);
+                    if (this.m_Owner is PlayerMobile)
+                        ((PlayerMobile)this.m_Owner).SetHairMods(-1, -1);
 
-                    m_Owner.BodyMod = 0;
-                    m_Owner.HueMod = -1;
-                    m_Owner.NameMod = null;
-                    m_Owner.EndAction(typeof(IncognitoSpell));
+                    this.m_Owner.BodyMod = 0;
+                    this.m_Owner.HueMod = -1;
+                    this.m_Owner.NameMod = null;
+                    this.m_Owner.EndAction(typeof(IncognitoSpell));
 
-                    BaseArmor.ValidateMobile(m_Owner);
-                    BaseClothing.ValidateMobile(m_Owner);
+                    BaseArmor.ValidateMobile(this.m_Owner);
+                    BaseClothing.ValidateMobile(this.m_Owner);
                 }
             }
         }

@@ -84,8 +84,20 @@ namespace Server.Items
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
-        public int CurrentRange => ItemID == InactiveItemID ? RangeCheck : OutRange;
-        public override bool HandlesOnMovement => true;
+        public int CurrentRange
+        {
+            get
+            {
+                return ItemID == InactiveItemID ? RangeCheck : OutRange;
+            }
+        }
+        public override bool HandlesOnMovement
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
             if (Utility.InRange(m.Location, Location, CurrentRange) || Utility.InRange(oldLocation, Location, CurrentRange))
@@ -131,13 +143,13 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_OutRange);
+            writer.Write((int)m_OutRange);
 
-            writer.Write(m_InactiveItemID);
-            writer.Write(m_ActiveItemID);
-            writer.Write(m_RangeCheck);
+            writer.Write((int)m_InactiveItemID);
+            writer.Write((int)m_ActiveItemID);
+            writer.Write((int)m_RangeCheck);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -146,7 +158,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -166,7 +178,7 @@ namespace Server.Items
                     }
             }
 
-            Timer.DelayCall(TimeSpan.Zero, Refresh);
+            Timer.DelayCall(TimeSpan.Zero, new TimerCallback(Refresh));
         }
     }
 }

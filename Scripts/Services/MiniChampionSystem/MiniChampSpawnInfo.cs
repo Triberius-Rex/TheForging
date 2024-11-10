@@ -1,20 +1,20 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Engines.MiniChamps
 {
     public class MiniChampSpawnInfo
     {
-        private readonly MiniChamp Owner;
+        private MiniChamp Owner;
         public List<Mobile> Creatures;
 
         public Type MonsterType { get; set; }
         public int Killed { get; set; }
         public int Spawned { get; set; }
         public int Required { get; set; }
-        public int MaxSpawned => (Required * 2) - 1;
-        public bool Done => Killed >= Required;
+        public int MaxSpawned { get { return (Required * 2) - 1; } }
+        public bool Done { get { return Killed >= Required; } }
 
         public MiniChampSpawnInfo(MiniChamp controller, MiniChampTypeInfo typeInfo)
         {
@@ -31,7 +31,7 @@ namespace Server.Engines.MiniChamps
         public bool Slice()
         {
             bool killed = false;
-            List<Mobile> list = new List<Mobile>(Creatures);
+            var list = new List<Mobile>(Creatures);
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -56,7 +56,7 @@ namespace Server.Engines.MiniChamps
 
             ColUtility.Free(list);
             return killed;
-        }
+        }        
 
         public bool Respawn()
         {
@@ -99,7 +99,10 @@ namespace Server.Engines.MiniChamps
         {
             Type essenceType = MiniChampInfo.GetInfo(Owner.Type).EssenceType;
 
-            Item essence = Loot.Construct(essenceType);
+            Item essence = null;
+
+            try { essence = (Item)Activator.CreateInstance(essenceType); }
+            catch { }
 
             if (essence != null)
             {
@@ -115,7 +118,7 @@ namespace Server.Engines.MiniChamps
 
         public void Serialize(GenericWriter writer)
         {
-            writer.WriteItem(Owner);
+            writer.WriteItem<MiniChamp>(Owner);
             writer.Write(Killed);
             writer.Write(Spawned);
             writer.Write(Required);
@@ -134,5 +137,5 @@ namespace Server.Engines.MiniChamps
             MonsterType = ScriptCompiler.FindTypeByFullName(reader.ReadString());
             Creatures = reader.ReadStrongMobileList();
         }
-    }
+    }   
 }

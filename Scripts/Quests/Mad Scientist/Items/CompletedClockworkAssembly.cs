@@ -1,9 +1,12 @@
-﻿namespace Server.Items
+﻿using System;
+using Server;
+
+namespace Server.Items
 {
     public class CompletedClockworkAssembly : BaseDecayingItem
     {
-        public override int LabelNumber => 1112879;  // completed clockwork assembly
-        public override int Lifespan => 600;
+        public override int LabelNumber { get { return 1112879; } } // completed clockwork assembly
+        public override int Lifespan { get { return 600; } }
 
         [Constructable]
         public CompletedClockworkAssembly()
@@ -20,7 +23,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

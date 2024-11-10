@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Spells.Eighth
 {
@@ -18,15 +18,21 @@ namespace Server.Spells.Eighth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Eighth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Eighth;
+            }
+        }
         public override bool CheckCast()
         {
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 2) > Caster.FollowersMax)
+            if ((this.Caster.Followers + 2) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
+                this.Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;
             }
 
@@ -35,14 +41,17 @@ namespace Server.Spells.Eighth
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
-                TimeSpan duration = TimeSpan.FromSeconds((2 * Caster.Skills.Magery.Fixed) / 5);
+                TimeSpan duration = TimeSpan.FromSeconds((2 * this.Caster.Skills.Magery.Fixed) / 5);
 
-                SpellHelper.Summon(new SummonedEarthElemental(), Caster, 0x217, duration, false, false);
+                if (Core.AOS)
+                    SpellHelper.Summon(new SummonedEarthElemental(), this.Caster, 0x217, duration, false, false);
+                else
+                    SpellHelper.Summon(new EarthElemental(), this.Caster, 0x217, duration, false, false);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
     }
 }

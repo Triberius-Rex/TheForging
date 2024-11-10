@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -18,42 +18,53 @@ namespace Server.Mobiles
         public HarrowerTentacles(Mobile harrower)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            m_Harrower = harrower;
+            this.m_Harrower = harrower;
 
-            Name = "tentacles of the harrower";
-            Body = 129;
+            this.Name = "tentacles of the harrower";
+            this.Body = 129;
 
-            SetStr(901, 1000);
-            SetDex(126, 140);
-            SetInt(1001, 1200);
+            this.SetStr(901, 1000);
+            this.SetDex(126, 140);
+            this.SetInt(1001, 1200);
 
-            SetHits(541, 600);
+            this.SetHits(541, 600);
 
-            SetDamage(13, 20);
+            this.SetDamage(13, 20);
 
-            SetDamageType(ResistanceType.Physical, 20);
-            SetDamageType(ResistanceType.Fire, 20);
-            SetDamageType(ResistanceType.Cold, 20);
-            SetDamageType(ResistanceType.Poison, 20);
-            SetDamageType(ResistanceType.Energy, 20);
+            this.SetDamageType(ResistanceType.Physical, 20);
+            this.SetDamageType(ResistanceType.Fire, 20);
+            this.SetDamageType(ResistanceType.Cold, 20);
+            this.SetDamageType(ResistanceType.Poison, 20);
+            this.SetDamageType(ResistanceType.Energy, 20);
 
-            SetResistance(ResistanceType.Physical, 55, 65);
-            SetResistance(ResistanceType.Fire, 35, 45);
-            SetResistance(ResistanceType.Cold, 35, 45);
-            SetResistance(ResistanceType.Poison, 35, 45);
-            SetResistance(ResistanceType.Energy, 35, 45);
+            this.SetResistance(ResistanceType.Physical, 55, 65);
+            this.SetResistance(ResistanceType.Fire, 35, 45);
+            this.SetResistance(ResistanceType.Cold, 35, 45);
+            this.SetResistance(ResistanceType.Poison, 35, 45);
+            this.SetResistance(ResistanceType.Energy, 35, 45);
 
-            SetSkill(SkillName.Meditation, 100.0);
-            SetSkill(SkillName.MagicResist, 120.1, 140.0);
-            SetSkill(SkillName.Swords, 90.1, 100.0);
-            SetSkill(SkillName.Tactics, 90.1, 100.0);
-            SetSkill(SkillName.Wrestling, 90.1, 100.0);
+            this.SetSkill(SkillName.Meditation, 100.0);
+            this.SetSkill(SkillName.MagicResist, 120.1, 140.0);
+            this.SetSkill(SkillName.Swords, 90.1, 100.0);
+            this.SetSkill(SkillName.Tactics, 90.1, 100.0);
+            this.SetSkill(SkillName.Wrestling, 90.1, 100.0);
 
-            Fame = 15000;
-            Karma = -15000;
+            this.Fame = 15000;
+            this.Karma = -15000;
 
-            m_Timer = new DrainTimer(this);
-            m_Timer.Start();
+            this.VirtualArmor = 60;
+
+            this.m_Timer = new DrainTimer(this);
+            this.m_Timer.Start();
+
+            this.PackReg(50);
+            this.PackNecroReg(15, 75);
+
+			switch (Utility.Random(3))
+            {
+                case 0: PackItem(new VampiricEmbraceScroll()); break;
+			}
+
         }
 
         public HarrowerTentacles(Serial serial)
@@ -66,21 +77,41 @@ namespace Server.Mobiles
         {
             get
             {
-                return m_Harrower;
+                return this.m_Harrower;
             }
             set
             {
-                m_Harrower = value;
+                this.m_Harrower = value;
             }
         }
-        public override bool AutoDispel => true;
-
-        public override bool Unprovokable => true;
-
-        public override Poison PoisonImmune => Poison.Lethal;
-
-        public override bool DisallowAllMoves => true;
-
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override bool DisallowAllMoves
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void CheckReflect(Mobile caster, ref bool reflect)
         {
             reflect = true;
@@ -113,38 +144,46 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 2);
-            AddLoot(LootPack.MedScrolls, 3);
-            AddLoot(LootPack.HighScrolls, 2);
-            AddLoot(LootPack.MageryRegs, 50);
-            AddLoot(LootPack.NecroRegs, 15, 75);
-            AddLoot(LootPack.LootItem<VampiricEmbraceScroll>(33.3, true));
+            this.AddLoot(LootPack.FilthyRich, 2);
+            this.AddLoot(LootPack.MedScrolls, 3);
+            this.AddLoot(LootPack.HighScrolls, 2);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
 
-            writer.Write(m_Harrower);
+            writer.Write((int)0); // version
+
+            writer.Write(this.m_Harrower);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
 
-            m_Harrower = reader.ReadMobile();
-            m_Timer = new DrainTimer(this);
-            m_Timer.Start();
+            switch ( version )
+            {
+                case 0:
+                    {
+                        this.m_Harrower = reader.ReadMobile();
+
+                        this.m_Timer = new DrainTimer(this);
+                        this.m_Timer.Start();
+
+                        break;
+                    }
+            }
         }
 
         public override void OnAfterDelete()
         {
-            if (m_Timer != null)
-                m_Timer.Stop();
+            if (this.m_Timer != null)
+                this.m_Timer.Stop();
 
-            m_Timer = null;
+            this.m_Timer = null;
 
             base.OnAfterDelete();
         }
@@ -156,15 +195,15 @@ namespace Server.Mobiles
             public DrainTimer(HarrowerTentacles owner)
                 : base(TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0))
             {
-                m_Owner = owner;
-                Priority = TimerPriority.TwoFiftyMS;
+                this.m_Owner = owner;
+                this.Priority = TimerPriority.TwoFiftyMS;
             }
 
             protected override void OnTick()
             {
-                if (m_Owner.Deleted)
+                if (this.m_Owner.Deleted)
                 {
-                    Stop();
+                    this.Stop();
                     return;
                 }
 
@@ -172,7 +211,7 @@ namespace Server.Mobiles
 
                 foreach (Mobile m in eable)
                 {
-                    if (m == m_Owner || m == m_Owner.Harrower || !m_Owner.CanBeHarmful(m))
+                    if (m == this.m_Owner || m == this.m_Owner.Harrower || !this.m_Owner.CanBeHarmful(m))
                         continue;
 
                     if (m is BaseCreature)
@@ -192,7 +231,7 @@ namespace Server.Mobiles
 
                 foreach (Mobile m in m_ToDrain)
                 {
-                    m_Owner.DoHarmful(m);
+                    this.m_Owner.DoHarmful(m);
 
                     m.FixedParticles(0x374A, 10, 15, 5013, 0x455, 0, EffectLayer.Waist);
                     m.PlaySound(0x1F1);
@@ -207,12 +246,12 @@ namespace Server.Mobiles
                     }
                     //end 
 
-                    m_Owner.Hits += drain;
+                    this.m_Owner.Hits += drain;
 
-                    if (m_Owner.Harrower != null)
-                        m_Owner.Harrower.Hits += drain;
+                    if (this.m_Owner.Harrower != null)
+                        this.m_Owner.Harrower.Hits += drain;
 
-                    m.Damage(drain, m_Owner);
+                    m.Damage(drain, this.m_Owner);
                 }
 
                 m_ToDrain.Clear();

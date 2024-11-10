@@ -1,19 +1,26 @@
-using Server.Items;
-using Server.Mobiles;
+using Server;
+using System;
 using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Items;
+using Server.ContextMenus;
+using Server.Gumps;
+using System.Collections;
+using Server.Network;
+using Server.Engines.Points;
 
 namespace Server.Engines.CleanUpBritannia
 {
     public class TheCleanupOfficer : BaseVendor
     {
-        public override bool IsActiveVendor => false;
-        public override bool IsInvulnerable => true;
-        public override bool DisallowAllMoves => true;
-        public override bool ClickTitle => true;
-        public override bool CanTeach => false;
+        public override bool IsActiveVendor { get { return false; } }
+        public override bool IsInvulnerable { get { return true; } }
+        public override bool DisallowAllMoves { get { return true; } }
+        public override bool ClickTitle { get { return true; } }
+        public override bool CanTeach { get { return false; } }
 
         protected List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return this.m_SBInfos; } }
         public override void InitSBInfo() { }
 
         [Constructable]
@@ -44,7 +51,14 @@ namespace Server.Engines.CleanUpBritannia
             SetWearable(new Doublet(), 50);
             SetWearable(new FancyShirt(), 1644);
             SetWearable(new Necklace());
-        }
+
+            if (Backpack == null)
+            {
+                Item backpack = new Backpack();
+                backpack.Movable = false;
+                AddItem(backpack);
+            }    
+        }        
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -52,10 +66,10 @@ namespace Server.Engines.CleanUpBritannia
 
             list.Add(1151317); // Clean Up Britannia Reward Trader
         }
-
+        
         public override void OnDoubleClick(Mobile from)
         {
-            if (from is PlayerMobile && from.InRange(Location, 5))
+            if (from is PlayerMobile && from.InRange(this.Location, 5))
                 from.SendGump(new CleanUpBritanniaRewardGump(this, from as PlayerMobile));
         }
 
@@ -75,5 +89,5 @@ namespace Server.Engines.CleanUpBritannia
             base.Deserialize(reader);
             int version = reader.ReadInt();
         }
-    }
+    }    
 }

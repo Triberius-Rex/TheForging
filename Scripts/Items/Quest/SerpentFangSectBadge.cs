@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class SerpentFangSectBadge : Item
@@ -6,7 +8,7 @@ namespace Server.Items
         public SerpentFangSectBadge()
             : base(0x23C)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public SerpentFangSectBadge(Serial serial)
@@ -14,12 +16,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073139;// A Serpent Fang Sect Badge
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073139;
+            }
+        }// A Serpent Fang Sect Badge
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,15 +1,16 @@
-using Server.Engines.HuntsmasterChallenge;
+using System;
+using Server;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 using System.Collections.Generic;
+using Server.Engines.HuntsmasterChallenge;
 
 namespace Server.Items
 {
     public class HuntingPermit : Item
     {
-        private static readonly List<HuntingPermit> m_Permits = new List<HuntingPermit>();
-        public static List<HuntingPermit> Permits => m_Permits;
+        private static List<HuntingPermit> m_Permits = new List<HuntingPermit>();
+        public static List<HuntingPermit> Permits { get { return m_Permits; } }
 
         private Mobile m_Owner;
         private bool m_ProducedTrophy;
@@ -26,25 +27,25 @@ namespace Server.Items
         public HuntingKillEntry KillEntry { get { return m_KillEntry; } set { m_KillEntry = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool HasDocumentedKill => m_KillEntry != null;
+        public bool HasDocumentedKill { get { return m_KillEntry != null; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool CanUseTaxidermyOn => HasDocumentedKill && m_KillEntry.KillIndex < HuntingTrophyInfo.Infos.Count && !m_ProducedTrophy;
+        public bool CanUseTaxidermyOn { get { return HasDocumentedKill && m_KillEntry.KillIndex < HuntingTrophyInfo.Infos.Count && !m_ProducedTrophy; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool HasSubmitted
-        {
+        public bool HasSubmitted 
+        { 
             get { return m_HasSubmitted; }
-            set
+            set 
             {
-                m_HasSubmitted = value;
+                m_HasSubmitted = value; 
 
-                if (m_HasSubmitted && m_Permits.Contains(this))
+                if(m_HasSubmitted && m_Permits.Contains(this)) 
                     m_Permits.Remove(this);
-            }
+            } 
         }
 
-        public override int LabelNumber => 1155704;  // Hunting Permit
+        public override int LabelNumber { get { return 1155704; } } // Hunting Permit
 
         [Constructable]
         public HuntingPermit(Mobile from)
@@ -98,7 +99,7 @@ namespace Server.Items
 
         private class InternalTarget : Target
         {
-            private readonly HuntingPermit m_Permit;
+            private HuntingPermit m_Permit;
 
             public InternalTarget(HuntingPermit Permit)
                 : base(-1, false, TargetFlags.None)
@@ -148,12 +149,12 @@ namespace Server.Items
                                     v = 100 - v;
                                 }
 
-                                int measurement = info.MinMeasurement + (int)((info.MaxMeasurement - info.MinMeasurement) * (v / 100.0));
+                                int measurement = info.MinMeasurement + (int)((double)(info.MaxMeasurement - info.MinMeasurement) * (double)((double)v / 100.0));
                                 m_Permit.KillEntry = new HuntingKillEntry(m_Permit.Owner, measurement, DateTime.Now, i, WorldLocationInfo.GetLocationString(c.Location, c.Map));
                                 c.VisitedByTaxidermist = true;
 
                                 from.PlaySound(0x249);
-                                from.PrivateOverheadMessage(Network.MessageType.Regular, 0x45, 1155713, from.NetState); // *You document your kill on the permit*
+                                from.PrivateOverheadMessage(Server.Network.MessageType.Regular, 0x45, 1155713, from.NetState); // *You document your kill on the permit*
                                 m_Permit.InvalidateProperties();
                                 return;
                             }
@@ -206,7 +207,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(m_Owner);
             writer.Write(m_ProducedTrophy);
@@ -214,11 +215,11 @@ namespace Server.Items
 
             if (m_KillEntry != null)
             {
-                writer.Write(1);
+                writer.Write((int)1);
                 m_KillEntry.Serialize(writer);
             }
             else
-                writer.Write(0);
+                writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

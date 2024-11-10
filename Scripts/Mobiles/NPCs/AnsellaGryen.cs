@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 
@@ -17,24 +18,25 @@ namespace Server.Engines.Quests.Zento
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Hue = 0x83EA;
+            this.Hue = 0x83EA;
 
-            Female = true;
-            Body = 0x191;
-            Name = "Ansella Gryen";
+            this.Female = true;
+            this.Body = 0x191;
+            this.Name = "Ansella Gryen";
         }
 
         public override void InitOutfit()
         {
-            HairItemID = 0x203B;
-            HairHue = 0x1BB;
+            this.HairItemID = 0x203B;
+            this.HairHue = 0x1BB;
 
-            SetWearable(new SamuraiTabi(), 0x8FD, 1);
-            SetWearable(new FemaleKimono(), 0x4B6, 1);
-            SetWearable(new Obi(), 0x526, 1);
-            SetWearable(new GoldBracelet(), dropChance: 1);
+            this.AddItem(new SamuraiTabi(0x8FD));
+            this.AddItem(new FemaleKimono(0x4B6));
+            this.AddItem(new Obi(0x526));
+
+            this.AddItem(new GoldBracelet());
         }
 
         public override int GetAutoTalkRange(PlayerMobile m)
@@ -111,7 +113,7 @@ namespace Server.Engines.Quests.Zento
                 if (qs != null)
                 {
                     if (contextMenu)
-                        SayTo(player, 1063322); // Before you can help me with the Terrible Hatchlings, you'll need to finish the quest you've already taken!
+                        this.SayTo(player, 1063322); // Before you can help me with the Terrible Hatchlings, you'll need to finish the quest you've already taken!
                 }
                 else if (QuestSystem.CanOfferQuest(player, typeof(TerribleHatchlingsQuest), out inRestartPeriod))
                 {
@@ -119,7 +121,7 @@ namespace Server.Engines.Quests.Zento
                 }
                 else if (inRestartPeriod && contextMenu)
                 {
-                    SayTo(player, 1049357); // I have nothing more for you at this time.
+                    this.SayTo(player, 1049357); // I have nothing more for you at this time.
                 }
             }
         }

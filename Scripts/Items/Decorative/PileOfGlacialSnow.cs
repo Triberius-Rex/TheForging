@@ -1,19 +1,17 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Items
 {
     public class PileOfGlacialSnow : Item
     {
-        public override int LabelNumber => 1070874; // a Pile of Glacial Snow
-
         [Constructable]
         public PileOfGlacialSnow()
             : base(0x913)
         {
-            Hue = 0x480;
-            Weight = 1.0;
-            LootType = LootType.Blessed;
+            this.Hue = 0x480;
+            this.Weight = 1.0;
+            this.LootType = LootType.Blessed;
         }
 
         public PileOfGlacialSnow(Serial serial)
@@ -21,16 +19,38 @@ namespace Server.Items
         {
         }
 
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1070874;
+            }
+        }// a Pile of Glacial Snow
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
+
+            if (version == 0)
+            {
+                this.Weight = 1.0;
+                this.LootType = LootType.Blessed;
+            }
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            this.LabelTo(from, 1070880); // Winter 2004
         }
 
         public override void GetProperties(ObjectPropertyList list)
@@ -42,7 +62,7 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!IsChildOf(from.Backpack))
+            if (!this.IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(1042010); // You must have the object in your backpack to use it.
             }
@@ -66,12 +86,12 @@ namespace Server.Items
             public InternalTimer(Mobile from)
                 : base(TimeSpan.FromSeconds(5.0))
             {
-                m_From = from;
+                this.m_From = from;
             }
 
             protected override void OnTick()
             {
-                m_From.EndAction(typeof(SnowPile));
+                this.m_From.EndAction(typeof(SnowPile));
             }
         }
 
@@ -82,8 +102,8 @@ namespace Server.Items
             public SnowTarget(Mobile thrower, Item snow)
                 : base(10, false, TargetFlags.None)
             {
-                m_Thrower = thrower;
-                m_Snow = snow;
+                this.m_Thrower = thrower;
+                this.m_Snow = snow;
             }
 
             protected override void OnTarget(Mobile from, object target)

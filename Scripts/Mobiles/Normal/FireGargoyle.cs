@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a charred corpse")]
@@ -38,6 +41,7 @@ namespace Server.Mobiles
             Fame = 3500;
             Karma = -3500;
 
+            VirtualArmor = 32;
             SetSpecialAbility(SpecialAbility.DragonBreath);
             SetAreaEffect(AreaEffect.AuraDamage);
         }
@@ -47,9 +51,27 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel => 1;
-        public override int Meat => 1;
-        public override bool CanFly => true;
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool CanFly
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public void AuraEffect(Mobile m)
         {
@@ -61,11 +83,11 @@ namespace Server.Mobiles
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Gems);
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

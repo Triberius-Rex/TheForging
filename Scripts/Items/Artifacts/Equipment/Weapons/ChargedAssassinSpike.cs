@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class ChargedAssassinSpike : AssassinSpike
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public ChargedAssassinSpike()
         {
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073518;// charged assassin spike
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073518;
+            }
+        }// charged assassin spike
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

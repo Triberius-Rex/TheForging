@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,34 +10,46 @@ namespace Server.Mobiles
         public Savage()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = NameList.RandomName("savage");
+            this.Name = NameList.RandomName("savage");
 
-            if (Female = Utility.RandomBool())
-                Body = 184;
+            if (this.Female = Utility.RandomBool())
+                this.Body = 184;
             else
-                Body = 183;
+                this.Body = 183;
 
-            SetStr(96, 115);
-            SetDex(86, 105);
-            SetInt(51, 65);
+            this.SetStr(96, 115);
+            this.SetDex(86, 105);
+            this.SetInt(51, 65);
 
-            SetDamage(23, 27);
+            this.SetDamage(23, 27);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetSkill(SkillName.Fencing, 60.0, 82.5);
-            SetSkill(SkillName.Macing, 60.0, 82.5);
-            SetSkill(SkillName.Poisoning, 60.0, 82.5);
-            SetSkill(SkillName.MagicResist, 57.5, 80.0);
-            SetSkill(SkillName.Swords, 60.0, 82.5);
-            SetSkill(SkillName.Tactics, 60.0, 82.5);
+            this.SetSkill(SkillName.Fencing, 60.0, 82.5);
+            this.SetSkill(SkillName.Macing, 60.0, 82.5);
+            this.SetSkill(SkillName.Poisoning, 60.0, 82.5);
+            this.SetSkill(SkillName.MagicResist, 57.5, 80.0);
+            this.SetSkill(SkillName.Swords, 60.0, 82.5);
+            this.SetSkill(SkillName.Tactics, 60.0, 82.5);
 
-            Fame = 1000;
-            Karma = -1000;
+            this.Fame = 1000;
+            this.Karma = -1000;
 
-            SetWearable(new Spear(), dropChance: 1);
-            SetWearable(new BoneArms(), dropChance: 1);
-            SetWearable(new BoneLegs(), dropChance: 1);
+            this.PackItem(new Bandage(Utility.RandomMinMax(1, 15)));
+
+            if (this.Female && 0.1 > Utility.RandomDouble())
+                this.PackItem(new TribalBerry());
+            else if (!this.Female && 0.1 > Utility.RandomDouble())
+                this.PackItem(new BolaBall());
+
+            this.AddItem(new Spear());
+            this.AddItem(new BoneArms());
+            this.AddItem(new BoneLegs());
+
+            if (0.5 > Utility.RandomDouble())
+                this.AddItem(new SavageMask());
+            else if (0.1 > Utility.RandomDouble())
+                this.AddItem(new OrcishKinMask());
         }
 
         public Savage(Serial serial)
@@ -45,38 +57,40 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Savage;
+        public override TribeType Tribe { get { return TribeType.Savage; } }
 
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.SavagesAndOrcs;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<Bandage>(1, 15, true));
-            AddLoot(LootPack.LootItem<SeveredHumanEars>(75.0, 1));
-
-            if (LootStage == LootStage.Death)
-            {
-                if (!Female)
-                {
-                    AddLoot(LootPack.LootItem<Bola>(10.0));
-                }
-                else
-                {
-                    AddLoot(LootPack.LootItem<TribalBerry>(10.0));
-                }
-
-                if (0.5 > Utility.RandomDouble())
-                {
-                    AddLoot(LootPack.LootItem<SavageMask>());
-                }
-                else if (0.1 > Utility.RandomDouble())
-                {
-                    AddLoot(LootPack.LootItem<OrcishKinMask>());
-                }
-            }
+            this.AddLoot(LootPack.Meager);
         }
 
         public override bool IsEnemy(Mobile m)
@@ -114,7 +128,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

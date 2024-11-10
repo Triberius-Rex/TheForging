@@ -1,8 +1,14 @@
+using System;
+using Server.Engines.Quests;
+using Server.Mobiles;
+using System.Collections.Generic;
+using Server.Gumps;
+
 namespace Server.Items
 {
     public class ShepherdsCrookOfHumility : ShepherdsCrook
     {
-        public override int LabelNumber => 1075856;  // Shepherd's Crook of Humility (Replica)
+        public override int LabelNumber { get { return 1075856; } } // Shepherd's Crook of Humility (Replica)
 
         [Constructable]
         public ShepherdsCrookOfHumility()
@@ -13,12 +19,12 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+ 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 using Server.Targeting;
 
@@ -5,7 +6,7 @@ namespace Server.Items
 {
     public class AcidPopper : Item
     {
-        public override int LabelNumber => 1095058;  // Acid Popper
+        public override int LabelNumber { get { return 1095058; } } // Acid Popper
 
         [Constructable]
         public AcidPopper()
@@ -32,7 +33,7 @@ namespace Server.Items
             if (!IsChildOf(from.Backpack))
                 from.SendLocalizedMessage(1042664); // You must have the object in your backpack to use it.
             else
-                from.BeginTarget(1, false, TargetFlags.None, BurnWeb_Callback);
+                from.BeginTarget(1, false, TargetFlags.None, new TargetCallback(BurnWeb_Callback));
         }
 
         private void BurnWeb_Callback(Mobile from, object targeted)
@@ -56,7 +57,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

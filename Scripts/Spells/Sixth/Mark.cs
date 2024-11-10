@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Multis;
 using Server.Network;
@@ -19,7 +20,13 @@ namespace Server.Spells.Sixth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Sixth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Sixth;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -44,7 +51,7 @@ namespace Server.Spells.Sixth
             else if (!SpellHelper.CheckTravel(Caster, TravelCheckType.Mark))
             {
             }
-            else if (boat == null && SpellHelper.CheckMulti(Caster.Location, Caster.Map, false))
+            else if (boat == null && SpellHelper.CheckMulti(Caster.Location, Caster.Map, !Core.AOS))
             {
                 Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
@@ -71,7 +78,7 @@ namespace Server.Spells.Sixth
         {
             private readonly MarkSpell m_Owner;
             public InternalTarget(MarkSpell owner)
-                : base(10, false, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.None)
             {
                 m_Owner = owner;
             }

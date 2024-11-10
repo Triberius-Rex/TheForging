@@ -1,3 +1,6 @@
+﻿using System;
+using Server;
+
 namespace Server.Mobiles
 {
     public enum ClockworkCreatureType
@@ -13,13 +16,13 @@ namespace Server.Mobiles
 
     public class ClockworkCreatureDef
     {
-        private readonly ClockworkCreatureType m_CreatureType;
-        private readonly string m_Name;
-        private readonly int m_BodyId;
+        private ClockworkCreatureType m_CreatureType;
+        private string m_Name;
+        private int m_BodyId;
 
-        public ClockworkCreatureType CreatureType => m_CreatureType;
-        public string Name => m_Name;
-        public int BodyId => m_BodyId;
+        public ClockworkCreatureType CreatureType { get { return m_CreatureType; } }
+        public string Name { get { return m_Name; } }
+        public int BodyId { get { return m_BodyId; } }
 
         public ClockworkCreatureDef(ClockworkCreatureType type, string name, int bodyId)
         {
@@ -31,9 +34,9 @@ namespace Server.Mobiles
 
     public class ClockworkCreature : Mobile
     {
-        public static ClockworkCreatureDef[] Definitions => m_Definitions;
+        public static ClockworkCreatureDef[] Definitions { get { return m_Definitions; } }
 
-        private static readonly ClockworkCreatureDef[] m_Definitions =
+        private static readonly ClockworkCreatureDef[] m_Definitions = new ClockworkCreatureDef[]
         {
             new ClockworkCreatureDef( ClockworkCreatureType.ExodusOverseer,     "an exodus overseer",   0x2F4 ),
             new ClockworkCreatureDef( ClockworkCreatureType.Betrayer,           "a betrayer",           0x2FF ),
@@ -69,7 +72,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

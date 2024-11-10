@@ -1,17 +1,19 @@
-using Server.Items;
-using Server.Network;
 using System;
+using Server;
+using Server.Items;
 using System.Linq;
+using Server.Network;
+using Server.Engines.CityLoyalty;
 
 namespace Server.Mobiles
 {
     public class Raider : BaseCreature
-    {
-        public DateTime TimeToDelete { get; set; }
+	{
+        public DateTime DeleteTime { get; set; }
 
-        public override bool Commandable => false;
-        public override bool ReduceSpeedWithDamage => false;
-        public override bool AlwaysMurderer => true;
+        public override bool Commandable { get { return false; } }
+        public override bool ReduceSpeedWithDamage { get { return false; } }
+        public override bool AlwaysMurderer { get { return true; } }
 
         [Constructable]
         public Raider()
@@ -28,7 +30,7 @@ namespace Server.Mobiles
             SetHits(400, 650);
             SetDamage(21, 28);
 
-            if (Female = Utility.RandomBool())
+            if (this.Female = Utility.RandomBool())
             {
                 Body = 0x191;
                 Name = NameList.RandomName("female");
@@ -69,10 +71,10 @@ namespace Server.Mobiles
             switch (Utility.Random(4))
             {
                 default:
-                case 0: bow = new CompositeBow(); break;
-                case 1: bow = new Crossbow(); break;
-                case 2: bow = new Bow(); break;
-                case 3: bow = new HeavyCrossbow(); break;
+                case 0: bow = new CompositeBow(); PackItem(new Arrow(25)); break;
+                case 1: bow = new Crossbow(); PackItem(new Bolt(25)); break;
+                case 2: bow = new Bow(); PackItem(new Arrow(25)); break;
+                case 3: bow = new HeavyCrossbow(); PackItem(new Bolt(25)); break;
             }
 
             SetWearable(bow);
@@ -93,19 +95,19 @@ namespace Server.Mobiles
             else if (Hits > ((double)HitsMax / 10))
             {
                 m.SendLocalizedMessage(1152229); // That person won't sit still for it! A more aggressive approach is in order.
-                m.NonlocalOverheadMessage(MessageType.Regular, 0x3B2, 1152237, string.Format("{0}\t{1}", m.Name, Name, "raider"));
+                m.NonlocalOverheadMessage(MessageType.Regular, 0x3B2, 1152237, String.Format("{0}\t{1}", m.Name, this.Name, "raider"));
             }
             else
             {
-                TimeToDelete = DateTime.UtcNow + TimeSpan.FromHours(1);
+                DeleteTime = DateTime.UtcNow + TimeSpan.FromHours(1);
 
                 SetControlMaster(m);
                 IsBonded = false;
                 ControlTarget = m;
                 ControlOrder = OrderType.Follow;
 
-                m.SendLocalizedMessage(1152236, Name); // You arrest the ~1_name~. Take the criminal to the guard captain.
-                m.NonlocalOverheadMessage(MessageType.Regular, 0x3B2, 1152238, string.Format("{0}\t{1}", m.Name, Name));
+                m.SendLocalizedMessage(1152236, this.Name); // You arrest the ~1_name~. Take the criminal to the guard captain.
+                m.NonlocalOverheadMessage(MessageType.Regular, 0x3B2, 1152238, String.Format("{0}\t{1}", m.Name, this.Name));
 
                 return true;
             }
@@ -122,7 +124,7 @@ namespace Server.Mobiles
 
         public void CheckDelete()
         {
-            if (TimeToDelete != DateTime.MinValue && DateTime.UtcNow > TimeToDelete)
+            if (DeleteTime != DateTime.MinValue && DateTime.UtcNow > DeleteTime)
             {
                 if (ControlMaster != null && ControlMaster.NetState != null)
                 {
@@ -136,8 +138,6 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 2);
-            AddLoot(LootPack.LootItem<Arrow>(25, true));
-            AddLoot(LootPack.LootItem<Bolt>(25, true));
         }
 
         public Raider(Serial serial)
@@ -148,11 +148,11 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             Timer.DelayCall(TimeSpan.FromSeconds(10), CheckDelete);
 
-            writer.Write(TimeToDelete);
+            writer.Write(DeleteTime);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -160,7 +160,7 @@ namespace Server.Mobiles
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            TimeToDelete = reader.ReadDateTime();
+            DeleteTime = reader.ReadDateTime();
         }
-    }
+	}
 }

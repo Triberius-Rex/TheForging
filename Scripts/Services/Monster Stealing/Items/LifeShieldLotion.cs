@@ -1,11 +1,13 @@
-﻿using Server.Mobiles;
+﻿using System;
+using Server.Mobiles;
+using Server;
 
 namespace Server.Items
 {
     [TypeAlias("drNO.ThieveItems.LifeShieldLotion")]
     public class LifeShieldLotion : BaseBalmOrLotion
     {
-        public override int LabelNumber => 1094945;  // Life Shield Lotion
+        public override int LabelNumber { get { return 1094945; } } // Life Shield Lotion
 
         [Constructable]
         public LifeShieldLotion()
@@ -22,7 +24,7 @@ namespace Server.Items
         protected override void ApplyEffect(PlayerMobile pm)
         {
             base.ApplyEffect(pm);
-            pm.SendMessage("You applied Life Shield Lotion");
+            pm.SendMessage("You applied Life Shield Lotion"); 
         }
 
         public static double HandleLifeDrain(PlayerMobile pm, double damage)
@@ -49,7 +51,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

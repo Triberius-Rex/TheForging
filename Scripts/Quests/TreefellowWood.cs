@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class TreefellowWood : Item
@@ -6,10 +8,10 @@ namespace Server.Items
         public TreefellowWood()
             : base(0x1BDD)
         {
-            Name = "Treefellow Wood";
+            this.Name = "Treefellow Wood";  
 
-            Hue = 2425;
-            Movable = true;
+            this.Hue = 2425;
+            this.Movable = true;
         }
 
         public TreefellowWood(Serial serial)
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,8 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Ansikart : MondainQuester
     {
         [Constructable]
@@ -18,11 +18,17 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] 
                 {
                     typeof(MasteringtheSoulforge),
                     typeof(ALittleSomething)
                 };
+            }
+        }
         public override void InitBody()
         {
             InitStats(100, 100, 25);
@@ -37,21 +43,21 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new SerpentStoneStaff(), dropChance: 1);
-            SetWearable(new GargishClothChest(), 1428, 1);
-            SetWearable(new GargishClothArms(), 1445, 1);
-            SetWearable(new GargishClothKilt(), 1443, 1);
+            AddItem(new SerpentStoneStaff());
+            AddItem(new GargishClothChest(1428));
+            AddItem(new GargishClothArms(1445));
+            AddItem(new GargishClothKilt(1443));
         }
 
         public override void Advertise()
         {
-            Say(1112528);  // Master the art of unraveling magic.
+            this.Say(1112528);  // Master the art of unraveling magic.
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

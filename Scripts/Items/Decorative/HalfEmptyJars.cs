@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class HalfEmptyJar : Item
     {
@@ -6,8 +8,8 @@
         public HalfEmptyJar()
             : base(0x1007)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public HalfEmptyJar(Serial serial)
@@ -19,7 +21,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -36,8 +38,8 @@
         public HalfEmptyJars()
             : base(0xe4c)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public HalfEmptyJars(Serial serial)
@@ -49,7 +51,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -66,8 +68,8 @@
         public Jars2()
             : base(0xE4d)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public Jars2(Serial serial)
@@ -79,7 +81,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -96,8 +98,8 @@
         public Jars3()
             : base(0xE4e)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public Jars3(Serial serial)
@@ -109,7 +111,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -126,8 +128,8 @@
         public Jars4()
             : base(0xE4f)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public Jars4(Serial serial)
@@ -139,7 +141,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

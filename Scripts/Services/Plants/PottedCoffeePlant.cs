@@ -1,14 +1,15 @@
+using Server;
+using System;
+using Server.Network;
 using Server.Engines.Plants;
 using Server.Gumps;
 using Server.Multis;
-using Server.Network;
-using System;
 
 namespace Server.Items
 {
     public class CoffeeGrounds : Item
     {
-        public override int LabelNumber => 1155735;  // Coffee Grounds
+        public override int LabelNumber { get { return 1155735; } } // Coffee Grounds
 
         [Constructable]
         public CoffeeGrounds()
@@ -33,7 +34,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -45,7 +46,7 @@ namespace Server.Items
 
     public class CoffeePod : Item
     {
-        public override int LabelNumber => 1123484;  // Coffee Pod
+        public override int LabelNumber { get { return 1123484; } } // Coffee Pod
 
         [Constructable]
         public CoffeePod()
@@ -69,7 +70,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -83,7 +84,7 @@ namespace Server.Items
     {
         public static readonly TimeSpan CheckDelay = TimeSpan.FromHours(23.0);
 
-        public override int LabelNumber => 1123480;  // Potted Coffee Plant
+        public override int LabelNumber { get { return 1123480; } } // Potted Coffee Plant
 
         private PlantStatus m_PlantStatus;
         private Timer m_Timer;
@@ -173,7 +174,7 @@ namespace Server.Items
             if (m_Timer != null)
                 return;
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromHours(1.0), TimeSpan.FromHours(1.0), OnTick);
+            m_Timer = Timer.DelayCall(TimeSpan.FromHours(1.0), TimeSpan.FromHours(1.0), new TimerCallback(OnTick));
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -210,10 +211,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write((int)PlantStatus);
             writer.Write((int)Level);
-            writer.Write(NextGrowth);
+            writer.Write((DateTime)NextGrowth);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,15 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class GauntletsOfNobility : RingmailGloves
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1061092;// Gauntlets of Nobility
-        public override int ArtifactRarity => 11;
-        public override int BasePhysicalResistance => 18;
-        public override int BasePoisonResistance => 20;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
-
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public GauntletsOfNobility()
         {
@@ -24,16 +19,69 @@ namespace Server.Items
         {
         }
 
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1061092;
+            }
+        }// Gauntlets of Nobility
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 11;
+            }
+        }
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 18;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
+
+            if (version < 1)
+            {
+                if (this.Hue == 0x562)
+                    this.Hue = 0x4FE;
+
+                this.PhysicalBonus = 0;
+                this.PoisonBonus = 0;
+            }
         }
     }
 }

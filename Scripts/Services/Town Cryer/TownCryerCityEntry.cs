@@ -1,5 +1,6 @@
-using Server.Engines.CityLoyalty;
+using Server;
 using System;
+using Server.Engines.CityLoyalty;
 
 namespace Server.Services.TownCryer
 {
@@ -11,7 +12,7 @@ namespace Server.Services.TownCryer
         public DateTime Expires { get; set; }
         public City City { get; set; }
 
-        public bool Expired => Expires < DateTime.Now;
+        public bool Expired { get { return Expires < DateTime.Now; } }
 
         public TownCryerCityEntry(Mobile author, City city, int duration, string title, string body)
         {

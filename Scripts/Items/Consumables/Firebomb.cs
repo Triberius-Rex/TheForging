@@ -1,9 +1,10 @@
-using Server.Network;
-using Server.Spells;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server.Network;
+using Server.Spells;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -37,7 +38,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -55,7 +56,7 @@ namespace Server.Items
                 return;
             }
 
-            if (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting))
+            if (Core.AOS && (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting)))
             {
                 // to prevent exploiting for pvp
                 from.SendLocalizedMessage(1075857); // You cannot use that while paralyzed.
@@ -64,7 +65,7 @@ namespace Server.Items
 
             if (m_Timer == null)
             {
-                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), OnFirebombTimerTick);
+                m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), new TimerCallback(OnFirebombTimerTick));
                 m_LitBy = from;
                 from.SendLocalizedMessage(1060582); // You light the firebomb.  Throw it now!
             }
@@ -91,7 +92,7 @@ namespace Server.Items
             if (Map == Map.Internal && HeldBy == null)
                 return;
 
-            switch (m_Ticks)
+            switch ( m_Ticks )
             {
                 case 0:
                 case 1:
@@ -135,9 +136,9 @@ namespace Server.Items
                         }
                         else if (RootParent == null)
                         {
-                            IEnumerable<Mobile> targets = GetTargets();
+                            var targets = GetTargets();
 
-                            foreach (Mobile victim in targets)
+                            foreach (var victim in targets)
                             {
                                 if (m_LitBy != null)
                                     m_LitBy.DoHarmful(victim);
@@ -221,7 +222,13 @@ namespace Server.Items
                 m_Bomb = bomb;
             }
 
-            public Firebomb Bomb => m_Bomb;
+            public Firebomb Bomb
+            {
+                get
+                {
+                    return m_Bomb;
+                }
+            }
             protected override void OnTarget(Mobile from, object targeted)
             {
                 m_Bomb.OnFirebombTarget(from, targeted);
@@ -243,7 +250,7 @@ namespace Server.Items
             m_LitBy = litBy;
             m_Expire = DateTime.UtcNow + TimeSpan.FromSeconds(10);
             m_Burning = toDamage;
-            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(1.0), OnFirebombFieldTimerTick);
+            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(1.0), new TimerCallback(OnFirebombFieldTimerTick));
         }
 
         public FirebombField(Serial serial)

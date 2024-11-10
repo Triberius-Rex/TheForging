@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Mobiles
@@ -53,6 +53,8 @@ namespace Server.Mobiles
             Fame = 28000;
             Karma = -28000;
 
+            VirtualArmor = 64;
+
             SetWeaponAbility(WeaponAbility.CrushingBlow);
             SetWeaponAbility(WeaponAbility.WhirlwindAttack);
 
@@ -65,14 +67,50 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanFlee => false;
+        public override bool CanFlee { get { return false; } }
 
-        public override bool IgnoreYoungProtection => true;
-        public override bool BardImmune => false;
-        public override bool Unprovokable => true;
-        public override bool AreaPeaceImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override int TreasureMapLevel => 5;
+        public override bool IgnoreYoungProtection
+        {
+            get
+            {
+                return Core.ML;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool AreaPeaceImmune
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 6;
+            }
+        }
 
         public override void OnDeath(Container c)
         {
@@ -101,14 +139,32 @@ namespace Server.Mobiles
             base.OnDeath(c);
         }
 
-        public override bool TeleportsTo => true;
+        public static Mobile FindRandomPlayer(BaseCreature creature)
+        {
+            List<DamageStore> rights = creature.GetLootingRights();
+
+            for (int i = rights.Count - 1; i >= 0; --i)
+            {
+                DamageStore ds = rights[i];
+
+                if (!ds.m_HasRight)
+                    rights.RemoveAt(i);
+            }
+
+            if (rights.Count > 0)
+                return rights[Utility.Random(rights.Count)].m_Mobile;
+
+            return null;
+        }
+
+        public override bool TeleportsTo { get { return true; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.SuperBoss, 2);
             AddLoot(LootPack.HighScrolls, Utility.RandomMinMax(6, 60));
         }
-
+        
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
             if (from != null && from != this && !m_InHere)
@@ -150,12 +206,11 @@ namespace Server.Mobiles
                         continue;
                 }
 
-                UnholyBone bone = new UnholyBone
-                {
-                    Hue = 0,
-                    Name = "unholy bones",
-                    ItemID = Utility.Random(0xECA, 9)
-                };
+                UnholyBone bone = new UnholyBone();
+
+                bone.Hue = 0;
+                bone.Name = "unholy bones";
+                bone.ItemID = Utility.Random(0xECA, 9);
 
                 bone.MoveToWorld(new Point3D(x, y, z), map);
             }
@@ -164,7 +219,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

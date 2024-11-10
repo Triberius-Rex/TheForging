@@ -1,9 +1,9 @@
-using Server.Items;
 using System;
 using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using Server.Items;
 
 namespace Server.Commands
 {
@@ -35,7 +35,7 @@ namespace Server.Commands
         }
         public static void Initialize()
         {
-            CommandSystem.Register("RebuildCategorization", AccessLevel.Administrator, RebuildCategorization_OnCommand);
+            CommandSystem.Register("RebuildCategorization", AccessLevel.Administrator, new CommandEventHandler(RebuildCategorization_OnCommand));
         }
 
         [Usage("RebuildCategorization")]
@@ -59,12 +59,11 @@ namespace Server.Commands
 
         public static void Export(CategoryEntry ce, string fileName, string title)
         {
-            XmlTextWriter xml = new XmlTextWriter(fileName, System.Text.Encoding.UTF8)
-            {
-                Indentation = 1,
-                IndentChar = '\t',
-                Formatting = Formatting.Indented
-            };
+            XmlTextWriter xml = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
+
+            xml.Indentation = 1;
+            xml.IndentChar = '\t';
+            xml.Formatting = Formatting.Indented;
 
             xml.WriteStartDocument(true);
 
@@ -105,7 +104,7 @@ namespace Server.Commands
                     int itemID = item.ItemID;
 
                     if (item is BaseAddon && ((BaseAddon)item).Components.Count == 1)
-                        itemID = ((BaseAddon)item).Components[0].ItemID;
+                        itemID = ((AddonComponent)(((BaseAddon)item).Components[0])).ItemID;
 
                     if (itemID > TileData.MaxItemValue)
                         itemID = 1;
@@ -217,9 +216,8 @@ namespace Server.Commands
                 {
                     match.Matched.Add(new CategoryTypeEntry(type));
                 }
-                catch (Exception e)
+                catch
                 {
-                    Diagnostics.ExceptionLogging.LogException(e);
                 }
             }
         }
@@ -276,12 +274,24 @@ namespace Server.Commands
         private readonly object m_Object;
         public CategoryTypeEntry(Type type)
         {
-            m_Type = type;
-            m_Object = Activator.CreateInstance(type);
+            this.m_Type = type;
+            this.m_Object = Activator.CreateInstance(type);
         }
 
-        public Type Type => m_Type;
-        public object Object => m_Object;
+        public Type Type
+        {
+            get
+            {
+                return this.m_Type;
+            }
+        }
+        public object Object
+        {
+            get
+            {
+                return this.m_Object;
+            }
+        }
     }
 
     public class CategoryEntry
@@ -293,38 +303,38 @@ namespace Server.Commands
         private readonly ArrayList m_Matched;
         public CategoryEntry()
         {
-            m_Title = "(empty)";
-            m_Matches = new Type[0];
-            m_SubCategories = new CategoryEntry[0];
-            m_Matched = new ArrayList();
+            this.m_Title = "(empty)";
+            this.m_Matches = new Type[0];
+            this.m_SubCategories = new CategoryEntry[0];
+            this.m_Matched = new ArrayList();
         }
 
         public CategoryEntry(CategoryEntry parent, string title, CategoryEntry[] subCats)
         {
-            m_Parent = parent;
-            m_Title = title;
-            m_SubCategories = subCats;
-            m_Matches = new Type[0];
-            m_Matched = new ArrayList();
+            this.m_Parent = parent;
+            this.m_Title = title;
+            this.m_SubCategories = subCats;
+            this.m_Matches = new Type[0];
+            this.m_Matched = new ArrayList();
         }
 
         public CategoryEntry(CategoryEntry parent, CategoryLine[] lines, ref int index)
         {
-            m_Parent = parent;
+            this.m_Parent = parent;
 
             string text = lines[index].Text;
 
             int start = text.IndexOf('(');
 
             if (start < 0)
-                throw new FormatException(string.Format("Input string not correctly formatted ('{0}')", text));
+                throw new FormatException(String.Format("Input string not correctly formatted ('{0}')", text));
 
-            m_Title = text.Substring(0, start).Trim();
+            this.m_Title = text.Substring(0, start).Trim();
 
             int end = text.IndexOf(')', ++start);
 
             if (end < start)
-                throw new FormatException(string.Format("Input string not correctly formatted ('{0}')", text));
+                throw new FormatException(String.Format("Input string not correctly formatted ('{0}')", text));
 
             text = text.Substring(start, end - start);
             string[] split = text.Split(';');
@@ -341,7 +351,7 @@ namespace Server.Commands
                     list.Add(type);
             }
 
-            m_Matches = (Type[])list.ToArray(typeof(Type));
+            this.m_Matches = (Type[])list.ToArray(typeof(Type));
             list.Clear();
 
             int ourIndentation = lines[index].Indentation;
@@ -351,23 +361,53 @@ namespace Server.Commands
             while (index < lines.Length && lines[index].Indentation > ourIndentation)
                 list.Add(new CategoryEntry(this, lines, ref index));
 
-            m_SubCategories = (CategoryEntry[])list.ToArray(typeof(CategoryEntry));
+            this.m_SubCategories = (CategoryEntry[])list.ToArray(typeof(CategoryEntry));
             list.Clear();
 
-            m_Matched = list;
+            this.m_Matched = list;
         }
 
-        public string Title => m_Title;
-        public Type[] Matches => m_Matches;
-        public CategoryEntry Parent => m_Parent;
-        public CategoryEntry[] SubCategories => m_SubCategories;
-        public ArrayList Matched => m_Matched;
+        public string Title
+        {
+            get
+            {
+                return this.m_Title;
+            }
+        }
+        public Type[] Matches
+        {
+            get
+            {
+                return this.m_Matches;
+            }
+        }
+        public CategoryEntry Parent
+        {
+            get
+            {
+                return this.m_Parent;
+            }
+        }
+        public CategoryEntry[] SubCategories
+        {
+            get
+            {
+                return this.m_SubCategories;
+            }
+        }
+        public ArrayList Matched
+        {
+            get
+            {
+                return this.m_Matched;
+            }
+        }
         public bool IsMatch(Type type)
         {
             bool isMatch = false;
 
-            for (int i = 0; !isMatch && i < m_Matches.Length; ++i)
-                isMatch = (type == m_Matches[i] || type.IsSubclassOf(m_Matches[i]));
+            for (int i = 0; !isMatch && i < this.m_Matches.Length; ++i)
+                isMatch = (type == this.m_Matches[i] || type.IsSubclassOf(this.m_Matches[i]));
 
             return isMatch;
         }
@@ -383,19 +423,31 @@ namespace Server.Commands
 
             for (index = 0; index < input.Length; ++index)
             {
-                if (char.IsLetter(input, index))
+                if (Char.IsLetter(input, index))
                     break;
             }
 
             if (index >= input.Length)
-                throw new FormatException(string.Format("Input string not correctly formatted ('{0}')", input));
+                throw new FormatException(String.Format("Input string not correctly formatted ('{0}')", input));
 
-            m_Indentation = index;
-            m_Text = input.Substring(index);
+            this.m_Indentation = index;
+            this.m_Text = input.Substring(index);
         }
 
-        public int Indentation => m_Indentation;
-        public string Text => m_Text;
+        public int Indentation
+        {
+            get
+            {
+                return this.m_Indentation;
+            }
+        }
+        public string Text
+        {
+            get
+            {
+                return this.m_Text;
+            }
+        }
         public static CategoryLine[] Load(string path)
         {
             ArrayList list = new ArrayList();

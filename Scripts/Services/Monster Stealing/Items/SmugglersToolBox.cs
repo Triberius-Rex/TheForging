@@ -1,4 +1,5 @@
 ﻿using System;
+using Server;
 
 namespace Server.Items
 {
@@ -11,9 +12,9 @@ namespace Server.Items
 
         public DateTime NextRecharge { get; set; }
 
-        public override int LabelNumber => 1071520;  // Smuggler's Tool Box
+        public override int LabelNumber { get { return 1071520; } } // Smuggler's Tool Box
 
-        [Constructable]
+        [Constructable] 
         public SmugglersToolBox()
            : base(0x1EB6)
         {
@@ -27,7 +28,7 @@ namespace Server.Items
         {
             if (IsChildOf(m.Backpack) && _UsesRemaining > 0)
             {
-                Lockpick lockpick = new Lockpick(Utility.RandomMinMax(5, 12));
+                var lockpick = new Lockpick(Utility.RandomMinMax(5, 12));
 
                 if (m.Backpack == null || !m.Backpack.TryDropItem(m, lockpick, false))
                 {
@@ -57,7 +58,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write(_UsesRemaining);
             writer.Write(NextRecharge);
 

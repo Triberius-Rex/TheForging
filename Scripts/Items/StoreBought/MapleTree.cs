@@ -1,10 +1,13 @@
+using System;
+using Server;
 using Server.Gumps;
+using Server.Network;
 
 namespace Server.Items
 {
     public class MapleTreeAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new MapleTreeDeed();
+        public override BaseAddonDeed Deed { get { return new MapleTreeDeed(); } }
 
         [Constructable]
         public MapleTreeAddon(bool trunk)
@@ -37,8 +40,8 @@ namespace Server.Items
 
     public class MapleTreeDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new MapleTreeAddon(m_Trunk);
-        public override int LabelNumber => 1071104;  // Maple Tree
+        public override BaseAddon Addon { get { return new MapleTreeAddon(m_Trunk); } }
+        public override int LabelNumber { get { return 1071104; } } // Maple Tree
 
         private bool m_Trunk;
 

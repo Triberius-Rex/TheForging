@@ -1,11 +1,13 @@
+using System;
+using Server;
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Network;
 using Server.Engines.Points;
 using Server.Guilds;
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Items;
 
 namespace Server.Engines.CityLoyalty
 {
@@ -70,19 +72,19 @@ namespace Server.Engines.CityLoyalty
         }
     }
 
-    public class CityLoyaltyGump : BaseCityGump
-    {
-        public CityLoyaltyGump(PlayerMobile pm) : base(pm)
-        {
-        }
-
-        public override void AddGumpLayout()
-        {
+	public class CityLoyaltyGump : BaseCityGump
+	{
+		public CityLoyaltyGump(PlayerMobile pm) : base(pm)
+		{
+		}
+		
+		public override void AddGumpLayout()
+		{
             if (!CityLoyaltySystem.Enabled || CityLoyaltySystem.Cities == null)
                 return;
 
-            base.AddGumpLayout();
-            int y = 40;
+			base.AddGumpLayout();
+			int y = 40;
 
             for (int i = 0; i < CityLoyaltySystem.Cities.Count; i++)
             {
@@ -96,13 +98,13 @@ namespace Server.Engines.CityLoyalty
 
                 y += 20;
             }
-
-            y += 20;
-
-            AddHtmlLocalized(70, y, 250, 16, 1152883, false, false); // Citizenship:
-            AddHtmlLocalized(200, y, 100, 16, Citizenship != null ? CityLoyaltySystem.CityLocalization(Citizenship.City) : 1152884, false, false);
-
-            y += 40;
+			
+			y += 20;
+			
+			AddHtmlLocalized(70, y, 250, 16, 1152883, false, false); // Citizenship:
+			AddHtmlLocalized(200, y, 100, 16, Citizenship != null ? CityLoyaltySystem.CityLocalization(Citizenship.City) : 1152884, false, false);
+			
+			y += 40;
 
             if (!CityLoyaltySystem.IsSetup())
             {
@@ -134,7 +136,7 @@ namespace Server.Engines.CityLoyalty
                      * more days before you may declare citizenship again.*/
                 }
             }
-        }
+		}
 
         public override void OnResponse(RelayInfo info)
         {
@@ -147,23 +149,23 @@ namespace Server.Engines.CityLoyalty
             {
                 case 0: break;
                 case 1:
-                    SendGump(new CityTitlesGump(User));
+                    BaseGump.SendGump(new CityTitlesGump(User));
                     break;
                 case 2:
-                    SendGump(new RenounceCitizenshipGump(User));
+                    BaseGump.SendGump(new RenounceCitizenshipGump(User));
                     break;
                 case 3:
                 default:
                     int id = info.ButtonID - 100;
                     if (id >= 0 && id < CityLoyaltySystem.Cities.Count)
                     {
-                        if (Citizenship == null)
-                            SendGump(new DeclareCitizenshipGump(CityLoyaltySystem.Cities[id], User));
+                        if(Citizenship == null)
+                            BaseGump.SendGump(new DeclareCitizenshipGump(CityLoyaltySystem.Cities[id], User));
                     }
                     break;
             }
         }
-    }
+	}
 
     public class DeclareCitizenshipGump : BaseCityGump
     {
@@ -181,7 +183,7 @@ namespace Server.Engines.CityLoyalty
             if (City == null)
                 return;
 
-            AddHtmlLocalized(30, 40, 285, 200, 1152891, string.Format("#{0}", CityLoyaltySystem.GetCityLocalization(City.City).ToString()), 1, false, true);
+            AddHtmlLocalized(30, 40, 285, 200, 1152891, String.Format("#{0}", CityLoyaltySystem.GetCityLocalization(City.City).ToString()), 1, false, true);
             /*If you choose to declare citizenship with ~1_CITY~, you will be granted the "Citizen" title.
              * If your loyalty rating to ~1_CITY~ is high enough, you will be able to receive titles with
              * that city.<br><br>You may only have citizenship in one city at a time. You may renounce 
@@ -201,7 +203,7 @@ namespace Server.Engines.CityLoyalty
         {
             base.OnResponse(info);
 
-            if (info.ButtonID == 1 && City != null)
+            if(info.ButtonID == 1 && City != null)
             {
                 if (CityLoyaltySystem.CanAddCitizen(User))
                 {
@@ -209,7 +211,7 @@ namespace Server.Engines.CityLoyalty
                 }
             }
             else if (info.ButtonID == 2)
-                SendGump(new CityLoyaltyGump(User));
+                BaseGump.SendGump(new CityLoyaltyGump(User));
         }
     }
 
@@ -230,7 +232,7 @@ namespace Server.Engines.CityLoyalty
             AddHtmlLocalized(45, 40, 250, 16, 1152883, false, false); // Citizenship:
             AddHtmlLocalized(200, 40, 100, 16, CityLoyaltySystem.CityLocalization(Citizenship.City), false, false);
 
-            AddHtmlLocalized(30, 70, 280, 200, 1152887, string.Format("#{0}", CityLoyaltySystem.GetCityLocalization(Citizenship.City).ToString()), 1, false, true);
+            AddHtmlLocalized(30, 70, 280, 200, 1152887, String.Format("#{0}", CityLoyaltySystem.GetCityLocalization(Citizenship.City).ToString()), 1, false, true);
             /*If you renounce your citizenship, you will be stripped of all titles gained with your current
              * city, and you must wait 7 days before declaring citizenship again.<br><br>Are you sure you wish
              * to renounce your citizenship with ~1_CITY~?*/
@@ -255,61 +257,61 @@ namespace Server.Engines.CityLoyalty
                 }
             }
             else if (info.ButtonID == 2)
-                SendGump(new CityLoyaltyGump(User));
+                BaseGump.SendGump(new CityLoyaltyGump(User));
         }
     }
 
-    public class CityTitlesGump : BaseCityGump
-    {
-        public CityTitlesGump(PlayerMobile pm) : base(pm)
-        {
-        }
-
-        public override void AddGumpLayout()
-        {
+	public class CityTitlesGump : BaseCityGump
+	{
+		public CityTitlesGump(PlayerMobile pm) : base(pm)
+		{
+		}
+		
+		public override void AddGumpLayout()
+		{
             base.AddGumpLayout();
 
-            AddHtmlLocalized(60, 40, 200, 16, 1152894, false, false); // Your Titles
-            int y = 60;
-
-            foreach (int i in Enum.GetValues(typeof(CityTitle)))
-            {
-                CityTitle title = (CityTitle)i;
-
-                if (title == CityTitle.None)
-                    continue;
-
-                if (Citizenship.HasTitle(User, title))
-                {
-                    AddHtmlLocalized(65, y, 300, 16, CityLoyaltySystem.GetTitleLocalization(User, title, Citizenship.City), false, false);
-                    y += 20;
-                }
-            }
-
-            y += 20;
-            AddHtmlLocalized(60, y, 250, 16, 1152895, false, false); //Available Titles:
-            y += 20;
-
-            foreach (int i in Enum.GetValues(typeof(CityTitle)))
-            {
-                CityTitle title = (CityTitle)i;
+			AddHtmlLocalized(60, 40, 200, 16, 1152894, false, false); // Your Titles
+			int y = 60;
+			
+			foreach(int i in Enum.GetValues(typeof(CityTitle)))
+			{
+				CityTitle title = (CityTitle)i;
 
                 if (title == CityTitle.None)
                     continue;
 
-                if (!Citizenship.HasTitle(User, title))
-                {
+				if(Citizenship.HasTitle(User, title))
+				{
+					AddHtmlLocalized(65, y, 300, 16, CityLoyaltySystem.GetTitleLocalization(User, title, Citizenship.City), false, false);
+					y += 20;
+				}
+			}
+			
+			y += 20;
+			AddHtmlLocalized(60, y, 250, 16, 1152895, false, false); //Available Titles:
+			y += 20;
+			
+			foreach(int i in Enum.GetValues(typeof(CityTitle)))
+			{
+				CityTitle title = (CityTitle)i;
+
+                if (title == CityTitle.None)
+                    continue;
+
+				if(!Citizenship.HasTitle(User, title))
+				{
                     AddButton(60, y + 5, 2103, 2104, i + 1, GumpButtonType.Reply, 0);
-
-                    AddHtmlLocalized(75, y, 300, 16, CityLoyaltySystem.GetTitleLocalization(User, title, Citizenship.City), false, false);
-                    y += 20;
-                }
-            }
-
-            y += 40;
-            AddHtmlLocalized(30, y, 285, 60, 1152896, false, false);
+					
+					AddHtmlLocalized(75, y, 300, 16, CityLoyaltySystem.GetTitleLocalization(User, title, Citizenship.City), false, false);
+					y += 20;
+				}
+			}
+			
+			y += 40;
+			AddHtmlLocalized(30, y, 285, 60, 1152896, false, false);
             /*Click the gem next to an available title for more information about obtaining that title.*/
-        }
+		}
 
         public override void OnResponse(RelayInfo info)
         {
@@ -320,34 +322,34 @@ namespace Server.Engines.CityLoyalty
                 CityTitle t = (CityTitle)info.ButtonID - 1;
 
                 if (!Citizenship.HasTitle(User, t))
-                    SendGump(new CityTitlesInfoGump(User, t));
+                    BaseGump.SendGump(new CityTitlesInfoGump(User, t));
             }
         }
-    }
+	}
+	
+	public class CityTitlesInfoGump : BaseCityGump
+	{
+		public CityTitle Title { get; private set; }
 
-    public class CityTitlesInfoGump : BaseCityGump
-    {
-        public CityTitle Title { get; private set; }
-
-        public CityTitlesInfoGump(PlayerMobile pm, CityTitle title) : base(pm)
-        {
-            Title = title;
-        }
-
-        public override void AddGumpLayout()
-        {
+		public CityTitlesInfoGump(PlayerMobile pm, CityTitle title) : base(pm)
+		{
+			Title = title;
+		}
+		
+		public override void AddGumpLayout()
+		{
             base.AddGumpLayout();
 
             int gold = Citizenship.GetTitleCost(Title);
             LoyaltyRating rating = Citizenship.GetMinimumRating(Title);
 
             AddHtmlLocalized(60, 40, 300, 20, 1152901, false, false); // Obtain Title
-            AddHtmlLocalized(75, 60, 200, 16, CityLoyaltySystem.GetTitleLocalization(User, Title, Citizenship.City), false, false);
-
-            AddHtmlLocalized(60, 120, 200, 16, 1152899, false, false); // Loyalty Required:
-            AddHtmlLocalized(60, 140, 200, 16, 1152900, false, false); // Donation Required:
-
-            AddHtmlLocalized(200, 120, 150, 16, CityLoyaltySystem.RatingLocalization(Citizenship.GetMinimumRating(Title)), false, false);
+			AddHtmlLocalized(75, 60, 200, 16, CityLoyaltySystem.GetTitleLocalization(User, Title, Citizenship.City), false, false);
+			
+			AddHtmlLocalized(60, 120, 200, 16, 1152899, false, false); // Loyalty Required:
+			AddHtmlLocalized(60, 140, 200, 16, 1152900, false, false); // Donation Required:
+			
+			AddHtmlLocalized(200, 120, 150, 16, CityLoyaltySystem.RatingLocalization(Citizenship.GetMinimumRating(Title)), false, false);
             AddHtml(200, 140, 150, 16, Citizenship.GetTitleCost(Title).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-US")), false, false);
 
             if (gold > Banker.GetBalance(User))
@@ -368,7 +370,7 @@ namespace Server.Engines.CityLoyalty
 
             AddHtmlLocalized(60, 365, 150, 16, 1152889, false, false); // Cancel
             AddButton(40, 370, 2103, 2104, 2, GumpButtonType.Reply, 0);
-        }
+		}
 
         public override void OnResponse(RelayInfo info)
         {
@@ -386,10 +388,10 @@ namespace Server.Engines.CityLoyalty
             }
             else if (info.ButtonID == 2)
             {
-                SendGump(new CityTitlesGump(User));
+                BaseGump.SendGump(new CityTitlesGump(User));
             }
         }
-    }
+	}
 
     public class CityStoneGump : BaseGump
     {
@@ -408,13 +410,13 @@ namespace Server.Engines.CityLoyalty
             if (City.Election == null || !City.Election.Ongoing)
             {
                 AddBackground(0, 0, 400, 150, 5054);
-                AddHtmlLocalized(0, 12, 400, 20, CenterLoc, "#1155758", 0xFFFF, false, false); // City Stone
+                AddHtmlLocalized(10, 12, 150, 20, 1155758, 0xFFFF, false, false); // City Stone
 
                 DateTime next = City.Election.NextElection();
 
-                AddHtmlLocalized(20, 45, 360, 60, 1153898, string.Format("{0}\t{1}\t{2}",
+                AddHtmlLocalized(20, 45, 360, 60, 1153898, String.Format("{0}\t{1}\t{2}", 
                     City.Definition.Name,
-                    City.Governor == null ? "Vacant" : City.Governor.Name,
+                    City.Governor == null ? "Vacant" : City.Governor.Name, 
                     next.ToString()), 0xFFFF, false, false); // The current Governor of ~1_CITY~ is ~2_PLAYER~.  The next election cycle begins after ~3_DAYS~. 
             }
             else
@@ -445,8 +447,8 @@ namespace Server.Engines.CityLoyalty
             {
                 case 0: break;
                 case 1: City.Election.TryNominate(User); break;
-                case 2: SendGump(new NomineesGump(User, City)); break;
-                case 3: SendGump(new CandidatesGump(User, City)); break;
+                case 2: BaseGump.SendGump(new NomineesGump(User, City)); break;
+                case 3: BaseGump.SendGump(new CandidatesGump(User, City)); break;
             }
         }
     }
@@ -485,15 +487,15 @@ namespace Server.Engines.CityLoyalty
             AddPage(page);
             int pageIndex = 0;
 
-            for (int i = 0; i < City.Election.Candidates.Count; i++)
+            for(int i = 0; i < City.Election.Candidates.Count; i++)
             {
                 BallotEntry entry = City.Election.Candidates[i];
 
                 Guild g = entry.Player == null ? null : entry.Player.Guild as Guild;
 
                 AddButton(10, 70 + (pageIndex * 25), 4002, 4004, i + 100, GumpButtonType.Reply, 0);
-                AddHtml(130, 70 + (pageIndex * 25), 200, 20, string.Format("<basefont color=#EEE8AA>{0}", entry.Player == null ? "Unknown" : entry.Player.Name), false, false);
-                AddHtml(300, 70 + (pageIndex * 25), 200, 20, string.Format("<basefont color=#EEE8AA>{0}", g != null ? g.Name : ""), false, false);
+                AddHtml(130, 70 + (pageIndex * 25), 200, 20, String.Format("<basefont color=#EEE8AA>{0}", entry.Player == null ? "Unknown" : entry.Player.Name), false, false);
+                AddHtml(300, 70 + (pageIndex * 25), 200, 20, String.Format("<basefont color=#EEE8AA>{0}", g != null ? g.Name : ""), false, false);
                 pageIndex++;
 
                 if (pageIndex >= 10 && i < City.Election.Candidates.Count - 1)
@@ -518,7 +520,7 @@ namespace Server.Engines.CityLoyalty
         public override void OnResponse(RelayInfo info)
         {
             if (info.ButtonID == 1)
-                SendGump(new CityStoneGump(User, City));
+                BaseGump.SendGump(new CityStoneGump(User, City));
             else if (info.ButtonID == 2)
                 City.Election.TryWithdraw(User);
             else if (info.ButtonID >= 100)
@@ -527,7 +529,7 @@ namespace Server.Engines.CityLoyalty
 
                 if (id >= 0 && id < City.Election.Candidates.Count)
                 {
-                    BallotEntry entry = City.Election.Candidates[id];
+                    var entry = City.Election.Candidates[id];
 
                     if (entry.Player != null)
                     {
@@ -584,10 +586,10 @@ namespace Server.Engines.CityLoyalty
                 Guild g = entry.Player == null ? null : entry.Player.Guild as Guild;
 
                 AddButton(10, 70 + (pageIndex * 25), 4002, 4004, i + 100, GumpButtonType.Reply, 0);
-                AddHtml(130, 70 + (pageIndex * 25), 200, 20, string.Format("<basefont color=#EEE8AA>{0}", entry.Player == null ? "Unknown" : entry.Player.Name), false, false);
-                AddHtml(300, 70 + (pageIndex * 25), 200, 20, string.Format("<basefont color=#EEE8AA>{0}", g != null ? g.Name : ""), false, false);
-                AddHtml(470, 70 + (pageIndex * 25), 200, 20, string.Format("<basefont color=#EEE8AA>{0}%", City.Election.GetStanding(entry).ToString("F1", System.Globalization.CultureInfo.InvariantCulture)), false, false);
-
+                AddHtml(130, 70 + (pageIndex * 25), 200, 20, String.Format("<basefont color=#EEE8AA>{0}", entry.Player == null ? "Unknown" : entry.Player.Name), false, false);
+                AddHtml(300, 70 + (pageIndex * 25), 200, 20, String.Format("<basefont color=#EEE8AA>{0}", g != null ? g.Name : ""), false, false);
+                AddHtml(470, 70 + (pageIndex * 25), 200, 20, String.Format("<basefont color=#EEE8AA>{0}%", City.Election.GetStanding(entry).ToString("F1", System.Globalization.CultureInfo.InvariantCulture)), false, false);
+                
                 pageIndex++;
 
                 if (pageIndex >= 10 && i < Candidates.Count - 1)
@@ -612,7 +614,7 @@ namespace Server.Engines.CityLoyalty
         public override void OnResponse(RelayInfo info)
         {
             if (info.ButtonID == 1)
-                SendGump(new CityStoneGump(User, City));
+                BaseGump.SendGump(new CityStoneGump(User, City));
             else if (info.ButtonID == 2)
                 City.Election.TryWithdraw(User);
             else if (info.ButtonID >= 100)
@@ -621,7 +623,7 @@ namespace Server.Engines.CityLoyalty
 
                 if (id >= 0 && id < Candidates.Count)
                 {
-                    BallotEntry entry = Candidates[id];
+                    var entry = Candidates[id];
 
                     if (entry.Player != null)
                     {
@@ -692,12 +694,12 @@ namespace Server.Engines.CityLoyalty
                     City.Treasury -= CityLoyaltySystem.TradeDealCost;
 
                     City.OnNewTradeDeal(_Deals[id]);
-                    City.HeraldMessage(1154058, string.Format("{0}\t#{1}", City.Definition.Name, (int)_Deals[id] - 12));
+                    City.HeraldMessage(1154058, String.Format("{0}\t#{1}", City.Definition.Name, (int)_Deals[id] - 12));
                 }
             }
         }
 
-        private readonly TradeDeal[] _Deals =
+        private TradeDeal[] _Deals =
         {
             TradeDeal.GuildOfArcaneArts,
             TradeDeal.SocietyOfClothiers,
@@ -736,7 +738,7 @@ namespace Server.Engines.CityLoyalty
 
             AddImageTiled(50, 145, 250, 20, 3504);
             AddTextEntry(51, 145, 249, 20, 0, 1, "");
-            AddButton(15, 145, 4023, 4024, 1, GumpButtonType.Reply, 0);
+            AddButton(15, 145, 4023, 4024, 1, GumpButtonType.Reply, 0); 
         }
 
         public override void OnResponse(RelayInfo info)
@@ -747,7 +749,7 @@ namespace Server.Engines.CityLoyalty
             if (entry == null)
                 return;
 
-            if (relay == null || string.IsNullOrEmpty(relay.Text))
+            if (relay == null || String.IsNullOrEmpty(relay.Text))
             {
                 if (entry != null)
                 {
@@ -769,7 +771,7 @@ namespace Server.Engines.CityLoyalty
             {
                 string text = Utility.FixHtml(relay.Text);
 
-                if (BaseGuildGump.CheckProfanity(text) && text.Trim().Length > 3)
+                if (Server.Guilds.BaseGuildGump.CheckProfanity(text) && text.Trim().Length > 3)
                 {
                     if (entry != null && entry.IsCitizen)
                     {
@@ -779,7 +781,7 @@ namespace Server.Engines.CityLoyalty
                         if (User != Citizen)
                             User.SendMessage("You have bestowed {0} the title: {1} of {2}.", Citizen.Name, text, City.Definition.Name);
 
-                        Citizen.SendLocalizedMessage(1155605, string.Format("{0}\t{1}", text, City.Definition.Name)); // Thou hath been bestowed the title ~1_TITLE~! - ~1_TITLE~ of ~2_CITY~
+                        Citizen.SendLocalizedMessage(1155605, String.Format("{0}\t{1}", text, City.Definition.Name)); // Thou hath been bestowed the title ~1_TITLE~! - ~1_TITLE~ of ~2_CITY~
                     }
                 }
                 else
@@ -983,7 +985,7 @@ namespace Server.Engines.CityLoyalty
                 return;
 
             AddBackground(0, 0, 250, (City.Stone.Boxes.Count * 25) + 90, 5054);
-            AddHtml(0, 15, 250, 20, string.Format("<center>Inventory - {0}</center>", City.Definition.Name), false, false); // Inventory
+            AddHtml(0, 15, 250, 20, String.Format("<center>Inventory - {0}</center>", City.Definition.Name), false, false); // Inventory
 
             AddLabel(10, 40, 0, "Location");
             AddLabel(150, 40, 0, "View");
@@ -1034,7 +1036,7 @@ namespace Server.Engines.CityLoyalty
 
                     m.SendGump(new WarningGump(1111873, 30720, "This will permanently delete the ballot box. Proceed?", 32512, 300, 200, (mob, ok, obj) =>
                         {
-                            if (ok)
+                            if(ok)
                             {
                                 box.Delete();
                                 City.Stone.Boxes.Remove(box);
@@ -1043,7 +1045,7 @@ namespace Server.Engines.CityLoyalty
                             }
 
                             m.CloseGump(typeof(OpenInventoryGump));
-                            SendGump(new OpenInventoryGump(User, City));
+                            BaseGump.SendGump(new OpenInventoryGump(User, City));
                         }, box, true));
                 }
             }
@@ -1052,7 +1054,7 @@ namespace Server.Engines.CityLoyalty
 
     public class CityMessageBoardGump : BaseGump
     {
-        private readonly int _Red = 0x8B0000;
+        private int _Red = 0x8B0000;
 
         public CityMessageBoardGump(PlayerMobile pm)
             : base(pm, 100, 100)
@@ -1063,14 +1065,14 @@ namespace Server.Engines.CityLoyalty
         {
             AddBackground(0, 0, 554, 350, 9380);
 
-            AddHtmlLocalized(0, 55, 554, 20, 1154645, "#1154911", Quests.BaseQuestGump.C32216(_Red), false, false);
+            AddHtmlLocalized(0, 55, 554, 20, 1154645, "#1154911", Server.Engines.Quests.BaseQuestGump.C32216(_Red), false, false);
 
             for (int i = 0; i < CityLoyaltySystem.Cities.Count; i++)
             {
                 CityLoyaltySystem city = CityLoyaltySystem.Cities[i];
 
                 AddButton(25, 78 + (i * 20), 2103, 2104, i + 100, GumpButtonType.Reply, 0);
-                AddHtml(70, 75 + (i * 20), 150, 20, string.Format("<basefont color=#8B0000>{0}", city.Definition.Name), false, false);
+                AddHtml(70, 75 + (i * 20), 150, 20, String.Format("<basefont color=#8B0000>{0}", city.Definition.Name), false, false);
                 AddLabelCropped(170, 75 + (i * 20), 295, 20, 0, city.Headline);
             }
         }
@@ -1082,8 +1084,8 @@ namespace Server.Engines.CityLoyalty
 
             int id = info.ButtonID - 100;
 
-            if (id >= 0 && id < CityLoyaltySystem.Cities.Count)
-                SendGump(new CityMessageGump(User, CityLoyaltySystem.Cities[id]));
+            if(id >= 0 && id < CityLoyaltySystem.Cities.Count)
+                BaseGump.SendGump(new CityMessageGump(User, CityLoyaltySystem.Cities[id]));
         }
     }
 
@@ -1103,7 +1105,7 @@ namespace Server.Engines.CityLoyalty
             AddHtmlLocalized(25, 55, 500, 20, 1154915, City.Definition.Name, 0, false, false); // The Latest News from the City of ~1_CITY~
 
             if (City.PostedOn != DateTime.MinValue)
-                AddHtmlLocalized(25, 85, 500, 20, 1154916, string.Format("{0}\t{1}", City.Governor != null ? City.Governor.Name : "somebody", City.PostedOn.ToShortDateString()), 0, false, false); // Posted by ~1_NAME~ on ~2_date~
+                AddHtmlLocalized(25, 85, 500, 20, 1154916, String.Format("{0}\t{1}", City.Governor != null ? City.Governor.Name : "somebody", City.PostedOn.ToShortDateString()), 0, false, false); // Posted by ~1_NAME~ on ~2_date~
 
             AddHtml(25, 115, 500, 20, City.Headline, false, false);
             AddHtml(25, 195, 500, 150, City.Body, false, false);
@@ -1148,7 +1150,7 @@ namespace Server.Engines.CityLoyalty
 
             if (id >= 0 && id < CityLoyaltySystem.Cities.Count)
             {
-                SendGump(new CityInfoGump(User, CityLoyaltySystem.Cities[id]));
+                BaseGump.SendGump(new CityInfoGump(User, CityLoyaltySystem.Cities[id]));
             }
         }
     }
@@ -1169,7 +1171,7 @@ namespace Server.Engines.CityLoyalty
             AddPage(page);
 
             AddBackground(0, 0, 500, 400, 5054);
-            AddHtml(0, 15, 400, 20, string.Format("<center>City Info - {0}</center>", City.Definition.Name), false, false);
+            AddHtml(0, 15, 400, 20, String.Format("<center>City Info - {0}</center>", City.Definition.Name), false, false);
 
             AddLabel(10, 35, 0, "Player");
             AddLabel(150, 35, 0, "Love");
@@ -1192,10 +1194,10 @@ namespace Server.Engines.CityLoyalty
                     continue;
 
                 pageIndex++;
-                AddHtml(10, 60 + (pageIndex * 25), 140, 20, string.Format("{0}{1}", entry.Player != null ? entry.Player.Name : "Unknown", entry.IsCitizen ? "(Citizen)" : ""), false, false);
+                AddHtml(10, 60 + (pageIndex * 25), 140, 20, String.Format("{0}{1}", entry.Player != null ? entry.Player.Name : "Unknown", entry.IsCitizen ? "(Citizen)" : ""), false, false);
                 AddHtml(150, 60 + (pageIndex * 25), 75, 20, entry.Love.ToString(), false, false);
                 AddHtml(225, 60 + (pageIndex * 25), 75, 20, entry.Hate.ToString(), false, false);
-                AddHtml(300, 60 + (pageIndex * 25), 150, 20, string.IsNullOrEmpty(entry.CustomTitle) ? "" : entry.CustomTitle, false, false);
+                AddHtml(300, 60 + (pageIndex * 25), 150, 20, String.IsNullOrEmpty(entry.CustomTitle) ? "" : entry.CustomTitle, false, false);
                 AddButton(450, 60 + (pageIndex * 25), 4005, 4007, i + 100, GumpButtonType.Reply, 0);
 
                 if (pageIndex >= 11 && i < City.PlayerTable.Count - 1)
@@ -1221,7 +1223,7 @@ namespace Server.Engines.CityLoyalty
 
             if (info.ButtonID == 1)
             {
-                SendGump(new SystemInfoGump(User));
+                BaseGump.SendGump(new SystemInfoGump(User));
                 return;
             }
 

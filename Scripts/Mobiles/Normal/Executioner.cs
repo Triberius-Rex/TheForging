@@ -1,28 +1,29 @@
+using System;
 using Server.Items;
 
-namespace Server.Mobiles
-{
-    public class Executioner : BaseCreature
-    {
-        [Constructable]
+namespace Server.Mobiles 
+{ 
+    public class Executioner : BaseCreature 
+    { 
+        [Constructable] 
         public Executioner()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
-        {
-            SpeechHue = Utility.RandomDyedHue();
-            Title = "the executioner";
-            Hue = Utility.RandomSkinHue();
+        { 
+            SpeechHue = Utility.RandomDyedHue(); 
+            Title = "the executioner"; 
+            Hue = Utility.RandomSkinHue(); 
 
-            if (Female = Utility.RandomBool())
-            {
-                Body = 0x191;
-                Name = NameList.RandomName("female");
-                SetWearable(new Skirt(), Utility.RandomRedHue(), 1);
+            if (Female = Utility.RandomBool()) 
+            { 
+                Body = 0x191; 
+                Name = NameList.RandomName("female"); 
+                AddItem(new Skirt(Utility.RandomRedHue())); 
             }
-            else
-            {
-                Body = 0x190;
-                Name = NameList.RandomName("male");
-				SetWearable(new ShortPants(), Utility.RandomRedHue(), 1);
+            else 
+            { 
+                Body = 0x190; 
+                Name = NameList.RandomName("male"); 
+                AddItem(new ShortPants(Utility.RandomRedHue())); 
             }
 
             SetStr(386, 400);
@@ -51,22 +52,30 @@ namespace Server.Mobiles
             Fame = 5000;
             Karma = -5000;
 
-			SetWearable(new ThighBoots(), Utility.RandomRedHue(), 1);
-			SetWearable(new Surcoat(), Utility.RandomRedHue(), 1);
-			SetWearable(new ExecutionersAxe(), dropChance: 1);
+            VirtualArmor = 40;
+
+            AddItem(new ThighBoots(Utility.RandomRedHue())); 
+            AddItem(new Surcoat(Utility.RandomRedHue()));    
+            AddItem(new ExecutionersAxe());
 
             Utility.AssignRandomHair(this);
         }
 
         public Executioner(Serial serial)
             : base(serial)
-        {
+        { 
         }
 
-        public override bool AlwaysMurderer => true;
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public bool BlockReflect { get; set; }
-
+        
         public override int Damage(int amount, Mobile from, bool informMount, bool checkDisrupt)
         {
             int dam = base.Damage(amount, from, informMount, checkDisrupt);
@@ -76,7 +85,7 @@ namespace Server.Mobiles
                 BlockReflect = true;
                 AOS.Damage(from, this, dam, 0, 0, 0, 0, 0, 0, 100);
                 BlockReflect = false;
-
+                
                 from.PlaySound(0x1F1);
             }
 
@@ -89,18 +98,18 @@ namespace Server.Mobiles
             AddLoot(LootPack.Meager);
         }
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+        public override void Serialize(GenericWriter writer) 
+        { 
+            base.Serialize(writer); 
 
-            writer.Write(0); // version 
+            writer.Write((int)0); // version 
         }
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
+        public override void Deserialize(GenericReader reader) 
+        { 
+            base.Deserialize(reader); 
 
-            int version = reader.ReadInt();
+            int version = reader.ReadInt(); 
         }
     }
 }

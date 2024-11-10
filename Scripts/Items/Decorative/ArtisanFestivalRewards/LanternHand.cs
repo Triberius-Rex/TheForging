@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class LanternHand : BaseLight, IFlipable
     {
-        public override int LabelNumber => 1011221;  // lantern
+        public override int LabelNumber { get { return 1011221; } } // lantern
 
-        public override int LitItemID => ItemID == 0xA471 ? 0xA472 : 0xA476;
-        public override int UnlitItemID => ItemID == 0xA472 ? 0xA471 : 0xA475;
+        public override int LitItemID { get { return ItemID == 0xA471 ? 0xA472 : 0xA476; } }
+        public override int UnlitItemID { get { return ItemID == 0xA472 ? 0xA471 : 0xA475; } }
 
-        public int NorthID => Burning ? 0xA472 : 0xA471;
-        public int WestID => Burning ? 0xA476 : 0xA475;
+        public int NorthID { get { return Burning ? 0xA472 : 0xA471; } }
+        public int WestID { get { return Burning ? 0xA476 : 0xA475; } }
 
         [Constructable]
         public LanternHand()
@@ -33,7 +35,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

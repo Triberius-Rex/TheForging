@@ -1,3 +1,4 @@
+using System;
 using Server.Commands;
 using Server.Commands.Generic;
 
@@ -18,11 +19,11 @@ namespace Server.Items
         public ToggleItem(int inactiveItemID, int activeItemID, bool playersCanToggle)
             : base(inactiveItemID)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_InactiveItemID = inactiveItemID;
-            m_ActiveItemID = activeItemID;
-            m_PlayersCanToggle = playersCanToggle;
+            this.m_InactiveItemID = inactiveItemID;
+            this.m_ActiveItemID = activeItemID;
+            this.m_PlayersCanToggle = playersCanToggle;
         }
 
         public ToggleItem(Serial serial)
@@ -35,11 +36,11 @@ namespace Server.Items
         {
             get
             {
-                return m_InactiveItemID;
+                return this.m_InactiveItemID;
             }
             set
             {
-                m_InactiveItemID = value;
+                this.m_InactiveItemID = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -47,11 +48,11 @@ namespace Server.Items
         {
             get
             {
-                return m_ActiveItemID;
+                return this.m_ActiveItemID;
             }
             set
             {
-                m_ActiveItemID = value;
+                this.m_ActiveItemID = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -59,11 +60,11 @@ namespace Server.Items
         {
             get
             {
-                return m_PlayersCanToggle;
+                return this.m_PlayersCanToggle;
             }
             set
             {
-                m_PlayersCanToggle = value;
+                this.m_PlayersCanToggle = value;
             }
         }
         public static void Initialize()
@@ -75,12 +76,12 @@ namespace Server.Items
         {
             if (from.AccessLevel >= AccessLevel.GameMaster)
             {
-                Toggle();
+                this.Toggle();
             }
-            else if (m_PlayersCanToggle)
+            else if (this.m_PlayersCanToggle)
             {
-                if (from.InRange(GetWorldLocation(), 1))
-                    Toggle();
+                if (from.InRange(this.GetWorldLocation(), 1))
+                    this.Toggle();
                 else
                     from.SendLocalizedMessage(500446); // That is too far away.
             }
@@ -88,19 +89,19 @@ namespace Server.Items
 
         public void Toggle()
         {
-            ItemID = (ItemID == m_ActiveItemID) ? m_InactiveItemID : m_ActiveItemID;
-            Visible = (ItemID != 0x1);
+            this.ItemID = (this.ItemID == this.m_ActiveItemID) ? this.m_InactiveItemID : this.m_ActiveItemID;
+            this.Visible = (this.ItemID != 0x1);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_InactiveItemID);
-            writer.Write(m_ActiveItemID);
-            writer.Write(m_PlayersCanToggle);
+            writer.Write(this.m_InactiveItemID);
+            writer.Write(this.m_ActiveItemID);
+            writer.Write(this.m_PlayersCanToggle);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -109,21 +110,21 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_InactiveItemID = reader.ReadInt();
-            m_ActiveItemID = reader.ReadInt();
-            m_PlayersCanToggle = reader.ReadBool();
+            this.m_InactiveItemID = reader.ReadInt();
+            this.m_ActiveItemID = reader.ReadInt();
+            this.m_PlayersCanToggle = reader.ReadBool();
         }
 
         public class ToggleCommand : BaseCommand
         {
             public ToggleCommand()
             {
-                AccessLevel = AccessLevel.GameMaster;
-                Supports = CommandSupport.AllItems;
-                Commands = new string[] { "Toggle" };
-                ObjectTypes = ObjectTypes.Items;
-                Usage = "Toggle";
-                Description = "Toggles a targeted ToggleItem.";
+                this.AccessLevel = AccessLevel.GameMaster;
+                this.Supports = CommandSupport.AllItems;
+                this.Commands = new string[] { "Toggle" };
+                this.ObjectTypes = ObjectTypes.Items;
+                this.Usage = "Toggle";
+                this.Description = "Toggles a targeted ToggleItem.";
             }
 
             public override void Execute(CommandEventArgs e, object obj)
@@ -131,11 +132,11 @@ namespace Server.Items
                 if (obj is ToggleItem)
                 {
                     ((ToggleItem)obj).Toggle();
-                    AddResponse("The item has been toggled.");
+                    this.AddResponse("The item has been toggled.");
                 }
                 else
                 {
-                    LogFailure("That is not a ToggleItem.");
+                    this.LogFailure("That is not a ToggleItem.");
                 }
             }
         }

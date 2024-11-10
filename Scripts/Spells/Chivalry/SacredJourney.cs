@@ -1,9 +1,9 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Chivalry
 {
@@ -29,12 +29,48 @@ namespace Server.Spells.Chivalry
             m_Book = book;
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.5);
-        public override double RequiredSkill => 15.0;
-        public override int RequiredMana => 10;
-        public override int RequiredTithing => 15;
-        public override int MantraNumber => 1060727;// Sanctum Viatas
-        public override bool BlocksMovement => false;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 15.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int RequiredTithing
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int MantraNumber
+        {
+            get
+            {
+                return 1060727;
+            }
+        }// Sanctum Viatas
+        public override bool BlocksMovement
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void OnCast()
         {
             if (m_Entry == null)
@@ -60,14 +96,9 @@ namespace Server.Spells.Chivalry
             if (!base.CheckCast())
                 return false;
 
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-            else if (Engines.CityLoyalty.CityTradeSystem.HasTrade(Caster))
-            {
-                Caster.SendLocalizedMessage(1151733); // You cannot do that while carrying a Trade Order.
                 return false;
             }
             else if (Caster.Criminal)
@@ -111,11 +142,11 @@ namespace Server.Spells.Chivalry
 
         public void Effect(Point3D loc, Map map, bool checkMulti, bool isboatkey = false)
         {
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
             }
-            else if (map == null)
+            else if (map == null || (!Core.AOS && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005569); // You can not recall to another facet.
             }
@@ -183,7 +214,7 @@ namespace Server.Spells.Chivalry
             private readonly SacredJourneySpell m_Owner;
 
             public InternalTarget(SacredJourneySpell owner)
-                : base(10, false, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.None)
             {
                 m_Owner = owner;
             }

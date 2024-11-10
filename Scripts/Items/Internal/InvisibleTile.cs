@@ -1,10 +1,15 @@
+using System;
+using Server;
 using Server.Network;
 
 namespace Server.Items
 {
     public class InvisibleTile : Item
     {
-        public override string DefaultName => "Invisible Tile";
+        public override string DefaultName
+        {
+            get { return "Invisible Tile"; }
+        }
 
         [Constructable]
         public InvisibleTile()
@@ -34,7 +39,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -71,7 +76,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)

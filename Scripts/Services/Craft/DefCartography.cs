@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 using System.Collections.Generic;
 
 namespace Server.Engines.Craft
@@ -27,8 +27,20 @@ namespace Server.Engines.Craft
                 return m_CraftSystem;
             }
         }
-        public override SkillName MainSkill => SkillName.Cartography;
-        public override int GumpTitleNumber => 1044008;
+        public override SkillName MainSkill
+        {
+            get
+            {
+                return SkillName.Cartography;
+            }
+        }
+        public override int GumpTitleNumber
+        {
+            get
+            {
+                return 1044008;
+            }// <CENTER>CARTOGRAPHY MENU</CENTER>
+        }
         public override double GetChanceAtMin(CraftItem item)
         {
             return 0.0; // 0%
@@ -80,10 +92,10 @@ namespace Server.Engines.Craft
 
         public override void InitCraftList()
         {
-            AddCraft(typeof(LocalMap), 1044448, 1015230, 10.0, 70.0, typeof(BlankMap), 1044449, 1, 1044450);
-            AddCraft(typeof(CityMap), 1044448, 1015231, 25.0, 85.0, typeof(BlankMap), 1044449, 1, 1044450);
-            AddCraft(typeof(SeaChart), 1044448, 1015232, 35.0, 95.0, typeof(BlankMap), 1044449, 1, 1044450);
-            AddCraft(typeof(WorldMap), 1044448, 1015233, 39.5, 99.5, typeof(BlankMap), 1044449, 1, 1044450);
+            this.AddCraft(typeof(LocalMap), 1044448, 1015230, 10.0, 70.0, typeof(BlankMap), 1044449, 1, 1044450);
+            this.AddCraft(typeof(CityMap), 1044448, 1015231, 25.0, 85.0, typeof(BlankMap), 1044449, 1, 1044450);
+            this.AddCraft(typeof(SeaChart), 1044448, 1015232, 35.0, 95.0, typeof(BlankMap), 1044449, 1, 1044450);
+            this.AddCraft(typeof(WorldMap), 1044448, 1015233, 39.5, 99.5, typeof(BlankMap), 1044449, 1, 1044450);
 
             int index = AddCraft(typeof(TatteredWallMapSouth), 1044448, 1072891, 90.0, 150.0, typeof(TreasureMap), 1073494, 10, 1073495);
             AddRes(index, typeof(TreasureMap), 1073498, 5, 1073499);
@@ -131,25 +143,25 @@ namespace Server.Engines.Craft
                             }
                             break;
                         case 3:
-                            if (map.CompletedBy == from)
-                            {
+                             if (map.CompletedBy == from)
+                             {
                                 three--;
                                 toConsume.Add(map);
-                            }
+                             }
                             break;
                         case 4:
-                            if (map.CompletedBy == from)
-                            {
+                             if (map.CompletedBy == from)
+                             {
                                 four--;
                                 toConsume.Add(map);
-                            }
+                             }
                             break;
                         case 5:
-                            if (map.CompletedBy == from)
-                            {
+                             if (map.CompletedBy == from)
+                             {
                                 five--;
                                 toConsume.Add(map);
-                            }
+                             }
                             break;
                     }
                 }

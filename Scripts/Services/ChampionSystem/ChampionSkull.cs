@@ -47,8 +47,10 @@ namespace Server.Items
                 case ChampionSkullType.Pain:
                     Hue = 0x035;
                     break;
-                    //Dupre Skull
-                case ChampionSkullType.Lust: Hue = 0x455; break;
+                    //Soth Skull
+                case ChampionSkullType.Despair: 
+                    Hue = 0x455; 
+                    break;
             }
         }
 

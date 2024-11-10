@@ -1,4 +1,5 @@
-﻿using Server.Targeting;
+﻿using System;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -16,9 +17,9 @@ namespace Server.Items
         public DawnsMusicGear(MusicName music)
             : base(0x1053)
         {
-            m_Music = music;
+            this.m_Music = music;
 
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public DawnsMusicGear(Serial serial)
@@ -26,24 +27,42 @@ namespace Server.Items
         {
         }
 
-        public static DawnsMusicGear RandomCommon => new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Common));
-        public static DawnsMusicGear RandomUncommon => new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Uncommon));
-        public static DawnsMusicGear RandomRare => new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Rare));
+        public static DawnsMusicGear RandomCommon
+        {
+            get
+            {
+                return new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Common));
+            }
+        }
+        public static DawnsMusicGear RandomUncommon
+        {
+            get
+            {
+                return new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Uncommon));
+            }
+        }
+        public static DawnsMusicGear RandomRare
+        {
+            get
+            {
+                return new DawnsMusicGear(DawnsMusicBox.RandomTrack(DawnsMusicRarity.Rare));
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public MusicName Music
         {
             get
             {
-                return m_Music;
+                return this.m_Music;
             }
             set
             {
-                m_Music = value;
+                this.m_Music = value;
             }
         }
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            DawnsMusicInfo info = DawnsMusicBox.GetInfo(m_Music);
+            DawnsMusicInfo info = DawnsMusicBox.GetInfo(this.m_Music);
 
             if (info != null)
             {
@@ -69,9 +88,9 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(1); // version
-
-            writer.Write((int)m_Music);
+            writer.WriteEncodedInt((int)1); // version
+			
+            writer.Write((int)this.m_Music);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -79,29 +98,29 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            switch (version)
+			
+            switch ( version )
             {
                 case 1:
                     {
-                        m_Music = (MusicName)reader.ReadInt();
+                        this.m_Music = (MusicName)reader.ReadInt();
                         break;
                     }
             }
-
+			
             if (version == 0) // Music wasn't serialized in version 0, pick a new track of random rarity
             {
                 DawnsMusicRarity rarity;
                 double rand = Utility.RandomDouble();
-
+				
                 if (rand < 0.025)
                     rarity = DawnsMusicRarity.Rare;
                 else if (rand < 0.225)
                     rarity = DawnsMusicRarity.Uncommon;
                 else
                     rarity = DawnsMusicRarity.Common;
-
-                m_Music = DawnsMusicBox.RandomTrack(rarity);
+				
+                this.m_Music = DawnsMusicBox.RandomTrack(rarity);
             }
         }
 
@@ -111,24 +130,24 @@ namespace Server.Items
             public InternalTarget(DawnsMusicGear gear)
                 : base(2, false, TargetFlags.None)
             {
-                m_Gear = gear;
+                this.m_Gear = gear;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (m_Gear == null || m_Gear.Deleted)
+                if (this.m_Gear == null || this.m_Gear.Deleted)
                     return;
 
                 DawnsMusicBox box = targeted as DawnsMusicBox;
 
                 if (box != null)
                 {
-                    if (!box.Tracks.Contains(m_Gear.Music))
+                    if (!box.Tracks.Contains(this.m_Gear.Music))
                     {
-                        box.Tracks.Add(m_Gear.Music);
+                        box.Tracks.Add(this.m_Gear.Music);
                         box.InvalidateProperties();
 
-                        m_Gear.Delete();
+                        this.m_Gear.Delete();
 
                         from.SendLocalizedMessage(1071961); // This song has been added to the musicbox.
                     }

@@ -1,6 +1,6 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -37,36 +37,52 @@ namespace Server.Items
 
         public static bool ApplyDefense(Mobile m)
         {
-            if (m_DefenseTable.ContainsKey(m))
+            if (!Core.HS)
             {
-                DefenseTimer timer = m_DefenseTable[m];
+                if (IsUnderDefenseEffect(m))
+                    return false;
 
-                if (timer != null)
-                {
-                    timer.Stop();
-                    timer.DefenseMalus = 0;
-                }
-            }
+                m_DefenseTable[m] = new DefenseTimer(m, 25);
+                BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.HitLowerDefense, 1151313, 1151286, DefenseEffectDuration, m, "35"));
+                m.SendLocalizedMessage(1062318); // Your defense chance has been reduced!
 
-            int malus;
+                m.Delta(MobileDelta.WeaponDamage);
 
-            if (m is PlayerMobile)
-            {
-                malus = 45 + BaseArmor.GetRefinedDefenseChance(m);
-                malus = malus - (int)(malus * .35);
+                return true;
             }
             else
             {
-                malus = 25;
+                if (m_DefenseTable.ContainsKey(m))
+                {
+                    var timer = m_DefenseTable[m];
+
+                    if (timer != null)
+                    {
+                        timer.Stop();
+                        timer.DefenseMalus = 0;
+                    }
+                }
+
+                int malus;
+
+                if (m is PlayerMobile)
+                {
+                    malus = 45 + BaseArmor.GetRefinedDefenseChance(m);
+                    malus = malus - (int)((double)malus * .35);
+                }
+                else
+                {
+                    malus = 25;
+                }
+
+                m_DefenseTable[m] = new DefenseTimer(m, malus);
+                BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.HitLowerDefense, 1151313, 1151286, DefenseEffectDuration, m, malus.ToString()));
+                m.SendLocalizedMessage(1062318); // Your defense chance has been reduced!
+
+                m.Delta(MobileDelta.WeaponDamage);
+
+                return true;
             }
-
-            m_DefenseTable[m] = new DefenseTimer(m, malus);
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.HitLowerDefense, 1151313, 1151286, DefenseEffectDuration, m, malus.ToString()));
-            m.SendLocalizedMessage(1062318); // Your defense chance has been reduced!
-
-            m.Delta(MobileDelta.WeaponDamage);
-
-            return true;
         }
 
         private static void RemoveAttack(Mobile m)

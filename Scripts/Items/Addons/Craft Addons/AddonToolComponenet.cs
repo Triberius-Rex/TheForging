@@ -1,9 +1,10 @@
-using Server.ContextMenus;
+using System;
+using Server;
 using Server.Engines.Craft;
+using Server.ContextMenus;
+using System.Collections.Generic;
 using Server.Multis;
 using Server.Network;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -13,14 +14,14 @@ namespace Server.Items
         private int _LabelNumber;
         private bool _TurnedOn;
 
-        public override CraftSystem CraftSystem => _CraftSystem;
-        public override bool BreakOnDepletion => false;
-        public override bool ForceShowProperties => true;
-        public override int LabelNumber => _LabelNumber;
+        public override CraftSystem CraftSystem { get { return _CraftSystem; } }
+        public override bool BreakOnDepletion { get { return false; } }
+        public override bool ForceShowProperties { get { return true; } }
+        public override int LabelNumber { get { return _LabelNumber; } }
 
-        public virtual bool NeedsWall => false;
-        public virtual int MaxUses => 5000;
-        public virtual Point3D WallPosition => Point3D.Zero;
+        public virtual bool NeedsWall { get { return false; } }
+        public virtual int MaxUses { get { return 5000; } }
+        public virtual Point3D WallPosition { get { return Point3D.Zero; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public CraftAddon Addon { get; set; }
@@ -104,24 +105,24 @@ namespace Server.Items
             {
                 list.Add(new SimpleContextMenuEntry(from, 1155742, m => // Toggle: On/Off
                 {
-                    if (_TurnedOn)
-                    {
-                        TurnedOn = false;
-
-                        if (InactiveMessage != 0)
-                            PrivateOverheadMessage(MessageType.Regular, 0x3B2, InactiveMessage, from.NetState);
-                    }
-                    else
-                    {
-                        TurnedOn = true;
-
-                        if (ActiveMessage != 0)
+                        if (_TurnedOn)
                         {
-                            PrivateOverheadMessage(MessageType.Regular, 0x3B2, ActiveMessage, from.NetState);
-                            from.PlaySound(84);
+                            TurnedOn = false;
+
+                            if (InactiveMessage != 0)
+                                PrivateOverheadMessage(MessageType.Regular, 0x3B2, InactiveMessage, from.NetState);
                         }
-                    }
-                }, 8));
+                        else
+                        {
+                            TurnedOn = true;
+
+                            if (ActiveMessage != 0)
+                            {
+                                PrivateOverheadMessage(MessageType.Regular, 0x3B2, ActiveMessage, from.NetState);
+                                from.PlaySound(84);
+                            }
+                        }
+                    }, 8));
 
                 SetSecureLevelEntry.AddTo(from, Addon, list);
             }
@@ -187,7 +188,7 @@ namespace Server.Items
             {
                 if (dropped is ITool && !(dropped is BaseRunicTool))
                 {
-                    ITool tool = dropped as ITool;
+                    var tool = dropped as ITool;
 
                     if (tool.CraftSystem == _CraftSystem)
                     {
@@ -236,7 +237,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write(InactiveMessage);
             writer.Write(ActiveMessage);
@@ -271,7 +272,7 @@ namespace Server.Items
                         TurnedOn = reader.ReadBool();
                         break;
                     }
-            }
+            }            
 
             if (Addon != null)
                 Addon.OnCraftComponentLoaded(this);

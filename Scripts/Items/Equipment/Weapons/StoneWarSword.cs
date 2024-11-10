@@ -1,6 +1,9 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x900, 0x4071)]
+    // Based off a VikingSword
+    [FlipableAttribute(0x900, 0x4071)]
     public class StoneWarSword : BaseSword
     {
         [Constructable]
@@ -15,21 +18,119 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.ArmorIgnore;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.ParalyzingBlow;
-        public override int StrengthReq => 40;
-        public override int MinDamage => 15;
-        public override int MaxDamage => 19;
-        public override float Speed => 3.75f;
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ArmorIgnore;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ParalyzingBlow;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 19;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 28;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 3.75f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 34;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int DefHitSound
+        {
+            get
+            {
+                return 0x237;
+            }
+        }
+        public override int DefMissSound
+        {
+            get
+            {
+                return 0x23A;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 100;
+            }
+        }
 
-        public override int DefMissSound => 0x23A;
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 100;
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+        public override bool CanBeWornByGargoyles { get { return true; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -12,7 +13,7 @@ namespace Server.Items
 
     public class HolidayGiftToken2018 : Item, IRewardOption
     {
-        public override int LabelNumber => 1158831;  // 2018 Holiday Gift Token
+        public override int LabelNumber { get { return 1158831; } } // 2018 Holiday Gift Token
 
         public HolidayGift2018 Gift { get; set; }
 
@@ -64,10 +65,8 @@ namespace Server.Items
         {
             GiftBox box = new GiftBox();
 
-            Item gift = new GingerBreadCookie
-            {
-                LootType = LootType.Regular
-            };
+            Item gift = new GingerBreadCookie();
+            gift.LootType = LootType.Regular;
             box.DropItem(gift);
 
             if (Utility.Random(100) < 60)
@@ -75,7 +74,7 @@ namespace Server.Items
             else
                 box.DropItem(new Poinsettia(1154));
 
-            switch (Gift)
+            switch(Gift)
             {
                 case HolidayGift2018.RecipeBook:
                     {

@@ -1,5 +1,7 @@
-using Server.Items;
+using System;
+using Server;
 using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Network
 {
@@ -7,7 +9,7 @@ namespace Server.Network
     {
         public static void Initialize()
         {
-            PacketHandlers.RegisterEncoded(0x1E, true, EquipLastWeaponRequest);
+            PacketHandlers.RegisterEncoded(0x1E, true, new OnEncodedPacketReceive(EquipLastWeaponRequest));
         }
 
         public static void EquipLastWeaponRequest(NetState state, IEntity e, EncodedReader reader)

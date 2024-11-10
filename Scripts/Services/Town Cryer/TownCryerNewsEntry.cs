@@ -1,3 +1,4 @@
+using Server;
 using System;
 
 namespace Server.Services.TownCryer

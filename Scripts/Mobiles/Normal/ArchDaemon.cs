@@ -1,3 +1,7 @@
+using System;
+using Server.Factions;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a arch daemon corpse")]
@@ -7,39 +11,41 @@ namespace Server.Mobiles
         public ArchDaemon()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "an arch deamon";
-            Body = 40;
-            Hue = 1755;
-            BaseSoundID = 357;
+            this.Name = "an Arch Deamon";
+            this.Body = 40;
+            this.Hue = 1755;
+            this.BaseSoundID = 357;
 
-            SetStr(986, 1185);
-            SetDex(177, 255);
-            SetInt(151, 250);
+            this.SetStr(986, 1185);
+            this.SetDex(177, 255);
+            this.SetInt(151, 250);
 
-            SetHits(592, 711);
+            this.SetHits(592, 711);
 
-            SetDamage(22, 29);
+            this.SetDamage(22, 29);
 
-            SetDamageType(ResistanceType.Physical, 50);
-            SetDamageType(ResistanceType.Fire, 25);
-            SetDamageType(ResistanceType.Energy, 25);
+            this.SetDamageType(ResistanceType.Physical, 50);
+            this.SetDamageType(ResistanceType.Fire, 25);
+            this.SetDamageType(ResistanceType.Energy, 25);
 
-            SetResistance(ResistanceType.Physical, 65, 80);
-            SetResistance(ResistanceType.Fire, 60, 80);
-            SetResistance(ResistanceType.Cold, 50, 60);
-            SetResistance(ResistanceType.Poison, 100);
-            SetResistance(ResistanceType.Energy, 40, 50);
+            this.SetResistance(ResistanceType.Physical, 65, 80);
+            this.SetResistance(ResistanceType.Fire, 60, 80);
+            this.SetResistance(ResistanceType.Cold, 50, 60);
+            this.SetResistance(ResistanceType.Poison, 100);
+            this.SetResistance(ResistanceType.Energy, 40, 50);
 
-            SetSkill(SkillName.Anatomy, 25.1, 50.0);
-            SetSkill(SkillName.EvalInt, 90.1, 100.0);
-            SetSkill(SkillName.Magery, 95.5, 100.0);
-            SetSkill(SkillName.Meditation, 25.1, 50.0);
-            SetSkill(SkillName.MagicResist, 100.5, 150.0);
-            SetSkill(SkillName.Tactics, 90.1, 100.0);
-            SetSkill(SkillName.Wrestling, 90.1, 100.0);
+            this.SetSkill(SkillName.Anatomy, 25.1, 50.0);
+            this.SetSkill(SkillName.EvalInt, 90.1, 100.0);
+            this.SetSkill(SkillName.Magery, 95.5, 100.0);
+            this.SetSkill(SkillName.Meditation, 25.1, 50.0);
+            this.SetSkill(SkillName.MagicResist, 100.5, 150.0);
+            this.SetSkill(SkillName.Tactics, 90.1, 100.0);
+            this.SetSkill(SkillName.Wrestling, 90.1, 100.0);
 
-            Fame = 24000;
-            Karma = -24000;
+            this.Fame = 24000;
+            this.Karma = -24000;
+
+            this.VirtualArmor = 90;
         }
 
         public ArchDaemon(Serial serial)
@@ -47,23 +53,73 @@ namespace Server.Mobiles
         {
         }
 
-        public override double DispelDifficulty => 125.0;
-        public override double DispelFocus => 45.0;
-        public override bool CanRummageCorpses => true;
-        public override Poison PoisonImmune => Poison.Regular;
-        public override int TreasureMapLevel => 4;
-        public override int Meat => 1;
+        public override double DispelDifficulty
+        {
+            get
+            {
+                return 125.0;
+            }
+        }
+        public override double DispelFocus
+        {
+            get
+            {
+                return 45.0;
+            }
+        }
+        public override Faction FactionAllegiance
+        {
+            get
+            {
+                return Shadowlords.Instance;
+            }
+        }
+        public override Ethics.Ethic EthicAllegiance
+        {
+            get
+            {
+                return Ethics.Ethic.Evil;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Regular;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Rich);
-            AddLoot(LootPack.Average, 2);
-            AddLoot(LootPack.MedScrolls, 2);
+            this.AddLoot(LootPack.Rich);
+            this.AddLoot(LootPack.Average, 2);
+            this.AddLoot(LootPack.MedScrolls, 2);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

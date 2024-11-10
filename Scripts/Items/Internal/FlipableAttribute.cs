@@ -1,7 +1,7 @@
-using Server.Commands;
-using Server.Targeting;
 using System;
 using System.Reflection;
+using Server.Commands;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -9,7 +9,7 @@ namespace Server.Items
     {
         public static void Initialize()
         {
-            CommandSystem.Register("Flip", AccessLevel.GameMaster, Flip_OnCommand);
+            CommandSystem.Register("Flip", AccessLevel.GameMaster, new CommandEventHandler(Flip_OnCommand));
         }
 
         [Usage("Flip")]
@@ -55,6 +55,9 @@ namespace Server.Items
     [AttributeUsage(AttributeTargets.Class)]
     public class DynamicFlipingAttribute : Attribute
     {
+        public DynamicFlipingAttribute()
+        {
+        }
     }
 
     [AttributeUsage(AttributeTargets.Class)]
@@ -68,13 +71,19 @@ namespace Server.Items
 
         public FlipableAttribute(params int[] itemIDs)
         {
-            m_ItemIDs = itemIDs;
+            this.m_ItemIDs = itemIDs;
         }
 
-        public int[] ItemIDs => m_ItemIDs;
+        public int[] ItemIDs
+        {
+            get
+            {
+                return this.m_ItemIDs;
+            }
+        }
         public virtual void Flip(Item item)
         {
-            if (m_ItemIDs == null)
+            if (this.m_ItemIDs == null)
             {
                 try
                 {
@@ -82,27 +91,26 @@ namespace Server.Items
                     if (flipMethod != null)
                         flipMethod.Invoke(item, new object[0]);
                 }
-                catch (Exception e)
+                catch
                 {
-                    Diagnostics.ExceptionLogging.LogException(e);
                 }
             }
             else
             {
                 int index = 0;
-                for (int i = 0; i < m_ItemIDs.Length; i++)
+                for (int i = 0; i < this.m_ItemIDs.Length; i++)
                 {
-                    if (item.ItemID == m_ItemIDs[i])
+                    if (item.ItemID == this.m_ItemIDs[i])
                     {
                         index = i + 1;
                         break;
                     }
                 }
 
-                if (index > m_ItemIDs.Length - 1)
+                if (index > this.m_ItemIDs.Length - 1)
                     index = 0;
 
-                item.ItemID = m_ItemIDs[index];
+                item.ItemID = this.m_ItemIDs[index];
             }
         }
     }

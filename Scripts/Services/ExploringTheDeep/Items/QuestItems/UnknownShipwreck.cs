@@ -1,26 +1,27 @@
-﻿using Server.Network;
+﻿using System;
+using Server.Network;
 
 namespace Server.Items
 {
     public class UnknownShipwreck : BaseDecayingItem
     {
-        public override int LabelNumber => 1154269;  // Map to an Unknown Shipwreck
+        public override int LabelNumber { get { return 1154269; } } // Map to an Unknown Shipwreck
 
         [Constructable]
         public UnknownShipwreck() : base(0x14ED)
         {
-            Weight = 1.0;
-            LootType = LootType.Blessed;
+            this.Weight = 1.0;
+            this.LootType = LootType.Blessed;
         }
-
-        public override void GetProperties(ObjectPropertyList list)
+		
+		public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
             list.Add(1072351); // Quest Item
         }
 
-        public override int Lifespan => 3600;
+        public override int Lifespan { get { return 3600; } }
 
         public UnknownShipwreck(Serial serial) : base(serial)
         {
@@ -40,7 +41,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

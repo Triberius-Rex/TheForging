@@ -1,9 +1,12 @@
-﻿namespace Server.Items
+﻿using Server;
+using System;
+
+namespace Server.Items
 {
     public class AntiqueWeddingDress : PlainDress
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1149958;
+	{
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1149958; } }
 
         [Constructable]
         public AntiqueWeddingDress()
@@ -19,7 +22,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

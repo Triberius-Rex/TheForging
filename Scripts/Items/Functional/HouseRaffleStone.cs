@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text;
 using Server.Accounting;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Network;
 using Server.Regions;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 
 namespace Server.Items
 {
@@ -31,46 +31,64 @@ namespace Server.Items
         private readonly DateTime m_Date;
         public RaffleEntry(Mobile from)
         {
-            m_From = from;
+            this.m_From = from;
 
-            if (m_From.NetState != null)
-                m_Address = m_From.NetState.Address;
+            if (this.m_From.NetState != null)
+                this.m_Address = this.m_From.NetState.Address;
             else
-                m_Address = IPAddress.None;
+                this.m_Address = IPAddress.None;
 
-            m_Date = DateTime.UtcNow;
+            this.m_Date = DateTime.UtcNow;
         }
 
         public RaffleEntry(GenericReader reader, int version)
         {
-            switch (version)
+            switch ( version )
             {
                 case 3: // HouseRaffleStone version changes
                 case 2:
                 case 1:
                 case 0:
                     {
-                        m_From = reader.ReadMobile();
-                        m_Address = Utility.Intern(reader.ReadIPAddress());
-                        m_Date = reader.ReadDateTime();
+                        this.m_From = reader.ReadMobile();
+                        this.m_Address = Utility.Intern(reader.ReadIPAddress());
+                        this.m_Date = reader.ReadDateTime();
 
                         break;
                     }
             }
         }
 
-        public Mobile From => m_From;
-        public IPAddress Address => m_Address;
-        public DateTime Date => m_Date;
+        public Mobile From
+        {
+            get
+            {
+                return this.m_From;
+            }
+        }
+        public IPAddress Address
+        {
+            get
+            {
+                return this.m_Address;
+            }
+        }
+        public DateTime Date
+        {
+            get
+            {
+                return this.m_Date;
+            }
+        }
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(m_From);
-            writer.Write(m_Address);
-            writer.Write(m_Date);
+            writer.Write(this.m_From);
+            writer.Write(this.m_Address);
+            writer.Write(this.m_Date);
         }
     }
 
-    [Flipable(0xEDD, 0xEDE)]
+    [FlipableAttribute(0xEDD, 0xEDE)]
     public class HouseRaffleStone : Item
     {
         public static readonly TimeSpan DefaultDuration = TimeSpan.FromDays(7.0);
@@ -94,22 +112,22 @@ namespace Server.Items
         public HouseRaffleStone()
             : base(0xEDD)
         {
-            m_Region = null;
-            m_Bounds = new Rectangle2D();
-            m_Facet = null;
+            this.m_Region = null;
+            this.m_Bounds = new Rectangle2D();
+            this.m_Facet = null;
 
-            m_Winner = null;
-            m_Deed = null;
+            this.m_Winner = null;
+            this.m_Deed = null;
 
-            m_State = HouseRaffleState.Inactive;
-            m_Started = DateTime.MinValue;
-            m_Duration = DefaultDuration;
-            m_ExpireAction = HouseRaffleExpireAction.None;
-            m_TicketPrice = DefaultTicketPrice;
+            this.m_State = HouseRaffleState.Inactive;
+            this.m_Started = DateTime.MinValue;
+            this.m_Duration = DefaultDuration;
+            this.m_ExpireAction = HouseRaffleExpireAction.None;
+            this.m_TicketPrice = DefaultTicketPrice;
 
-            m_Entries = new List<RaffleEntry>();
+            this.m_Entries = new List<RaffleEntry>();
 
-            Movable = false;
+            this.Movable = false;
 
             m_AllStones.Add(this);
         }
@@ -124,22 +142,22 @@ namespace Server.Items
         {
             get
             {
-                return m_State;
+                return this.m_State;
             }
             set
             {
-                if (m_State != value)
+                if (this.m_State != value)
                 {
                     if (value == HouseRaffleState.Active)
                     {
-                        m_Entries.Clear();
-                        m_Winner = null;
-                        m_Deed = null;
-                        m_Started = DateTime.UtcNow;
+                        this.m_Entries.Clear();
+                        this.m_Winner = null;
+                        this.m_Deed = null;
+                        this.m_Started = DateTime.UtcNow;
                     }
 
-                    m_State = value;
-                    InvalidateProperties();
+                    this.m_State = value;
+                    this.InvalidateProperties();
                 }
             }
         }
@@ -148,14 +166,14 @@ namespace Server.Items
         {
             get
             {
-                return m_Bounds;
+                return this.m_Bounds;
             }
             set
             {
-                m_Bounds = value;
+                this.m_Bounds = value;
 
-                InvalidateRegion();
-                InvalidateProperties();
+                this.InvalidateRegion();
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -163,14 +181,14 @@ namespace Server.Items
         {
             get
             {
-                return m_Facet;
+                return this.m_Facet;
             }
             set
             {
-                m_Facet = value;
+                this.m_Facet = value;
 
-                InvalidateRegion();
-                InvalidateProperties();
+                this.InvalidateRegion();
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -178,12 +196,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Winner;
+                return this.m_Winner;
             }
             set
             {
-                m_Winner = value;
-                InvalidateProperties();
+                this.m_Winner = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -191,11 +209,11 @@ namespace Server.Items
         {
             get
             {
-                return m_Deed;
+                return this.m_Deed;
             }
             set
             {
-                m_Deed = value;
+                this.m_Deed = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -203,12 +221,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Started;
+                return this.m_Started;
             }
             set
             {
-                m_Started = value;
-                InvalidateProperties();
+                this.m_Started = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -216,12 +234,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Duration;
+                return this.m_Duration;
             }
             set
             {
-                m_Duration = value;
-                InvalidateProperties();
+                this.m_Duration = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -229,10 +247,10 @@ namespace Server.Items
         {
             get
             {
-                if (m_State != HouseRaffleState.Completed)
+                if (this.m_State != HouseRaffleState.Completed)
                     return false;
 
-                return (m_Started + m_Duration + ExpirationTime <= DateTime.UtcNow);
+                return (this.m_Started + this.m_Duration + ExpirationTime <= DateTime.UtcNow);
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -240,11 +258,11 @@ namespace Server.Items
         {
             get
             {
-                return m_ExpireAction;
+                return this.m_ExpireAction;
             }
             set
             {
-                m_ExpireAction = value;
+                this.m_ExpireAction = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Seer)]
@@ -252,17 +270,35 @@ namespace Server.Items
         {
             get
             {
-                return m_TicketPrice;
+                return this.m_TicketPrice;
             }
             set
             {
-                m_TicketPrice = Math.Max(0, value);
-                InvalidateProperties();
+                this.m_TicketPrice = Math.Max(0, value);
+                this.InvalidateProperties();
             }
         }
-        public List<RaffleEntry> Entries => m_Entries;
-        public override string DefaultName => "a house raffle stone";
-        public override bool DisplayWeight => false;
+        public List<RaffleEntry> Entries
+        {
+            get
+            {
+                return this.m_Entries;
+            }
+        }
+        public override string DefaultName
+        {
+            get
+            {
+                return "a house raffle stone";
+            }
+        }
+        public override bool DisplayWeight
+        {
+            get
+            {
+                return false;
+            }
+        }
         public static void CheckEnd_OnTick()
         {
             for (int i = 0; i < m_AllStones.Count; i++)
@@ -277,7 +313,7 @@ namespace Server.Items
 
                 if (stone.IsExpired)
                 {
-                    switch (stone.ExpireAction)
+                    switch ( stone.ExpireAction )
                     {
                         case HouseRaffleExpireAction.HideStone:
                             {
@@ -298,7 +334,7 @@ namespace Server.Items
                 }
             }
 
-            Timer.DelayCall(TimeSpan.FromMinutes(1.0), TimeSpan.FromMinutes(1.0), CheckEnd_OnTick);
+            Timer.DelayCall(TimeSpan.FromMinutes(1.0), TimeSpan.FromMinutes(1.0), new TimerCallback(CheckEnd_OnTick));
         }
 
         public static string FormatLocation(Point3D loc, Map map, bool displayMap)
@@ -310,7 +346,7 @@ namespace Server.Items
             bool xEast = false, ySouth = false;
 
             if (Sextant.Format(loc, map, ref xLong, ref yLat, ref xMins, ref yMins, ref xEast, ref ySouth))
-                result.AppendFormat("{0}Â°{1}'{2},{3}Â°{4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
+                result.AppendFormat("{0}°{1}'{2},{3}°{4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
             else
                 result.AppendFormat("{0},{1}", loc.X, loc.Y);
 
@@ -322,52 +358,71 @@ namespace Server.Items
 
         public bool ValidLocation()
         {
-            return (m_Bounds.Start != Point2D.Zero && m_Bounds.End != Point2D.Zero && m_Facet != null && m_Facet != Map.Internal);
+            return (this.m_Bounds.Start != Point2D.Zero && this.m_Bounds.End != Point2D.Zero && this.m_Facet != null && this.m_Facet != Map.Internal);
         }
 
         public Point3D GetPlotCenter()
         {
-            int x = m_Bounds.X + m_Bounds.Width / 2;
-            int y = m_Bounds.Y + m_Bounds.Height / 2;
-            int z = (m_Facet == null) ? 0 : m_Facet.GetAverageZ(x, y);
+            int x = this.m_Bounds.X + this.m_Bounds.Width / 2;
+            int y = this.m_Bounds.Y + this.m_Bounds.Height / 2;
+            int z = (this.m_Facet == null) ? 0 : this.m_Facet.GetAverageZ(x, y);
 
             return new Point3D(x, y, z);
         }
 
         public string FormatLocation()
         {
-            if (!ValidLocation())
+            if (!this.ValidLocation())
                 return "no location set";
 
-            return FormatLocation(GetPlotCenter(), m_Facet, true);
+            return FormatLocation(this.GetPlotCenter(), this.m_Facet, true);
         }
 
         public string FormatPrice()
         {
-            if (m_TicketPrice == 0)
+            if (this.m_TicketPrice == 0)
                 return "FREE";
             else
-                return string.Format("{0} gold", m_TicketPrice);
+                return String.Format("{0} gold", this.m_TicketPrice);
         }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
 
-            if (ValidLocation())
-                list.Add(FormatLocation());
+            if (this.ValidLocation())
+                list.Add(this.FormatLocation());
 
-            switch (m_State)
+            switch (this.m_State)
             {
                 case HouseRaffleState.Active:
                     {
-                        list.Add(1060658, "ticket price\t{0}", FormatPrice()); // ~1_val~: ~2_val~
-                        list.Add(1060659, "ends\t{0}", m_Started + m_Duration); // ~1_val~: ~2_val~
+                        list.Add(1060658, "ticket price\t{0}", this.FormatPrice()); // ~1_val~: ~2_val~
+                        list.Add(1060659, "ends\t{0}", this.m_Started + this.m_Duration); // ~1_val~: ~2_val~
                         break;
                     }
                 case HouseRaffleState.Completed:
                     {
-                        list.Add(1060658, "winner\t{0}", (m_Winner == null) ? "unknown" : m_Winner.Name); // ~1_val~: ~2_val~
+                        list.Add(1060658, "winner\t{0}", (this.m_Winner == null) ? "unknown" : this.m_Winner.Name); // ~1_val~: ~2_val~
+                        break;
+                    }
+            }
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            base.OnSingleClick(from);
+
+            switch (this.m_State)
+            {
+                case HouseRaffleState.Active:
+                    {
+                        this.LabelTo(from, 1060658, String.Format("Ends\t{0}", this.m_Started + this.m_Duration)); // ~1_val~: ~2_val~
+                        break;
+                    }
+                case HouseRaffleState.Completed:
+                    {
+                        this.LabelTo(from, 1060658, String.Format("Winner\t{0}", (this.m_Winner == null) ? "Unknown" : this.m_Winner.Name)); // ~1_val~: ~2_val~
                         break;
                     }
             }
@@ -381,7 +436,7 @@ namespace Server.Items
             {
                 list.Add(new EditEntry(from, this));
 
-                if (m_State == HouseRaffleState.Inactive)
+                if (this.m_State == HouseRaffleState.Inactive)
                     list.Add(new ActivateEntry(from, this));
                 else
                     list.Add(new ManagementEntry(from, this));
@@ -390,32 +445,32 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (m_State != HouseRaffleState.Active || !from.CheckAlive())
+            if (this.m_State != HouseRaffleState.Active || !from.CheckAlive())
                 return;
 
-            if (!from.InRange(GetWorldLocation(), 2))
+            if (!from.InRange(this.GetWorldLocation(), 2))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
                 return;
             }
 
-            if (HasEntered(from))
+            if (this.HasEntered(from))
             {
                 from.SendMessage(MessageHue, "You have already entered this plot's raffle.");
             }
-            else if (IsAtIPLimit(from))
+            else if (this.IsAtIPLimit(from))
             {
                 from.SendMessage(MessageHue, "You may not enter this plot's raffle.");
             }
             else
             {
-                from.SendGump(new WarningGump(1150470, 0x7F00, string.Format("You are about to purchase a raffle ticket for the house plot located at {0}.  The ticket price is {1}.  Tickets are non-refundable and you can only purchase one ticket per account.  Do you wish to continue?", FormatLocation(), FormatPrice()), 0xFFFFFF, 420, 280, Purchase_Callback, null)); // CONFIRM TICKET PURCHASE
+                from.SendGump(new WarningGump(1150470, 0x7F00, String.Format("You are about to purchase a raffle ticket for the house plot located at {0}.  The ticket price is {1}.  Tickets are non-refundable and you can only purchase one ticket per account.  Do you wish to continue?", this.FormatLocation(), this.FormatPrice()), 0xFFFFFF, 420, 280, new WarningGumpCallback(Purchase_Callback), null)); // CONFIRM TICKET PURCHASE
             }
         }
 
         public void Purchase_Callback(Mobile from, bool okay, object state)
         {
-            if (Deleted || m_State != HouseRaffleState.Active || !from.CheckAlive() || HasEntered(from) || IsAtIPLimit(from))
+            if (this.Deleted || this.m_State != HouseRaffleState.Active || !from.CheckAlive() || this.HasEntered(from) || this.IsAtIPLimit(from))
                 return;
 
             Account acc = from.Account as Account;
@@ -427,15 +482,15 @@ namespace Server.Items
             {
                 Container bank = from.FindBankNoCreate();
 
-                if (m_TicketPrice == 0 || (from.Backpack != null && from.Backpack.ConsumeTotal(typeof(Gold), m_TicketPrice)) || Mobiles.Banker.Withdraw(from, m_TicketPrice, true))
+                if (this.m_TicketPrice == 0 || (from.Backpack != null && from.Backpack.ConsumeTotal(typeof(Gold), this.m_TicketPrice)) || Mobiles.Banker.Withdraw(from, m_TicketPrice, true))
                 {
-                    m_Entries.Add(new RaffleEntry(from));
+                    this.m_Entries.Add(new RaffleEntry(from));
 
                     from.SendMessage(MessageHue, "You have successfully entered the plot's raffle.");
                 }
                 else
                 {
-                    from.SendMessage(MessageHue, "You do not have the {0} required to enter the raffle.", FormatPrice());
+                    from.SendMessage(MessageHue, "You do not have the {0} required to enter the raffle.", this.FormatPrice());
                 }
             }
             else
@@ -446,44 +501,44 @@ namespace Server.Items
 
         public void CheckEnd()
         {
-            if (m_State != HouseRaffleState.Active || m_Started + m_Duration > DateTime.UtcNow)
+            if (this.m_State != HouseRaffleState.Active || this.m_Started + this.m_Duration > DateTime.UtcNow)
                 return;
 
-            m_State = HouseRaffleState.Completed;
+            this.m_State = HouseRaffleState.Completed;
 
-            if (m_Region != null && m_Entries.Count != 0)
+            if (this.m_Region != null && this.m_Entries.Count != 0)
             {
-                int winner = Utility.Random(m_Entries.Count);
+                int winner = Utility.Random(this.m_Entries.Count);
 
-                m_Winner = m_Entries[winner].From;
+                this.m_Winner = this.m_Entries[winner].From;
 
-                if (m_Winner != null)
+                if (this.m_Winner != null)
                 {
-                    m_Deed = new HouseRaffleDeed(this, m_Winner);
+                    this.m_Deed = new HouseRaffleDeed(this, this.m_Winner);
 
-                    m_Winner.SendMessage(MessageHue, "Congratulations, {0}!  You have won the raffle for the plot located at {1}.", m_Winner.Name, FormatLocation());
+                    this.m_Winner.SendMessage(MessageHue, "Congratulations, {0}!  You have won the raffle for the plot located at {1}.", this.m_Winner.Name, this.FormatLocation());
 
-                    if (m_Winner.AddToBackpack(m_Deed))
+                    if (this.m_Winner.AddToBackpack(this.m_Deed))
                     {
-                        m_Winner.SendMessage(MessageHue, "The writ of lease has been placed in your backpack.");
+                        this.m_Winner.SendMessage(MessageHue, "The writ of lease has been placed in your backpack.");
                     }
                     else
                     {
-                        m_Winner.BankBox.DropItem(m_Deed);
-                        m_Winner.SendMessage(MessageHue, "As your backpack is full, the writ of lease has been placed in your bank box.");
+                        this.m_Winner.BankBox.DropItem(this.m_Deed);
+                        this.m_Winner.SendMessage(MessageHue, "As your backpack is full, the writ of lease has been placed in your bank box.");
                     }
                 }
             }
 
-            InvalidateProperties();
+            this.InvalidateProperties();
         }
 
         public override void OnDelete()
         {
-            if (m_Region != null)
+            if (this.m_Region != null)
             {
-                m_Region.Unregister();
-                m_Region = null;
+                this.m_Region.Unregister();
+                this.m_Region = null;
             }
 
             m_AllStones.Remove(this);
@@ -495,25 +550,25 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(3); // version
+            writer.Write((int)3); // version
 
-            writer.WriteEncodedInt((int)m_State);
-            writer.WriteEncodedInt((int)m_ExpireAction);
+            writer.WriteEncodedInt((int)this.m_State);
+            writer.WriteEncodedInt((int)this.m_ExpireAction);
 
-            writer.Write(m_Deed);
+            writer.Write(this.m_Deed);
 
-            writer.Write(m_Bounds);
-            writer.Write(m_Facet);
+            writer.Write(this.m_Bounds);
+            writer.Write(this.m_Facet);
 
-            writer.Write(m_Winner);
+            writer.Write(this.m_Winner);
 
-            writer.Write(m_TicketPrice);
-            writer.Write(m_Started);
-            writer.Write(m_Duration);
+            writer.Write(this.m_TicketPrice);
+            writer.Write(this.m_Started);
+            writer.Write(this.m_Duration);
 
-            writer.Write(m_Entries.Count);
+            writer.Write(this.m_Entries.Count);
 
-            foreach (RaffleEntry entry in m_Entries)
+            foreach (RaffleEntry entry in this.m_Entries)
                 entry.Serialize(writer);
         }
 
@@ -523,23 +578,23 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 3:
                     {
-                        m_State = (HouseRaffleState)reader.ReadEncodedInt();
+                        this.m_State = (HouseRaffleState)reader.ReadEncodedInt();
 
                         goto case 2;
                     }
                 case 2:
                     {
-                        m_ExpireAction = (HouseRaffleExpireAction)reader.ReadEncodedInt();
+                        this.m_ExpireAction = (HouseRaffleExpireAction)reader.ReadEncodedInt();
 
                         goto case 1;
                     }
                 case 1:
                     {
-                        m_Deed = reader.ReadItem<HouseRaffleDeed>();
+                        this.m_Deed = reader.ReadItem<HouseRaffleDeed>();
 
                         goto case 0;
                     }
@@ -547,17 +602,17 @@ namespace Server.Items
                     {
                         bool oldActive = (version < 3) ? reader.ReadBool() : false;
 
-                        m_Bounds = reader.ReadRect2D();
-                        m_Facet = reader.ReadMap();
+                        this.m_Bounds = reader.ReadRect2D();
+                        this.m_Facet = reader.ReadMap();
 
-                        m_Winner = reader.ReadMobile();
+                        this.m_Winner = reader.ReadMobile();
 
-                        m_TicketPrice = reader.ReadInt();
-                        m_Started = reader.ReadDateTime();
-                        m_Duration = reader.ReadTimeSpan();
+                        this.m_TicketPrice = reader.ReadInt();
+                        this.m_Started = reader.ReadDateTime();
+                        this.m_Duration = reader.ReadTimeSpan();
 
                         int entryCount = reader.ReadInt();
-                        m_Entries = new List<RaffleEntry>(entryCount);
+                        this.m_Entries = new List<RaffleEntry>(entryCount);
 
                         for (int i = 0; i < entryCount; i++)
                         {
@@ -566,21 +621,21 @@ namespace Server.Items
                             if (entry.From == null)
                                 continue; // Character was deleted
 
-                            m_Entries.Add(entry);
+                            this.m_Entries.Add(entry);
                         }
 
-                        InvalidateRegion();
+                        this.InvalidateRegion();
 
                         m_AllStones.Add(this);
 
                         if (version < 3)
                         {
                             if (oldActive)
-                                m_State = HouseRaffleState.Active;
-                            else if (m_Winner != null)
-                                m_State = HouseRaffleState.Completed;
+                                this.m_State = HouseRaffleState.Active;
+                            else if (this.m_Winner != null)
+                                this.m_State = HouseRaffleState.Completed;
                             else
-                                m_State = HouseRaffleState.Inactive;
+                                this.m_State = HouseRaffleState.Inactive;
                         }
 
                         break;
@@ -590,16 +645,16 @@ namespace Server.Items
 
         private void InvalidateRegion()
         {
-            if (m_Region != null)
+            if (this.m_Region != null)
             {
-                m_Region.Unregister();
-                m_Region = null;
+                this.m_Region.Unregister();
+                this.m_Region = null;
             }
 
-            if (ValidLocation())
+            if (this.ValidLocation())
             {
-                m_Region = new HouseRaffleRegion(this);
-                m_Region.Register();
+                this.m_Region = new HouseRaffleRegion(this);
+                this.m_Region.Register();
             }
         }
 
@@ -610,7 +665,7 @@ namespace Server.Items
             if (acc == null)
                 return false;
 
-            foreach (RaffleEntry entry in m_Entries)
+            foreach (RaffleEntry entry in this.m_Entries)
             {
                 if (entry.From != null)
                 {
@@ -632,7 +687,7 @@ namespace Server.Items
             IPAddress address = from.NetState.Address;
             int tickets = 0;
 
-            foreach (RaffleEntry entry in m_Entries)
+            foreach (RaffleEntry entry in this.m_Entries)
             {
                 if (Utility.IPMatchClassC(entry.Address, address))
                 {
@@ -651,8 +706,8 @@ namespace Server.Items
             public RaffleContextMenuEntry(Mobile from, HouseRaffleStone stone, int label)
                 : base(label)
             {
-                m_From = from;
-                m_Stone = stone;
+                this.m_From = from;
+                this.m_Stone = stone;
             }
         }
 
@@ -665,10 +720,10 @@ namespace Server.Items
 
             public override void OnClick()
             {
-                if (m_Stone.Deleted || m_From.AccessLevel < AccessLevel.Seer)
+                if (this.m_Stone.Deleted || this.m_From.AccessLevel < AccessLevel.Seer)
                     return;
 
-                m_From.SendGump(new PropertiesGump(m_From, m_Stone));
+                this.m_From.SendGump(new PropertiesGump(this.m_From, this.m_Stone));
             }
         }
 
@@ -678,15 +733,15 @@ namespace Server.Items
                 : base(from, stone, 5113)// Start
             {
                 if (!stone.ValidLocation())
-                    Flags |= CMEFlags.Disabled;
+                    this.Flags |= Network.CMEFlags.Disabled;
             }
 
             public override void OnClick()
             {
-                if (m_Stone.Deleted || m_From.AccessLevel < AccessLevel.Seer || !m_Stone.ValidLocation())
+                if (this.m_Stone.Deleted || this.m_From.AccessLevel < AccessLevel.Seer || !this.m_Stone.ValidLocation())
                     return;
 
-                m_Stone.CurrentState = HouseRaffleState.Active;
+                this.m_Stone.CurrentState = HouseRaffleState.Active;
             }
         }
 
@@ -699,10 +754,10 @@ namespace Server.Items
 
             public override void OnClick()
             {
-                if (m_Stone.Deleted || m_From.AccessLevel < AccessLevel.Seer)
+                if (this.m_Stone.Deleted || this.m_From.AccessLevel < AccessLevel.Seer)
                     return;
 
-                m_From.SendGump(new HouseRaffleManagementGump(m_Stone));
+                this.m_From.SendGump(new HouseRaffleManagementGump(this.m_Stone));
             }
         }
     }

@@ -1,5 +1,5 @@
-using Server.Accounting;
 using System;
+using Server.Accounting;
 
 namespace Server.Misc
 {
@@ -13,7 +13,7 @@ namespace Server.Misc
                 Console.Write("Do you want to create the owner account now? (y/n)");
 
                 string key = Console.ReadLine();
-
+ 
                 if (key.ToUpper() == "Y")
                 {
                     Console.WriteLine();
@@ -24,10 +24,8 @@ namespace Server.Misc
                     Console.Write("Password: ");
                     string password = Console.ReadLine();
 
-                    _ = new Account(username, password)
-                    {
-                        AccessLevel = AccessLevel.Owner
-                    };
+                    Account a = new Account(username, password);
+                    a.AccessLevel = AccessLevel.Owner;
 
                     Console.WriteLine("Account created.");
                 }

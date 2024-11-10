@@ -1,5 +1,6 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -9,8 +10,8 @@ namespace Server.Mobiles
         [Constructable]
         public Alethanian()
             : base("the wise")
-        {
-            Name = "Elder Alethanian";
+        { 
+            this.Name = "Elder Alethanian";
         }
 
         public Alethanian(Serial serial)
@@ -18,45 +19,63 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanTeach => false;
-        public override bool IsInvulnerable => true;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override void InitSBInfo()
+        public override bool CanTeach
         {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
+        public override void InitSBInfo()
+        { 
         }
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = true;
-            Race = Race.Elf;
-
-            Hue = 0x876C;
-            HairItemID = 0x2FC2;
-            HairHue = 0x368;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = true;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x876C;
+            this.HairItemID = 0x2FC2;
+            this.HairHue = 0x368;			
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new ElvenBoots(), dropChance: 1);
-            SetWearable(new GemmedCirclet(), dropChance: 1);
-            SetWearable(new HidePants(), dropChance: 1);
-            SetWearable(new HideFemaleChest(), dropChance: 1);
-            SetWearable(new HidePauldrons(), dropChance: 1);
+            this.AddItem(new ElvenBoots());
+            this.AddItem(new GemmedCirclet());
+            this.AddItem(new HidePants());
+            this.AddItem(new HideFemaleChest());
+            this.AddItem(new HidePauldrons());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+	
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+	
             int version = reader.ReadInt();
         }
     }

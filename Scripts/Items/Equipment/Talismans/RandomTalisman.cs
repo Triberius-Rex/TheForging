@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class RandomTalisman : BaseTalisman
@@ -6,15 +8,15 @@ namespace Server.Items
         public RandomTalisman()
             : base(GetRandomItemID())
         {
-            Summoner = GetRandomSummoner();
+            Summoner = BaseTalisman.GetRandomSummoner();
 
             if (Summoner.IsEmpty)
             {
-                Removal = GetRandomRemoval();
+                Removal = BaseTalisman.GetRandomRemoval();
 
                 if (Removal != TalismanRemoval.None)
                 {
-                    MaxCharges = GetRandomCharges();
+                    MaxCharges = BaseTalisman.GetRandomCharges();
                     MaxChargeTime = 1200;
                 }
             }
@@ -28,13 +30,13 @@ namespace Server.Items
                     MaxChargeTime = 1800;
             }
 
-            Blessed = GetRandomBlessed();
-            Slayer = GetRandomSlayer();
-            Protection = GetRandomProtection();
-            Killer = GetRandomKiller();
-            Skill = GetRandomSkill();
-            ExceptionalBonus = GetRandomExceptional();
-            SuccessBonus = GetRandomSuccessful();
+            Blessed = BaseTalisman.GetRandomBlessed();
+            Slayer = BaseTalisman.GetRandomSlayer();
+            Protection = BaseTalisman.GetRandomProtection();
+            Killer = BaseTalisman.GetRandomKiller();
+            Skill = BaseTalisman.GetRandomSkill();
+            ExceptionalBonus = BaseTalisman.GetRandomExceptional();
+            SuccessBonus = BaseTalisman.GetRandomSuccessful();
             Charges = MaxCharges;
         }
 
@@ -46,7 +48,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

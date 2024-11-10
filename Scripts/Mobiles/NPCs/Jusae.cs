@@ -1,14 +1,14 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Jusae : MondainQuester
-    {
+    { 
         [Constructable]
         public Jusae()
             : base("Jusae", "the bowcrafter")
-        {
+        { 
             SetSkill(SkillName.Meditation, 60.0, 83.0);
             SetSkill(SkillName.Focus, 60.0, 83.0);
         }
@@ -18,7 +18,11 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(LethalDartsQuest),
                     typeof(SimpleBowQuest),
@@ -27,13 +31,15 @@ namespace Server.Engines.Quests
                     typeof(IngeniousArcheryPartThreeQuest),
                     typeof(StopHarpingOnMeQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
             InitStats(100, 100, 25);
-
+			
             Female = false;
             Race = Race.Elf;
-
+			
             Hue = 0x83E5;
             HairItemID = 0x2FD0;
             HairHue = 0x238;
@@ -41,18 +47,26 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new Sandals(), 0x901, 1);
-            SetWearable(new ShortPants(), 0x651, 1);
-            SetWearable(new MagicalShortbow(), dropChance: 1);
-			SetWearable(new HideChest(), 0x27B, 1);
-			SetWearable(new HidePauldrons(), 0x27E, 1); 
+            AddItem(new Sandals(0x901));
+            AddItem(new ShortPants(0x651));
+            AddItem(new MagicalShortbow());
+			
+            Item item;
+			
+            item = new HideChest();
+            item.Hue = 0x27B;
+            AddItem(item);
+			
+            item = new HidePauldrons();
+            item.Hue = 0x27E;
+            AddItem(item);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

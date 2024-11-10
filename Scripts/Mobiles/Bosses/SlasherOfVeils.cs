@@ -1,20 +1,21 @@
+using System;
+using System.Collections;
 using Server.Items;
 using Server.Spells;
-using System;
 
 namespace Server.Mobiles
 {
     [CorpseName("a slasher of veils corpse")]
     public class SlasherOfVeils : BaseSABoss
     {
-        private static readonly int[] m_North =
+        private static readonly int[] m_North = new int[]
         {
             -1, -1,
             1, -1,
             -1, 2,
             1, 2
         };
-        private static readonly int[] m_East =
+        private static readonly int[] m_East = new int[]
         {
             -1, 0,
             2, 0
@@ -72,31 +73,35 @@ namespace Server.Mobiles
         {
         }
 
-        public override Type[] UniqueSAList => new[] { typeof(ClawsOfTheBerserker), typeof(Lavaliere), typeof(Mangler), typeof(HumanSignOfChaos), typeof(GargishSignOfChaos), typeof(StandardOfChaosG), typeof(StandardOfChaos) };
-        public override Type[] SharedSAList => new[] { typeof(AxesOfFury), typeof(BladeOfBattle), typeof(DemonBridleRing), typeof(PetrifiedSnake), typeof(PillarOfStrength), typeof(SwordOfShatteredHopes), typeof(SummonersKilt) };
+        public override Type[] UniqueSAList
+        {
+            get
+            {
+                return new Type[] { typeof(ClawsOfTheBerserker), typeof(Lavaliere), typeof(Mangler), typeof(HumanSignOfChaos), typeof(GargishSignOfChaos), typeof(StandardOfChaosG), typeof(StandardOfChaos) };
+            }
+        }
+        public override Type[] SharedSAList
+        {
+            get
+            {
+                return new Type[] { typeof(AxesOfFury), typeof(BladeOfBattle), typeof(DemonBridleRing), typeof(PetrifiedSnake), typeof(PillarOfStrength), typeof(SwordOfShatteredHopes), typeof(SummonersKilt) };
+            }
+        }
 
-        public override bool Unprovokable => false;
-        public override bool BardImmune => false;
-
-        [CommandProperty(AccessLevel.Counselor)]
-        public override int PhysicalResistance => Weakened ? base.PhysicalResistance / 2 : base.PhysicalResistance;
-
-        [CommandProperty(AccessLevel.Counselor)]
-        public override int FireResistance => Weakened ? base.FireResistance / 2 : base.FireResistance;
-
-        [CommandProperty(AccessLevel.Counselor)]
-        public override int ColdResistance => Weakened ? base.ColdResistance / 2 : base.ColdResistance;
-
-        [CommandProperty(AccessLevel.Counselor)]
-        public override int PoisonResistance => Weakened ? base.PoisonResistance / 2 : base.PoisonResistance;
-
-        [CommandProperty(AccessLevel.Counselor)]
-        public override int EnergyResistance => Weakened ? base.EnergyResistance / 2 : base.EnergyResistance;
-
-        private static readonly Rectangle2D _WeakBounds = new Rectangle2D(740, 466, 20, 20);
-
-        public bool Weakened => Map == Map.TerMur && _WeakBounds.Contains(this);
-
+        public override bool Unprovokable
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override int GetIdleSound()
         {
             return 1589;
@@ -117,12 +122,24 @@ namespace Server.Mobiles
             return 1587;
         }
 
-        public override bool AlwaysMurderer => true;
+		public override bool AlwaysMurderer { get { return true; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss, 4);
+            AddLoot(LootPack.AosSuperBoss, 4);
             AddLoot(LootPack.Gems, 8);
+        }
+
+
+        public override void OnThink()
+        {
+            base.OnThink();
+
+            //if (Combatant == null)
+            //    return;
+
+            //if (Hits > 0.6 * HitsMax && Utility.RandomDouble() < 0.05)
+            //    FireRing();
         }
 
         public override void FireRing()
@@ -134,7 +151,7 @@ namespace Server.Mobiles
                 p.X += m_North[i];
                 p.Y += m_North[i + 1];
 
-                IPoint3D po = p;
+                IPoint3D po = p as IPoint3D;
 
                 SpellHelper.GetSurfaceTop(ref po);
 
@@ -148,7 +165,7 @@ namespace Server.Mobiles
                 p.X += m_East[i];
                 p.Y += m_East[i + 1];
 
-                IPoint3D po = p;
+                IPoint3D po = p as IPoint3D;
 
                 SpellHelper.GetSurfaceTop(ref po);
 
@@ -176,7 +193,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

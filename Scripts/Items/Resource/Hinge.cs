@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x1055, 0x1056)]
@@ -13,9 +15,9 @@ namespace Server.Items
         public Hinge(int amount)
             : base(0x1055)
         {
-            Stackable = true;
-            Amount = amount;
-            Weight = 1.0;
+            this.Stackable = true;
+            this.Amount = amount;
+            this.Weight = 1.0;
         }
 
         public Hinge(Serial serial)
@@ -27,7 +29,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

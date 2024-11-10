@@ -1,6 +1,8 @@
+using Server;
+using System;
+using Server.Targeting;
 using Server.Gumps;
 using Server.Network;
-using Server.Targeting;
 
 namespace Server.Items
 {
@@ -35,7 +37,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public double Has { get { return m_Has; } set { m_Has = value; InvalidateProperties(); } }
 
-        public override int LabelNumber => 1113135;  // Scroll Binder
+        public override int LabelNumber { get { return 1113135; } } // Scroll Binder
 
         [Constructable]
         public ScrollBinderDeed()
@@ -128,7 +130,7 @@ namespace Server.Items
                                 from.SendLocalizedMessage(1113144); // This scroll is already the highest of its type and cannot be bound.
                                 return;
                             }
-
+                            
                             double value = ps.Value;
                             int needed = 0;
 
@@ -186,7 +188,7 @@ namespace Server.Items
                             {
                                 from.SendLocalizedMessage(1113144); //This scroll is already the highest of its type and cannot be bound.
                                 return;
-                            }
+                            }                                
 
                             Skill = sot.Skill;
                             BinderType = BinderType.SOT;
@@ -407,7 +409,7 @@ namespace Server.Items
 
         private class InternalTarget : Target
         {
-            private readonly ScrollBinderDeed m_Binder;
+            private ScrollBinderDeed m_Binder;
 
             public InternalTarget(ScrollBinderDeed binder) : base(-1, false, TargetFlags.None)
             {
@@ -425,8 +427,8 @@ namespace Server.Items
         {
             private readonly double m_Value;
             private readonly int m_Needed;
-            private readonly ScrollOfTranscendence m_Scroll;
-            private readonly ScrollBinderDeed m_Binder;
+            private ScrollOfTranscendence m_Scroll;
+            private ScrollBinderDeed m_Binder;
 
             public BinderWarningGump(double value, ScrollBinderDeed binder, ScrollOfTranscendence scroll, int needed)
                 : base(340, 340)
@@ -476,7 +478,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2);
+            writer.Write((int)2);
 
             writer.Write((int)m_BinderType);
             writer.Write((int)m_Skill);

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [TypeAlias("Server.Items.Dressform")]
@@ -7,7 +9,7 @@ namespace Server.Items
         public DressformFront()
             : base(0xec6)
         {
-            Weight = 10;
+            this.Weight = 10;
         }
 
         public DressformFront(Serial serial)
@@ -18,7 +20,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -27,7 +29,7 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
     }
-
+    
     public class DressformSide : Item
     {
         [Constructable]
@@ -45,7 +47,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

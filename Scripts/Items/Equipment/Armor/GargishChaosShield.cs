@@ -1,21 +1,26 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x4228, 0x4229)]
+    [FlipableAttribute(0x4228, 0x4229)]
     public class GargishChaosShield : BaseShield
     {
-        public override int BasePhysicalResistance => 1;
-        public override int BaseFireResistance => 0;
-        public override int BaseColdResistance => 0;
-        public override int BasePoisonResistance => 0;
-        public override int BaseEnergyResistance => 0;
-        public override int InitMinHits => 100;
-        public override int InitMaxHits => 125;
-        public override int StrReq => 95;
-
+		public override int BasePhysicalResistance { get { return 1; } }
+        public override int BaseFireResistance { get { return 0; } }
+        public override int BaseColdResistance { get { return 0; } }
+        public override int BasePoisonResistance { get { return 0; } }
+        public override int BaseEnergyResistance { get { return 0; } }
+        public override int InitMinHits { get { return 100; } }
+        public override int InitMaxHits { get { return 125; } }
+        public override int AosStrReq { get { return 95; } }
+        public override int ArmorBase { get { return 32; } }
+		public override bool CanBeWornByGargoyles { get { return true; } }
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+		
         [Constructable]
         public GargishChaosShield()
             : base(0x4228)
-        {
+        {           
             Weight = 5.0;
         }
 
@@ -23,7 +28,7 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+              
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -33,7 +38,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);//version
-        }
+            writer.Write((int)0);//version
+        }      
     }
 }

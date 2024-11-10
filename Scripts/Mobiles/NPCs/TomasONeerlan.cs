@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 
@@ -18,24 +19,24 @@ namespace Server.Engines.Quests.Collector
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Hue = 0x83F8;
+            this.Hue = 0x83F8;
 
-            Female = false;
-            Body = 0x190;
-            Name = "Tomas O'Neerlan";
+            this.Female = false;
+            this.Body = 0x190;
+            this.Name = "Tomas O'Neerlan";
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new FancyShirt(), dropChance: 1);
-            SetWearable(new LongPants(), 0x546, 1);
-            SetWearable(new Boots(), 0x452, 1);
-			SetWearable(new FullApron(), 0x455, 1);
+            this.AddItem(new FancyShirt());
+            this.AddItem(new LongPants(0x546));
+            this.AddItem(new Boots(0x452));
+            this.AddItem(new FullApron(0x455));
 
-            HairItemID = 0x203B;	//ShortHair
-            HairHue = 0x455;
+            this.HairItemID = 0x203B;	//ShortHair
+            this.HairHue = 0x455;
         }
 
         public override bool CanTalkTo(PlayerMobile to)
@@ -56,7 +57,7 @@ namespace Server.Engines.Quests.Collector
 
             if (qs is CollectorQuest)
             {
-                Direction = GetDirectionTo(player);
+                this.Direction = this.GetDirectionTo(player);
 
                 QuestObjective obj = qs.FindObjective(typeof(FindTomasObjective));
 
@@ -97,7 +98,7 @@ namespace Server.Engines.Quests.Collector
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

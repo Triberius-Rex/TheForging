@@ -1,24 +1,49 @@
-using Server.ContextMenus;
-using Server.Engines.Quests;
-using Server.Items;
-using Server.SkillHandlers;
-
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Engines.Despise;
+using Server.Items;
+using Server.Gumps;
+using Server.Network;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
     [CorpseName("a wisp corpse")]
     public class MysteriousWisp : BaseCreature
     {
-        public static readonly int MinBudget = 300;
-        public static readonly int MaxBudget = 600;
-        public static readonly int ItemCount = 10;
+        private int m_ItemCountMin;
+        private int m_ItemCountMax;
+        private int m_IntensityMin;
+        private int m_IntensityMax;
+        private int m_RestockMin;
+        private int m_RestockMax;
+        private double m_MutateChance;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool ForceRestock { get { return false; } set { if (value) DoRestock(true); } }
+        public int ItemCountMin { get { return m_ItemCountMin; } set { m_ItemCountMin = value; } }
 
-        private readonly Dictionary<Mobile, int> m_Conversation = new Dictionary<Mobile, int>();
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int ItemCountMax { get { return m_ItemCountMax; } set { m_ItemCountMax = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int IntensityMin { get { return m_IntensityMin; } set { m_IntensityMin = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int IntensityMax { get { return m_IntensityMax; } set { m_IntensityMax = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int RestockMin { get { return m_RestockMin; } set { m_RestockMin = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int RestockMax { get { return m_RestockMax; } set { m_RestockMax = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public double MutateChance { get { return m_MutateChance; } set { m_MutateChance = value; } }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool ForceRestock { get { return false; } set { if (value) DoRestock(); } }
 
         [Constructable]
         public MysteriousWisp()
@@ -58,6 +83,15 @@ namespace Server.Mobiles
             if (Backpack != null)
                 Backpack.Delete();
 
+            m_ItemCountMin = 14;
+            m_ItemCountMax = 20;
+            m_IntensityMin = 40;
+            m_IntensityMax = 100;
+            m_RestockMin = 45;
+            m_RestockMax = 65;
+            m_MutateChance = 0.10;
+
+            AddItem(new BuyBackpack());
             DoRestock();
         }
 
@@ -66,40 +100,42 @@ namespace Server.Mobiles
             return m_Conversation.ContainsKey(from);
         }
 
+        private Dictionary<Mobile, int> m_Conversation = new Dictionary<Mobile, int>();
+
         public override void OnDoubleClick(Mobile from)
         {
-            if (from.InRange(Location, 4))
+            if (from.InRange(this.Location, 5))
             {
                 if (!m_Conversation.ContainsKey(from))
                 {
                     SayTo(from, m_Responses[0]);
                     m_Conversation[from] = 1;
                 }
-
-                if (Backpack != null)
-                {
-                    Backpack.DisplayTo(from);
-                }
             }
 
-            if (from is PlayerMobile pm && QuestHelper.CheckDoneOnce(pm, typeof(WishesOfTheWispQuest), null, false))
+            if (from is PlayerMobile)
             {
-                WhisperingWithWispsQuest q = QuestHelper.GetQuest<WhisperingWithWispsQuest>(pm);
+                var pm = from as PlayerMobile;
 
-                if (q == null)
+                if (QuestHelper.CheckDoneOnce(pm, typeof(WishesOfTheWispQuest), null, false))
                 {
-                    BaseQuest quest = QuestHelper.RandomQuest(pm, new Type[] { typeof(WhisperingWithWispsQuest) }, this);
+                    var q = QuestHelper.GetQuest<WhisperingWithWispsQuest>(pm);
 
-                    if (quest != null)
+                    if (q == null)
                     {
-                        pm.CloseGump(typeof(MondainQuestGump));
-                        pm.SendGump(new MondainQuestGump(quest));
+                        BaseQuest quest = QuestHelper.RandomQuest(pm, new Type[] { typeof(WhisperingWithWispsQuest) }, this);
+
+                        if (quest != null)
+                        {
+                            pm.CloseGump(typeof(MondainQuestGump));
+                            pm.SendGump(new MondainQuestGump(quest));
+                        }
+                    }
+                    else if (q.Completed)
+                    {
+                        q.CompleteQuest();
                     }
                 }
-                else if (q.Completed)
-                {
-                    q.CompleteQuest();
-                }           
             }
         }
 
@@ -146,7 +182,7 @@ namespace Server.Mobiles
             }
         }
 
-        private readonly string[][] m_Keywords = new string[][]
+        private string[][] m_Keywords = new string[][]
         {
             new string[] { },
             new string[] { "corporeal" },
@@ -163,7 +199,7 @@ namespace Server.Mobiles
             new string[] { "trade" },
         };
 
-        private readonly int[] m_Responses = new int[]
+        private int[] m_Responses = new int[]
         {
             1153441,
             1153443,
@@ -180,110 +216,154 @@ namespace Server.Mobiles
             1153467
         };
 
-        private void DoRestock()
+        public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
-            DoRestock(false);
+            base.GetContextMenuEntries(from, list);
+
+            list.Add(new InternalEntry(this, from));
         }
 
-        private void DoRestock(bool wipe)
+        private Dictionary<Item, int> m_ItemTable = new Dictionary<Item, int>();
+
+        public void CheckRestock()
         {
-            int count;
+            if (m_NextRestock <= DateTime.UtcNow)
+                DoRestock();
+        }
 
-            if (Backpack == null)
-            {
-                var pack = new BuyBackpack();
+        private void DoRestock()
+        {
+            List<Item> list = new List<Item>(this.Backpack.Items);
+            m_ItemTable.Clear();
 
-                AddItem(pack);
-            }
+            InternalGump.Clear();
 
-            if (wipe)
-            {
-                count = ItemCount;
-                ColUtility.SafeDelete(Backpack.Items);
-            }
-            else
-            {
-                count = ItemCount - Backpack.Items.Count;
-            }
+            foreach (Item item in list)
+                item.Delete();
 
-            if (count > 0)
+            int count = Utility.RandomMinMax(m_ItemCountMin, m_ItemCountMax);
+
+            for (int i = 0; i < count; i++)
             {
-                for (var i = 0; i < count; i++)
+                Item item;
+
+                switch (Utility.Random(3))
                 {
-                    Item item;
+                    default:
+                    case 0: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(false, false, true); break;
+                    case 1: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(false, true, false); break;
+                    case 2: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(true, false, false); break;
+                }
 
-                    switch (Utility.Random(3))
+                int weight = 0;
+
+                if (0.10 > Utility.RandomDouble())
+                {
+                    int budget = Utility.RandomMinMax(500, 860);
+                    RunicReforging.GenerateRandomItem(item, null, Utility.RandomMinMax(500, 860), 0, ReforgedPrefix.None, ReforgedSuffix.None);
+                    weight += budget / 3;
+                }
+                else
+                {
+                    int props = Utility.RandomMinMax(3, 5);
+
+                    if (props == 5 && 0.05 > Utility.RandomDouble())
                     {
-                        default:
-                        case 0: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(false, false, true); break;
-                        case 1: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(false, true, false); break;
-                        case 2: item = Loot.RandomArmorOrShieldOrWeaponOrJewelry(true, false, false); break;
+                        props++;
+                        weight += 100;
                     }
 
-                    var failSafe = 0;
-                    bool success = true;
-
-                    do
+                    if (item is BaseWeapon)
                     {
-                        RunicReforging.GenerateRandomItem(item, null, Utility.RandomMinMax(MinBudget, MaxBudget), 0, ReforgedPrefix.None, ReforgedSuffix.None);
-
-                        if (++failSafe == 25 && Imbuing.GetTotalWeight(item, -1, false, true) == 0)
-                        {
-                            item.Delete();
-                            success = false;
-                            i--;
-                            break;
-                        }
+                        BaseRunicTool.ApplyAttributesTo((BaseWeapon)item, false, 0, props, m_IntensityMin, m_IntensityMax);
                     }
-                    while (Imbuing.GetTotalWeight(item, -1, false, true) == 0);
-
-                    if (success)
+                    else if (item is BaseArmor)
                     {
-                        item.Movable = false;
-                        PackItem(item);
+                        BaseRunicTool.ApplyAttributesTo((BaseArmor)item, false, 0, props, m_IntensityMin, m_IntensityMax);
+                    }
+                    else if (item is BaseJewel)
+                    {
+                        BaseRunicTool.ApplyAttributesTo((BaseJewel)item, false, 0, props, m_IntensityMin, m_IntensityMax);
+                    }
+                    else if (item is BaseHat)
+                    {
+                        BaseRunicTool.ApplyAttributesTo((BaseHat)item, false, 0, props, m_IntensityMin, m_IntensityMax);
                     }
                 }
+
+                m_ItemTable[item] = (int)((weight + Server.SkillHandlers.Imbuing.GetTotalWeight(item, -1, false, true)) * 31.5);
+                item.Movable = false;
+                this.Backpack.DropItem(item);
             }
+
+            m_NextRestock = DateTime.UtcNow + TimeSpan.FromMinutes(Utility.RandomMinMax(m_RestockMin, m_RestockMax));
         }
 
         public int GetCostFor(Item item)
         {
-            return (int)((double)Imbuing.GetTotalWeight(item, -1, false, true) * 2.18);
+            if (!m_ItemTable.ContainsKey(item))
+                return -1;
+
+            return m_ItemTable[item];
         }
 
         public void TryBuyItem(Mobile from, Item item)
         {
-            if (item.Deleted || !Backpack.Items.Contains(item))
+            if (item.Deleted || !this.Backpack.Items.Contains(item) || !m_ItemTable.ContainsKey(item))
             {
-                from.SendLocalizedMessage(1150244); // Transaction no longer available
+                from.SendMessage("This item is no longer available.");
                 return;
             }
 
-            int points = (int)Engines.Points.PointsSystem.DespiseCrystals.GetPoints(from);
-            int cost = GetCostFor(item);
+            int points = (int)Server.Engines.Points.PointsSystem.DespiseCrystals.GetPoints(from);
+            int cost = m_ItemTable[item];
 
             if (points >= cost)
             {
-                Engines.Points.PointsSystem.DespiseCrystals.DeductPoints(from, cost);
+                //DespiseController.Instance.DeductDespisePoints(from, cost);
+                Server.Engines.Points.PointsSystem.DespiseCrystals.DeductPoints(from, cost);
                 item.Movable = true;
 
                 if (from.Backpack == null || !from.Backpack.TryDropItem(from, item, false))
-                {
                     item.MoveToWorld(from.Location, from.Map);
-                }
 
-                from.SendLocalizedMessage(1153431, cost.ToString()); // You purchase the item for ~1_AMT~ Despise Crystals.
+                from.SendLocalizedMessage(1153427, cost.ToString()); // You have spent ~1_AMT~ Dungeon Crystal Points of Despise.
 
-                if (Backpack.Items.Count == 0)
-                {
-                    Timer.DelayCall(TimeSpan.FromSeconds(Utility.RandomMinMax(30, 180)), DoRestock);
-                }
+                InternalGump.Resend(this);
             }
             else
+                from.SendMessage("You need {0} more Despise dungeon crystal points for this.", cost - points);
+        }
+
+        private class InternalEntry : ContextMenuEntry
+        {
+            private Mobile m_Clicker;
+            private MysteriousWisp m_Wisp;
+
+            public InternalEntry(MysteriousWisp wisp, Mobile clicker)
+                : base(1150143, 3)
             {
-                from.SendLocalizedMessage(1153430); // You cannot afford that
+                m_Clicker = clicker;
+                m_Wisp = wisp;
+            }
+
+            public override void OnClick()
+            {
+                if (m_Clicker.Alive && !m_Wisp.Deleted && m_Clicker.InRange(m_Wisp.Location, 3))
+                {
+                    if (m_Wisp.Backpack == null)
+                    {
+                        Console.WriteLine("Error, wisp backpack is null");
+                        return;
+                    }
+
+                    m_Wisp.CheckRestock();
+                    m_Clicker.SendGump(new InternalGump(m_Wisp, m_Clicker));
+                }
             }
         }
+
+        private DateTime m_NextRestock;
 
         public MysteriousWisp(Serial serial)
             : base(serial)
@@ -293,7 +373,13 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)0);
+
+            writer.Write(m_ItemCountMin);
+            writer.Write(m_ItemCountMax);
+            writer.Write(m_IntensityMin);
+            writer.Write(m_IntensityMax);
+            writer.Write(m_MutateChance);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -301,16 +387,13 @@ namespace Server.Mobiles
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            if (version == 0)
-            {
-                reader.ReadInt();
-                reader.ReadInt();
-                reader.ReadInt();
-                reader.ReadInt();
-                reader.ReadDouble();
-            }
+            m_ItemCountMin = reader.ReadInt();
+            m_ItemCountMax = reader.ReadInt();
+            m_IntensityMin = reader.ReadInt();
+            m_IntensityMax = reader.ReadInt();
+            m_MutateChance = reader.ReadDouble();
 
-            Timer.DelayCall(() => DoRestock(true));
+            m_NextRestock = DateTime.UtcNow;
         }
 
         public class BuyBackpack : Backpack
@@ -322,11 +405,17 @@ namespace Server.Mobiles
                 Weight = 1.0;
             }
 
-            public override int DefaultMaxWeight => 0;
+            public override int DefaultMaxWeight { get { return 0; } }
 
             public override bool IsAccessibleTo(Mobile m)
             {
                 return true;
+            }
+
+            public override bool CheckItemUse(Mobile from, Item item)
+            {
+                from.SendLocalizedMessage(500447); // That is not accessible.
+                return false;
             }
 
             public override void GetChildProperties(ObjectPropertyList list, Item item)
@@ -336,36 +425,11 @@ namespace Server.Mobiles
                 MysteriousWisp wisp = RootParent as MysteriousWisp;
 
                 if (wisp == null)
-                {
                     return;
-                }
 
-                list.Add(1153425, wisp.GetCostFor(item).ToString()); // Price: ~1_AMT~ Despise Crystals
-            }
+                int cost = wisp.GetCostFor(item);
 
-            public override void GetChildContextMenuEntries(Mobile from, List<ContextMenuEntry> list, Item item)
-            {
-                base.GetChildContextMenuEntries(from, list, item);
-
-                list.Add(new SimpleContextMenuEntry<Item>(from, 1062219, (m, i) => // Buy
-                {
-                    var wisp = RootParent as MysteriousWisp;
-
-                    if (wisp != null && i.IsChildOf(this))
-                    {
-                        wisp.TryBuyItem(m, i);
-                    }
-                },
-                item, nonlocalUse: true));
-
-                list.Add(new SimpleContextMenuEntry<Item>(from, 1153469, (m, i) => // Move
-                {
-                    if (i.IsChildOf(this))
-                    {
-                        DropItem(i);
-                    }
-                },
-                item, nonlocalUse: true));
+                list.Add(1153425, cost.ToString()); // Price: ~1_AMT~ Despise Crystals
             }
 
             public BuyBackpack(Serial serial)
@@ -377,7 +441,7 @@ namespace Server.Mobiles
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -385,6 +449,186 @@ namespace Server.Mobiles
                 base.Deserialize(reader);
 
                 int version = reader.ReadInt();
+            }
+        }
+
+        private class InternalGump : Gump
+        {
+            private static List<Mobile> m_Viewers = new List<Mobile>();
+
+            private MysteriousWisp m_Wisp;
+            private List<Item> m_Items;
+
+            public InternalGump(MysteriousWisp wisp, Mobile viewer) : base(40, 40)
+            {
+                m_Wisp = wisp;
+                if (!m_Viewers.Contains(viewer))
+                    m_Viewers.Add(viewer);
+
+                AddBackground(0, 0, 320, 404, 0x13BE);
+                AddImageTiled(10, 10, 300, 20, 0xA40);
+                AddImageTiled(10, 40, 300, 324, 0xA40);
+                AddImageTiled(10, 374, 300, 20, 0xA40);
+                AddAlphaRegion(10, 10, 300, 384);
+
+                AddHtml(14, 12, 500, 20, "<BASEFONT COLOR=#FFFFFF>Mysterious Wisp Inventory</BASEFONT>", false, false);
+
+                AddButton(10, 374, 0xFB1, 0xFB2, 0, GumpButtonType.Reply, 0);
+                AddHtmlLocalized(45, 376, 450, 20, 1011012, 0x7FFF, false, false); // CANCEL
+
+                m_Items = new List<Item>(m_Wisp.Backpack.Items);
+                int current = 0;
+
+                for (int i = 0; i < m_Items.Count; i++)
+                {
+                    Item item = m_Items[i];
+
+                    int page = current / 5 + 1;
+                    int pos = current % 5;
+
+                    if (pos == 0)
+                    {
+                        if (page > 1)
+                        {
+                            AddButton(200, 374, 0xFA5, 0xFA7, 0, GumpButtonType.Page, page);
+                            AddHtmlLocalized(240, 376, 60, 20, 1043353, 0x7FFF, false, false); // Next
+                        }
+
+                        AddPage(page);
+
+                        if (page > 1)
+                        {
+                            AddButton(100, 374, 0xFAE, 0xFB0, 0, GumpButtonType.Page, page - 1);
+                            AddHtmlLocalized(140, 376, 60, 20, 1011393, 0x7FFF, false, false); // Back
+                        }
+                    }
+
+                    if (item != null && !item.Deleted)
+                    {
+                        int x = 14;
+                        int y = (pos * 64) + 44;
+
+                        Rectangle2D b = ItemBounds.Table[item.ItemID];
+
+                        AddImageTiledButton(x, y, 0x918, 0x919, i + 1, GumpButtonType.Reply, 0, item.ItemID, item.Hue, 40 - b.Width / 2 - b.X, 30 - b.Height / 2 - b.Y);
+                        AddItemProperty(item.Serial);
+
+                        string cost = m_Wisp.GetCostFor(item) > -1 ? m_Wisp.GetCostFor(item).ToString("###,###,###") : "No Longer Available";
+
+                        AddHtmlLocalized(x + 84, y, 250, 60, item.LabelNumber, 0x7FFF, false, false);
+                        AddHtml(x + 84, y + 20, 250, 60, "<BASEFONT COLOR=#FFFFFF>" + cost + "</BASEFONT>", false, false);
+
+                        current++;
+                    }
+                }
+            }
+
+            public override void OnResponse(NetState state, RelayInfo info)
+            {
+                Mobile from = state.Mobile;
+
+                if (m_Viewers.Contains(from))
+                    m_Viewers.Remove(from);
+
+                int idx = info.ButtonID - 1;
+
+                if (idx >= 0 && idx < m_Items.Count)
+                {
+                    Item item = m_Items[idx];
+
+                    if (item != null && !item.Deleted && m_Wisp.Backpack != null && m_Wisp.Backpack.Items.Contains(item))
+                    {
+                        from.SendGump(new InternalGump2(m_Wisp, item));
+                    }
+                }
+            }
+
+            public static void Resend(MysteriousWisp wisp)
+            {
+                if (m_Viewers == null || m_Viewers.Count == 0)
+                    return;
+
+                List<Mobile> viewers = new List<Mobile>(m_Viewers);
+                Type t = typeof(Server.Mobiles.MysteriousWisp.InternalGump);
+
+                foreach (Mobile m in viewers)
+                {
+                    if (m.HasGump(t))
+                    {
+                        m.CloseGump(t);
+
+                        if (m_Viewers.Contains(m))
+                            m_Viewers.Remove(m);
+
+                        if(wisp.InRange(m.Location, 5) && wisp.Backpack != null)
+                            m.SendGump(new InternalGump(wisp, m));
+                    }
+                }
+            }
+
+            public static void Clear()
+            {
+                if (m_Viewers == null || m_Viewers.Count == 0)
+                    return;
+
+                List<Mobile> viewers = new List<Mobile>(m_Viewers);
+                Type t = typeof(Server.Mobiles.MysteriousWisp.InternalGump);
+
+                foreach (Mobile m in viewers)
+                {
+                    if (m.HasGump(t))
+                        m.CloseGump(t);
+                }
+
+                m_Viewers.Clear();
+            }
+        }
+
+        private class InternalGump2 : Gump
+        {
+            private MysteriousWisp m_Wisp;
+            private Item m_Item;
+            private bool m_Available;
+
+            public InternalGump2(MysteriousWisp wisp, Item item) : base(40, 40)
+            {
+                m_Wisp = wisp;
+                m_Item = item;
+
+                AddImageTiled(0, 0, 300, 180, 0xA8E);
+                AddAlphaRegion(0, 0, 300, 180);
+                AddBackground(150, 10, 130, 130, 0xBB8);
+
+                AddHtml(10, 10, 150, 20, "<BASEFONT COLOR=#FFFFFF>CONFIRM PURCHASE:</BASEFONT>", false, false);
+                AddHtmlLocalized(10, 30, 140, 20, item.LabelNumber, 0x7FFF, false, false);
+
+                m_Available = m_Wisp.GetCostFor(item) > -1;
+                string cost = m_Available ? m_Wisp.GetCostFor(item).ToString() : "No Longer Available";
+
+                AddHtml(10, 100, 140, 20, "<BASEFONT COLOR=#FFFFFF>Despise Crystals:</BASEFONT>", false, false);
+                AddHtml(10, 120, 140, 20, "<BASEFONT COLOR=#FFFFFF>"+cost+"</BASEFONT>", false, false);
+
+                Rectangle2D b = ItemBounds.Table[item.ItemID];
+                AddItem(210 - b.Width / 2 - b.X, 70 - b.Height / 2 - b.Y, item.ItemID, item.Hue);
+                AddItemProperty(item.Serial);
+
+                if (m_Available)
+                    AddButton(90, 150, 2128, 2129, 1, GumpButtonType.Reply, 0);
+
+                AddButton(155, 150, 2119, 2120, 0, GumpButtonType.Reply, 0);
+            }
+
+            public override void OnResponse(NetState state, RelayInfo info)
+            {
+                Mobile from = state.Mobile;
+
+                if (info.ButtonID == 1)
+                {
+                    if (m_Available)
+                        m_Wisp.TryBuyItem(from, m_Item);
+                    else
+                        from.SendMessage("That item is no longer available");
+                }
             }
         }
     }

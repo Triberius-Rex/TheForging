@@ -1,13 +1,16 @@
-using Server.Mobiles;
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.Mobiles;
 using System.Linq;
+using Server.Network;
+using Server.Commands;
 
 namespace Server.Items
 {
     public class MyrmidexHill : Item
     {
-        private readonly Type[] _SpawnList =
+        private Type[] _SpawnList =
         {
             typeof(MyrmidexLarvae), typeof(MyrmidexDrone), typeof(MyrmidexWarrior)
         };
@@ -22,7 +25,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile Focus { get; set; }
 
-        public int SpawnCount => Utility.RandomMinMax(6, 9);
+        public int SpawnCount { get { return Utility.RandomMinMax(6, 9); } }
 
         public int HasSpawned { get; set; }
 
@@ -36,10 +39,10 @@ namespace Server.Items
             Spawn = new List<BaseCreature>();
         }
 
-        public override bool HandlesOnMovement => NextSpawn < DateTime.UtcNow;
+        public override bool HandlesOnMovement { get { return NextSpawn < DateTime.UtcNow; } }
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
-            if (m.InRange(Location, 7) && m.AccessLevel == AccessLevel.Player &&
+            if (m.InRange(this.Location, 7) && m.AccessLevel == AccessLevel.Player &&
                 (m is PlayerMobile || (m is BaseCreature && ((BaseCreature)m).GetMaster() is PlayerMobile)))
             {
                 Focus = m;
@@ -49,14 +52,14 @@ namespace Server.Items
 
         public void DoSpawn()
         {
-            Map map = Map;
+            Map map = this.Map;
 
             if (Spawn == null)
                 return;
 
             ColUtility.ForEach(Spawn.Where(bc => bc == null || !bc.Alive || bc.Deleted), bc => Spawn.Remove(bc));
 
-            if (map != null && map != Map.Internal && !Deleted && Spawn.Count == 0 && HasSpawned < 3)
+            if (map != null && map != Map.Internal && !this.Deleted && Spawn.Count == 0 && HasSpawned < 3)
             {
                 HasSpawned++;
                 NextSpawn = DateTime.UtcNow + TimeSpan.FromMinutes(Utility.RandomMinMax(2, 5));
@@ -66,15 +69,15 @@ namespace Server.Items
                 {
                     Timer.DelayCall(TimeSpan.FromMilliseconds(time), () =>
                     {
-                        Point3D p = Location;
+                        Point3D p = this.Location;
 
                         for (int j = 0; j < 25; j++)
                         {
-                            int x = Utility.RandomMinMax(X - 3, X + 3);
-                            int y = Utility.RandomMinMax(Y - 3, Y + 3);
+                            int x = Utility.RandomMinMax(this.X - 3, this.X + 3);
+                            int y = Utility.RandomMinMax(this.Y - 3, this.Y + 3);
                             int z = map.GetAverageZ(x, y);
 
-                            if (map.CanSpawnMobile(x, y, z) && InLOS(new Point3D(x, y, z)))
+                            if (map.CanSpawnMobile(x, y, z) && this.InLOS(new Point3D(x, y, z)))
                             {
                                 p = new Point3D(x, y, z);
                                 break;
@@ -88,7 +91,7 @@ namespace Server.Items
                             Spawn.Add(bc);
                             bc.MoveToWorld(p, map);
 
-                            Timer.DelayCall(creature => creature.Combatant = Focus, bc);
+                            Timer.DelayCall<BaseCreature>(creature => creature.Combatant = Focus, bc);
                         }
                     });
 
@@ -142,7 +145,7 @@ namespace Server.Items
                 Spawn.ForEach(bc => writer.Write(bc));
             }
 
-            Timer.DelayCall(TimeSpan.FromMinutes(1), CheckSpawn);
+            Timer.DelayCall(TimeSpan.FromSeconds(30), CheckSpawn);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -179,7 +182,7 @@ namespace Server.Items
             {
                 Timer.DelayCall(TimeSpan.FromSeconds(10), () =>
                 {
-                    EodonTribeRegion r = Region.Find(Location, Map) as EodonTribeRegion;
+                    EodonTribeRegion r = Region.Find(this.Location, this.Map) as EodonTribeRegion;
 
                     if (r != null)
                         Zone = r;
@@ -202,12 +205,12 @@ namespace Server.Items
 
         public static EodonTribeRegion[] _Zones = new EodonTribeRegion[6];
 
-        public int MaxSpawns { get; }
+        public int MaxSpawns { get; private set; }
         public EodonTribe Tribe { get; set; }
-        public int Spawns => GetItemCount(i => i is MyrmidexHill);
+        public int Spawns { get { return this.GetItemCount(i => i is MyrmidexHill); } }
 
         public EodonTribeRegion(EodonTribe tribe, Rectangle2D[] rec, int maxSpawns)
-            : base(tribe + " tribe", Map.TerMur, DefaultPriority, rec)
+            : base(tribe.ToString() + " tribe", Map.TerMur, Region.DefaultPriority, rec)
         {
             Tribe = tribe;
             Register();
@@ -230,16 +233,16 @@ namespace Server.Items
                     {
                         int x = Utility.RandomMinMax(p.X - 5, p.X + 5);
                         int y = Utility.RandomMinMax(p.Y - 5, p.Y + 5);
-                        int z = Map.GetAverageZ(x, y);
+                        int z = this.Map.GetAverageZ(x, y);
 
-                        if (Map.CanFit(x, y, z, 16, false, false, true))
+                        if (this.Map.CanFit(x, y, z, 16, false, false, true))
                         {
                             p = new Point3D(x, y, z);
                             break;
                         }
                     }
 
-                    hill.MoveToWorld(p, Map);
+                    hill.MoveToWorld(p, this.Map);
                     hill.DoSpawn();
                 }
             }

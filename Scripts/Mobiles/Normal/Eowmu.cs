@@ -1,16 +1,16 @@
-using Server.Gumps;
 using System;
+using Server.Gumps;
 
 namespace Server.Mobiles
 {
     public class EowmuStatue : Item, ICreatureStatuette
     {
-        public override int LabelNumber => 1158082;  // Eowmu
+        public override int LabelNumber { get { return 1158082; } } // Eowmu
 
-        public Type CreatureType => typeof(Eowmu);
+        public Type CreatureType { get { return typeof(Eowmu); } }
 
         [Constructable]
-        public EowmuStatue()
+        public EowmuStatue() 
             : base(0xA0C0)
         {
             LootType = LootType.Blessed;
@@ -31,7 +31,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -52,7 +52,7 @@ namespace Server.Mobiles
 
         [Constructable]
         public Eowmu(string name)
-            : base(name, 1440, 16079, AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(name, 1440, 16079, AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             BaseSoundID = 0xA8;
 
@@ -90,14 +90,14 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 3;
-        public override int Hides => 10;
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies;
+        public override int Meat { get { return 3; } }
+        public override int Hides { get { return 10; } }
+        public override FoodType FavoriteFood { get { return FoodType.FruitsAndVegies; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

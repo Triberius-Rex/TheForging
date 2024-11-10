@@ -1,5 +1,6 @@
-using Server.Gumps;
+using System;
 using System.Collections;
+using Server.Gumps;
 
 namespace Server.Commands.Generic
 {
@@ -24,85 +25,85 @@ namespace Server.Commands.Generic
         private string m_Description;
         public BaseCommand()
         {
-            m_Responses = new ArrayList();
-            m_Failures = new ArrayList();
+            this.m_Responses = new ArrayList();
+            this.m_Failures = new ArrayList();
         }
 
         public bool ListOptimized
         {
             get
             {
-                return m_ListOptimized;
+                return this.m_ListOptimized;
             }
             set
             {
-                m_ListOptimized = value;
+                this.m_ListOptimized = value;
             }
         }
         public string[] Commands
         {
             get
             {
-                return m_Commands;
+                return this.m_Commands;
             }
             set
             {
-                m_Commands = value;
+                this.m_Commands = value;
             }
         }
         public string Usage
         {
             get
             {
-                return m_Usage;
+                return this.m_Usage;
             }
             set
             {
-                m_Usage = value;
+                this.m_Usage = value;
             }
         }
         public string Description
         {
             get
             {
-                return m_Description;
+                return this.m_Description;
             }
             set
             {
-                m_Description = value;
+                this.m_Description = value;
             }
         }
         public AccessLevel AccessLevel
         {
             get
             {
-                return m_AccessLevel;
+                return this.m_AccessLevel;
             }
             set
             {
-                m_AccessLevel = value;
+                this.m_AccessLevel = value;
             }
         }
         public ObjectTypes ObjectTypes
         {
             get
             {
-                return m_ObjectTypes;
+                return this.m_ObjectTypes;
             }
             set
             {
-                m_ObjectTypes = value;
+                this.m_ObjectTypes = value;
             }
         }
         public CommandSupport Supports
         {
             get
             {
-                return m_Implementors;
+                return this.m_Implementors;
             }
             set
             {
-                m_Implementors = value;
+                this.m_Implementors = value;
             }
         }
         public static bool IsAccessible(Mobile from, object obj)
@@ -128,7 +129,7 @@ namespace Server.Commands.Generic
         public virtual void ExecuteList(CommandEventArgs e, ArrayList list)
         {
             for (int i = 0; i < list.Count; ++i)
-                Execute(e, list[i]);
+                this.Execute(e, list[i]);
         }
 
         public virtual void Execute(CommandEventArgs e, object obj)
@@ -142,9 +143,9 @@ namespace Server.Commands.Generic
 
         public void AddResponse(string message)
         {
-            for (int i = 0; i < m_Responses.Count; ++i)
+            for (int i = 0; i < this.m_Responses.Count; ++i)
             {
-                MessageEntry entry = (MessageEntry)m_Responses[i];
+                MessageEntry entry = (MessageEntry)this.m_Responses[i];
 
                 if (entry.m_Message == message)
                 {
@@ -153,22 +154,22 @@ namespace Server.Commands.Generic
                 }
             }
 
-            if (m_Responses.Count == 10)
+            if (this.m_Responses.Count == 10)
                 return;
 
-            m_Responses.Add(new MessageEntry(message));
+            this.m_Responses.Add(new MessageEntry(message));
         }
 
         public void AddResponse(Gump gump)
         {
-            m_Responses.Add(gump);
+            this.m_Responses.Add(gump);
         }
 
         public void LogFailure(string message)
         {
-            for (int i = 0; i < m_Failures.Count; ++i)
+            for (int i = 0; i < this.m_Failures.Count; ++i)
             {
-                MessageEntry entry = (MessageEntry)m_Failures[i];
+                MessageEntry entry = (MessageEntry)this.m_Failures[i];
 
                 if (entry.m_Message == message)
                 {
@@ -177,19 +178,19 @@ namespace Server.Commands.Generic
                 }
             }
 
-            if (m_Failures.Count == 10)
+            if (this.m_Failures.Count == 10)
                 return;
 
-            m_Failures.Add(new MessageEntry(message));
+            this.m_Failures.Add(new MessageEntry(message));
         }
 
         public void Flush(Mobile from, bool flushToLog)
         {
-            if (m_Responses.Count > 0)
+            if (this.m_Responses.Count > 0)
             {
-                for (int i = 0; i < m_Responses.Count; ++i)
+                for (int i = 0; i < this.m_Responses.Count; ++i)
                 {
-                    object obj = m_Responses[i];
+                    object obj = this.m_Responses[i];
 
                     if (obj is MessageEntry)
                     {
@@ -206,12 +207,12 @@ namespace Server.Commands.Generic
             }
             else
             {
-                for (int i = 0; i < m_Failures.Count; ++i)
-                    from.SendMessage(((MessageEntry)m_Failures[i]).ToString());
+                for (int i = 0; i < this.m_Failures.Count; ++i)
+                    from.SendMessage(((MessageEntry)this.m_Failures[i]).ToString());
             }
 
-            m_Responses.Clear();
-            m_Failures.Clear();
+            this.m_Responses.Clear();
+            this.m_Failures.Clear();
         }
 
         private class MessageEntry
@@ -220,16 +221,16 @@ namespace Server.Commands.Generic
             public int m_Count;
             public MessageEntry(string message)
             {
-                m_Message = message;
-                m_Count = 1;
+                this.m_Message = message;
+                this.m_Count = 1;
             }
 
             public override string ToString()
             {
-                if (m_Count > 1)
-                    return string.Format("{0} ({1})", m_Message, m_Count);
+                if (this.m_Count > 1)
+                    return String.Format("{0} ({1})", this.m_Message, this.m_Count);
 
-                return m_Message;
+                return this.m_Message;
             }
         }
     }

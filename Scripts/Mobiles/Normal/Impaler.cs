@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -40,6 +41,8 @@ namespace Server.Mobiles
             Fame = 24000;
             Karma = -24000;
 
+            VirtualArmor = 49;
+
             SetWeaponAbility(WeaponAbility.BleedAttack);
             SetWeaponAbility(WeaponAbility.MortalStrike);
             SetWeaponAbility(WeaponAbility.ArmorIgnore);
@@ -53,25 +56,76 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanFlee => false;
+        public override bool CanFlee { get { return false; } }
 
-        public override bool IgnoreYoungProtection => true;
-        public override bool AutoDispel => true;
-        public override bool Unprovokable => true;
-        public override bool AreaPeaceImmune => true;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly);
-        public override int TreasureMapLevel => 1;
+        public override bool IgnoreYoungProtection
+        {
+            get
+            {
+                return Core.ML;
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool AreaPeaceImmune
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly);
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 2);
         }
 
+        
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

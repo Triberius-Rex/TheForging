@@ -1,4 +1,6 @@
-﻿using Server.Mobiles;
+﻿using System;
+using Server.Mobiles; 
+using Server; 
 
 namespace Server.Items
 {
@@ -10,18 +12,18 @@ namespace Server.Items
             pm.AddResistanceMod(new ResistanceMod(ResistanceType.Cold, -5));
             pm.AddResistanceMod(new ResistanceMod(ResistanceType.Fire, -5));
 
-            pm.AddResistanceMod(new ResistanceMod(ResistanceType.Physical, 30));
+            pm.AddResistanceMod(new ResistanceMod(ResistanceType.Physical, 30)); 
 
             base.ApplyEffect(pm);
         }
 
-        public override int LabelNumber => 1094944;  // Stone Skin Lotion
+        public override int LabelNumber { get { return 1094944; } } // Stone Skin Lotion
 
-        [Constructable]
+        [Constructable] 
         public StoneSkinLotion()
             : base(0xEFD)
         {
-            m_EffectType = ThieveConsumableEffect.StoneSkinLotionEffect;
+            m_EffectType = ThieveConsumableEffect.StoneSkinLotionEffect; 
         }
 
         public StoneSkinLotion(Serial serial)
@@ -33,7 +35,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

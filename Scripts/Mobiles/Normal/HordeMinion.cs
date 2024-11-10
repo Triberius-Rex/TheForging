@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -9,36 +10,36 @@ namespace Server.Mobiles
         public HordeMinion()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "a horde minion";
-            Body = 776;
-            BaseSoundID = 357;
+            this.Name = "a horde minion";
+            this.Body = 776;
+            this.BaseSoundID = 357;
 
-            SetStr(16, 40);
-            SetDex(31, 60);
-            SetInt(11, 25);
+            this.SetStr(16, 40);
+            this.SetDex(31, 60);
+            this.SetInt(11, 25);
 
-            SetHits(10, 24);
+            this.SetHits(10, 24);
 
-            SetDamage(5, 10);
+            this.SetDamage(5, 10);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 15, 20);
-            SetResistance(ResistanceType.Fire, 5, 10);
+            this.SetResistance(ResistanceType.Physical, 15, 20);
+            this.SetResistance(ResistanceType.Fire, 5, 10);
 
-            SetSkill(SkillName.MagicResist, 10.0);
-            SetSkill(SkillName.Tactics, 0.1, 15.0);
-            SetSkill(SkillName.Wrestling, 25.1, 40.0);
+            this.SetSkill(SkillName.MagicResist, 10.0);
+            this.SetSkill(SkillName.Tactics, 0.1, 15.0);
+            this.SetSkill(SkillName.Wrestling, 25.1, 40.0);
 
-            Fame = 500;
-            Karma = -500;
+            this.Fame = 500;
+            this.Karma = -500;
 
-            AddItem(new LightSource());
-        }
+            this.VirtualArmor = 18;
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.LootItem<Bone>(3));
+            this.AddItem(new LightSource());
+
+            this.PackItem(new Bone(3));
+            // TODO: Body parts
         }
 
         public HordeMinion(Serial serial)
@@ -74,7 +75,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

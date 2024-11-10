@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class AlchemistsBandage : Item
@@ -6,9 +8,9 @@ namespace Server.Items
         public AlchemistsBandage()
             : base(0xE21)
         {
-            LootType = LootType.Blessed;
-            Weight = 1.0;
-            Hue = 0x482;
+            this.LootType = LootType.Blessed;
+            this.Weight = 1.0;
+            this.Hue = 0x482;
         }
 
         public AlchemistsBandage(Serial serial)
@@ -16,12 +18,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1075452;// Alchemist's Bandage
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1075452;
+            }
+        }// Alchemist's Bandage
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

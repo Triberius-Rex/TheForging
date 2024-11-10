@@ -1,12 +1,12 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("a cu sidhe corpse")]
     public class CuSidhe : BaseMount
     {
-        public override double HealChance => 1.0;
+        public override double HealChance { get { return 1.0; } }
 
         [Constructable]
         public CuSidhe()
@@ -16,15 +16,15 @@ namespace Server.Mobiles
 
         [Constructable]
         public CuSidhe(string name)
-            : base(name, 277, 0x3E91, AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(name, 277, 0x3E91, AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             double chance = Utility.RandomDouble() * 23301;
 
             if (chance <= 1)
                 Hue = 0x489;
-            else if (chance <= 301)
+            else if (chance < 50)
                 Hue = Utility.RandomList(0x657, 0x515, 0x4B1, 0x481, 0x482, 0x455);
-            else if (chance <= 3301)
+            else if (chance < 500)
                 Hue = Utility.RandomList(0x97A, 0x978, 0x901, 0x8AC, 0x5A7, 0x527);
 
             SetStr(1200, 1225);
@@ -58,6 +58,8 @@ namespace Server.Mobiles
             ControlSlots = 4;
             MinTameSkill = 101.1;
 
+            PackGold(500, 800);
+
             SetWeaponAbility(WeaponAbility.BleedAttack);
         }
 
@@ -66,22 +68,54 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel => 5;
+        public override int TreasureMapLevel
+        {
+            get { return 5; }
+        }
 
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies;
-        public override bool CanAngerOnTame => true;
-        public override bool StatLossAfterTame => true;
-        public override int Hides => 10;
-        public override int Meat => 3;
-
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.FruitsAndVegies;
+            }
+        }
+        public override bool CanAngerOnTame
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool StatLossAfterTame
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 3;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 5);
+            AddLoot(LootPack.AosFilthyRich, 5);
         }
 
         public override void OnAfterTame(Mobile tamer)
         {
-            if (Owners.Count == 0)
+            if (Owners.Count == 0 && PetTrainingHelper.Enabled)
             {
                 if (RawStr > 0)
                     RawStr = (int)Math.Max(1, RawStr * 0.5);
@@ -148,7 +182,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(3); // version
+            writer.Write((int)3); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -159,7 +193,7 @@ namespace Server.Mobiles
 
             if (version < 3 && Controlled && RawStr >= 1200 && ControlSlots == ControlSlotsMin)
             {
-                SkillHandlers.AnimalTaming.ScaleStats(this, 0.5);
+                Server.SkillHandlers.AnimalTaming.ScaleStats(this, 0.5);
             }
 
             if (version < 1 && Name == "a Cu Sidhe")

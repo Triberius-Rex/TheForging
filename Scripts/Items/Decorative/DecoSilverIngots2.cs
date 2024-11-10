@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class DecoSilverIngots2 : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public DecoSilverIngots2()
             : base(0x1BF6)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public DecoSilverIngots2(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

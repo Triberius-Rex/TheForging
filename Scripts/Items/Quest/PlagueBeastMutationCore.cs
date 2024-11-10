@@ -1,22 +1,22 @@
+using System;
 using Server.Mobiles;
 using Server.Network;
-using System;
 
 namespace Server.Items
 {
     public class PlagueBeastMutationCore : Item, IScissorable
     {
         private bool m_Cut;
-
-        public override int LabelNumber => 1153760;  // a plague beast mutation core
-
+		
+		public override int LabelNumber { get { return 1153760; } } // a plague beast mutation core
+		
         [Constructable]
         public PlagueBeastMutationCore()
             : base(0x1CF0)
-        {
+        {                     
             Weight = 1.0;
             Hue = 0x480;
-            m_Cut = true;
+			m_Cut = true; 
         }
 
         public PlagueBeastMutationCore(Serial serial)
@@ -29,27 +29,27 @@ namespace Server.Items
         {
             get
             {
-                return m_Cut;
+                return this.m_Cut;
             }
             set
             {
-                m_Cut = value;
+                this.m_Cut = value;
             }
         }
         public virtual bool Scissor(Mobile from, Scissors scissors)
         {
-            if (!m_Cut)
+            if (!this.m_Cut)
             {
-                PlagueBeastLord owner = RootParent as PlagueBeastLord;
+                PlagueBeastLord owner = this.RootParent as PlagueBeastLord;
 
-                m_Cut = true;
-                Movable = true;
+                this.m_Cut = true;
+                this.Movable = true;
 
                 from.AddToBackpack(this);
                 from.LocalOverheadMessage(MessageType.Regular, 0x34, 1071906); // * You remove the plague mutation core from the plague beast, causing it to dissolve into a pile of goo *				
 
                 if (owner != null)
-                    Timer.DelayCall(TimeSpan.FromSeconds(1), KillParent, owner);
+                    Timer.DelayCall<PlagueBeastLord>(TimeSpan.FromSeconds(1), new TimerStateCallback<PlagueBeastLord>(KillParent), owner);
 
                 return true;
             }
@@ -63,7 +63,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_Cut);
+            writer.Write((bool)this.m_Cut);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -72,7 +72,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Cut = reader.ReadBool();
+            this.m_Cut = reader.ReadBool();
         }
 
         private void KillParent(PlagueBeastLord parent)

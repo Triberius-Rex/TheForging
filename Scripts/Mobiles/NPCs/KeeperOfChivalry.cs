@@ -1,5 +1,6 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,10 +11,10 @@ namespace Server.Mobiles
         public KeeperOfChivalry()
             : base("the Keeper of Chivalry")
         {
-            SetSkill(SkillName.Fencing, 75.0, 85.0);
-            SetSkill(SkillName.Macing, 75.0, 85.0);
-            SetSkill(SkillName.Swords, 75.0, 85.0);
-            SetSkill(SkillName.Chivalry, 100.0);
+            this.SetSkill(SkillName.Fencing, 75.0, 85.0);
+            this.SetSkill(SkillName.Macing, 75.0, 85.0);
+            this.SetSkill(SkillName.Swords, 75.0, 85.0);
+            this.SetSkill(SkillName.Chivalry, 100.0);
         }
 
         public KeeperOfChivalry(Serial serial)
@@ -21,72 +22,87 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBKeeperOfChivalry());
+            this.m_SBInfos.Add(new SBKeeperOfChivalry());
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new PlateArms(), dropChance: 1);
-            SetWearable(new PlateChest(), dropChance: 1);
-            SetWearable(new PlateGloves(), dropChance: 1);
-            SetWearable(new StuddedGorget(), dropChance: 1);
-			SetWearable(new PlateLegs(), dropChance: 1);
+            this.AddItem(new PlateArms());
+            this.AddItem(new PlateChest());
+            this.AddItem(new PlateGloves());
+            this.AddItem(new StuddedGorget());
+            this.AddItem(new PlateLegs());
 
-            switch (Utility.Random(4))
+            switch ( Utility.Random(4) )
             {
                 case 0:
-					SetWearable(new PlateHelm(), dropChance: 1);
+                    this.AddItem(new PlateHelm());
                     break;
                 case 1:
-					SetWearable(new NorseHelm(), dropChance: 1);
+                    this.AddItem(new NorseHelm());
                     break;
                 case 2:
-					SetWearable(new CloseHelm(), dropChance: 1);
+                    this.AddItem(new CloseHelm());
                     break;
                 case 3:
-					SetWearable(new Helmet(), dropChance: 1);
+                    this.AddItem(new Helmet());
                     break;
             }
 
-            switch (Utility.Random(3))
+            switch ( Utility.Random(3) )
             {
                 case 0:
-					SetWearable(new BodySash(), 0x482, 1);
+                    this.AddItem(new BodySash(0x482));
                     break;
                 case 1:
-					SetWearable(new Doublet(), 0x482, 1);
+                    this.AddItem(new Doublet(0x482));
                     break;
                 case 2:
-					SetWearable(new Tunic(), 0x482, 1);
+                    this.AddItem(new Tunic(0x482));
                     break;
             }
 
-			SetWearable(new Broadsword(), dropChance: 1);
-			SetWearable(new MetalKiteShield(), Utility.RandomNondyedHue(), 1);
+            this.AddItem(new Broadsword());
 
-            switch (Utility.Random(2))
+            Item shield = new MetalKiteShield();
+
+            shield.Hue = Utility.RandomNondyedHue();
+
+            this.AddItem(shield);
+
+            switch ( Utility.Random(2) )
             {
                 case 0:
-					SetWearable(new Boots(), dropChance: 1);
+                    this.AddItem(new Boots());
                     break;
                 case 1:
-					SetWearable(new ThighBoots(), dropChance: 1);
+                    this.AddItem(new ThighBoots());
                     break;
             }
+
+            this.PackGold(100, 200);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

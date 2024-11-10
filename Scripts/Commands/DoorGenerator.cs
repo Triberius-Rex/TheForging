@@ -1,3 +1,4 @@
+using System;
 using Server.Commands;
 using Server.Items;
 
@@ -326,7 +327,7 @@ namespace Server
         private static int m_Count;
         public static void Initialize()
         {
-            CommandSystem.Register("DoorGen", AccessLevel.Administrator, DoorGen_OnCommand);
+            CommandSystem.Register("DoorGen", AccessLevel.Administrator, new CommandEventHandler(DoorGen_OnCommand));
         }
 
         [Usage("DoorGen")]
@@ -469,7 +470,7 @@ namespace Server
                 return null;
 
             BaseDoor door = new DarkWoodDoor(facing);
-            WeakEntityCollection.Add("door", door);
+			WeakEntityCollection.Add("door", door);
             door.MoveToWorld(new Point3D(x, y, z), m_Map);
 
             ++m_Count;

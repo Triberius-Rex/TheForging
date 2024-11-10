@@ -1,7 +1,9 @@
-using Server.Items;
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+
+using Server;
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Engines.Quests.RitualQuest
 {
@@ -11,14 +13,14 @@ namespace Server.Engines.Quests.RitualQuest
 
         public static void Initialize()
         {
-            if (Instance == null)
+            if (Core.SA && Instance == null)
             {
                 Instance = new Prugyilonus();
                 Instance.MoveToWorld(new Point3D(750, 3344, 61), Map.TerMur);
             }
         }
 
-        public override Type[] Quests => new Type[] { typeof(ScalesOfADreamSerpentQuest) };
+        public override Type[] Quests { get { return new Type[] { typeof(ScalesOfADreamSerpentQuest) }; } }
 
         public Prugyilonus()
             : base("Prugyilonus", "the Advisor to the Queen")
@@ -57,19 +59,26 @@ namespace Server.Engines.Quests.RitualQuest
             base.Deserialize(reader);
             reader.ReadInt(); // version
 
-            Instance = this;
+            if (Core.SA)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Delete();
+            }
         }
     }
 
     public class Bexil : MondainQuester
     {
-        public override Type[] Quests => new Type[] { typeof(CatchMeIfYouCanQuest) };
+        public override Type[] Quests { get { return new Type[] { typeof(CatchMeIfYouCanQuest) }; } }
 
         public static Bexil Instance { get; set; }
 
         public static void Initialize()
         {
-            if (Instance == null)
+            if(Core.SA && Instance == null)
             {
                 Instance = new Bexil();
                 Instance.MoveToWorld(new Point3D(662, 3819, -43), Map.TerMur);
@@ -118,19 +127,26 @@ namespace Server.Engines.Quests.RitualQuest
             base.Deserialize(reader);
             reader.ReadInt(); // version
 
-            Instance = this;
+            if (Core.SA)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Delete();
+            }
         }
     }
 
     public class BexilPunchingBag : BaseCreature
     {
-        public override bool InitialInnocent => true;
+        public override bool InitialInnocent { get { return true; } }
 
-        private readonly Dictionary<Mobile, int> _Table = new Dictionary<Mobile, int>();
+        private Dictionary<Mobile, int> _Table = new Dictionary<Mobile, int>();
         private DateTime _NextTeleport;
 
         public BexilPunchingBag()
-            : base(AIType.AI_Melee, FightMode.None, 10, 1, 0.4, 0.8)
+            : base(AIType.AI_Animal, FightMode.None, 10, 1, 0.4, 0.8)
         {
             Name = "Bexil";
             Title = "the Dream Serpent";
@@ -156,8 +172,8 @@ namespace Server.Engines.Quests.RitualQuest
 
             if (Combatant is Mobile && _NextTeleport < DateTime.UtcNow)
             {
-                Map map = Map;
-                Mobile c = (Mobile)Combatant;
+                var map = Map;
+                var c = (Mobile)Combatant;
 
                 Point3D p;
 
@@ -182,7 +198,7 @@ namespace Server.Engines.Quests.RitualQuest
         {
             if (from is PlayerMobile)
             {
-                CatchMeIfYouCanQuest quest = QuestHelper.GetQuest<CatchMeIfYouCanQuest>((PlayerMobile)from);
+                var quest = QuestHelper.GetQuest<CatchMeIfYouCanQuest>((PlayerMobile)from);
 
                 if (quest != null)
                 {
@@ -200,7 +216,7 @@ namespace Server.Engines.Quests.RitualQuest
 
         public override void Delete()
         {
-            BexilPunchingBag bex = new BexilPunchingBag();
+            var bex = new BexilPunchingBag();
             bex.MoveToWorld(new Point3D(403, 3391, 38), Map.TerMur);
 
             base.Delete();
@@ -220,18 +236,23 @@ namespace Server.Engines.Quests.RitualQuest
         {
             base.Deserialize(reader);
             reader.ReadInt(); // version
+
+            if (!Core.SA)
+            {
+                Delete();
+            }
         }
     }
 
     public class Grubbix : MondainQuester
     {
-        public override Type[] Quests => new Type[] { typeof(FilthyLifeStealersQuest) };
+        public override Type[] Quests { get { return new Type[] { typeof(FilthyLifeStealersQuest) }; } }
 
         public static Grubbix Instance { get; set; }
 
         public static void Initialize()
         {
-            if (Instance == null)
+            if (Core.SA && Instance == null)
             {
                 Instance = new Grubbix();
                 Instance.MoveToWorld(new Point3D(1106, 3138, -43), Map.TerMur);
@@ -267,7 +288,14 @@ namespace Server.Engines.Quests.RitualQuest
             base.Deserialize(reader);
             reader.ReadInt(); // version
 
-            Instance = this;
+            if (Core.SA)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Delete();
+            }
         }
     }
 }

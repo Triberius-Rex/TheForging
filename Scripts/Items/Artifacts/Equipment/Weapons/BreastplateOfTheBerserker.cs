@@ -1,19 +1,21 @@
+using System;
+
 namespace Server.Items
 {
     public class BreastplateOfTheBerserker : GargishPlateChest
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1113539;  // Breastplate of the Berserker
-
+	{
+		public override bool IsArtifact { get { return true; } }
+		public override int LabelNumber { get { return 1113539; } } // Breastplate of the Berserker
+		
         [Constructable]
-        public BreastplateOfTheBerserker()
-        {
-            Hue = 1172;
+        public BreastplateOfTheBerserker() 
+        {	
+            Hue = 1172;	
             Attributes.WeaponSpeed = 10;
-            Attributes.WeaponDamage = 15;
+            Attributes.WeaponDamage = 15;		
             Attributes.LowerManaCost = 4;
-            Attributes.BonusHits = 5;
-            Attributes.RegenStam = 3;
+            Attributes.BonusHits = 5;			
+			Attributes.RegenStam = 3;
         }
 
         public BreastplateOfTheBerserker(Serial serial)
@@ -21,18 +23,60 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 18;
-        public override int BaseFireResistance => 16;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 11;
-        public override int BaseEnergyResistance => 5;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 18;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 11;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

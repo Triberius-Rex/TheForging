@@ -1,18 +1,21 @@
+using System;
+using Server.Engines.Harvest;
+
 namespace Server.Items
 {
     public class JadeWarAxe : WarAxe
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1115445;  // Jade War Axe
-
+	{
+		public override bool IsArtifact { get { return true; } }
+		public override int LabelNumber { get { return 1115445; } } // Jade War Axe
+		
         [Constructable]
         public JadeWarAxe()
-        {
-            Hue = 1162;
+        {	
+            Hue = 1162;			
             AbsorptionAttributes.EaterFire = 10;
             Slayer = SlayerName.ReptilianDeath;
-            WeaponAttributes.HitFireball = 30;
-            WeaponAttributes.HitLowerDefend = 60;
+            WeaponAttributes.HitFireball = 30;	
+            WeaponAttributes.HitLowerDefend = 60;		
             Attributes.WeaponSpeed = 20;
             Attributes.WeaponDamage = 50;
         }
@@ -22,12 +25,24 @@ namespace Server.Items
         {
         }
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

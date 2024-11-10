@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0xC24, 0xC25)]
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076261;// Broken Chest of Drawers
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076261;
+            }
+        }// Broken Chest of Drawers
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -35,7 +43,7 @@ namespace Server.Items
         public BrokenChestOfDrawersAddon()
             : base()
         {
-            AddComponent(new BrokenChestOfDrawersComponent(), 0, 0, 0);
+            this.AddComponent(new BrokenChestOfDrawersComponent(), 0, 0, 0);
         }
 
         public BrokenChestOfDrawersAddon(Serial serial)
@@ -43,7 +51,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new BrokenChestOfDrawersDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new BrokenChestOfDrawersDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -65,7 +79,7 @@ namespace Server.Items
         public BrokenChestOfDrawersDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public BrokenChestOfDrawersDeed(Serial serial)
@@ -73,8 +87,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new BrokenChestOfDrawersAddon();
-        public override int LabelNumber => 1076261;// Broken Chest of Drawers
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new BrokenChestOfDrawersAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076261;
+            }
+        }// Broken Chest of Drawers
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

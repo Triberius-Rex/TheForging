@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     public class ServantOfSemidar : BaseCreature
@@ -6,8 +8,8 @@ namespace Server.Mobiles
         public ServantOfSemidar()
             : base(AIType.AI_Melee, FightMode.None, 10, 1, 0.2, 0.4)
         {
-            Name = "a servant of Semidar";
-            Body = 0x26;
+            this.Name = "a servant of Semidar";
+            this.Body = 0x26;
         }
 
         public ServantOfSemidar(Serial serial)
@@ -15,8 +17,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DisallowAllMoves => true;
-        public override bool InitialInnocent => true;
+        public override bool DisallowAllMoves
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool InitialInnocent
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override bool CanBeDamaged()
         {
             return false;

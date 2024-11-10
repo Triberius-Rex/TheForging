@@ -1,6 +1,7 @@
-using Server.Gumps;
-using Server.Mobiles;
+using Server;
 using System;
+using Server.Mobiles;
+using Server.Gumps;
 
 namespace Server.Services.TownCryer
 {
@@ -18,10 +19,10 @@ namespace Server.Services.TownCryer
             {
                 Edit = true;
 
-                _Headline = Entry.Title != null ? Entry.Title.String : string.Empty;
-                _Body = Entry.Body1 != null ? Entry.Body1.String : string.Empty;
-                _Body2 = Entry.Body2 != null ? Entry.Body2 : string.Empty;
-                _Body3 = Entry.Body3 != null ? Entry.Body3 : string.Empty;
+                _Headline = Entry.Title != null ? Entry.Title.String : String.Empty;
+                _Body = Entry.Body1 != null ? Entry.Body1.String : String.Empty;
+                _Body2 = Entry.Body2 != null ? Entry.Body2 : String.Empty;
+                _Body3 = Entry.Body3 != null ? Entry.Body3 : String.Empty;
 
                 _Link = Entry.Link;
                 _LinkText = Entry.LinkText;
@@ -33,7 +34,7 @@ namespace Server.Services.TownCryer
             base.AddGumpLayout();
 
             AddHtmlLocalized(58, 140, 100, 20, 1158027, false, false); // Author:
-            AddLabel(105, 140, 0, string.Format("{1} {0}", User.Name, User.AccessLevel.ToString()));
+            AddLabel(105, 140, 0, String.Format("{1} {0}", User.Name, User.AccessLevel.ToString()));
 
             AddHtmlLocalized(58, 160, 100, 20, 1158026, false, false); // Headline:
             AddBackground(58, 180, 740, 20, 0x2486);
@@ -136,17 +137,17 @@ namespace Server.Services.TownCryer
             {
                 HandleText(info);
 
-                string headline = _Headline;
-                string body = _Body;
-                string body2 = _Body2;
-                string body3 = _Body3;
-                string exp = _Expires;
-                string link = _Link;
-                string linkText = _LinkText;
+                var headline = _Headline;
+                var body = _Body;
+                var body2 = _Body2;
+                var body3 = _Body3;
+                var exp = _Expires;
+                var link = _Link;
+                var linkText = _LinkText;
 
                 int expires = -1;
 
-                if (!string.IsNullOrEmpty(exp))
+                if (!String.IsNullOrEmpty(exp))
                 {
                     expires = Utility.ToInt32(exp);
                 }
@@ -170,7 +171,7 @@ namespace Server.Services.TownCryer
                     }
                 }
 
-                if (!Edit && (expires < 1 || expires > 30))
+                if(!Edit && (expires < 1 || expires > 30))
                 {
                     User.SendLocalizedMessage(1158033); // The expiry can be between 1 and 30 days. Please check your entry and try again.
                 }

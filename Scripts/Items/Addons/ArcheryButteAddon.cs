@@ -1,11 +1,11 @@
-using Server.Gumps;
-using Server.Network;
 using System;
 using System.Collections;
+using Server.Network;
+using Server.Gumps;
 
 namespace Server.Items
 {
-    [Flipable(0x100A/*East*/, 0x100B/*South*/)]
+    [FlipableAttribute(0x100A/*East*/, 0x100B/*South*/)]
     public class ArcheryButte : AddonComponent
     {
         private static readonly TimeSpan UseDelay = TimeSpan.FromSeconds(2.0);
@@ -169,7 +169,7 @@ namespace Server.Items
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 500598); // You are too far away from the archery butte to get an accurate shot.
                 return;
             }
-
+            
             if (from.InRange(worldLoc, 4))
             {
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 500599); // You are too close to the target.
@@ -209,7 +209,7 @@ namespace Server.Items
             }
 
             m_LastUse = DateTime.UtcNow;
-
+            
             from.MovingEffect(this, ranged.EffectID, 18, 1, false, false);
             from.Direction = from.GetDirectionTo(GetWorldLocation());
             ranged.PlaySwingAnimation(from);
@@ -227,7 +227,7 @@ namespace Server.Items
                 if (se.Count == 1)
                     PublicOverheadMessage(MessageType.Regular, 0x3B2, 1062719, se.Total.ToString());
                 else
-                    PublicOverheadMessage(MessageType.Regular, 0x3B2, 1042683, string.Format("{0}\t{1}", se.Total, se.Count));
+                    PublicOverheadMessage(MessageType.Regular, 0x3B2, 1042683, String.Format("{0}\t{1}", se.Total, se.Count));
 
                 return;
             }
@@ -267,13 +267,13 @@ namespace Server.Items
 
             if (split)
             {
-                PublicOverheadMessage(MessageType.Regular, 0x3B2, 1010027 + area, string.Format("{0}\t{1}", from.Name, isArrow ? "arrow" : "bolt"));
+                PublicOverheadMessage(MessageType.Regular, 0x3B2, 1010027 + area, String.Format("{0}\t{1}", from.Name, isArrow ? "arrow" : "bolt"));
             }
             else
             {
                 PublicOverheadMessage(MessageType.Regular, 0x3B2, 1010035 + area, from.Name);
 
-                if (ammoType != null)
+                if(ammoType != null)
                 {
                     if (isArrow)
                         ++m_Arrows;
@@ -287,7 +287,7 @@ namespace Server.Items
             if (se.Count == 1)
                 PublicOverheadMessage(MessageType.Regular, 0x3B2, 1062719, se.Total.ToString());
             else
-                PublicOverheadMessage(MessageType.Regular, 0x3B2, 1042683, string.Format("{0}\t{1}", se.Total, se.Count));
+                PublicOverheadMessage(MessageType.Regular, 0x3B2, 1042683, String.Format("{0}\t{1}", se.Total, se.Count));
         }
 
         public override void Serialize(GenericWriter writer)
@@ -399,7 +399,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ArcheryButteDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ArcheryButteDeed();
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
@@ -430,9 +436,21 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ArcheryButteAddon(Facing);
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ArcheryButteAddon(Facing);
+            }
+        }
 
-        public override int LabelNumber => 1080205;// archery butte
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1080205;
+            }
+        }// archery butte
 
         public override void OnDoubleClick(Mobile from)
         {

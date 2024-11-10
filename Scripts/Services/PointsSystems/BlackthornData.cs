@@ -1,19 +1,21 @@
+using System;
+using Server;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Mobiles;
-using System;
-using System.Collections.Generic;
+using Server.Engines.ResortAndCasino;
 
 namespace Server.Engines.Points
 {
     public class BlackthornData : PointsSystem
     {
-        public override PointsType Loyalty => PointsType.Blackthorn;
-        public override TextDefinition Name => m_Name;
-        public override bool AutoAdd => true;
-        public override double MaxPoints => double.MaxValue;
-        public override bool ShowOnLoyaltyGump => false;
+        public override PointsType Loyalty { get { return PointsType.Blackthorn; } }
+        public override TextDefinition Name { get { return m_Name; } }
+        public override bool AutoAdd { get { return true; } }
+        public override double MaxPoints { get { return double.MaxValue; } }
+        public override bool ShowOnLoyaltyGump { get { return false; } }
 
-        private readonly TextDefinition m_Name = null;
+        private TextDefinition m_Name = null;
 
         public BlackthornData()
         {
@@ -27,11 +29,11 @@ namespace Server.Engines.Points
 
         public override void ProcessKill(Mobile victim, Mobile damager)
         {
-            BaseCreature bc = victim as BaseCreature;
+            var bc = victim as BaseCreature;
 
             if (bc == null || bc.Controlled || bc.Summoned || !damager.Alive || damager.Deleted)
                 return;
-
+        
             Region r = bc.Region;
 
             if (damager is PlayerMobile && r.IsPartOf("BlackthornDungeon"))

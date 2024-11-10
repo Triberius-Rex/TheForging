@@ -42,9 +42,9 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool IsScaryToPets => true;
-        public override bool BardImmune => true;
-
+        public override bool IsScaryToPets { get { return true; } }
+        public override bool BardImmune { get { return true; } }
+		
         public override void OnDeath(Container c)
         {
             base.OnDeath(c);
@@ -63,7 +63,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

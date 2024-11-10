@@ -1,12 +1,19 @@
-using Server.Guilds;
-using Server.Gumps;
-using Server.Misc;
-using Server.Mobiles;
-using Server.Multis;
-using Server.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Network;
+using Server.Guilds;
+using Server.Engines.Points;
+using Server.Engines.CityLoyalty;
+using Server.SkillHandlers;
+using Server.Multis;
+using Server.Regions;
+using Server.Misc;
 
 namespace Server.Engines.VvV
 {
@@ -16,7 +23,7 @@ namespace Server.Engines.VvV
         Assist,
         Steal,
         TurnInVice,
-        TurnInVirtue,
+        TurnInVirtue, 
         Disarm
     }
 
@@ -154,11 +161,14 @@ namespace Server.Engines.VvV
 
         public Timer Timer { get; private set; }
 
-        public int TrapCount => Traps.Where(t => !t.Deleted).Count();
-        public int TurretCount => Turrets.Where(t => !t.Deleted).Count();
+        public int TrapCount { get { return Traps.Where(t => !t.Deleted).Count(); } }
+        public int TurretCount { get { return Turrets.Where(t => !t.Deleted).Count(); } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool InCooldown => CooldownEnds > DateTime.UtcNow;
+        public bool InCooldown
+        {
+            get { return CooldownEnds > DateTime.UtcNow; }
+        }
 
         public DateTime NextCombatHeatCycle { get; private set; }
 
@@ -216,7 +226,7 @@ namespace Server.Engines.VvV
 
             NextAltarActivate = DateTime.UtcNow + TimeSpan.FromMinutes(1);
 
-            System.SendVvVMessage(1154721, string.Format("#{0}", ViceVsVirtueSystem.GetCityLocalization(City).ToString()));
+            System.SendVvVMessage(1154721, String.Format("#{0}", ViceVsVirtueSystem.GetCityLocalization(City).ToString())); 
             // A Battle between Vice and Virtue is active! To Arms! The City of ~1_CITY~ is besieged!
         }
 
@@ -233,10 +243,10 @@ namespace Server.Engines.VvV
 
         public void SpawnPriests(bool movetoworld = true)
         {
-            if (VicePriest == null || VicePriest.Deleted)
+            if(VicePriest == null || VicePriest.Deleted)
                 VicePriest = new VvVPriest(VvVType.Vice, this);
 
-            if (VirtuePriest == null || VirtuePriest.Deleted)
+            if(VirtuePriest == null || VirtuePriest.Deleted)
                 VirtuePriest = new VvVPriest(VvVType.Virtue, this);
 
             if (movetoworld)
@@ -342,7 +352,7 @@ namespace Server.Engines.VvV
             UnContested = true;
             bool checkAggression = ViceVsVirtueSystem.EnhancedRules && NextCombatHeatCycle < DateTime.UtcNow;
 
-            foreach (PlayerMobile pm in Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
+            foreach (PlayerMobile pm in this.Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
             {
                 bool vvv = ViceVsVirtueSystem.IsVvV(pm);
 
@@ -357,7 +367,7 @@ namespace Server.Engines.VvV
 
                     if (g != null)
                     {
-                        BattleTeam t = GetTeam(g);
+                        var t = GetTeam(g);
 
                         if (team == null)
                         {
@@ -403,9 +413,9 @@ namespace Server.Engines.VvV
             if (BattleAggression == null)
                 return;
 
-            List<Mobile> list = new List<Mobile>(BattleAggression.Keys);
+            var list = new List<Mobile>(BattleAggression.Keys);
 
-            foreach (Mobile m in list)
+            foreach (var m in list)
             {
                 if (BattleAggression[m] < DateTime.UtcNow && !m.Region.IsPartOf(Region))
                 {
@@ -449,13 +459,13 @@ namespace Server.Engines.VvV
 
             foreach (VvVAltar altar in Altars)
             {
-                if (!altar.Deleted)
+                if(!altar.Deleted)
                     altar.Delete();
             }
 
             foreach (VvVTrap trap in Traps)
             {
-                if (!trap.Deleted)
+                if(!trap.Deleted)
                     trap.Delete();
             }
 
@@ -532,7 +542,7 @@ namespace Server.Engines.VvV
 
             leader.Silver += AwardSilver(WinSilver + (OppositionCount(leader.Guild) * 50));
 
-            foreach (Mobile m in Region.GetEnumeratedMobiles())
+            foreach (Mobile m in this.Region.GetEnumeratedMobiles())
             {
                 Guild g = m.Guild as Guild;
 
@@ -621,7 +631,7 @@ namespace Server.Engines.VvV
             if (Altars == null || Region == null)
                 return;
 
-            foreach (PlayerMobile pm in Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
+            foreach (PlayerMobile pm in this.Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
             {
                 if (pm.NetState != null && pm.QuestArrow == null)
                 {
@@ -689,8 +699,8 @@ namespace Server.Engines.VvV
 
             BattleTeam killerTeam = GetTeam(killer.Guild);
             BattleTeam victimTeam = null;
-
-            if (victim != null)
+            
+            if(victim != null)
                 victimTeam = GetTeam(victim.Guild);
 
             switch (type)
@@ -715,14 +725,14 @@ namespace Server.Engines.VvV
                                 killerTeam.Silver += AwardSilver(KillSilver + (OppositionCount(killer.Guild) * 50));
                             }
 
-                            SendStatusMessage(string.Format("{0} has killed {1}!", killer.Player.Name, victim.Player.Name));
+                            SendStatusMessage(String.Format("{0} has killed {1}!", killer.Player.Name, victim.Player.Name));
                             KillCooldown[victim.Player] = DateTime.UtcNow + TimeSpan.FromMinutes(KillCooldownDuration);
                         }
                     }
 
                     break;
                 case UpdateType.Assist:
-                    if (killerStats != null)
+                    if (killerStats != null) 
                         killerStats.Assists++;
 
                     if (killerTeam != null)
@@ -733,7 +743,7 @@ namespace Server.Engines.VvV
                     if (killerStats != null)
                     {
                         killerStats.Stolen++;
-                        SendStatusMessage(string.Format("{0} has stolen the sigil!", killer.Player.Name));
+                        SendStatusMessage(String.Format("{0} has stolen the sigil!", killer.Player.Name));
                     }
 
                     if (killerTeam != null)
@@ -762,14 +772,14 @@ namespace Server.Engines.VvV
                         }
                     }
 
-                    SendStatusMessage(string.Format("{0} has returned the sigil!", killer.Player.Name));
+                    SendStatusMessage(String.Format("{0} has returned the sigil!", killer.Player.Name));
 
                     NextSigilSpawn = DateTime.UtcNow + TimeSpan.FromMinutes(1);
                     RemovePriests();
 
                     break;
                 case UpdateType.Disarm:
-                    SendStatusMessage(string.Format("{0} has disarmed a trap!", killer.Player.Name));
+                    SendStatusMessage(String.Format("{0} has disarmed a trap!", killer.Player.Name));
 
                     if (killerStats != null)
                     {
@@ -789,7 +799,7 @@ namespace Server.Engines.VvV
 
         public int AwardSilver(int amount)
         {
-            return (int)(amount * SilverPenalty);
+            return (int)((double)amount * SilverPenalty);
         }
 
         public void RemovePriests()
@@ -814,7 +824,7 @@ namespace Server.Engines.VvV
             team.Score += (int)AltarPoints;
             team.Silver += AwardSilver(AltarSilver + (OppositionCount(g) * 50));
 
-            SendStatusMessage(string.Format("{0} claimed the altar!", g != null ? g.Abbreviation : "somebody"));
+            SendStatusMessage(String.Format("{0} claimed the altar!", g != null ? g.Abbreviation : "somebody"));
 
             foreach (PlayerMobile p in Region.GetEnumeratedMobiles().Where(player => player is PlayerMobile))
             {
@@ -841,15 +851,7 @@ namespace Server.Engines.VvV
 
                 if (OnGoing && NextAnnouncement < DateTime.UtcNow)
                 {
-                    if (ViceVsVirtueSystem.EnhancedRules)
-                    {
-                        System.SendVvVMessage(string.Format("{0} is occupying {1}!", team.Guild.Name, City == VvVCity.SkaraBrae ? "Skara Brae" : City.ToString()));
-                    }
-                    else
-                    {
-                        System.SendVvVMessage(1154957, team.Guild.Name); // ~1_NAME~ is occupying the city!
-                    }
-
+                    System.SendVvVMessage(1154957, team.Guild.Name); // ~1_NAME~ is occupying the city!
                     NextAnnouncement = DateTime.UtcNow + TimeSpan.FromMinutes(Announcement);
                 }
             }
@@ -857,19 +859,10 @@ namespace Server.Engines.VvV
             {
                 if (NextAnnouncement < DateTime.UtcNow)
                 {
-                    if (ViceVsVirtueSystem.EnhancedRules)
-                    {
-                        System.SendVvVMessage(1050039, string.Format("#{0}\tis unoccupied! Slay opposing forces to claim the city for your guild!", ViceVsVirtueSystem.GetCityLocalization(City).ToString()));
-                    }
-                    else
-                    {
-                        System.SendVvVMessage(1154958); // The City is unoccupied! Slay opposing forces to claim the city for your guild!
-                    }
-
+                    System.SendVvVMessage(1154958); // The City is unoccupied! Slay opposing forces to claim the city for your guild!
                     NextAnnouncement = DateTime.UtcNow + TimeSpan.FromMinutes(Announcement);
                 }
             }
-
         }
 
         public void CheckScore()
@@ -909,7 +902,7 @@ namespace Server.Engines.VvV
                 score = teams[0].Score;
                 return teams[0];
             }
-
+            
             return null;
         }
 
@@ -954,7 +947,7 @@ namespace Server.Engines.VvV
 
             Region r = Region.Find(m.Location, m.Map);
 
-            return r == Region;
+            return r == this.Region;
         }
 
         public void OnEnterRegion(Mobile m)
@@ -981,7 +974,7 @@ namespace Server.Engines.VvV
             if (Region == null)
                 return;
 
-            foreach (PlayerMobile m in Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
+            foreach (PlayerMobile m in this.Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
             {
                 if (!ViceVsVirtueSystem.IsVvV(m) || m.NetState == null)
                     continue;
@@ -1004,12 +997,12 @@ namespace Server.Engines.VvV
             if (Region == null)
                 return;
 
-            foreach (PlayerMobile m in Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
+            foreach (PlayerMobile m in this.Region.GetEnumeratedMobiles().OfType<PlayerMobile>())
             {
                 if (ViceVsVirtueSystem.IsVvV(m))
                 {
                     m.CloseGump(typeof(VvVBattleStatusGump));
-                    m.SendGump(new BattleStatsGump(m, this));
+                    m.SendGump(new BattleStatsGump((PlayerMobile)m, this));
                 }
             }
         }
@@ -1018,7 +1011,7 @@ namespace Server.Engines.VvV
         {
             Messages.Add(message);
 
-            if (sendgumps)
+            if(sendgumps)
                 UpdateAllGumps();
         }
 
@@ -1158,7 +1151,7 @@ namespace Server.Engines.VvV
             }
             else
                 writer.Write(1);
-
+            
         }
     }
 }

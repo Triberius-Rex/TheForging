@@ -1,3 +1,6 @@
+using Server;
+using System;
+
 namespace Server.Engines.ArenaSystem
 {
     [PropertyObject]
@@ -48,7 +51,7 @@ namespace Server.Engines.ArenaSystem
         public int MapIndex { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Map Map => Map.Maps[MapIndex];
+        public Map Map { get { return Map.Maps[MapIndex]; } }
 
         public ArenaDefinition(
             string name,
@@ -91,16 +94,16 @@ namespace Server.Engines.ArenaSystem
         public static ArenaDefinition HavenTrammel { get; set; }
         public static ArenaDefinition HavenFelucca { get; set; }
 
-        public static ArenaDefinition[] Definitions => _Definitions;
-        private static readonly ArenaDefinition[] _Definitions = new ArenaDefinition[4];
+        public static ArenaDefinition[] Definitions { get { return _Definitions; } }
+        private static ArenaDefinition[] _Definitions = new ArenaDefinition[4];
 
         static ArenaDefinition()
         {
-            LostLandsTrammel = new ArenaDefinition("Lostland (T)", 1,
-                new Point3D(6102, 3721, 25),
+            LostLandsTrammel = new ArenaDefinition("Lostland (T)", 1, 
+                new Point3D(6102, 3721, 25), 
                 new Point3D(6097, 3730, 20),
                 new Point3D(6081, 3713, 26),
-                new Point3D(6087, 3713, 26),
+                new Point3D(6087, 3713, 26), 
                 17101,
                 17099,
                 new Rectangle2D[]
@@ -136,7 +139,7 @@ namespace Server.Engines.ArenaSystem
                 new Rectangle2D(6099, 3718, 5, 7),
                 new Rectangle2D(6097, 3729, 2, 2));
 
-            LostLandsFelucca = new ArenaDefinition("Lostland (F)", 0,
+            LostLandsFelucca = new ArenaDefinition("Lostland (F)", 0, 
                 new Point3D(6102, 3721, 25),
                 new Point3D(6097, 3730, 20),
                 new Point3D(6081, 3713, 26),
@@ -176,8 +179,8 @@ namespace Server.Engines.ArenaSystem
                 new Rectangle2D(6099, 3718, 5, 7),
                 new Rectangle2D(6097, 3729, 2, 2));
 
-            HavenTrammel = new ArenaDefinition("New Haven (T)", 1,
-                new Point3D(3793, 2770, 6),
+            HavenTrammel = new ArenaDefinition("New Haven (T)", 1, 
+                new Point3D(3793, 2770, 6), 
                 new Point3D(3790, 2783, 6),
                 new Point3D(3760, 2769, 12),
                 new Point3D(3783, 2761, 10),
@@ -217,7 +220,7 @@ namespace Server.Engines.ArenaSystem
                 new Rectangle2D(3790, 2781, 2, 5));
 
             HavenFelucca = new ArenaDefinition("New Haven (F)", 0,
-                new Point3D(3782, 2766, 5),
+                new Point3D(3782, 2766, 5), 
                 new Point3D(3779, 2778, 5),
                 new Point3D(3749, 2765, 12),
                 new Point3D(3772, 2757, 10),

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0xC14, 0xC15)]
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076258;// Broken Bookcase
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076258;
+            }
+        }// Broken Bookcase
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -35,7 +43,7 @@ namespace Server.Items
         public BrokenBookcaseAddon()
             : base()
         {
-            AddComponent(new BrokenBookcaseComponent(), 0, 0, 0);
+            this.AddComponent(new BrokenBookcaseComponent(), 0, 0, 0);
         }
 
         public BrokenBookcaseAddon(Serial serial)
@@ -43,7 +51,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new BrokenBookcaseDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new BrokenBookcaseDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -65,7 +79,7 @@ namespace Server.Items
         public BrokenBookcaseDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public BrokenBookcaseDeed(Serial serial)
@@ -73,8 +87,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new BrokenBookcaseAddon();
-        public override int LabelNumber => 1076258;// Broken Bookcase
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new BrokenBookcaseAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076258;
+            }
+        }// Broken Bookcase
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

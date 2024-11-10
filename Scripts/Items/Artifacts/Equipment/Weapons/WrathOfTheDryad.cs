@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class WrathOfTheDryad : GnarledStaff
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public WrathOfTheDryad()
         {
@@ -18,9 +20,27 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1070853;// Wrath of the Dryad
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1070853;
+            }
+        }// Wrath of the Dryad
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void GetDamageTypes(Mobile wielder, out int phys, out int fire, out int cold, out int pois, out int nrgy, out int chaos, out int direct)
         {
             pois = 100;
@@ -32,7 +52,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

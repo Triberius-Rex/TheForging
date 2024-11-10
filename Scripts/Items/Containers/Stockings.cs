@@ -1,6 +1,9 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x2bd9, 0x2bda)]
+    [Furniture]
+    [FlipableAttribute(0x2bd9, 0x2bda)]
     public class GreenStocking : BaseContainer
     {
         [Constructable]
@@ -14,14 +17,26 @@ namespace Server.Items
         {
         }
 
-        public override int DefaultGumpID => 0x103;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x103;
+            }
+        }
 
-        public override int DefaultDropSound => 0x42;
+        public override int DefaultDropSound
+        {
+            get
+            {
+                return 0x42;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -31,7 +46,8 @@ namespace Server.Items
         }
     }
 
-    [Flipable(0x2bdb, 0x2bdc)]
+    [Furniture]
+    [FlipableAttribute(0x2bdb, 0x2bdc)]
     public class RedStocking : BaseContainer
     {
         [Constructable]
@@ -45,14 +61,26 @@ namespace Server.Items
         {
         }
 
-        public override int DefaultGumpID => 0x103;
+        public override int DefaultGumpID 
+        { 
+            get 
+            { 
+                return 0x103; 
+            } 
+        }
 
-        public override int DefaultDropSound => 0x42;
+        public override int DefaultDropSound 
+        {
+            get
+            { 
+                return 0x42; 
+            } 
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

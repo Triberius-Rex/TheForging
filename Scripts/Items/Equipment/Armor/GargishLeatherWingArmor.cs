@@ -1,9 +1,9 @@
-using Server.Engines.Craft;
 using System;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
-    [Flipable(0x457E, 0x457F)]
+    [FlipableAttribute(0x457E, 0x457F)]
     public class GargishLeatherWingArmor : BaseArmor, IRangeDamage
     {
         private AosElementAttributes m_AosElementDamages;
@@ -26,16 +26,20 @@ namespace Server.Items
         {
         }
 
-        public override int PhysicalResistance => 0;
-        public override int FireResistance => 0;
-        public override int ColdResistance => 0;
-        public override int PoisonResistance => 0;
-        public override int EnergyResistance => 0;
+        public override int PhysicalResistance { get { return 0; } }
+        public override int FireResistance { get { return 0; } }
+        public override int ColdResistance { get { return 0; } }
+        public override int PoisonResistance { get { return 0; } }
+        public override int EnergyResistance { get { return 0; } }
 
-        public override int StrReq => 10;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Leather;
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
-        public override ArmorMeditationAllowance DefMedAllowance => ArmorMeditationAllowance.All;
+        public override int AosStrReq { get { return 10; } }
+        public override int OldStrReq { get { return 10; } }
+        public override int ArmorBase { get { return 13; } }
+        public override ArmorMaterialType MaterialType { get { return ArmorMaterialType.Leather; } }
+        public override CraftResource DefaultResource { get { return CraftResource.RegularLeather; } }
+        public override ArmorMeditationAllowance DefMedAllowance { get { return ArmorMeditationAllowance.All; } }
+        public override Race RequiredRace { get { return Race.Gargoyle; } }
+        public override bool CanBeWornByGargoyles { get { return true; } }
 
         public override int GetLuckBonus() { return 0; }
 
@@ -106,7 +110,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             if (m_AosElementDamages.IsEmpty)
             {

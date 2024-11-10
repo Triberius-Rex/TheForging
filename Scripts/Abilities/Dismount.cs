@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -11,14 +11,25 @@ namespace Server.Items
     /// </summary>
     public class Dismount : WeaponAbility
     {
-        public override int BaseMana => 25;
+        public static readonly TimeSpan DefenderRemountDelay = TimeSpan.FromSeconds(10.0);// TODO: Taken from bola script, needs to be verified
+        public static readonly TimeSpan AttackerRemountDelay = TimeSpan.FromSeconds(3.0);
+        public Dismount()
+        {
+        }
 
+        public override int BaseMana
+        {
+            get
+            {
+                return Core.TOL ? 25 : 20;
+            }
+        }
         public override bool Validate(Mobile from)
         {
             if (!base.Validate(from))
                 return false;
 
-            if ((from.Mounted || from.Flying) && !(from.Weapon is Lance) && !(from.Weapon is GargishLance))
+            if ( (from.Mounted || from.Flying) && !(from.Weapon is Lance) && !(from.Weapon is GargishLance) )
             {
                 from.SendLocalizedMessage(1061283); // You cannot perform that attack while mounted or flying!
                 return false;
@@ -29,34 +40,31 @@ namespace Server.Items
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker))
+            if (!this.Validate(attacker))
                 return;
 
             if (defender is ChaosDragoon || defender is ChaosDragoonElite)
                 return;
 
-            ClearCurrentAbility(attacker);
-
-            if (CheckMountedNoLance(attacker, defender))
-            {
-                attacker.SendLocalizedMessage(1060089); // You fail to execute your special move
+            if (CheckMountedNoLance(attacker, defender)) // TODO: Should there be a message here?
                 return;
-            }
+
+            ClearCurrentAbility(attacker);
 
             IMount mount = defender.Mount;
 
-            if (mount == null && !defender.Flying && !Spells.Ninjitsu.AnimalForm.UnderTransformation(defender))
+            if (mount == null && !defender.Flying && (!Core.ML || !Server.Spells.Ninjitsu.AnimalForm.UnderTransformation(defender)))
             {
                 attacker.SendLocalizedMessage(1060848); // This attack only works on mounted or flying targets
                 return;
             }
 
-            if (!CheckMana(attacker, true))
+            if (!this.CheckMana(attacker, true))
             {
                 return;
             }
 
-            if (attacker is LesserHiryu && 0.8 >= Utility.RandomDouble())
+            if (Core.ML && attacker is LesserHiryu && 0.8 >= Utility.RandomDouble())
             {
                 return; //Lesser Hiryu have an 80% chance of missing this attack
             }
@@ -64,7 +72,7 @@ namespace Server.Items
             defender.PlaySound(0x140);
             defender.FixedParticles(0x3728, 10, 15, 9955, EffectLayer.Waist);
 
-            int delay = attacker.Weapon is BaseRanged ? 8 : 10;
+            int delay = Core.TOL && attacker.Weapon is BaseRanged ? 8 : 10;
 
             DoDismount(attacker, defender, mount, delay);
 
@@ -80,7 +88,7 @@ namespace Server.Items
 
             if (defender is PlayerMobile)
             {
-                if (Spells.Ninjitsu.AnimalForm.UnderTransformation(defender))
+                if (Core.ML && Server.Spells.Ninjitsu.AnimalForm.UnderTransformation(defender))
                 {
                     defender.SendLocalizedMessage(1114066, attacker.Name); // ~1_NAME~ knocked you out of animal form!
                 }
@@ -102,9 +110,9 @@ namespace Server.Items
 
             if (attacker is PlayerMobile)
             {
-                ((PlayerMobile)attacker).SetMountBlock(BlockMountType.DismountRecovery, TimeSpan.FromSeconds(attacker.Weapon is BaseRanged ? 8 : 10), false);
+                ((PlayerMobile)attacker).SetMountBlock(BlockMountType.DismountRecovery, TimeSpan.FromSeconds(Core.TOL && attacker.Weapon is BaseRanged ? 8 : 10), false);
             }
-            else if (attacker is BaseCreature)
+            else if (Core.ML && attacker is BaseCreature)
             {
                 BaseCreature bc = attacker as BaseCreature;
 

@@ -1,12 +1,35 @@
+using System;
 using Server.Items;
 
 namespace Server.Spells.Ninjitsu
 {
     public class FocusAttack : NinjaMove
     {
-        public override int BaseMana => 10;
-        public override double RequiredSkill => 30.0;
-        public override TextDefinition AbilityMessage => new TextDefinition(1063095);// You prepare to focus all of your abilities into your next strike.
+        public FocusAttack()
+        {
+        }
+
+        public override int BaseMana
+        {
+            get
+            {
+                return Core.ML ? 10 : 20;
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return Core.ML ? 30.0 : 60 ;
+            }
+        }
+        public override TextDefinition AbilityMessage
+        {
+            get
+            {
+                return new TextDefinition(1063095);
+            }
+        }// You prepare to focus all of your abilities into your next strike.
         public override bool Validate(Mobile from)
         {
             if (from.FindItemOnLayer(Layer.TwoHanded) as BaseShield != null)
@@ -47,7 +70,7 @@ namespace Server.Spells.Ninjitsu
 
         public override bool OnBeforeDamage(Mobile attacker, Mobile defender)
         {
-            return Validate(attacker) && CheckMana(attacker, true);
+            return this.Validate(attacker) && this.CheckMana(attacker, true);
         }
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
@@ -57,7 +80,7 @@ namespace Server.Spells.Ninjitsu
             attacker.SendLocalizedMessage(1063098); // You focus all of your abilities and strike with deadly force!
             attacker.PlaySound(0x510);
 
-            CheckGain(attacker);
+            this.CheckGain(attacker);
         }
 
         public override void OnUse(Mobile from)

@@ -1,9 +1,10 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefBlacksmithy), typeof(DiscMace))]
-    [Flipable(0x143D, 0x143C)]
+    [FlipableAttribute(0x143D, 0x143C)]
     public class HammerPick : BaseBashing
     {
         [Constructable]
@@ -19,23 +20,108 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.ArmorIgnore;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.MortalStrike;
-        public override int StrengthReq => 45;
-        public override int MinDamage => 13;
-        public override int MaxDamage => 17;
-        public override float Speed => 3.25f;
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 70;
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.ArmorIgnore;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.MortalStrike;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 13;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 17;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 28;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 3.25f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 35;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 33;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 70;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

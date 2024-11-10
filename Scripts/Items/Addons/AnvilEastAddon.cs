@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class AnvilEastAddon : BaseAddon
@@ -5,7 +7,7 @@ namespace Server.Items
         [Constructable]
         public AnvilEastAddon()
         {
-            AddComponent(new AnvilComponent(0xFAF), 0, 0, 0);
+            this.AddComponent(new AnvilComponent(0xFAF), 0, 0, 0);
         }
 
         public AnvilEastAddon(Serial serial)
@@ -13,13 +15,19 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new AnvilEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new AnvilEastDeed();
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -42,13 +50,25 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new AnvilEastAddon();
-        public override int LabelNumber => 1044333;// anvil (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new AnvilEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044333;
+            }
+        }// anvil (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

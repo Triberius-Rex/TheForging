@@ -1,6 +1,8 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x41D8, 0x41D9)]
+    [FlipableAttribute(0x41D8, 0x41D9)]
     public class LeatherTalons : BaseShoes
     {
         [Constructable]
@@ -13,7 +15,7 @@ namespace Server.Items
         public LeatherTalons(int hue)
             : base(0x41D8, hue)
         {
-            Weight = 3.0;
+            this.Weight = 3.0;
         }
 
         public LeatherTalons(Serial serial)
@@ -21,12 +23,32 @@ namespace Server.Items
         {
         }
 
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override CraftResource DefaultResource
+        {
+            get
+            {
+                return CraftResource.RegularLeather;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

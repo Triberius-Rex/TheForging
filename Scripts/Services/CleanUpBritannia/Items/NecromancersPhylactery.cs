@@ -1,18 +1,21 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class NecromancersPhylactery : BaseTalisman
     {
-        public override bool IsArtifact => true;
-
+		public override bool IsArtifact { get { return true; } }
+		
         [Constructable]
         public NecromancersPhylactery()
             : base(0x2F5A)
         {
-            Hue = 1912;
-            SkillBonuses.SetValues(0, SkillName.SpiritSpeak, 10.0);
-            Attributes.RegenMana = 1;
-            Attributes.LowerRegCost = 10;
-            Attributes.SpellDamage = 5;
+            this.Hue = 1912;
+            this.SkillBonuses.SetValues(0, SkillName.SpiritSpeak, 10.0);
+            this.Attributes.RegenMana = 1;
+            this.Attributes.LowerRegCost = 10;
+            this.Attributes.SpellDamage = 5;
         }
 
         public NecromancersPhylactery(Serial serial)
@@ -20,13 +23,25 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1154728;// Necromancer's Phylactery
-        public override bool ForceShowName => true;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1154728;
+            }
+        }// Necromancer's Phylactery
+        public override bool ForceShowName
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

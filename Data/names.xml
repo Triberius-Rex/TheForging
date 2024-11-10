@@ -658,8 +658,8 @@
 		Yero, Yervant, York, Yusuf, Yves, Zachariah, Zachary, Zackery, Zaid, Zaide, 
 		Zane, Zaniel, Zann, Zared, Zarek, Zeke, Zenon, Zion, Ziven, Zorn
 	</namelist>
-	 <namelist type="Undead Knights">
-    Sir Caradoc, Sir Fredrick Dubouis, Sir Hobart Von Kettlester, Sir Hubert DeCockney, Sir Timmothy McVandhosen, Sir Vlad Tepest, Sir Colm Farold,
-    Sir Darin Valcic, Sir Derik Grimscribe, Sir Kris Krejlgaard, Sir Meyer Seril, Sir Wersten Kern, Sir Zander Vingus
+	<namelist type="Undead Knights">
+    Caradoc, Fredrick Dubouis, Hobart Von Kettlester, Hubert DeCockney, Cullen of Cerrmor, Rhodry of Aberwyn, Colm Farold,
+    Darin Valcic, Derik Grimscribe, Kris Krejlgaard, Meyer Seril, Wersten Kern, Zander Vingus
   </namelist>
 </names>

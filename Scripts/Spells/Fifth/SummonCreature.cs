@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Spells.Fifth
 {
@@ -39,15 +39,21 @@ namespace Server.Spells.Fifth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fifth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fifth;
+            }
+        }
         public override bool CheckCast()
         {
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 2) > Caster.FollowersMax)
+            if ((this.Caster.Followers + 2) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
+                this.Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;
             }
 
@@ -56,7 +62,7 @@ namespace Server.Spells.Fifth
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
                 try
                 {
@@ -64,22 +70,29 @@ namespace Server.Spells.Fifth
 
                     //creature.ControlSlots = 2;
 
-                    TimeSpan duration = TimeSpan.FromSeconds(4.0 * Caster.Skills[SkillName.Magery].Value);
+                    TimeSpan duration;
 
-                    SpellHelper.Summon(creature, Caster, 0x215, duration, false, false);
+                    if (Core.AOS)
+                        duration = TimeSpan.FromSeconds((2 * this.Caster.Skills.Magery.Fixed) / 5);
+                    else
+                        duration = TimeSpan.FromSeconds(4.0 * this.Caster.Skills[SkillName.Magery].Value);
+
+                    SpellHelper.Summon(creature, this.Caster, 0x215, duration, false, false);
                 }
-                catch (Exception e)
+                catch
                 {
-                    Diagnostics.ExceptionLogging.LogException(e);
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public override TimeSpan GetCastDelay()
         {
-            return TimeSpan.FromTicks(base.GetCastDelay().Ticks * 5);
+            if (Core.AOS)
+                return TimeSpan.FromTicks(base.GetCastDelay().Ticks * 5);
+
+            return base.GetCastDelay() + TimeSpan.FromSeconds(6.0);
         }
     }
 }

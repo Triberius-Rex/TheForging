@@ -1,9 +1,12 @@
-using Server.Mobiles;
-using Server.Network;
-using Server.Spells;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Spells;
+using Server.Engines.PartySystem;
+using Server.Network;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -12,15 +15,19 @@ namespace Server.Items
     /// </summary>
     public class FrenziedWhirlwind : WeaponAbility
     {
+        public FrenziedWhirlwind()
+        {
+        }
+
         public override SkillName GetSecondarySkill(Mobile from)
         {
             return from.Skills[SkillName.Ninjitsu].Base > from.Skills[SkillName.Bushido].Base ? SkillName.Ninjitsu : SkillName.Bushido;
         }
 
-        public override int BaseMana => 20;
+        public override int BaseMana { get { return 30; } }
 
-        private static readonly Dictionary<Mobile, Timer> m_Registry = new Dictionary<Mobile, Timer>();
-        public static Dictionary<Mobile, Timer> Registry => m_Registry;
+        private static Dictionary<Mobile, Timer> m_Registry = new Dictionary<Mobile, Timer>();
+        public static Dictionary<Mobile, Timer> Registry { get { return m_Registry; } }
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
@@ -39,7 +46,7 @@ namespace Server.Items
             if (weapon == null)
                 return;
 
-            List<Mobile> targets = SpellHelper.AcquireIndirectTargets(attacker, attacker.Location, attacker.Map, 2).OfType<Mobile>().ToList();
+            var targets = SpellHelper.AcquireIndirectTargets(attacker, attacker.Location, attacker.Map, 2).OfType<Mobile>().ToList();
 
             if (targets.Count > 0)
             {
@@ -56,7 +63,7 @@ namespace Server.Items
 
                 m_Registry[attacker] = new InternalTimer(attacker, targets);
 
-                foreach (PlayerMobile pm in targets.OfType<PlayerMobile>())
+                foreach (var pm in targets.OfType<PlayerMobile>())
                 {
                     BuffInfo.AddBuff(pm, new BuffInfo(BuffIcon.SplinteringEffect, 1153804, 1028852, TimeSpan.FromSeconds(2.0), pm));
                 }
@@ -84,9 +91,9 @@ namespace Server.Items
 
         private class InternalTimer : Timer
         {
-            private readonly Mobile m_Attacker;
-            private readonly List<Mobile> m_List;
-            private readonly long m_Start;
+            private Mobile m_Attacker;
+            private List<Mobile> m_List;
+            private long m_Start;
 
             public InternalTimer(Mobile attacker, List<Mobile> list)
                 : base(TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(500))
@@ -110,7 +117,7 @@ namespace Server.Items
                 if (!m_Attacker.Alive || m_Start + 2000 < Core.TickCount)
                 {
                     ColUtility.Free(m_List);
-                    RemoveFromRegistry(m_Attacker);
+                    Server.Items.FrenziedWhirlwind.RemoveFromRegistry(m_Attacker);
                 }
             }
 
@@ -129,7 +136,7 @@ namespace Server.Items
                         int skill = m_Attacker is BaseCreature ? (int)m_Attacker.Skills[SkillName.Ninjitsu].Value :
                                                               (int)Math.Max(m_Attacker.Skills[SkillName.Bushido].Value, m_Attacker.Skills[SkillName.Ninjitsu].Value);
 
-                        int baseMin = Math.Max(5, (skill / 50) * 5);
+                        var baseMin = (int)Math.Max(5, (skill / 50) * 5);
                         AOS.Damage(m, m_Attacker, Utility.RandomMinMax(baseMin, (baseMin * 3) + 2), 100, 0, 0, 0, 0);
                     }
                 }

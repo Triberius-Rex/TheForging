@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Misc
@@ -16,12 +17,12 @@ namespace Server.Misc
     {
         private static readonly bool Enabled = false;
         private static readonly ProfanityAction Action = ProfanityAction.Disallow;// change here what to do when profanity is detected
-        private static readonly char[] m_Exceptions = new[]
+        private static readonly char[] m_Exceptions = new char[]
         {
             ' ', '-', '.', '\'', '"', ',', '_', '+', '=', '~', '`', '!', '^', '*', '\\', '/', ';', ':', '<', '>', '[', ']', '{', '}', '?', '|', '(', ')', '%', '$', '&', '#', '@'
         };
         private static readonly string[] m_StartDisallowed = new string[] { };
-        private static readonly string[] m_Disallowed = new[]
+        private static readonly string[] m_Disallowed = new string[]
         {
             "jigaboo",
             "chigaboo",
@@ -69,18 +70,36 @@ namespace Server.Misc
             "shit",
             "fuck"
         };
-        public static char[] Exceptions => m_Exceptions;
-        public static string[] StartDisallowed => m_StartDisallowed;
-        public static string[] Disallowed => m_Disallowed;
+        public static char[]	Exceptions
+        {
+            get
+            {
+                return m_Exceptions;
+            }
+        }
+        public static string[]	StartDisallowed
+        {
+            get
+            {
+                return m_StartDisallowed;
+            }
+        }
+        public static string[]	Disallowed
+        {
+            get
+            {
+                return m_Disallowed;
+            }
+        }
         public static void Initialize()
         {
             if (Enabled)
-                EventSink.Speech += EventSink_Speech;
+                EventSink.Speech += new SpeechEventHandler(EventSink_Speech);
         }
 
         private static bool OnProfanityDetected(Mobile from, string speech)
         {
-            switch (Action)
+            switch ( Action )
             {
                 case ProfanityAction.None:
                     return true;

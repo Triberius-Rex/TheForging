@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class TalismanofGoblinSlaying : BaseTalisman
     {
-        public override int LabelNumber => 1095011; //Talisman of Goblin Slaying
-        public override bool ForceShowName => true;
-
+		public override int LabelNumber { get { return 1095011; } }//Talisman of Goblin Slaying
+        public override bool ForceShowName { get { return true; } }
+		
         [Constructable]
         public TalismanofGoblinSlaying()
             : base(0x2F58)
-        {
+        { 
             Slayer = TalismanSlayerName.Goblin;
             MaxChargeTime = 1200;
         }
@@ -17,7 +19,7 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

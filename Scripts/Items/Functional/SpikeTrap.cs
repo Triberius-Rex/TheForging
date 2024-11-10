@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -35,7 +35,7 @@ namespace Server.Items
         {
             get
             {
-                switch (ItemID)
+                switch ( this.ItemID )
                 {
                     case 4360:
                     case 4361:
@@ -59,32 +59,56 @@ namespace Server.Items
             }
             set
             {
-                bool extended = Extended;
+                bool extended = this.Extended;
 
-                ItemID = (extended ? GetExtendedID(value) : GetBaseID(value));
+                this.ItemID = (extended ? GetExtendedID(value) : GetBaseID(value));
             }
         }
         public bool Extended
         {
             get
             {
-                return (ItemID == GetExtendedID(Type));
+                return (this.ItemID == GetExtendedID(this.Type));
             }
             set
             {
                 if (value)
-                    ItemID = GetExtendedID(Type);
+                    this.ItemID = GetExtendedID(this.Type);
                 else
-                    ItemID = GetBaseID(Type);
+                    this.ItemID = GetBaseID(this.Type);
             }
         }
-        public override bool PassivelyTriggered => false;
-        public override TimeSpan PassiveTriggerDelay => TimeSpan.Zero;
-        public override int PassiveTriggerRange => 0;
-        public override TimeSpan ResetDelay => TimeSpan.FromSeconds(6.0);
+        public override bool PassivelyTriggered
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override TimeSpan PassiveTriggerDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
+        public override int PassiveTriggerRange
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override TimeSpan ResetDelay
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(6.0);
+            }
+        }
         public static int GetBaseID(SpikeTrapType type)
         {
-            switch (type)
+            switch ( type )
             {
                 case SpikeTrapType.WestWall:
                     return 4360;
@@ -106,7 +130,7 @@ namespace Server.Items
 
         public static int GetExtendedOffset(SpikeTrapType type)
         {
-            switch (type)
+            switch ( type )
             {
                 case SpikeTrapType.WestWall:
                     return 6;
@@ -127,8 +151,8 @@ namespace Server.Items
             if (!from.Alive || from.IsStaff())
                 return;
 
-            Effects.SendLocationEffect(Location, Map, GetBaseID(Type) + 1, 18, 3, GetEffectHue(), 0);
-            Effects.PlaySound(Location, Map, 0x22C);
+            Effects.SendLocationEffect(this.Location, this.Map, GetBaseID(this.Type) + 1, 18, 3, this.GetEffectHue(), 0);
+            Effects.PlaySound(this.Location, this.Map, 0x22C);
             IPooledEnumerable eable = GetMobilesInRange(0);
 
             foreach (Mobile mob in eable)
@@ -138,28 +162,28 @@ namespace Server.Items
             }
             eable.Free();
 
-            Timer.DelayCall(TimeSpan.FromSeconds(1.0), OnSpikeExtended);
+            Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerCallback(OnSpikeExtended));
 
             from.LocalOverheadMessage(MessageType.Regular, 0x22, 500852); // You stepped onto a spike trap!
         }
 
         public virtual void OnSpikeExtended()
         {
-            Extended = true;
-            Timer.DelayCall(TimeSpan.FromSeconds(5.0), OnSpikeRetracted);
+            this.Extended = true;
+            Timer.DelayCall(TimeSpan.FromSeconds(5.0), new TimerCallback(OnSpikeRetracted));
         }
 
         public virtual void OnSpikeRetracted()
         {
-            Extended = false;
-            Effects.SendLocationEffect(Location, Map, GetExtendedID(Type) - 1, 6, 3, GetEffectHue(), 0);
+            this.Extended = false;
+            Effects.SendLocationEffect(this.Location, this.Map, GetExtendedID(this.Type) - 1, 6, 3, this.GetEffectHue(), 0);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -168,7 +192,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            Extended = false;
+            this.Extended = false;
         }
     }
 }

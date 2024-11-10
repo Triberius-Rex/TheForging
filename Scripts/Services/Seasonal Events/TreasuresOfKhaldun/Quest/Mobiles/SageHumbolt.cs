@@ -1,8 +1,11 @@
-using Server.Engines.Quests;
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
-using System.Collections.Generic;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
@@ -11,8 +14,8 @@ namespace Server.Engines.Khaldun
         public static SageHumbolt TramInstance { get; set; }
 
         protected readonly List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override bool IsActiveVendor => false;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
+        public override bool IsActiveVendor { get { return false; } }
 
         public override void InitSBInfo()
         {
@@ -20,11 +23,14 @@ namespace Server.Engines.Khaldun
 
         public static void Initialize()
         {
-            if (TramInstance == null)
+            if (Core.TOL)
             {
-                TramInstance = new SageHumbolt();
-                TramInstance.MoveToWorld(new Point3D(5808, 3270, -15), Map.Trammel);
-                TramInstance.Direction = Direction.North;
+                if (TramInstance == null)
+                {
+                    TramInstance = new SageHumbolt();
+                    TramInstance.MoveToWorld(new Point3D(5808, 3270, -15), Map.Trammel);
+                    TramInstance.Direction = Direction.North;
+                }
             }
         }
 
@@ -48,22 +54,20 @@ namespace Server.Engines.Khaldun
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            AddItem(new Backpack());
 
-            DeathRobe robe = new DeathRobe
-            {
-                ItemID = 9863
-            };
+            var robe = new DeathRobe();
+            robe.ItemID = 9863;
             SetWearable(robe);
         }
 
         public bool OnSpiritSpeak(Mobile m)
         {
-            PlayerMobile pm = m as PlayerMobile;
+            var pm = m as PlayerMobile;
 
             if (pm != null)
             {
-                GoingGumshoeQuest4 quest = QuestHelper.GetQuest<GoingGumshoeQuest4>(pm);
+                var quest = QuestHelper.GetQuest<GoingGumshoeQuest4>(pm);
 
                 if (quest != null && !quest.IsComplete)
                 {
@@ -126,7 +130,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -139,6 +143,9 @@ namespace Server.Engines.Khaldun
             {
                 TramInstance = this;
             }
+
+            if (!Core.TOL)
+                Delete();
         }
     }
 }

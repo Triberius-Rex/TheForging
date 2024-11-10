@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseWall : Item
@@ -5,7 +7,7 @@ namespace Server.Items
         public BaseWall(int itemID)
             : base(itemID)
         {
-            Movable = false;
+            this.Movable = false;
         }
 
         public BaseWall(Serial serial)
@@ -17,7 +19,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

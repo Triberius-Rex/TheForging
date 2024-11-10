@@ -1,69 +1,76 @@
-using Server.Accounting;
+using Server;
 using System;
 using System.Collections.Generic;
+using Server.Accounting;
 
 namespace Server.Engines.NewMagincia
 {
     [PropertyObject]
     public class MaginciaHousingPlot
     {
-        private readonly string m_Identifier;
+        private string m_Identifier;
         private WritOfLease m_Writ;
         private Rectangle2D m_Bounds;
         private MaginciaPlotStone m_Stone;
-        private readonly bool m_IsPrimeSpot;
+        private bool m_IsPrimeSpot;
         private bool m_Complete;
         private Mobile m_Winner;
-        private readonly Map m_Map;
+        private Map m_Map;
         private DateTime m_Expires;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public string Identifier => m_Identifier;
+        public string Identifier { get { return m_Identifier; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public WritOfLease Writ { get { return m_Writ; } set { m_Writ = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Rectangle2D Bounds => m_Bounds;
+        public Rectangle2D Bounds { get { return m_Bounds; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public MaginciaPlotStone Stone { get { return m_Stone; } set { m_Stone = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsPrimeSpot => m_IsPrimeSpot;
+        public bool IsPrimeSpot { get { return m_IsPrimeSpot; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Complete => m_Complete;
+        public bool Complete { get { return m_Complete; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile Winner { get { return m_Winner; } set { m_Winner = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Map Map => m_Map;
+        public Map Map { get { return m_Map; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime Expires { get { return m_Expires; } set { m_Expires = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Point3D RecallLoc => new Point3D(m_Bounds.X, m_Bounds.Y, m_Map.GetAverageZ(m_Bounds.X, m_Bounds.Y));
+        public Point3D RecallLoc 
+        { 
+            get
+            {
+                return new Point3D(m_Bounds.X, m_Bounds.Y, m_Map.GetAverageZ(m_Bounds.X, m_Bounds.Y));
+            } 
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsAvailable => !m_Complete;
+        public bool IsAvailable { get { return !m_Complete; } }
 
         #region Lotto Info
         private DateTime m_LottoEnds;
-        private readonly Dictionary<Mobile, int> m_Participants = new Dictionary<Mobile, int>();
+        private Dictionary<Mobile, int> m_Participants = new Dictionary<Mobile, int>();
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime LottoEnds { get { return m_LottoEnds; } set { m_LottoEnds = value; } }
 
-        public Dictionary<Mobile, int> Participants => m_Participants;
+        public Dictionary<Mobile, int> Participants { get { return m_Participants; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int LottoPrice => m_IsPrimeSpot ? 10000 : 2000;
+        public int LottoPrice { get { return m_IsPrimeSpot ? 10000 : 2000; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool LottoOngoing => IsAvailable && m_LottoEnds > DateTime.UtcNow && m_LottoEnds != DateTime.MinValue;
+        public bool LottoOngoing { get { return IsAvailable && m_LottoEnds > DateTime.UtcNow && m_LottoEnds != DateTime.MinValue; } }
         #endregion
 
         public MaginciaHousingPlot(string identifier, Rectangle2D bounds, bool prime, Map map)
@@ -84,10 +91,8 @@ namespace Server.Engines.NewMagincia
 
         public void AddPlotStone(Point3D p)
         {
-            m_Stone = new MaginciaPlotStone
-            {
-                Plot = this
-            };
+            m_Stone = new MaginciaPlotStone();
+            m_Stone.Plot = this;
             m_Stone.MoveToWorld(p, m_Map);
         }
 
@@ -159,7 +164,7 @@ namespace Server.Engines.NewMagincia
 
             Mobile winner = raffle[Utility.Random(raffle.Count)];
 
-            if (winner != null)
+            if(winner != null)
                 OnLottoComplete(winner);
             else
                 ResetLotto();
@@ -232,7 +237,7 @@ namespace Server.Engines.NewMagincia
             m_Complete = reader.ReadBool();
             m_Winner = reader.ReadMobile();
             m_Expires = reader.ReadDateTime();
-
+            
             int c = reader.ReadInt();
             for (int i = 0; i < c; i++)
             {
@@ -254,7 +259,7 @@ namespace Server.Engines.NewMagincia
 
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(m_Identifier);
             writer.Write(m_Writ);

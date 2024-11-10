@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class PlateBattleKabuto : BaseArmor
@@ -6,7 +8,7 @@ namespace Server.Items
         public PlateBattleKabuto()
             : base(0x2785)
         {
-            Weight = 6.0;
+            this.Weight = 6.0;
         }
 
         public PlateBattleKabuto(Serial serial)
@@ -14,19 +16,87 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 6;
-        public override int BaseFireResistance => 2;
-        public override int BaseColdResistance => 2;
-        public override int BasePoisonResistance => 2;
-        public override int BaseEnergyResistance => 3;
-        public override int InitMinHits => 60;
-        public override int InitMaxHits => 65;
-        public override int StrReq => 70;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Plate;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 60;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 65;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 70;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 70;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Plate;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

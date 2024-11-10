@@ -1,6 +1,7 @@
-using Server.Items;
-using Server.Mobiles;
 using System;
+using Server;
+using Server.Mobiles;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Engines.TreasuresOfKotlCity
@@ -12,7 +13,7 @@ namespace Server.Engines.TreasuresOfKotlCity
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextDeactivation { get { return m_NextDeactivation; } set { m_NextDeactivation = value; } }
 
-        public override BaseAddonDeed Deed => null;
+        public override BaseAddonDeed Deed { get { return null; } }
 
         [Constructable]
         public EnergyTileAddon(int count, Direction direction)

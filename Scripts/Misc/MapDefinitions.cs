@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Misc
 {
     public class MapDefinitions

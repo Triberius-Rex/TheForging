@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Engines.BulkOrders
@@ -8,15 +9,15 @@ namespace Server.Engines.BulkOrders
         public LargeBODTarget(LargeBOD deed)
             : base(18, false, TargetFlags.None)
         {
-            m_Deed = deed;
+            this.m_Deed = deed;
         }
 
         protected override void OnTarget(Mobile from, object targeted)
         {
-            if (m_Deed.Deleted || !m_Deed.IsChildOf(from.Backpack))
+            if (this.m_Deed.Deleted || !this.m_Deed.IsChildOf(from.Backpack))
                 return;
 
-            m_Deed.EndCombine(from, targeted);
+            this.m_Deed.EndCombine(from, targeted);
         }
     }
 }

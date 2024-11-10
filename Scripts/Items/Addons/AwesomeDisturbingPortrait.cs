@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -10,8 +10,8 @@ namespace Server.Items
         public AwesomeDisturbingPortraitComponent()
             : base(0x2A5D)
         {
-            m_Timer = new InternalTimer(this, TimeSpan.FromSeconds(1));
-            m_Timer.Start();
+            this.m_Timer = new InternalTimer(this, TimeSpan.FromSeconds(1));
+            this.m_Timer.Start();
         }
 
         public AwesomeDisturbingPortraitComponent(Serial serial)
@@ -19,21 +19,33 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074479;// Disturbing portrait
-        public bool FacingSouth => ItemID < 0x2A61;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074479;
+            }
+        }// Disturbing portrait
+        public bool FacingSouth
+        {
+            get
+            {
+                return this.ItemID < 0x2A61;
+            }
+        }
         public override void OnDoubleClick(Mobile from)
         {
-            if (Utility.InRange(Location, from.Location, 2))
+            if (Utility.InRange(this.Location, from.Location, 2))
             {
                 int hours;
                 int minutes;
 
-                Clock.GetTime(Map, X, Y, out hours, out minutes);
+                Clock.GetTime(this.Map, this.X, this.Y, out hours, out minutes);
 
                 if (hours < 4 || hours > 20)
-                    Effects.PlaySound(Location, Map, 0x569);
+                    Effects.PlaySound(this.Location, this.Map, 0x569);
 
-                UpdateImage();
+                this.UpdateImage();
             }
             else
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
@@ -43,8 +55,8 @@ namespace Server.Items
         {
             base.OnAfterDelete();
 
-            if (m_Timer != null && m_Timer.Running)
-                m_Timer.Stop();
+            if (this.m_Timer != null && this.m_Timer.Running)
+                this.m_Timer.Stop();
         }
 
         public override void Serialize(GenericWriter writer)
@@ -60,8 +72,8 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Timer = new InternalTimer(this, TimeSpan.Zero);
-            m_Timer.Start();
+            this.m_Timer = new InternalTimer(this, TimeSpan.Zero);
+            this.m_Timer.Start();
         }
 
         private void UpdateImage()
@@ -69,41 +81,41 @@ namespace Server.Items
             int hours;
             int minutes;
 
-            Clock.GetTime(Map, X, Y, out hours, out minutes);
+            Clock.GetTime(this.Map, this.X, this.Y, out hours, out minutes);
 
-            if (FacingSouth)
+            if (this.FacingSouth)
             {
                 if (hours < 4)
-                    ItemID = 0x2A60;
+                    this.ItemID = 0x2A60;
                 else if (hours < 6)
-                    ItemID = 0x2A5F;
+                    this.ItemID = 0x2A5F;
                 else if (hours < 8)
-                    ItemID = 0x2A5E;
+                    this.ItemID = 0x2A5E;
                 else if (hours < 16)
-                    ItemID = 0x2A5D;
+                    this.ItemID = 0x2A5D;
                 else if (hours < 18)
-                    ItemID = 0x2A5E;
+                    this.ItemID = 0x2A5E;
                 else if (hours < 20)
-                    ItemID = 0x2A5F;
+                    this.ItemID = 0x2A5F;
                 else
-                    ItemID = 0x2A60;
+                    this.ItemID = 0x2A60;
             }
             else
             {
                 if (hours < 4)
-                    ItemID = 0x2A64;
+                    this.ItemID = 0x2A64;
                 else if (hours < 6)
-                    ItemID = 0x2A63;
+                    this.ItemID = 0x2A63;
                 else if (hours < 8)
-                    ItemID = 0x2A62;
+                    this.ItemID = 0x2A62;
                 else if (hours < 16)
-                    ItemID = 0x2A61;
+                    this.ItemID = 0x2A61;
                 else if (hours < 18)
-                    ItemID = 0x2A62;
+                    this.ItemID = 0x2A62;
                 else if (hours < 20)
-                    ItemID = 0x2A63;
+                    this.ItemID = 0x2A63;
                 else
-                    ItemID = 0x2A64;
+                    this.ItemID = 0x2A64;
             }
         }
 
@@ -113,15 +125,15 @@ namespace Server.Items
             public InternalTimer(AwesomeDisturbingPortraitComponent c, TimeSpan delay)
                 : base(delay, TimeSpan.FromMinutes(10))
             {
-                m_Component = c;
+                this.m_Component = c;
 
-                Priority = TimerPriority.OneMinute;
+                this.Priority = TimerPriority.OneMinute;
             }
 
             protected override void OnTick()
             {
-                if (m_Component != null && !m_Component.Deleted)
-                    m_Component.UpdateImage();
+                if (this.m_Component != null && !this.m_Component.Deleted)
+                    this.m_Component.UpdateImage();
             }
         }
     }
@@ -132,7 +144,7 @@ namespace Server.Items
         public AwesomeDisturbingPortraitAddon()
             : base()
         {
-            AddComponent(new AwesomeDisturbingPortraitComponent(), 0, 0, 0);
+            this.AddComponent(new AwesomeDisturbingPortraitComponent(), 0, 0, 0);
         }
 
         public AwesomeDisturbingPortraitAddon(Serial serial)
@@ -140,7 +152,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new AwesomeDisturbingPortraitDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new AwesomeDisturbingPortraitDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -162,7 +180,7 @@ namespace Server.Items
         public AwesomeDisturbingPortraitDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public AwesomeDisturbingPortraitDeed(Serial serial)
@@ -170,8 +188,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new AwesomeDisturbingPortraitAddon();
-        public override int LabelNumber => 1074479;// Disturbing portrait
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new AwesomeDisturbingPortraitAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074479;
+            }
+        }// Disturbing portrait
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

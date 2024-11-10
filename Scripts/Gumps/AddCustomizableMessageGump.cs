@@ -1,7 +1,9 @@
-using Server.ContextMenus;
+using System;
+
+using Server;
 using Server.Gumps;
 using Server.Mobiles;
-using System;
+using Server.ContextMenus;
 
 namespace Server.Items
 {
@@ -12,9 +14,9 @@ namespace Server.Items
 
     public class AddCustomizableMessageGump : BaseGump
     {
-        private readonly ICustomizableMessageItem _MessageItem;
-        private readonly int TitleCliloc;
-        private readonly int SubjectCliloc;
+        private ICustomizableMessageItem _MessageItem;
+        private int TitleCliloc;
+        private int SubjectCliloc;
 
         public AddCustomizableMessageGump(PlayerMobile pm, ICustomizableMessageItem item, int title = 0, int subject = 0)
             : base(pm, 100, 100)
@@ -26,9 +28,9 @@ namespace Server.Items
 
         public override void AddGumpLayout()
         {
-            string line1 = string.Empty;
-            string line2 = string.Empty;
-            string line3 = string.Empty;
+            string line1 = String.Empty;
+            string line2 = String.Empty;
+            string line3 = String.Empty;
 
             if (_MessageItem.Lines != null)
             {
@@ -45,21 +47,21 @@ namespace Server.Items
             AddPage(0);
 
             AddBackground(0, 0, 420, 320, 0x2454);
-            AddHtmlLocalized(10, 10, 400, 18, 1114513, string.Format("#{0}", TitleCliloc == 0 ? 1151680 : TitleCliloc), 0x4000, false, false); // Add Message
+            AddHtmlLocalized(10, 10, 400, 18, 1114513, String.Format("#{0}", TitleCliloc == 0 ? 1151680 : TitleCliloc), 0x4000, false, false); // Add Message
             AddHtmlLocalized(10, 37, 400, 90, SubjectCliloc == 0 ? 1151681 : SubjectCliloc, 0x14AA, false, false); // Enter up to three lines of personallized text.  you may enter up to 25 characters per line.
-
+            
             AddHtmlLocalized(10, 136, 400, 16, 1150296, 0x14AA, false, false); // Line 1:
             AddBackground(10, 152, 400, 22, 0x2486);
             AddTextEntry(12, 154, 396, 18, 0x9C2, 0, line1, 25);
-
+            
             AddHtmlLocalized(10, 178, 400, 16, 1150297, 0x14AA, false, false); // Line 2:
             AddBackground(10, 194, 400, 22, 0x2486);
             AddTextEntry(12, 196, 396, 18, 0x9C2, 1, line2, 25);
-
+            
             AddHtmlLocalized(10, 220, 400, 16, 1150298, 0x14AA, false, false); // Line 3:
             AddBackground(10, 236, 400, 22, 0x2486);
             AddTextEntry(12, 238, 396, 18, 0x9C2, 2, line3, 25);
-
+            
             AddButton(10, 290, 0xFAB, 0xFAC, 1, GumpButtonType.Reply, 0);
             AddHtmlLocalized(50, 290, 100, 20, 1150299, 0x10, false, false); // ACCEPT
 
@@ -92,7 +94,7 @@ namespace Server.Items
 
                 if (_MessageItem is BaseAddon)
                 {
-                    foreach (AddonComponent comp in ((BaseAddon)_MessageItem).Components)
+                    foreach (var comp in ((BaseAddon)_MessageItem).Components)
                     {
                         comp.InvalidateProperties();
                     }
@@ -112,8 +114,8 @@ namespace Server.Items
 
     public class EditSign : ContextMenuEntry
     {
-        private readonly ICustomizableMessageItem _MessageItem;
-        private readonly PlayerMobile _From;
+        private ICustomizableMessageItem _MessageItem;
+        private PlayerMobile _From;
 
         public EditSign(ICustomizableMessageItem messageItem, PlayerMobile from)
             : base(1151817) // Edit Sign

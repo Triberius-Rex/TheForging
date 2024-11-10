@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -38,6 +39,12 @@ namespace Server.Mobiles
             Fame = 4500;
             Karma = -4500;
 
+            VirtualArmor = 40;
+
+            PackItem(new SulfurousAsh(3));
+            PackItem(new Bone());
+            PackBodyPart();
+
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
 
@@ -46,17 +53,33 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DeathAdderCharmable => true;
-        public override int Meat => 4;
-        public override int Hides => 15;
-        public override HideType HideType => HideType.Spined;
-
-        public override void GenerateLoot()
+        public override bool DeathAdderCharmable
         {
-            AddLoot(LootPack.Average);
-            AddLoot(LootPack.LootItem<SulfurousAsh>(100.0, 1, false, true));
-            AddLoot(LootPack.LootItem<Bone>(100.0, 1, false, true));
-            AddLoot(LootPack.BodyParts);
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 15;
+            }
+        }
+        public override HideType HideType
+        {
+            get
+            {
+                return HideType.Spined;
+            }
         }
 
         public void AuraEffect(Mobile m)
@@ -64,15 +87,22 @@ namespace Server.Mobiles
             m.SendMessage("The radiating heat scorches your skin!");
         }
 
+        public override void GenerateLoot()
+        {
+            AddLoot(LootPack.Average);
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

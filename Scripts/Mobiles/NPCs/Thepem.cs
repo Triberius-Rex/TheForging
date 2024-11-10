@@ -1,14 +1,14 @@
-using Server.Engines.BulkOrders;
+using System;
 using Server.Items;
 using Server.Mobiles;
-using System;
 using System.Collections.Generic;
+using Server.Engines.BulkOrders;
 
 namespace Server.Engines.Quests
 {
     public class Thepem : MondainQuester, ITierQuester
     {
-        public TierQuestInfo TierInfo => TierQuestInfo.Thepem;
+        public TierQuestInfo TierInfo { get { return TierQuestInfo.Thepem; } }
 
         [Constructable]
         public Thepem()
@@ -23,10 +23,16 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[] { };
+        public override Type[] Quests
+        {
+            get
+            {
+                return new Type[] { };
+            }
+        }
 
         #region Bulk Orders
-        public override BODType BODType => BODType.Alchemy;
+        public override BODType BODType { get { return BODType.Alchemy; } }
 
         public override bool IsValidBulkOrder(Item item)
         {
@@ -46,9 +52,9 @@ namespace Server.Engines.Quests
 
         #endregion
 
-        public override bool IsActiveVendor => true;
+        public override bool IsActiveVendor { get { return true; } }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return m_SBInfos; } }
 
         public override void InitSBInfo()
         {
@@ -69,17 +75,16 @@ namespace Server.Engines.Quests
 
         public override void InitOutfit()
         {
-            SetWearable(new FemaleGargishClothLegs(), 0x70F, 1);
-            SetWearable(new FemaleGargishClothKilt(), 0x742, 1);
-            SetWearable(new FemaleGargishClothChest(), 0x4C3, 1);
-			SetWearable(new FemaleGargishClothArms(), 0x738, 1);
+            AddItem(new FemaleGargishClothLegs(0x70F));
+            AddItem(new FemaleGargishClothKilt(0x742));
+            AddItem(new FemaleGargishClothChest(0x4C3));
+            AddItem(new FemaleGargishClothArms(0x738));
         }
 
-        private static readonly Type[][] m_PileTypes = new Type[][]
+        private static Type[][] m_PileTypes = new Type[][]
             {
                 new Type[] {typeof(DullCopperIngot),  typeof(PileofInspectedDullCopperIngots) },
                 new Type[] {typeof(ShadowIronIngot),  typeof(PileofInspectedShadowIronIngots) },
-                new Type[] {typeof(CopperIngot),      typeof(PileofInspectedCopperIngots) },
                 new Type[] {typeof(BronzeIngot),      typeof(PileofInspectedBronzeIngots) },
                 new Type[] {typeof(GoldIngot),        typeof(PileofInspectedGoldIngots) },
                 new Type[] {typeof(AgapiteIngot),     typeof(PileofInspectedAgapiteIngots) },
@@ -132,22 +137,15 @@ namespace Server.Engines.Quests
             }
             else
             {
-                if (item is Gold)
-                {
-                    return base.CheckGold(from, item);
-                }
-                else
-                {
-                    SayTo(from, 1113035); // Oooh, shiney. I have no use for this, though.
-                    return false;
-                }
+                SayTo(from, 1113035); // Oooh, shiney. I have no use for this, though.
+                return false;
             }
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

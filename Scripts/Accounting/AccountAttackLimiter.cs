@@ -1,8 +1,8 @@
-using Server.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Server.Network;
 
 namespace Server.Accounting
 {
@@ -15,12 +15,12 @@ namespace Server.Accounting
             if (!Enabled)
                 return;
 
-            PacketHandlers.RegisterThrottler(0x80, Throttle_Callback);
-            PacketHandlers.RegisterThrottler(0x91, Throttle_Callback);
-            PacketHandlers.RegisterThrottler(0xCF, Throttle_Callback);
+            PacketHandlers.RegisterThrottler(0x80, new ThrottlePacketCallback(Throttle_Callback));
+            PacketHandlers.RegisterThrottler(0x91, new ThrottlePacketCallback(Throttle_Callback));
+            PacketHandlers.RegisterThrottler(0xCF, new ThrottlePacketCallback(Throttle_Callback));
         }
 
-        public static bool Throttle_Callback(NetState ns, out bool drop)
+        public static bool Throttle_Callback(byte packetID, NetState ns, out bool drop)
         {
             drop = false;
 
@@ -78,9 +78,8 @@ namespace Server.Accounting
                             accessLog.Counts);
                     }
                 }
-                catch (Exception e)
+                catch
                 {
-                    Diagnostics.ExceptionLogging.LogException(e);
                 }
             }
         }
@@ -113,47 +112,53 @@ namespace Server.Accounting
         private int m_Counts;
         public InvalidAccountAccessLog(IPAddress address)
         {
-            m_Address = address;
-            RefreshAccessTime();
+            this.m_Address = address;
+            this.RefreshAccessTime();
         }
 
         public IPAddress Address
         {
             get
             {
-                return m_Address;
+                return this.m_Address;
             }
             set
             {
-                m_Address = value;
+                this.m_Address = value;
             }
         }
         public DateTime LastAccessTime
         {
             get
             {
-                return m_LastAccessTime;
+                return this.m_LastAccessTime;
             }
             set
             {
-                m_LastAccessTime = value;
+                this.m_LastAccessTime = value;
             }
         }
-        public bool HasExpired => (DateTime.UtcNow >= (m_LastAccessTime + TimeSpan.FromHours(1.0)));
+        public bool HasExpired
+        {
+            get
+            {
+                return (DateTime.UtcNow >= (this.m_LastAccessTime + TimeSpan.FromHours(1.0)));
+            }
+        }
         public int Counts
         {
             get
             {
-                return m_Counts;
+                return this.m_Counts;
             }
             set
             {
-                m_Counts = value;
+                this.m_Counts = value;
             }
         }
         public void RefreshAccessTime()
         {
-            m_LastAccessTime = DateTime.UtcNow;
+            this.m_LastAccessTime = DateTime.UtcNow;
         }
     }
 }

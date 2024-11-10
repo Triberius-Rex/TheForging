@@ -1,13 +1,15 @@
+using System;
+
 namespace Server.Items
 {
     public class ShipModelOfTheHMSCape : Item
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public ShipModelOfTheHMSCape()
             : base(0x14F3)
         {
-            Hue = 0x37B;
+            this.Hue = 0x37B;
         }
 
         public ShipModelOfTheHMSCape(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1063476;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1063476;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Engines.CannedEvil
@@ -28,7 +29,7 @@ namespace Server.Engines.CannedEvil
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_Spawn);
         }
@@ -39,7 +40,7 @@ namespace Server.Engines.CannedEvil
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {

@@ -1,18 +1,19 @@
-using Server.Items;
-using Server.Mobiles;
 using System;
+
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Engines.SorcerersDungeon
 {
-    [CorpseName("the corpse of Jack the Pumpkin King")]
+    [CorpseName("the corpse of jack the pumpkin king")]
     public class JackThePumpkinKing : BaseCreature
     {
         [Constructable]
         public JackThePumpkinKing()
             : base(AIType.AI_NecroMage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "Jack";
-            Title = "the Pumpkin King";
+            Name = "jack";
+            Title = "the pumpkin king";
             Body = 0x190;
             Hue = Race.RandomSkinHue();
 
@@ -20,9 +21,9 @@ namespace Server.Engines.SorcerersDungeon
             SetDex(200);
             SetInt(1200);
 
-            SetHits(8000);
+            SetHits(26000);
 
-            SetDamage(21, 27);
+            SetDamage(22, 26);
 
             SetDamageType(ResistanceType.Physical, 100);
 
@@ -45,8 +46,8 @@ namespace Server.Engines.SorcerersDungeon
             SetSkill(SkillName.Meditation, 120);
             SetSkill(SkillName.Focus, 70, 80);
 
-            Fame = 16000;
-            Karma = -16000;
+            Fame = 12000;
+            Karma = -12000;
 
             SetWearable(new ClothNinjaHood(), 1281);
             SetWearable(new BoneChest(), 1175);
@@ -58,6 +59,7 @@ namespace Server.Engines.SorcerersDungeon
 
         private bool m_InHere;
 
+        // gleefully stolen from DemonKnight
         public override void OnDamage(int amount, Mobile from, bool willKill)
         {
             if (from != null && from != this && !m_InHere)
@@ -99,12 +101,11 @@ namespace Server.Engines.SorcerersDungeon
                         continue;
                 }
 
-                UnholyPumpkin bone = new UnholyPumpkin
-                {
-                    Hue = 0,
-                    Name = "unholy pumpkin",
-                    ItemID = Utility.RandomMinMax(0xC6A, 0xC6C)
-                };
+                UnholyPumpkin bone = new UnholyPumpkin();
+
+                bone.Hue = 0;
+                bone.Name = "unholy pumpkin";
+                bone.ItemID = Utility.RandomMinMax(0xC6A, 0xC6C);
 
                 bone.MoveToWorld(new Point3D(x, y, z), map);
             }
@@ -115,9 +116,8 @@ namespace Server.Engines.SorcerersDungeon
         {
         }
 
-        public override bool CanFlee => false;
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Deadly;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Deadly; } }
 
         public override void GenerateLoot()
         {
@@ -127,7 +127,7 @@ namespace Server.Engines.SorcerersDungeon
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -156,7 +156,13 @@ namespace Server.Engines.SorcerersDungeon
         {
         }
 
-        public override string DefaultName => "unholy pumpkin";
+        public override string DefaultName
+        {
+            get
+            {
+                return "unholy pumpkin";
+            }
+        }
         public bool Carve(Mobile from, Item item)
         {
             Effects.PlaySound(GetWorldLocation(), Map, 0x48F);
@@ -184,7 +190,7 @@ namespace Server.Engines.SorcerersDungeon
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -203,7 +209,7 @@ namespace Server.Engines.SorcerersDungeon
             public SpawnTimer(Item item)
                 : base(TimeSpan.FromSeconds(Utility.RandomMinMax(5, 10)))
             {
-                Priority = TimerPriority.OneSecond;
+                Priority = TimerPriority.FiftyMS;
 
                 m_Item = item;
             }

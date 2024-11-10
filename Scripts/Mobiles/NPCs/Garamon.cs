@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -32,11 +33,17 @@ namespace Server.Mobiles
         {
         }
 
-        public virtual bool IsInvulnerable => true;
+        public virtual bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2);
+            writer.Write((int)2);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -60,7 +67,7 @@ namespace Server.Mobiles
 
         public override void OnSpeech(SpeechEventArgs e)
         {
-            if (!e.Handled && e.Mobile.InRange(Location, 2))
+            if (!e.Handled && e.Mobile.InRange(this.Location, 2))
             {
                 PlayerMobile pm = e.Mobile as PlayerMobile;
 
@@ -76,57 +83,57 @@ namespace Server.Mobiles
                     {
                         case "hello":
                             {
-                                Say("Greetings Adventurer! If you are seeking to enter the Abyss, I may be of assitance to you.");
+                                this.Say("Greetings Adventurer! If you are seeking to enter the Abyss, I may be of assitance to you.");
                                 break;
                             }
                         case "secret":
                             {
-                                Say("He who pays close attention to the walls may notice something unusual.");
+                                this.Say("He who pays close attention to the walls may notice something unusual.");
                                 break;
                             }
                         case "teleporter":
                             {
-                                Say("You will find many within the dungeon. They will facilitate your travels.");
+                                this.Say("You will find many within the dungeon. They will facilitate your travels.");
                                 break;
                             }
                         case "vines":
                             {
-                                Say("Aaah yes! Tricky things they are. Try to find something that could burn through them.");
+                                this.Say("Aaah yes! Tricky things they are. Try to find something that could burn through them.");
                                 break;
                             }
                         case "burn":
                             {
-                                Say("I can tell you right away it's not fire based. Surely something within the dungeon will yield what you need.");
+                                this.Say("I can tell you right away it's not fire based. Surely something within the dungeon will yield what you need.");
                                 break;
                             }
                         case "abyss":
                             {
-                                Say("It's entrance is protected by stone guardians who will only grant passage to the carrier of a Tripartite Key!");
+                                this.Say("It's entrance is protected by stone guardians who will only grant passage to the carrier of a Tripartite Key!");
                                 break;
                             }
                         case "stone guardian":
                             {
-                                Say("They will not let you enter the Abyss unless you can present a Tripartite Key");
+                                this.Say("They will not let you enter the Abyss unless you can present a Tripartite Key");
                                 break;
                             }
                         case "key":
                             {
-                                Say("It's three parts that you must find, and reunite as one!");
+                                this.Say("It's three parts that you must find, and reunite as one!");
                                 break;
                             }
                         case "parts":
                             {
-                                Say("Two can be found hidden in secret rooms within the Underworld. The third you must take from a shadow of evil.");
+                                this.Say("Two can be found hidden in secret rooms within the Underworld. The third you must take from a shadow of evil.");
                                 break;
                             }
                         case "shadow of evil":
                             {
-                                Say("A most foul traitor. Once you have the first two parts, challenge him for the third! He dwells beyond the void in the Shrine.");
+                                this.Say("A most foul traitor. Once you have the first two parts, challenge him for the third! He dwells beyond the void in the Shrine.");
                                 break;
                             }
                         case "shrine":
                             {
-                                Say("Find your way there through the dungeon. You must use a teleporter to reach it.");
+                                this.Say("Find your way there through the dungeon. You must use a teleporter to reach it.");
                                 break;
                             }
                     }

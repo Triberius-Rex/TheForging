@@ -1,14 +1,17 @@
-using Server.Mobiles;
 using System;
+using System.Collections.Generic;
+using System.Text;
+using Server;
+using Server.Mobiles; 
 
 namespace Server.Items
 {
     public class BaseBalmOrLotion : BaseThieveConsumable, ICommodity
     {
-        public BaseBalmOrLotion(int itemId) : base(itemId)
+        public BaseBalmOrLotion(int itemId) : base(itemId) 
         {
             m_EffectDuration = TimeSpan.FromMinutes(30);
-            Weight = 1.0;
+            Weight = 1.0; 
         }
 
         protected override void OnUse(PlayerMobile by)
@@ -16,7 +19,7 @@ namespace Server.Items
             if (m_EffectType == ThieveConsumableEffect.None)
             {
                 by.SendMessage("This balm or lotion is corrupted. Please contact a game master");
-                return;
+                return; 
             }
 
             if (CanUse(by, this))
@@ -29,22 +32,22 @@ namespace Server.Items
             }
         }
 
-
+        
         public BaseBalmOrLotion(Serial serial)
             : base(serial)
         {
-
+          
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [TypeAlias("Server.Items.LavaSerpenCrust")]
@@ -13,8 +15,8 @@ namespace Server.Items
         public LavaSerpentCrust(int amount)
             : base(0x572D)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public LavaSerpentCrust(Serial serial)
@@ -22,15 +24,21 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
-        public override int LabelNumber => 1113336;// lava serpent crust
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113336;
+            }
+        }// lava serpent crust
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

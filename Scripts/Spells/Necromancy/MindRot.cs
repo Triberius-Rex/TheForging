@@ -1,7 +1,7 @@
-using Server.Spells.SkillMasteries;
-using Server.Targeting;
 using System;
 using System.Collections;
+using Server.Targeting;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells.Necromancy
 {
@@ -20,9 +20,27 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.75);
-        public override double RequiredSkill => 30.0;
-        public override int RequiredMana => 17;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.75);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 30.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 17;
+            }
+        }
         public static void ClearMindRotScalar(Mobile m)
         {
             if (!m_Table.ContainsKey(m))
@@ -30,7 +48,7 @@ namespace Server.Spells.Necromancy
 
             BuffInfo.RemoveBuff(m, BuffIcon.Mindrot);
             MRBucket tmpB = (MRBucket)m_Table[m];
-            MRExpireTimer tmpT = tmpB.m_MRExpireTimer;
+            MRExpireTimer tmpT = (MRExpireTimer)tmpB.m_MRExpireTimer;
             tmpT.Stop();
             m_Table.Remove(m);
             m.SendLocalizedMessage(1060872); // Your mind feels normal again.
@@ -58,7 +76,7 @@ namespace Server.Spells.Necromancy
                 m_Table.Add(target, new MRBucket(scalar, new MRExpireTimer(caster, target, duration)));
                 BuffInfo.AddBuff(target, new BuffInfo(BuffIcon.Mindrot, 1075665, duration, target));
                 MRBucket tmpB = (MRBucket)m_Table[target];
-                MRExpireTimer tmpT = tmpB.m_MRExpireTimer;
+                MRExpireTimer tmpT = (MRExpireTimer)tmpB.m_MRExpireTimer;
                 tmpT.Start();
                 target.SendLocalizedMessage(1074384);
             }
@@ -78,8 +96,6 @@ namespace Server.Spells.Necromancy
             else if (CheckHSequence(m))
             {
                 SpellHelper.Turn(Caster, m);
-
-                SpellHelper.CheckReflect(this, Caster, ref m);
 
                 ApplyEffects(m);
                 ConduitSpell.CheckAffected(Caster, m, ApplyEffects);
@@ -117,7 +133,7 @@ namespace Server.Spells.Necromancy
         {
             private readonly MindRotSpell m_Owner;
             public InternalTarget(MindRotSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

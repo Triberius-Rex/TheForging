@@ -1,14 +1,15 @@
-using Server.Engines.Quests;
+using System;
 using Server.Items;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
     public class Kevin : HumilityQuestMobile
     {
-        public override int Greeting => 1075759;
+        public override int Greeting { get { return 1075759; } }
 
-        public override bool IsActiveVendor => true;
-        public override bool CanTeach => true;
+        public override bool IsActiveVendor { get { return true; } }
+        public override bool CanTeach { get { return true; } }
 
         [Constructable]
         public Kevin()
@@ -29,30 +30,30 @@ namespace Server.Mobiles
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
+            this.InitStats(100, 100, 25);
 
-            Female = false;
-            Race = Race.Human;
-            Body = 0x190;
+            this.Female = false;
+            this.Race = Race.Human;
+            this.Body = 0x190;
 
-            Hue = Race.RandomSkinHue();
-            HairItemID = Race.RandomHair(false);
-            HairHue = Race.RandomHairHue();
+            this.Hue = Race.RandomSkinHue();
+            this.HairItemID = Race.RandomHair(false);
+            this.HairHue = Race.RandomHairHue();
         }
 
         public override void InitOutfit()
         {
             base.InitOutfit();
 
-            SetWearable(new HalfApron(), dropChance: 1);
-			SetWearable(new Cleaver(), dropChance: 1);
+            AddItem(new Server.Items.HalfApron());
+            AddItem(new Server.Items.Cleaver());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

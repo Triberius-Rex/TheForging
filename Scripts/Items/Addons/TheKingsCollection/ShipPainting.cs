@@ -1,12 +1,12 @@
+using System;
 using Server.Gumps;
 using Server.Multis;
-using System;
 
 namespace Server.Items
 {
     public class ShipPaintingAddon : BaseAddon
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextResourceCount { get; set; }
@@ -53,7 +53,7 @@ namespace Server.Items
                 if (ResourceCount > 0)
                 {
                     ResourceCount--;
-                    Item item = new PowderCharge();
+                    Item item = new HeavyPowderCharge();
 
                     from.AddToBackpack(item);
                     from.SendLocalizedMessage(1154174); // Powder charges have been placed in your backpack.
@@ -65,11 +65,41 @@ namespace Server.Items
             }
         }
 
-        public override BaseAddonDeed Deed => new ShipPaintingDeed();
+        public override BaseAddonDeed Deed { get { return new ShipPaintingDeed(); } }
 
-        public override void GetProperties(ObjectPropertyList list, AddonComponent c)
+        private class ShipPaintingComponent : LocalizedAddonComponent
         {
-            list.Add(1154175, ResourceCount.ToString()); // Powder Charges: ~1_COUNT~
+            public ShipPaintingComponent(int id)
+                : base(id, 1098378) // painting
+            {
+            }
+
+            public override void GetProperties(ObjectPropertyList list)
+            {
+                base.GetProperties(list);
+
+                if (Addon is ShipPaintingAddon)
+                {
+                    list.Add(1154175, ((ShipPaintingAddon)Addon).ResourceCount.ToString()); // Powder Charges: ~1_COUNT~
+                }
+            }
+
+            public ShipPaintingComponent(Serial serial)
+                : base(serial)
+            {
+            }
+
+            public override void Serialize(GenericWriter writer)
+            {
+                base.Serialize(writer);
+                writer.Write(0); // Version
+            }
+
+            public override void Deserialize(GenericReader reader)
+            {
+                base.Deserialize(reader);
+                int version = reader.ReadInt();
+            }
         }
 
         private void TryGiveResourceCount()
@@ -86,7 +116,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             TryGiveResourceCount();
 
@@ -102,11 +132,11 @@ namespace Server.Items
             m_ResourceCount = reader.ReadInt();
             NextResourceCount = reader.ReadDateTime();
         }
-    }
+    }    
 
     public class ShipPaintingDeed : BaseAddonDeed, IRewardOption
     {
-        public override int LabelNumber => 1154180;  // Ship Painting 
+        public override int LabelNumber { get { return 1154180; } } // Ship Painting 
 
         private DirectionType _Direction;
 
@@ -149,12 +179,12 @@ namespace Server.Items
                 base.OnDoubleClick(from);
         }
 
-        public override BaseAddon Addon => new ShipPaintingAddon(_Direction);
-
+        public override BaseAddon Addon { get { return new ShipPaintingAddon(_Direction); } }
+                
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

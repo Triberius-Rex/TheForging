@@ -1,14 +1,14 @@
-using Server.Engines.Quests;
+using System;
 using Server.Mobiles;
 using Server.Spells;
-using System;
 using System.Linq;
+using Server.Engines.Quests;
 
 namespace Server.Items
 {
     public class Whirlpool : Item
     {
-        public override int LabelNumber => 1033459;  // whirlpool
+        public override int LabelNumber { get { return 1033459; } } // whirlpool
 
         private bool m_Active, m_Creatures, m_CombatCheck, m_CriminalCheck;
         private Point3D m_PointDest;
@@ -17,7 +17,7 @@ namespace Server.Items
         private bool m_DestEffect;
         private int m_SoundID;
         private TimeSpan m_Delay;
-
+        
         [Constructable]
         public Whirlpool(Point3D pointDest, Map mapDest)
             : this(pointDest, mapDest, false)
@@ -252,7 +252,7 @@ namespace Server.Items
             {
                 Timer.DelayCall(TimeSpan.FromSeconds(1.0), () =>
                     {
-                        ExploringTheDeepQuest spell = QuestHelper.GetQuest<ExploringTheDeepQuest>((PlayerMobile)m);
+                        var spell = QuestHelper.GetQuest<ExploringTheDeepQuest>((PlayerMobile)m);
 
                         if (spell != null)
                         {

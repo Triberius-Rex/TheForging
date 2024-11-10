@@ -1,7 +1,7 @@
-using Server.Items;
-using Server.Spells;
 using System;
 using System.Collections;
+using Server.Items;
+using Server.Spells;
 
 namespace Server.Mobiles
 {
@@ -13,60 +13,42 @@ namespace Server.Mobiles
         public MeerCaptain()
             : base(AIType.AI_Paladin, FightMode.Evil, 10, 1, 0.2, 0.4)
         {
-            Name = "a meer captain";
-            Body = 773;
+            this.Name = "a meer captain";
+            this.Body = 773;
 
-            SetStr(96, 110);
-            SetDex(186, 200);
-            SetInt(96, 110);
+            this.SetStr(96, 110);
+            this.SetDex(186, 200);
+            this.SetInt(96, 110);
 
-            SetHits(58, 66);
+            this.SetHits(58, 66);
 
-            SetDamage(5, 15);
+            this.SetDamage(5, 15);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 45, 55);
-            SetResistance(ResistanceType.Fire, 10, 20);
-            SetResistance(ResistanceType.Cold, 40, 50);
-            SetResistance(ResistanceType.Poison, 35, 45);
-            SetResistance(ResistanceType.Energy, 35, 45);
+            this.SetResistance(ResistanceType.Physical, 45, 55);
+            this.SetResistance(ResistanceType.Fire, 10, 20);
+            this.SetResistance(ResistanceType.Cold, 40, 50);
+            this.SetResistance(ResistanceType.Poison, 35, 45);
+            this.SetResistance(ResistanceType.Energy, 35, 45);
 
-            SetSkill(SkillName.Archery, 90.1, 100.0);
-            SetSkill(SkillName.MagicResist, 91.0, 100.0);
-            SetSkill(SkillName.Swords, 90.1, 100.0);
-            SetSkill(SkillName.Tactics, 91.0, 100.0);
-            SetSkill(SkillName.Wrestling, 80.9, 89.9);
+            this.SetSkill(SkillName.Archery, 90.1, 100.0);
+            this.SetSkill(SkillName.MagicResist, 91.0, 100.0);
+            this.SetSkill(SkillName.Swords, 90.1, 100.0);
+            this.SetSkill(SkillName.Tactics, 91.0, 100.0);
+            this.SetSkill(SkillName.Wrestling, 80.9, 89.9);
 
-            Fame = 2000;
-            Karma = 5000;
+            this.Fame = 2000;
+            this.Karma = 5000;
 
-            SetWearable(new Crossbow(), dropChance: 1);
+            this.VirtualArmor = 28;
 
-            m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
-        }
+            Container pack = new Backpack();
 
-        public MeerCaptain(Serial serial)
-            : base(serial)
-        {
-        }
+            pack.DropItem(new Bolt(Utility.RandomMinMax(10, 20)));
+            pack.DropItem(new Bolt(Utility.RandomMinMax(10, 20)));
 
-        public override bool CanRummageCorpses => true;
-        public override bool InitialInnocent => true;
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<Bolt>(10, 20));
-            AddLoot(LootPack.LootItem<Arrow>(10, 20));
-            AddLoot(LootPack.LootItemCallback(DropWeapons));
-            AddLoot(LootPack.LootItemCallback(DropRegs));
-        }
-
-        private static Item DropWeapons(IEntity e)
-        {
-            var pack = new Backpack();
-
-            switch (Utility.Random(6))
+            switch ( Utility.Random(6) )
             {
                 case 0:
                     pack.DropItem(new Broadsword());
@@ -88,21 +70,58 @@ namespace Server.Mobiles
                     break;
             }
 
-            return pack;
-        }
-
-        private static Item DropRegs(IEntity e)
-        {
-            var bag = new Bag();
+            Container bag = new Bag();
 
             int count = Utility.RandomMinMax(10, 20);
 
             for (int i = 0; i < count; ++i)
             {
-                bag.DropItemStacked(Loot.RandomReagent());
+                Item item = Loot.RandomReagent();
+
+                if (item == null)
+                    continue;
+
+                if (!bag.TryDropItem(this, item, false))
+                    item.Delete();
             }
 
-            return bag;
+            pack.DropItem(bag);
+
+            this.AddItem(new Crossbow());
+            this.PackItem(pack);
+
+            this.m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
+        }
+
+        public MeerCaptain(Serial serial)
+            : base(serial)
+        {
+        }
+
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.AOS;
+            }
+        }
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool InitialInnocent
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override void GenerateLoot()
+        {
+            this.AddLoot(LootPack.Meager);
         }
 
         public override int GetHurtSound()
@@ -122,23 +141,23 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (Combatant != null && MagicDamageAbsorb < 1)
+            if (this.Combatant != null && this.MagicDamageAbsorb < 1)
             {
-                MagicDamageAbsorb = Utility.RandomMinMax(5, 7);
-                FixedParticles(0x375A, 10, 15, 5037, EffectLayer.Waist);
-                PlaySound(0x1E9);
+                this.MagicDamageAbsorb = Utility.RandomMinMax(5, 7);
+                this.FixedParticles(0x375A, 10, 15, 5037, EffectLayer.Waist);
+                this.PlaySound(0x1E9);
             }
 
-            if (DateTime.UtcNow >= m_NextAbilityTime)
+            if (DateTime.UtcNow >= this.m_NextAbilityTime)
             {
-                m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
+                this.m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
 
                 ArrayList list = new ArrayList();
                 IPooledEnumerable eable = GetMobilesInRange(8);
 
                 foreach (Mobile m in eable)
                 {
-                    if (m is MeerWarrior && IsFriend(m) && CanBeBeneficial(m) && m.Hits < m.HitsMax && !m.Poisoned && !MortalStrike.IsWounded(m))
+                    if (m is MeerWarrior && this.IsFriend(m) && this.CanBeBeneficial(m) && m.Hits < m.HitsMax && !m.Poisoned && !MortalStrike.IsWounded(m))
                         list.Add(m);
                 }
                 eable.Free();
@@ -147,7 +166,7 @@ namespace Server.Mobiles
                 {
                     Mobile m = (Mobile)list[i];
 
-                    DoBeneficial(m);
+                    this.DoBeneficial(m);
 
                     int toHeal = Utility.RandomMinMax(20, 30);
 
@@ -166,7 +185,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

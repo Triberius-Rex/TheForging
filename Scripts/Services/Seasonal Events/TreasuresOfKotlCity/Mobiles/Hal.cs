@@ -1,17 +1,20 @@
-using Server.Engines.Points;
-using Server.Items;
-using Server.Mobiles;
 using System;
+using Server;
+using Server.Items;
+using Server.Gumps;
+using System.Collections.Generic;
+using Server.ContextMenus;
+using Server.Engines.Points;
+using Server.Mobiles;
 
 namespace Server.Engines.TreasuresOfKotlCity
 {
     public class Hal : BaseTurnInMobile
     {
-        public static Hal Instance { get; set; }
-
-        public override int TitleLocalization => 1154520;  // Click a minor artifact to turn in for reward points.
-        public override int CancelLocalization => 1156903; 	// Bring me items of the Kotl and I will reward you with valuable items.
-        public override int TurnInLocalization => 1155592;  // Turn In Artifacts of the Kotl
+        public override int TitleLocalization { get { return 1154520; } } // Click a minor artifact to turn in for reward points.
+        public override int CancelLocalization { get { return 1156903; } }	// Bring me items of the Kotl and I will reward you with valuable items.
+        public override int TurnInLocalization { get { return 1155592; } } // Turn In Artifacts of the Kotl
+        
 
         [Constructable]
         public Hal() : base("the Researcher")
@@ -27,8 +30,6 @@ namespace Server.Engines.TreasuresOfKotlCity
             SpeechHue = 0x3B2;
             Hue = Utility.RandomSkinHue();
             Body = 0x190;
-
-            Instance = this;
         }
 
         public override void InitOutfit()
@@ -88,8 +89,6 @@ namespace Server.Engines.TreasuresOfKotlCity
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
-
-            Instance = this;
         }
     }
 }

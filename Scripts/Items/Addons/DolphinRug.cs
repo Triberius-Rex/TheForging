@@ -1,14 +1,15 @@
+using System;
+using Server;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
-using System;
 
 namespace Server.Items
 {
     [TypeAlias("Server.Items.DolphinRugEastAddon", "Server.Items.DolphinRugSouthAddon")]
     public class DolphinRugAddon : BaseAddon, IRewardItem
     {
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties { get { return true; } }
 
         private bool m_IsRewardItem;
         private int m_ResourceCount;
@@ -45,7 +46,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextResourceCount { get; set; }
 
-        private static readonly int[,] _EastLarge = new int[,]
+        private static int[,] _EastLarge = new int[,]
         {
               {14590, 1, -1, 0}, {14586, 1, -2, 0}, {14589, 0, -1, 0}// 1	2	3	
 			, {14592, -1, -1, 0}, {14593, 0, 0, 0}, {14597, 0, 1, 0}// 4	5	6	
@@ -59,7 +60,7 @@ namespace Server.Items
 			, {14598, 1, 2, 0}// 28	
 		};
 
-        private static readonly int[,] _SouthLarge = new int[,]
+        private static int[,] _SouthLarge = new int[,]
         {
               {14553, -3, 2, 0}, {14554, -3, 1, 0}, {14555, -3, 0, 0}// 1	2	3	
 			, {14556, -3, -1, 0}, {14557, -2, 1, 0}, {14558, -2, 0, 0}// 4	5	6	
@@ -73,7 +74,7 @@ namespace Server.Items
 			, {14574, 2, 0, 0}// 28	
 		};
 
-        private static readonly int[,] _EastSmall =
+        private static int[,] _EastSmall =
         {
               {18283, 1, 0, 0}, {18276, 1, 1, 0},   {18289, 1, 2, 0}    // 1	2	3	
 			, {18288, 0, 2, 0}, {18287, -1, -2, 0}, {18286, 1, -2, 0}   // 4	5	6	
@@ -82,7 +83,7 @@ namespace Server.Items
 			, {18278, -1, -1, 0}, {18277, 0, 1, 0}, {18275, 0, 0, 0}    // 13	14	15	
 		};
 
-        private static readonly int[,] _SouthSmall =
+        private static int[,] _SouthSmall =
         {
               {18393, 2, -1, 0},  {18392, -2, -1, 0}, {18391, -2, 1, 0} // 1	2	3	
 			, {18390, 1, -1, 0},  {18300, 1, 0, 0},   {18299, 1, 1, 0}  // 4	5	6	
@@ -95,10 +96,8 @@ namespace Server.Items
         {
             get
             {
-                DolphinRugAddonDeed deed = new DolphinRugAddonDeed(RugType, m_ResourceCount, NextResourceCount)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                DolphinRugAddonDeed deed = new DolphinRugAddonDeed(RugType, m_ResourceCount, NextResourceCount);
+                deed.IsRewardItem = m_IsRewardItem;
 
                 return deed;
             }
@@ -172,7 +171,7 @@ namespace Server.Items
 
         private class InternalAddonComponent : AddonComponent
         {
-            public override int LabelNumber => 1150122;  // Dolphin Rug
+            public override int LabelNumber { get { return 1150122; } } // Dolphin Rug
 
             public InternalAddonComponent(int id)
                 : base(id)
@@ -234,7 +233,7 @@ namespace Server.Items
 
             writer.Write(m_ResourceCount);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
             writer.Write(NextResourceCount);
             writer.Write((int)RugType);
         }
@@ -272,10 +271,8 @@ namespace Server.Items
         {
             get
             {
-                DolphinRugAddon addon = new DolphinRugAddon(RugType, m_ResourceCount, NextResourceCount)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                DolphinRugAddon addon = new DolphinRugAddon(RugType, m_ResourceCount, NextResourceCount);
+                addon.IsRewardItem = m_IsRewardItem;
 
                 return addon;
             }
@@ -398,7 +395,7 @@ namespace Server.Items
 
             writer.Write(m_ResourceCount);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
             writer.Write(NextResourceCount);
             writer.Write((int)RugType);
         }

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class CrystallineFragments : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public CrystallineFragments()
             : base(0x223B)
         {
-            LootType = LootType.Blessed;
-            Hue = 0x47E;
+            this.LootType = LootType.Blessed;
+            this.Hue = 0x47E;
         }
 
         public CrystallineFragments(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073160;// Crystalline Fragments
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073160;
+            }
+        }// Crystalline Fragments
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

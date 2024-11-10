@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Network;
 
@@ -13,14 +14,17 @@ namespace Server.Mobiles
 
     public class SolenHelper
     {
-        public static Item PackPicnicBasket(IEntity e)
+        public static void PackPicnicBasket(BaseCreature solen)
         {
-            var basket = new PicnicBasket();
+            if (1 > Utility.Random(100))
+            {
+                PicnicBasket basket = new PicnicBasket();
 
-            basket.DropItem(new BeverageBottle(BeverageType.Wine));
-            basket.DropItem(new CheeseWedge());
+                basket.DropItem(new BeverageBottle(BeverageType.Wine));
+                basket.DropItem(new CheeseWedge());
 
-            return basket;
+                solen.PackItem(basket);
+            }
         }
 
         public static bool CheckRedFriendship(Mobile m)

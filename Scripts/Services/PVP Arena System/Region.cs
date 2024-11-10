@@ -1,13 +1,21 @@
+using Server;
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Mobiles;
 using Server.Regions;
 using Server.Spells;
-using Server.Spells.Fifth;
-using Server.Spells.Fourth;
+using Server.Spells.Eighth;
 using Server.Spells.Seventh;
 using Server.Spells.Sixth;
+using Server.Spells.Fifth;
+using Server.Spells.Fourth;
 using Server.Spells.Third;
-using System;
+using Server.Spells.Mysticism;
+using Server.Spells.Spellweaving;
+using Server.Spells.Necromancy;
+using Server.Spells.Ninjitsu;
+using Server.Targeting;
 
 namespace Server.Engines.ArenaSystem
 {
@@ -16,9 +24,9 @@ namespace Server.Engines.ArenaSystem
         public PVPArena Arena { get; set; }
 
         public ArenaRegion(PVPArena arena)
-            : base(string.Format("Duel Arena {0}", arena.Definition.Name),
-                    arena.Definition.Map,
-                    DefaultPriority,
+            : base(String.Format("Duel Arena {0}", arena.Definition.Name),
+                    arena.Definition.Map, 
+                    Region.DefaultPriority, 
                     arena.Definition.RegionBounds)
         {
             Arena = arena;
@@ -28,7 +36,7 @@ namespace Server.Engines.ArenaSystem
         {
             if (Arena.CurrentDuel != null)
             {
-                ArenaDuel duel = Arena.CurrentDuel;
+                var duel = Arena.CurrentDuel;
 
                 if (o is BasePotion && duel.PotionRules != PotionRules.All)
                 {
@@ -73,7 +81,7 @@ namespace Server.Engines.ArenaSystem
         {
             if (Arena.CurrentDuel != null)
             {
-                ArenaDuel duel = Arena.CurrentDuel;
+                var duel = Arena.CurrentDuel;
 
                 if (duel.InPreFight)
                 {
@@ -87,7 +95,7 @@ namespace Server.Engines.ArenaSystem
                     return false;
                 }
 
-                if (!duel.FieldSpellsAllowed && (spell is FireFieldSpell || spell is ParalyzeFieldSpell || spell is PoisonFieldSpell || spell is EnergyFieldSpell
+                if(!duel.FieldSpellsAllowed && (spell is FireFieldSpell || spell is ParalyzeFieldSpell || spell is PoisonFieldSpell || spell is EnergyFieldSpell
                     || spell is WallOfStoneSpell))
                 {
                     m.SendLocalizedMessage(1010391); // A magical aura surrounds you and prevents the spell.
@@ -102,7 +110,7 @@ namespace Server.Engines.ArenaSystem
         {
             if (type == TravelCheckType.TeleportTo)
             {
-                if (Find(traveller.Location, traveller.Map) != this || traveller.Z != p.Z)
+                if (Region.Find(traveller.Location, traveller.Map) != this || traveller.Z != p.Z)
                 {
                     traveller.SendLocalizedMessage(501035); // You cannot teleport from here to the destination.
                     return false;
@@ -138,7 +146,7 @@ namespace Server.Engines.ArenaSystem
 
             if (Arena != null)
             {
-                Timer.DelayCall(TimeSpan.FromSeconds(.2), mob => Arena.RemovePlayer(mob), m);
+                Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(.2), mob => Arena.RemovePlayer(mob), m);
             }
 
             return res;
@@ -166,8 +174,8 @@ namespace Server.Engines.ArenaSystem
         }
 
         public override bool AllowHarmful(Mobile from, IDamageable target)
-        {
-            Region theirs = Find(target.Location, target.Map);
+		{
+            Region theirs = Region.Find(target.Location, target.Map);
 
             if (theirs is ArenaRegion)
             {
@@ -175,11 +183,11 @@ namespace Server.Engines.ArenaSystem
             }
 
             return base.AllowHarmful(from, target);
-        }
+		}
 
         public override bool AllowBeneficial(Mobile from, Mobile target)
         {
-            Region theirs = Find(target.Location, target.Map);
+            Region theirs = Region.Find(target.Location, target.Map);
 
             if (theirs is ArenaRegion)
             {

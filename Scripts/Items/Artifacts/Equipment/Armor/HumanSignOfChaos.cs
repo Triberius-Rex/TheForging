@@ -1,8 +1,10 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class HumanSignOfChaos : ChaosShield
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public HumanSignOfChaos()
             : base()
@@ -18,16 +20,58 @@
             : base(serial)
         {
         }
-
-        public override int LabelNumber => 1113535; // Sign of Chaos
-
-        public override int BasePhysicalResistance => 3;
-        public override int BaseFireResistance => 2;
-        public override int BaseColdResistance => 2;
-        public override int BasePoisonResistance => 2;
-        public override int BaseEnergyResistance => 2;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        
+        public override int LabelNumber { get{return 1113535;} }// Sign of Chaos
+        
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
 
         public override void Deserialize(GenericReader reader)
         {
@@ -38,7 +82,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);//version
+            writer.Write((int)0);//version
         }
     }
 }

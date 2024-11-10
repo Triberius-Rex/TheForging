@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Cards2 : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public Cards2()
             : base(0xE16)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public Cards2(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

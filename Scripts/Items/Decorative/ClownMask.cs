@@ -1,4 +1,6 @@
-﻿namespace Server.Items.Holiday
+﻿using System;
+
+namespace Server.Items.Holiday
 {
     public class PaintedEvilClownMask : BasePaintedMask
     {
@@ -13,12 +15,18 @@
         {
         }
 
-        public override string MaskName => "Evil Clown Mask";
+        public override string MaskName
+        {
+            get
+            {
+                return "Evil Clown Mask";
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

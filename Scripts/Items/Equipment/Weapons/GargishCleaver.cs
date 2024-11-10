@@ -1,6 +1,9 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x48AE, 0x48AF)]
+    //Based off Cleaver
+    [FlipableAttribute(0x48AE, 0x48AF)]
     public class GargishCleaver : BaseKnife
     {
         [Constructable]
@@ -15,20 +18,115 @@ namespace Server.Items
         {
         }
 
-        public override WeaponAbility PrimaryAbility => WeaponAbility.BleedAttack;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.InfectiousStrike;
-        public override int StrengthReq => 10;
-        public override int MinDamage => 10;
-        public override int MaxDamage => 14;
-        public override float Speed => 2.50f;
-
-        public override int InitMinHits => 31;
-        public override int InitMaxHits => 50;
-
+        public override WeaponAbility PrimaryAbility
+        {
+            get
+            {
+                return WeaponAbility.BleedAttack;
+            }
+        }
+        public override WeaponAbility SecondaryAbility
+        {
+            get
+            {
+                return WeaponAbility.InfectiousStrike;
+            }
+        }
+        public override int AosStrengthReq
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int AosMinDamage
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int AosMaxDamage
+        {
+            get
+            {
+                return 14;
+            }
+        }
+        public override int AosSpeed
+        {
+            get
+            {
+                return 46;
+            }
+        }
+        public override float MlSpeed
+        {
+            get
+            {
+                return 2.50f;
+            }
+        }
+        public override int OldStrengthReq
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int OldMinDamage
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int OldMaxDamage
+        {
+            get
+            {
+                return 13;
+            }
+        }
+        public override int OldSpeed
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 31;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 50;
+            }
+        }
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

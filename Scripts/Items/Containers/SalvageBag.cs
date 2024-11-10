@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Engines.Craft;
 using Server.Network;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Items
@@ -10,8 +10,14 @@ namespace Server.Items
     public class SalvageBag : Bag
     {
         private bool m_Failure;
-
-        public override int LabelNumber => 1079931;// Salvage Bag
+		
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1079931;
+            }
+        }// Salvage Bag
 
         [Constructable]
         public SalvageBag()
@@ -38,7 +44,7 @@ namespace Server.Items
                 list.Add(new SalvageAllEntry(this, IsChildOf(from.Backpack) && Resmeltables() && Scissorables()));
             }
         }
-
+		
         #region Checks
         private bool Resmeltables() //Where context menu checks for metal items and dragon barding deeds
         {
@@ -62,7 +68,7 @@ namespace Server.Items
             }
             return false;
         }
-
+		
         private bool Scissorables() //Where context menu checks for Leather items and cloth items
         {
             return Items.Any(i => (i != null) && (!i.Deleted) && (i is IScissorable) && (i is Item));
@@ -92,10 +98,10 @@ namespace Server.Items
 
                 if (craftResource.Amount < 2)
                     return false; // Not enough metal to resmelt
-
+					
                 double difficulty = 0.0;
 
-                switch (resource)
+                switch ( resource )
                 {
                     case CraftResource.DullCopper:
                         difficulty = 65.0;
@@ -147,7 +153,7 @@ namespace Server.Items
 
                 if (difficulty > skill)
                 {
-                    m_Failure = true;
+                    m_Failure = true; 
                     ingot.Delete();
                 }
                 else
@@ -160,16 +166,16 @@ namespace Server.Items
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Diagnostics.ExceptionLogging.LogException(e);
+                Console.WriteLine(ex.ToString());
             }
 
             return false;
         }
 
         #endregion
-
+		
         #region Salvaging
         private void SalvageIngots(Mobile from)
         {
@@ -192,15 +198,15 @@ namespace Server.Items
 
             int salvaged = 0;
             int notSalvaged = 0;
-
+			
             Container sBag = this;
-
+			
             List<Item> Smeltables = sBag.FindItemsByType<Item>();
 
             for (int i = Smeltables.Count - 1; i >= 0; i--)
             {
                 Item item = Smeltables[i];
-
+				
                 if (item is BaseArmor)
                 {
                     if (Resmelt(from, item, ((BaseArmor)item).Resource))
@@ -230,7 +236,7 @@ namespace Server.Items
                 m_Failure = false;
             }
             else
-                from.SendLocalizedMessage(1079973, string.Format("{0}\t{1}", salvaged, salvaged + notSalvaged)); // Salvaged: ~1_COUNT~/~2_NUM~ blacksmithed items
+                from.SendLocalizedMessage(1079973, String.Format("{0}\t{1}", salvaged, salvaged + notSalvaged)); // Salvaged: ~1_COUNT~/~2_NUM~ blacksmithed items
         }
 
         private void SalvageCloth(Mobile from)
@@ -244,9 +250,9 @@ namespace Server.Items
 
             int salvaged = 0;
             int notSalvaged = 0;
-
+			
             Container sBag = this;
-
+			
             List<Item> Scissorables = sBag.FindItemsByType<Item>();
 
             for (int i = Scissorables.Count - 1; i >= 0; i--)
@@ -264,12 +270,12 @@ namespace Server.Items
                     }
                 }
             }
-
-            from.SendLocalizedMessage(1079974, string.Format("{0}\t{1}", salvaged, salvaged + notSalvaged)); // Salvaged: ~1_COUNT~/~2_NUM~ tailored items
-
+			
+            from.SendLocalizedMessage(1079974, String.Format("{0}\t{1}", salvaged, salvaged + notSalvaged)); // Salvaged: ~1_COUNT~/~2_NUM~ tailored items
+			
             Container pack = from.Backpack;
-
-            foreach (Item i in FindItemsByType(typeof(Item), true))
+			
+            foreach (Item i in ((Container)this).FindItemsByType(typeof(Item), true))
             {
                 if ((i is Leather) || (i is Cloth) || (i is SpinedLeather) || (i is HornedLeather) || (i is BarbedLeather) || (i is Bandage) || (i is Bone))
                 {
@@ -374,7 +380,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(0); // version
+            writer.WriteEncodedInt((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,14 +1,26 @@
+using System;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
     public class OilCloth : Item, IScissorable, IDyable
     {
-        public override int LabelNumber => 1041498;// oil cloth
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041498;
+            }
+        }// oil cloth
 
-        public override double DefaultWeight => 1.0;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 1.0;
+            }
+        }
 
         [Constructable]
         public OilCloth()
@@ -41,7 +53,7 @@ namespace Server.Items
         {
             if (IsChildOf(from.Backpack))
             {
-                from.BeginTarget(-1, false, TargetFlags.None, OnTarget);
+                from.BeginTarget(-1, false, TargetFlags.None, new TargetCallback(OnTarget));
                 from.SendLocalizedMessage(1005424); // Select the weapon or armor you wish to use the cloth on.
             }
             else
@@ -109,10 +121,8 @@ namespace Server.Items
 
                 if (beverage.Content == BeverageType.Liquor)
                 {
-                    Firebomb bomb = new Firebomb(beverage.ItemID)
-                    {
-                        Name = beverage.Name
-                    };
+                    Firebomb bomb = new Firebomb(beverage.ItemID);
+                    bomb.Name = beverage.Name;
 
                     beverage.ReplaceWith(bomb);
 
@@ -144,7 +154,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

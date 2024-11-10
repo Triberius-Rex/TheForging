@@ -1,17 +1,14 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
 {
     [Alterable(typeof(DefTinkering), typeof(GargishGlasses), true)]
-    public class ElvenGlasses : BaseArmor, IRepairable, ICanBeElfOrHuman
+    public class ElvenGlasses : BaseArmor, IRepairable
     {
-        public override int LabelNumber => 1032216;  // elven glasses
-        public CraftSystem RepairSystem => DefTinkering.CraftSystem;
+        public override int LabelNumber { get { return 1032216; } } // elven glasses
 
-        private bool _ElvesOnly;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool ElfOnly { get { return _ElvesOnly; } set { _ElvesOnly = value; } }
+        public CraftSystem RepairSystem { get { return DefTinkering.CraftSystem; } }
 
         [Constructable]
         public ElvenGlasses()
@@ -24,25 +21,103 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override int BasePhysicalResistance => 2;
-        public override int BaseFireResistance => 4;
-        public override int BaseColdResistance => 4;
-        public override int BasePoisonResistance => 3;
-        public override int BaseEnergyResistance => 2;
-        public override int InitMinHits => 36;
-        public override int InitMaxHits => 48;
-        public override int StrReq => 45;
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Leather;
-        public override CraftResource DefaultResource => CraftResource.RegularLeather;
-        public override ArmorMeditationAllowance DefMedAllowance => ArmorMeditationAllowance.All;
+        
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 36;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 48;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int OldStrReq
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 30;
+            }
+        }
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Leather;
+            }
+        }
+        public override CraftResource DefaultResource
+        {
+            get
+            {
+                return CraftResource.RegularLeather;
+            }
+        }
+        public override ArmorMeditationAllowance DefMedAllowance
+        {
+            get
+            {
+                return ArmorMeditationAllowance.All;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
-
-            writer.Write(_ElvesOnly);
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -50,9 +125,9 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            if (version > 1)
+            if (version == 0)
             {
-                _ElvesOnly = reader.ReadBool();
+                xWeaponAttributesDeserializeHelper(reader, this);
             }
         }
     }

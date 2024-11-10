@@ -1,21 +1,25 @@
+using Server;
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
-    public class AloronsShorts : TigerPeltShorts
-    {
-        public override int LabelNumber => 1156243;  // Aloron's Armor
-
-        public override SetItem SetID => SetItem.Aloron;
-        public override int Pieces => 4;
-
-        public override int BasePhysicalResistance => 7;
-        public override int BaseFireResistance => 7;
-        public override int BaseColdResistance => 6;
-        public override int BasePoisonResistance => 7;
-        public override int BaseEnergyResistance => 7;
-
-        [Constructable]
-        public AloronsShorts()
-        {
+	public class AloronsShorts : TigerPeltShorts
+	{
+		public override int LabelNumber { get { return 1156243; } } // Aloron's Armor
+		
+		public override SetItem SetID{ get{ return SetItem.Aloron; } }
+		public override int Pieces{ get{ return 4; } }
+		
+		public override int BasePhysicalResistance{ get{ return 7; } }
+        public override int BaseFireResistance{ get{ return 7; } }
+        public override int BaseColdResistance{ get{ return 6; } }
+        public override int BasePoisonResistance{ get{ return 7; } }
+        public override int BaseEnergyResistance{ get{ return 7; } }
+		
+		[Constructable]
+		public AloronsShorts()
+		{
             AbsorptionAttributes.EaterCold = 2;
             Attributes.BonusDex = 4;
             Attributes.BonusStam = 4;
@@ -30,7 +34,7 @@ namespace Server.Items
             SetColdBonus = 9;
             SetPoisonBonus = 8;
             SetEnergyBonus = 8;
-        }
+		}
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -39,22 +43,22 @@ namespace Server.Items
             list.Add(1156345); // Dinosaur Slayer
         }
 
-        public AloronsShorts(Serial serial) : base(serial)
+		public AloronsShorts( Serial serial ) : base( serial )
         {
         }
-
-        public override void Serialize(GenericWriter writer)
+       
+        public override void Serialize( GenericWriter writer )
         {
-            base.Serialize(writer);
-
-            writer.Write(0); // version
+            base.Serialize( writer );
+           
+            writer.Write( (int) 0 ); // version
         }
-
+       
         public override void Deserialize(GenericReader reader)
         {
-            base.Deserialize(reader);
-
-            int version = reader.ReadInt();
+            base.Deserialize( reader );
+           
+            int version = reader.ReadInt(); 
         }
-    }
+	}
 }

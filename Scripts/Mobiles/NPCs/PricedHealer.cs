@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Mobiles
@@ -14,7 +15,10 @@ namespace Server.Mobiles
         [Constructable]
         public PricedHealer(int price)
         {
-            m_Price = price;
+            this.m_Price = price;
+
+            if (!Core.AOS)
+                this.NameHue = 0x35;
         }
 
         public PricedHealer(Serial serial)
@@ -27,28 +31,40 @@ namespace Server.Mobiles
         {
             get
             {
-                return m_Price;
+                return this.m_Price;
             }
             set
             {
-                m_Price = value;
+                this.m_Price = value;
             }
         }
-        public override bool IsInvulnerable => true;
-        public override bool HealsYoungPlayers => false;
+        public override bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool HealsYoungPlayers
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void InitSBInfo()
         {
         }
 
         public override void OfferResurrection(Mobile m)
         {
-            Direction = GetDirectionTo(m);
+            this.Direction = this.GetDirectionTo(m);
 
             m.PlaySound(0x214);
             m.FixedEffect(0x376A, 10, 16);
 
             m.CloseGump(typeof(ResurrectGump));
-            m.SendGump(new ResurrectGump(m, this, m_Price));
+            m.SendGump(new ResurrectGump(m, this, this.m_Price));
         }
 
         public override bool CheckResurrect(Mobile m)
@@ -60,9 +76,9 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Price);
+            writer.Write((int)this.m_Price);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -71,11 +87,11 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_Price = reader.ReadInt();
+                        this.m_Price = reader.ReadInt();
                         break;
                     }
             }

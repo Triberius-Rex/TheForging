@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ElvenWashBasinEastAddon : BaseAddon
@@ -5,8 +7,8 @@ namespace Server.Items
         [Constructable]
         public ElvenWashBasinEastAddon()
         {
-            AddComponent(new AddonComponent(0x30DF), 0, 0, 0);
-            AddComponent(new AddonComponent(0x30E0), 0, 1, 0);
+            this.AddComponent(new AddonComponent(0x30DF), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x30E0), 0, 1, 0);
         }
 
         public ElvenWashBasinEastAddon(Serial serial)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ElvenWashBasinEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ElvenWashBasinEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -42,8 +50,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ElvenWashBasinEastAddon();
-        public override int LabelNumber => 1073387;// elven wash basin (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ElvenWashBasinEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073387;
+            }
+        }// elven wash basin (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

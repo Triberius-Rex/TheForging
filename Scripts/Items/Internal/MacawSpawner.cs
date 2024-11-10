@@ -1,12 +1,14 @@
-using Server.Mobiles;
 using System;
+using Server.Items;
+using Server.Mobiles;
+using Server.Network;
 using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class MacawSpawner : Item
     {
-        public override int LabelNumber => 1124032;  // foil sheet
+        public override int LabelNumber { get { return 1124032; } } // foil sheet
 
         public List<BaseCreature> Spawn { get; set; }
 
@@ -23,15 +25,13 @@ namespace Server.Items
             Movable = false;
             Hue = 1281;
 
-            Addon = new MacawNest
-            {
-                Foil = this
-            };
+            Addon = new MacawNest();
+            Addon.Foil = this;
         }
 
-        public override bool VerifyMove(Mobile from)
+        public override bool VerifyMove( Mobile from )
         {
-            if (Visible && Map != null && Map != Map.Internal && Utility.RandomBool())
+            if (this.Visible && this.Map != null && this.Map != Map.Internal && Utility.RandomBool())
             {
                 SpawnBirdies(from);
             }
@@ -51,9 +51,9 @@ namespace Server.Items
                 {
                     int x = Utility.RandomMinMax(X - 1, X + 1);
                     int y = Utility.RandomMinMax(Y - 1, Y + 2);
-                    int z = Map.GetAverageZ(x, y);
+                    int z = this.Map.GetAverageZ(x, y);
 
-                    if (Map.CanSpawnMobile(x, y, z))
+                    if (this.Map.CanSpawnMobile(x, y, z))
                     {
                         p = new Point3D(x, y, z);
                         break;
@@ -61,7 +61,7 @@ namespace Server.Items
                 }
 
                 BaseCreature macaw = new Macaw(this);
-                macaw.MoveToWorld(p, Map);
+                macaw.MoveToWorld(p, this.Map);
                 Spawn.Add(macaw);
 
                 Visible = false;
@@ -73,7 +73,7 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (Location != oldLocation && Addon != null && !Moving)
+            if (this.Location != oldLocation && Addon != null && !Moving)
                 MoveToNest();
 
             base.OnLocationChange(oldLocation);
@@ -82,14 +82,14 @@ namespace Server.Items
         public override void OnMapChange()
         {
             if (Addon != null)
-                Addon.Map = Map;
+                Addon.Map = this.Map;
 
             base.OnMapChange();
         }
 
         private void MoveToNest()
         {
-            Addon.MoveToWorld(Location, Map);
+            Addon.MoveToWorld(this.Location, this.Map);
             Moving = true;
             MoveToWorld(new Point3D(Addon.X + 1, Addon.Y, Addon.Z + 9), Addon.Map);
             Moving = false;
@@ -115,7 +115,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(Addon);
             writer.Write(Spawn.Count);
@@ -160,7 +160,7 @@ namespace Server.Items
             }
         }
 
-        private static readonly Point3D[] _SpawnLocs =
+        private static Point3D[] _SpawnLocs =
         {
             new Point3D(491, 1863, 95),
             new Point3D(496, 1865, 85),
@@ -223,7 +223,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

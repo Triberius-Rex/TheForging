@@ -1,13 +1,17 @@
+using System;
+using Server;
+using Server.Items;
+
 namespace Server.Items
 {
-    public class KhaldunDecorationAddon : BaseAddon
-    {
+	public class KhaldunDecorationAddon : BaseAddon
+	{
         public static KhaldunDecorationAddon Instance { get; set; }
 
         // Ritual Table needs to be hued 1362
         // 14031 = hue 1
-        private static readonly int[,] m_AddOnSimpleComponents = new int[,] {
-              {27, 74, 9, 1}, {28, 74, 9, 1}, {28, 73, 9, 1}// 1	2	3	
+        private static int[,] m_AddOnSimpleComponents = new int[,] {
+			  {27, 74, 9, 1}, {28, 74, 9, 1}, {28, 73, 9, 1}// 1	2	3	
 			, {28, 72, 9, 1}, {28, 74, -1, 1}, {28, 72, -1, 1}// 4	5	6	
 			, {28, 73, -1, 1}, {27, 74, 6, 1}, {27, 74, 4, 1}// 7	8	9	
 			, {27, 74, 5, 1}, {27, 74, 7, 1}, {27, 74, 8, 1}// 10	11	12	
@@ -216,56 +220,56 @@ namespace Server.Items
 			, {611, -75, -11, 1}// 653	
 		};
 
-        public override BaseAddonDeed Deed => null;
+        public override BaseAddonDeed Deed { get { return null; } }
 
         [Constructable]
         public KhaldunDecorationAddon()
         {
-            Instance = this;
+            Instance = this; 
 
             for (int i = 0; i < m_AddOnSimpleComponents.Length / 4; i++)
                 AddComponent(new AddonComponent(m_AddOnSimpleComponents[i, 0]), m_AddOnSimpleComponents[i, 1], m_AddOnSimpleComponents[i, 2], m_AddOnSimpleComponents[i, 3]);
 
-            AddComplexComponent(this, 4643, 59, -12, 1, 1105, -1, "", 1);// 121
-            AddComplexComponent(this, 8429, 60, -9, 2, 1105, -1, "", 1);// 149
-            AddComplexComponent(this, 8429, 59, -9, 2, 1105, -1, "", 1);// 150
-            AddComplexComponent(this, 4646, 57, -12, 2, 1105, -1, "", 1);// 152
-            AddComplexComponent(this, 4646, 57, -11, 2, 1105, -1, "", 1);// 154
-            AddComplexComponent(this, 4648, 62, -12, 2, 1105, -1, "", 1);// 156
-            AddComplexComponent(this, 4648, 62, -11, 2, 1105, -1, "", 1);// 160
-            AddComplexComponent(this, 14031, -22, 7, 1, 1, -1, "Hole", 1);// 375
-            AddComplexComponent(this, 14031, -23, 6, 1, 1, -1, "Hole", 1);// 376
-            AddComplexComponent(this, 18818, -24, -2, 1, 1105, -1, "", 1);// 377
-            AddComplexComponent(this, 18819, -24, -3, 1, 1105, -1, "", 1);// 378
-            AddComplexComponent(this, 14031, -23, 7, 1, 1, -1, "Hole", 1);// 382
-            AddComplexComponent(this, 14031, -22, 6, 1, 1, -1, "Hole", 1);// 410
-            AddComplexComponent(this, 18820, -25, -2, 1, 1105, -1, "", 1);// 474
-            AddComplexComponent(this, 18821, -25, -3, 1, 1105, -1, "", 1);// 487
-            AddComplexComponent(this, 4077, -68, -1, 1, 1105, -1, "", 1);// 544
-            AddComplexComponent(this, 4076, -69, -1, 1, 1105, -1, "", 1);// 545
-            AddComplexComponent(this, 4073, -70, -1, 1, 1105, -1, "", 1);// 546
-            AddComplexComponent(this, 4078, -68, -2, 1, 1105, -1, "", 1);// 547
-            AddComplexComponent(this, 4074, -69, -2, 1, 1105, -1, "", 1);// 548
-            AddComplexComponent(this, 4070, -70, -2, 1, 1105, -1, "", 1);// 549
-            AddComplexComponent(this, 4075, -68, -3, 1, 1105, -1, "", 1);// 550
-            AddComplexComponent(this, 4072, -69, -3, 1, 1105, -1, "", 1);// 551
-            AddComplexComponent(this, 4071, -70, -3, 1, 1105, -1, "", 1);// 552
-            AddComplexComponent(this, 6571, -64, 2, 8, 0, 1, "", 1);// 553
-            AddComplexComponent(this, 6571, -64, -2, 4, 0, 1, "", 1);// 554
-            AddComplexComponent(this, 6571, -72, -4, 4, 0, 1, "", 1);// 559
-            AddComplexComponent(this, 6571, -72, 0, 4, 0, 1, "", 1);// 560
-            AddComplexComponent(this, 6571, -67, 0, 4, 0, 1, "", 1);// 561
-            AddComplexComponent(this, 6571, -67, -4, 4, 0, 1, "", 1);// 562
-            AddComplexComponent(this, 6571, -64, -6, 8, 0, 1, "", 1);// 563
-            AddComplexComponent(this, 6571, -74, 2, 8, 0, 1, "", 1);// 622
-            AddComplexComponent(this, 6571, -74, -2, 4, 0, 1, "", 1);// 623
-            AddComplexComponent(this, 6571, -74, -6, 8, 0, 1, "", 1);// 624
+            AddComplexComponent((BaseAddon)this, 4643, 59, -12, 1, 1105, -1, "", 1);// 121
+            AddComplexComponent((BaseAddon)this, 8429, 60, -9, 2, 1105, -1, "", 1);// 149
+            AddComplexComponent((BaseAddon)this, 8429, 59, -9, 2, 1105, -1, "", 1);// 150
+            AddComplexComponent((BaseAddon)this, 4646, 57, -12, 2, 1105, -1, "", 1);// 152
+            AddComplexComponent((BaseAddon)this, 4646, 57, -11, 2, 1105, -1, "", 1);// 154
+            AddComplexComponent((BaseAddon)this, 4648, 62, -12, 2, 1105, -1, "", 1);// 156
+            AddComplexComponent((BaseAddon)this, 4648, 62, -11, 2, 1105, -1, "", 1);// 160
+            AddComplexComponent((BaseAddon)this, 14031, -22, 7, 1, 1, -1, "Hole", 1);// 375
+            AddComplexComponent((BaseAddon)this, 14031, -23, 6, 1, 1, -1, "Hole", 1);// 376
+            AddComplexComponent((BaseAddon)this, 18818, -24, -2, 1, 1105, -1, "", 1);// 377
+            AddComplexComponent((BaseAddon)this, 18819, -24, -3, 1, 1105, -1, "", 1);// 378
+            AddComplexComponent((BaseAddon)this, 14031, -23, 7, 1, 1, -1, "Hole", 1);// 382
+            AddComplexComponent((BaseAddon)this, 14031, -22, 6, 1, 1, -1, "Hole", 1);// 410
+            AddComplexComponent((BaseAddon)this, 18820, -25, -2, 1, 1105, -1, "", 1);// 474
+            AddComplexComponent((BaseAddon)this, 18821, -25, -3, 1, 1105, -1, "", 1);// 487
+            AddComplexComponent((BaseAddon)this, 4077, -68, -1, 1, 1105, -1, "", 1);// 544
+            AddComplexComponent((BaseAddon)this, 4076, -69, -1, 1, 1105, -1, "", 1);// 545
+            AddComplexComponent((BaseAddon)this, 4073, -70, -1, 1, 1105, -1, "", 1);// 546
+            AddComplexComponent((BaseAddon)this, 4078, -68, -2, 1, 1105, -1, "", 1);// 547
+            AddComplexComponent((BaseAddon)this, 4074, -69, -2, 1, 1105, -1, "", 1);// 548
+            AddComplexComponent((BaseAddon)this, 4070, -70, -2, 1, 1105, -1, "", 1);// 549
+            AddComplexComponent((BaseAddon)this, 4075, -68, -3, 1, 1105, -1, "", 1);// 550
+            AddComplexComponent((BaseAddon)this, 4072, -69, -3, 1, 1105, -1, "", 1);// 551
+            AddComplexComponent((BaseAddon)this, 4071, -70, -3, 1, 1105, -1, "", 1);// 552
+            AddComplexComponent((BaseAddon)this, 6571, -64, 2, 8, 0, 1, "", 1);// 553
+            AddComplexComponent((BaseAddon)this, 6571, -64, -2, 4, 0, 1, "", 1);// 554
+            AddComplexComponent((BaseAddon)this, 6571, -72, -4, 4, 0, 1, "", 1);// 559
+            AddComplexComponent((BaseAddon)this, 6571, -72, 0, 4, 0, 1, "", 1);// 560
+            AddComplexComponent((BaseAddon)this, 6571, -67, 0, 4, 0, 1, "", 1);// 561
+            AddComplexComponent((BaseAddon)this, 6571, -67, -4, 4, 0, 1, "", 1);// 562
+            AddComplexComponent((BaseAddon)this, 6571, -64, -6, 8, 0, 1, "", 1);// 563
+            AddComplexComponent((BaseAddon)this, 6571, -74, 2, 8, 0, 1, "", 1);// 622
+            AddComplexComponent((BaseAddon)this, 6571, -74, -2, 4, 0, 1, "", 1);// 623
+            AddComplexComponent((BaseAddon)this, 6571, -74, -6, 8, 0, 1, "", 1);// 624
 
         }
 
-        public KhaldunDecorationAddon(Serial serial) : base(serial)
-        {
-        }
+		public KhaldunDecorationAddon( Serial serial ) : base( serial )
+		{
+		}
 
         private static void AddComplexComponent(BaseAddon addon, int item, int xoffset, int yoffset, int zoffset, int hue, int lightsource)
         {
@@ -276,7 +280,7 @@ namespace Server.Items
         {
             AddonComponent ac;
             ac = new AddonComponent(item);
-            if (!string.IsNullOrEmpty(name))
+            if (name != null && name.Length > 0)
                 ac.Name = name;
             if (hue != 0)
                 ac.Hue = hue;
@@ -286,29 +290,29 @@ namespace Server.Items
                 ac.Amount = amount;
             }
             if (lightsource != -1)
-                ac.Light = (LightType)lightsource;
+                ac.Light = (LightType) lightsource;
             addon.AddComponent(ac, xoffset, yoffset, zoffset);
         }
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // Version
-        }
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+			writer.Write( 0 ); // Version
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+			int version = reader.ReadInt();
 
             Instance = this;
-        }
-    }
+		}
+	}
 
     public class KhaldunWorkshop : BaseAddon
     {
-        private static readonly int[,] m_AddOnSimpleComponents = new int[,] {
-              {7864, 4, 0, 12} // 7	 8	9	
+        private static int[,] m_AddOnSimpleComponents = new int[,] {
+			  {7864, 4, 0, 12} // 7	 8	9	
 			, {4179, 4, 1, 10}, {4130, -2, -3, 10}, {9932, -2, -2, 10}// 10	11	12	
 			, {7867, -2, 0, 12}, {7129, -2, 1, 10}, {4014, -1, 1, 4}// 13	14	15	
 			, {4015, 1, -3, 4}, {4017, 1, -2, 4}, {4017, 1, 0, 4}// 16	17	18	
@@ -318,7 +322,7 @@ namespace Server.Items
 			, {2879, -2, -2, 4}// 28	
 		};
 
-        public override BaseAddonDeed Deed => null;
+        public override BaseAddonDeed Deed { get { return null; } }
 
         [Constructable]
         public KhaldunWorkshop()

@@ -1,12 +1,12 @@
+using System;
 using Server.Items;
 using Server.Regions;
-using System;
 
 namespace Server.Engines.Quests
 {
     public class FreedomQuest : BaseQuest
     {
-        public override bool DoneOnce => true;
+        public override bool DoneOnce { get { return true; } }
 
         public FreedomQuest()
             : base()
@@ -17,27 +17,27 @@ namespace Server.Engines.Quests
         }
 
         /* Freedom! */
-        public override object Title => 1072367;
+        public override object Title { get { return 1072367; } }
 
         /*
          * Lenley isn't seen.  Why you see me? Lenley is sneaking.  Lenley runs away.
          * You help Lenley to not get dead?  We go out past pig-men orcs?  Yes? Yes? You say yes?
         */
-        public override object Description => 1072552;
+        public override object Description { get { return 1072552; } }
 
         /* You no like Lenley? No hurt Lenley!  No see Lenley.  Go 'way. */
-        public override object Refuse => 1072553;
+        public override object Refuse { get { return 1072553; } }
 
         /* Lenley not run away yet.  Go, go, Lenley not past pig-men orcs.  You go, Lenley go after you.  Go! */
-        public override object Uncomplete => 1072554;
+        public override object Uncomplete { get { return 1072554; } }
 
         /* Lenley so happy!  Lenley not get dead.  You have best Lenley shiny! */
-        public override object Complete => 1072556;
+        public override object Complete { get { return 1072556; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,7 +49,7 @@ namespace Server.Engines.Quests
 
     public class Lenley : BaseEscort
     {
-        public override Type[] Quests => new Type[] { typeof(FreedomQuest) };
+        public override Type[] Quests { get { return new Type[] { typeof(FreedomQuest) }; } }
 
         public LenleyRegion _Region { get; set; }
 
@@ -86,6 +86,8 @@ namespace Server.Engines.Quests
 
             Fame = 1500;
             Karma = 1500;
+
+            VirtualArmor = 28;
         }
 
         public Lenley(Serial serial)
@@ -149,7 +151,7 @@ namespace Server.Engines.Quests
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -159,7 +161,7 @@ namespace Server.Engines.Quests
 
             if (Hidden)
             {
-                Timer.DelayCall(TimeSpan.Zero, UpdateLenleyRegion);
+                Timer.DelayCall(TimeSpan.Zero, new TimerCallback(UpdateLenleyRegion));
             }
         }
     }
@@ -167,7 +169,7 @@ namespace Server.Engines.Quests
     public class LenleyRegion : BaseRegion
     {
         public LenleyRegion(Mobile lenley)
-            : base(null, lenley.Map, Find(lenley.Location, lenley.Map), new Rectangle2D(lenley.Location.X - 2, lenley.Location.Y - 2, 5, 5))
+            : base(null, lenley.Map, Region.Find(lenley.Location, lenley.Map), new Rectangle2D(lenley.Location.X - 2, lenley.Location.Y - 2, 5, 5))
         {
         }
 

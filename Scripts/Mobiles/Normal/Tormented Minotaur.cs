@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -43,8 +44,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Deadly;
-        public override int TreasureMapLevel => 3;
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Deadly;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -80,7 +93,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

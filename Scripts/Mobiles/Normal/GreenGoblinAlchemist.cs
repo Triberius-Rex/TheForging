@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -38,6 +39,49 @@ namespace Server.Mobiles
 
             Fame = 1500;
             Karma = -1500;
+
+            VirtualArmor = 28;
+
+            // loot 60 gold, magic item, gem, bola ball, liquar,gob blood
+            switch ( Utility.Random(20) )
+            {
+                case 0:
+                    PackItem(new Scimitar());
+                    break;
+                case 1:
+                    PackItem(new Katana());
+                    break;
+                case 2:
+                    PackItem(new WarMace());
+                    break;
+                case 3:
+                    PackItem(new WarHammer());
+                    break;
+                case 4:
+                    PackItem(new Kryss());
+                    break;
+                case 5:
+                    PackItem(new Pitchfork());
+                    break;
+            }
+
+            PackItem(new ThighBoots());
+
+            switch ( Utility.Random(3) )
+            {
+                case 0:
+                    PackItem(new Ribs());
+                    break;
+                case 1:
+                    PackItem(new Shaft());
+                    break;
+                case 2:
+                    PackItem(new Candle());
+                    break;
+            }
+
+            if (0.2 > Utility.RandomDouble())
+                PackItem(new BolaBall());
         }
 
         public GreenGoblinAlchemist(Serial serial)
@@ -51,15 +95,14 @@ namespace Server.Mobiles
         public override int GetHurtSound() { return 0x5FF; }
         public override int GetDeathSound() { return 0x5FE; }
 
-        public override bool CanRummageCorpses => true;
-        public override int TreasureMapLevel => 1;
-        public override int Meat => 1;
-        public override TribeType Tribe => TribeType.GreenGoblin;
+        public override bool CanRummageCorpses { get { return true; } }
+        public override int TreasureMapLevel { get { return 1; } }
+        public override int Meat { get { return 1; } }
+        public override TribeType Tribe { get { return TribeType.GreenGoblin; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<BolaBall>(20.0));
         }
 
         public override void OnDeath(Container c)
@@ -73,7 +116,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

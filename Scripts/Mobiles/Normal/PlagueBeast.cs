@@ -1,6 +1,6 @@
+using System;
 using Server.Items;
 using Server.Network;
-using System;
 
 namespace Server.Mobiles
 {
@@ -38,7 +38,13 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool HasMetalChest => m_HasMetalChest;
+        public bool HasMetalChest
+        {
+            get
+            {
+                return m_HasMetalChest;
+            }
+        }
 
         [Constructable]
         public PlagueBeast()
@@ -71,6 +77,13 @@ namespace Server.Mobiles
             Fame = 13000;
             Karma = -13000;
 
+            VirtualArmor = 30;
+            if (Utility.RandomDouble() < 0.80)
+                PackItem(new PlagueBeastGland());
+
+            if (Core.ML && Utility.RandomDouble() < 0.33)
+                PackItem(Engines.Plants.Seed.RandomPeculiarSeed(2));
+
             m_DevourTotal = 0;
             m_DevourGoal = Utility.RandomMinMax(15, 25); // How many corpses must be devoured before a metal chest is awarded
 
@@ -81,18 +94,15 @@ namespace Server.Mobiles
         {
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Gems, Utility.Random(1, 3));
-            AddLoot(LootPack.LootItem<PlagueBeastGland>(80.0));
-            AddLoot(LootPack.PeculiarSeed2);
         }
 
         public override void OnDamagedBySpell(Mobile caster)
         {
             if (Map != null && caster != this && 0.25 > Utility.RandomDouble())
             {
-                BaseCreature spawn = new PlagueSpawn(this)
-                {
-                    Team = Team
-                };
+                BaseCreature spawn = new PlagueSpawn(this);
+
+                spawn.Team = Team;
                 spawn.MoveToWorld(Location, Map);
                 spawn.Combatant = caster;
 
@@ -102,17 +112,28 @@ namespace Server.Mobiles
             base.OnDamagedBySpell(caster);
         }
 
-        public override bool AutoDispel => true;
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
 
         public override void OnGotMeleeAttack(Mobile attacker)
         {
             if (Map != null && attacker != this && 0.25 > Utility.RandomDouble())
             {
-                BaseCreature spawn = new PlagueSpawn(this)
-                {
-                    Team = Team
-                };
+                BaseCreature spawn = new PlagueSpawn(this);
+
+                spawn.Team = Team;
                 spawn.MoveToWorld(Location, Map);
                 spawn.Combatant = attacker;
 
@@ -150,7 +171,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write(m_HasMetalChest);
             writer.Write(m_DevourTotal);
@@ -162,7 +183,7 @@ namespace Server.Mobiles
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            switch (version)
+            switch( version )
             {
                 case 1:
                     {
@@ -208,7 +229,7 @@ namespace Server.Mobiles
             if (corpse.Owner.Body.IsHuman)
                 corpse.TurnToBones(); // Not bones yet, and we are a human body therefore we turn to bones.
 
-            IncreaseHits((int)Math.Ceiling(corpse.Owner.HitsMax * 0.75));
+            IncreaseHits((int)Math.Ceiling((double)corpse.Owner.HitsMax * 0.75));
             m_DevourTotal++;
 
             PublicOverheadMessage(MessageType.Emote, 0x3B2, 1053033); // * The plague beast absorbs the fleshy remains of the corpse *
@@ -230,6 +251,9 @@ namespace Server.Mobiles
 
             if (IsParagon)
                 maxhits = (int)(maxhits * Paragon.HitsBuff);
+
+            if (hp < 1000 && !Core.AOS)
+                hp = (hp * 100) / 60;
 
             if (HitsMaxSeed >= maxhits)
             {

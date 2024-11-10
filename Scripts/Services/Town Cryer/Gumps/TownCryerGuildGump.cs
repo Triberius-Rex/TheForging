@@ -1,6 +1,9 @@
-using Server.Gumps;
-using Server.Mobiles;
+using Server;
 using System;
+using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Guilds;
+using Server.Gumps;
 
 namespace Server.Services.TownCryer
 {
@@ -19,20 +22,20 @@ namespace Server.Services.TownCryer
             base.AddGumpLayout();
 
             AddHtml(57, 155, 724, 20, Entry.Title, false, false);
-            AddHtmlLocalized(57, 180, 724, 20, 1158066, string.Format("{0}, {1}", Entry.Author, Entry.Guild.Name), 0, false, false); // Posted By: ~1_NAME~
+            AddHtmlLocalized(57, 180, 724, 20, 1158066, String.Format("{0}, {1}", Entry.Author, Entry.Guild.Name), 0, false, false); // Posted By: ~1_NAME~
 
             AddHtmlLocalized(57, 215, 50, 20, 1158067, false, false); // When:
             AddHtmlLocalized(57, 235, 50, 20, 1158068, false, false); // Where:
 
             int time = Entry.EventTime.Hour;
 
-            AddLabel(102, 215, 0, string.Format("{0}-{1}-{2} {3}{4} {5}",
+            AddLabel(102, 215, 0, String.Format("{0}-{1}-{2} {3}{4} {5}",
                 Entry.EventTime.Month,
                 Entry.EventTime.Day,
                 Entry.EventTime.Year,
                 time == 0 ? 12 : time > 12 ? time - 12 : time,
                 Entry.EventTime.Hour >= 12 ? "pm" : "am",
-                TimeZone.CurrentTimeZone.StandardName));
+                TimeZoneInfo.Local.StandardName));
 
             AddLabel(102, 235, 0, Entry.EventLocation);
 
@@ -45,11 +48,9 @@ namespace Server.Services.TownCryer
         {
             if (info.ButtonID == 0)
             {
-                TownCryerGump gump = new TownCryerGump(User, Cryer)
-                {
-                    Category = TownCryerGump.GumpCategory.Guild
-                };
-                SendGump(gump);
+                var gump = new TownCryerGump(User, Cryer);
+                gump.Category = TownCryerGump.GumpCategory.Guild;
+                BaseGump.SendGump(gump);
             }
         }
     }

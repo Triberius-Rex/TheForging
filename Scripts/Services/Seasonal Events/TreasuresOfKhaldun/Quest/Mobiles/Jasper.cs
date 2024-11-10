@@ -1,24 +1,29 @@
-using Server.Engines.Quests;
+using System;
+
+using Server;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
-using System;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
     public class InspectorJasper : MondainQuester
     {
-        public override Type[] Quests => null;
+        public override Type[] Quests { get { return null; } }
 
         public static InspectorJasper TramInstance { get; set; }
 
         public static void Initialize()
         {
-            if (TramInstance == null)
+            if (Core.TOL)
             {
-                TramInstance = new InspectorJasper();
-                TramInstance.MoveToWorld(new Point3D(1675, 1584, 7), Map.Trammel);
-                TramInstance.Direction = Direction.South;
+                if (TramInstance == null)
+                {
+                    TramInstance = new InspectorJasper();
+                    TramInstance.MoveToWorld(new Point3D(1675, 1584, 7), Map.Trammel);
+                    TramInstance.Direction = Direction.South;
+                }
             }
         }
 
@@ -42,14 +47,14 @@ namespace Server.Engines.Khaldun
 
         public override void InitOutfit()
         {
-			SetWearable(new Backpack());
+            AddItem(new Backpack());
 
-            SetWearable(new LongPants(), 1156, 1);
-            SetWearable(new FancyShirt(), dropChance: 1);
-            SetWearable(new Epaulette(), 1156, 1);
-            SetWearable(new BodySash(), 1175, 1);
-            SetWearable(new Obi(), 1156, 1);
-            SetWearable(new Shoes(), 1910, 1);
+            SetWearable(new LongPants(), 1156);
+            SetWearable(new FancyShirt());
+            SetWearable(new Epaulette(), 1156);
+            SetWearable(new BodySash(), 1175);
+            SetWearable(new Obi(), 1156);
+            SetWearable(new Shoes(), 1910);
         }
 
         public override void OnDoubleClick(Mobile m)
@@ -134,7 +139,7 @@ namespace Server.Engines.Khaldun
         {
             if (m is PlayerMobile && InLOS(m) && InRange(m.Location, 3) && !InRange(oldLocation, 3))
             {
-                GoingGumshoeQuest quest = QuestHelper.GetQuest<GoingGumshoeQuest>((PlayerMobile)m);
+                var quest = QuestHelper.GetQuest<GoingGumshoeQuest>((PlayerMobile)m);
 
                 if (quest != null)
                 {
@@ -143,7 +148,7 @@ namespace Server.Engines.Khaldun
                 }
                 else
                 {
-                    GoingGumshoeQuest4 quest2 = QuestHelper.GetQuest<GoingGumshoeQuest4>((PlayerMobile)m);
+                    var quest2 = QuestHelper.GetQuest<GoingGumshoeQuest4>((PlayerMobile)m);
 
                     if (quest2 != null && quest2.IsComplete)
                     {
@@ -187,7 +192,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -200,6 +205,9 @@ namespace Server.Engines.Khaldun
             {
                 TramInstance = this;
             }
+
+            if (!Core.TOL)
+                Delete();
         }
     }
 }

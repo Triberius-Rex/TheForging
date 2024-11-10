@@ -1,10 +1,20 @@
+using System;
+using System.Collections.Generic;
+
+using Server;
+using Server.Prompts;
+using Server.Mobiles;
+using Server.Items;
+using Server.SkillHandlers;
 using Server.Network;
+using Server.Gumps;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
     public class RolledParchment : Item
     {
-        public override int LabelNumber => 1158578;  // rolled parchment
+        public override int LabelNumber { get { return 1158578; } } // rolled parchment
 
         public int Page { get; set; }
 
@@ -39,7 +49,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write(Page);
         }
 

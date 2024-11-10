@@ -1,4 +1,6 @@
+using System;
 using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Gumps
 {
@@ -31,7 +33,7 @@ namespace Server.Gumps
 
             for (int i = 0; i < Skills.Length; i++)
             {
-                SkillName skill = Skills[i];
+                var skill = Skills[i];
 
                 AddButton(15, y, 4005, 4007, i + 100, GumpButtonType.Reply, 0);
                 AddHtmlLocalized(50, y, 200, 20, SkillInfo.Table[(int)skill].Localization, 0x7FFF, false, false);
@@ -49,8 +51,18 @@ namespace Server.Gumps
                 if (id >= 0 && id < Skills.Length)
                 {
                     Selection = Skills[id];
+                    TextDefinition text;
 
-                    SendGump(new GenericConfirmCallbackGump<ApplySkillBonusGump>(User, User.Skills[Selection].Info.Name, 1155611, this, null,
+                    if (Item is BaseWeapon)
+                    {
+                        text = 1155611; // Are you sure you wish to apply the selected skill bonus to this weapon?
+                    }
+                    else
+                    {
+                        text = 1155611; // Are you sure you wish to apply the selected skill bonus to this item?
+                    }
+
+                    BaseGump.SendGump(new GenericConfirmCallbackGump<ApplySkillBonusGump>(User, User.Skills[Selection].Info.Name, text, this, null,
                     (m, gump) =>
                     {
                         if (gump.Item.IsChildOf(gump.User.Backpack) || gump.User.Items.Contains(gump.Item))

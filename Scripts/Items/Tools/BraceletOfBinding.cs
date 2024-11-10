@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Mobiles;
-using Server.Multis;
 using Server.Network;
 using Server.Prompts;
 using Server.Spells;
 using Server.Targeting;
-using System;
-using System.Collections.Generic;
+using Server.Multis;
 
 namespace Server.Items
 {
@@ -74,12 +74,30 @@ namespace Server.Items
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int MaxCharges => 999;
+        public int MaxCharges
+        {
+            get
+            {
+                return 999;
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public virtual int MaxRecharges => -1;
+        public virtual int MaxRecharges
+        {
+            get
+            {
+                return -1;
+            }
+        }
 
-        public virtual string TranslocationItemName => "bracelet of binding";
+        public virtual string TranslocationItemName
+        {
+            get
+            {
+                return "bracelet of binding";
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public string Inscription
@@ -114,6 +132,11 @@ namespace Server.Items
             list.Add(1054000, m_Charges.ToString() + (m_Inscription.Length == 0 ? "\t " : " :\t" + m_Inscription)); // a bracelet of binding : ~1_val~ ~2_val~
         }
 
+        public override void OnSingleClick(Mobile from)
+        {
+            LabelTo(from, 1054000, m_Charges.ToString() + (m_Inscription.Length == 0 ? "\t " : " :\t" + m_Inscription)); // a bracelet of binding : ~1_val~ ~2_val~
+        }
+
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
             base.GetContextMenuEntries(from, list);
@@ -122,10 +145,10 @@ namespace Server.Items
             {
                 BraceletOfBinding bound = Bound;
 
-                list.Add(new BraceletEntry(Activate, 6170, bound != null));
-                list.Add(new BraceletEntry(Search, 6171, bound != null));
-                list.Add(new BraceletEntry(Bind, bound == null ? 6173 : 6174, true));
-                list.Add(new BraceletEntry(Inscribe, 6175, true));
+                list.Add(new BraceletEntry(new BraceletCallback(Activate), 6170, bound != null));
+                list.Add(new BraceletEntry(new BraceletCallback(Search), 6171, bound != null));
+                list.Add(new BraceletEntry(new BraceletCallback(Bind), bound == null ? 6173 : 6174, true));
+                list.Add(new BraceletEntry(new BraceletCallback(Inscribe), 6175, true));
             }
         }
 
@@ -223,13 +246,13 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(1); // version
+            writer.WriteEncodedInt((int)1); // version
 
-            writer.WriteEncodedInt(m_Recharges);
+            writer.WriteEncodedInt((int)m_Recharges);
 
-            writer.WriteEncodedInt(m_Charges);
-            writer.Write(m_Inscription);
-            writer.Write(Bound);
+            writer.WriteEncodedInt((int)m_Charges);
+            writer.Write((string)m_Inscription);
+            writer.Write((Item)Bound);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -238,7 +261,7 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
@@ -279,6 +302,16 @@ namespace Server.Items
                 from.SendLocalizedMessage(1054006); // The bracelet emits a red glow. The bracelet's twin is not available for transport.
                 return false;
             }
+            else if (!Core.AOS && from.Map != boundRoot.Map)
+            {
+                from.SendLocalizedMessage(1054014); // The bracelet glows black. The bracelet's target is on another facet.
+                return false;
+            }
+            else if (Factions.Sigil.ExistsOn(from))
+            {
+                from.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
+                return false;
+            }
             else if (!SpellHelper.CheckTravel(from, TravelCheckType.RecallFrom))
             {
                 return false;
@@ -307,22 +340,17 @@ namespace Server.Items
                 from.SendLocalizedMessage(1005564, "", 0x22); // Wouldst thou flee during the heat of battle??
                 return false;
             }
-            else if (Misc.WeightOverloading.IsOverloaded(from))
+            else if (Server.Misc.WeightOverloading.IsOverloaded(from))
             {
                 from.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
                 return false;
             }
-            else if (Engines.CityLoyalty.CityTradeSystem.HasTrade(from))
-            {
-                from.SendLocalizedMessage(1151733); // You cannot do that while carrying a Trade Order.
-                return false;
-            }
-            else if (from.Region.IsPartOf<Regions.Jail>())
+            else if (from.Region.IsPartOf<Server.Regions.Jail>())
             {
                 from.SendLocalizedMessage(1114345, "", 0x35); // You'll need a better jailbreak plan than that!
                 return false;
             }
-            else if (boundRoot.Region.IsPartOf<Regions.Jail>())
+            else if (boundRoot.Region.IsPartOf<Server.Regions.Jail>())
             {
                 from.SendLocalizedMessage(1019004); // You are not allowed to travel there.
                 return false;

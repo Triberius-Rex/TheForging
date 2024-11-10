@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Engines.Mahjong
 {
     public enum MahjongPieceDirection

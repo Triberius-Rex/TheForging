@@ -1,12 +1,12 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class ExplosiveGoo : Item
     {
-        public override int LabelNumber => 1157463;  // Explosive Goo
+        public override int LabelNumber { get { return 1157463; } } // Explosive Goo
 
         private bool m_Drying;
         private readonly DateTime m_Created;
@@ -46,8 +46,8 @@ namespace Server.Items
 
         private void OnTick()
         {
-            DateTime now = DateTime.UtcNow;
-            TimeSpan age = now - m_Created;
+            var now = DateTime.UtcNow;
+            var age = now - m_Created;
 
             if (age > m_Duration)
             {
@@ -61,12 +61,12 @@ namespace Server.Items
                     ItemID = 0x122B;
                 }
 
-                List<Mobile> toDamage = new List<Mobile>();
+                var toDamage = new List<Mobile>();
                 IPooledEnumerable eable = GetMobilesInRange(0);
 
                 foreach (Mobile m in eable)
                 {
-                    BaseCreature bc = m as BaseCreature;
+                    var bc = m as BaseCreature;
                     if (m.Alive && !m.IsDeadBondedPet && (bc == null || bc.Controlled || bc.Summoned))
                     {
                         toDamage.Add(m);
@@ -74,7 +74,7 @@ namespace Server.Items
                 }
                 eable.Free();
 
-                for (int i = 0; i < toDamage.Count; i++)
+                for (var i = 0; i < toDamage.Count; i++)
                     Damage(toDamage[i]);
             }
         }

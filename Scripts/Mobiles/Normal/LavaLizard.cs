@@ -1,8 +1,10 @@
 using Server.Items;
+using Server.Services;
 
 namespace Server.Mobiles
 {
     [CorpseName("a lava lizard corpse")]
+    [TypeAlias("Server.Mobiles.Lavalizard")]
     public class LavaLizard : BaseCreature
     {
         [Constructable]
@@ -37,9 +39,13 @@ namespace Server.Mobiles
             Fame = 3000;
             Karma = -3000;
 
+            VirtualArmor = 40;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 80.7;
+
+            PackItem(new SulfurousAsh(Utility.Random(4, 10)));
 
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
@@ -49,26 +55,33 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Hides => 12;
+        public override int Hides
+        {
+            get { return 12; }
+        }
 
-        public override HideType HideType => HideType.Spined;
+        public override HideType HideType
+        {
+            get { return HideType.Spined; }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItem<SulfurousAsh>(4, 10));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
+
             writer.Write(0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            int version = reader.ReadInt();
+
+            var version = reader.ReadInt();
         }
     }
 }

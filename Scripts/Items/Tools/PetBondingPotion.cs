@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 using Server.Targeting;
 
@@ -5,7 +6,7 @@ namespace Server.Items
 {
     public class PetBondingPotion : Item
     {
-        public override int LabelNumber => 1152921;  // Pet Bonding Potion
+        public override int LabelNumber { get { return 1152921; } } // Pet Bonding Potion
 
         [Constructable]
         public PetBondingPotion() : base(0x0F04)
@@ -35,7 +36,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version 
+            writer.Write((int)0); // version 
         }
 
         public override void Deserialize(GenericReader reader)
@@ -47,7 +48,7 @@ namespace Server.Items
 
     public class BondingTarget : Target
     {
-        private readonly PetBondingPotion m_Potion;
+        private PetBondingPotion m_Potion;
 
         public BondingTarget(PetBondingPotion potion) : base(1, false, TargetFlags.None)
         {
@@ -57,8 +58,8 @@ namespace Server.Items
         protected override void OnTarget(Mobile from, object target)
         {
             if (m_Potion == null || m_Potion.Deleted || !m_Potion.IsChildOf(from.Backpack))
-                return;
-
+                    return;
+                    
             if (target is BaseCreature)
             {
                 BaseCreature t = (BaseCreature)target;
@@ -75,7 +76,7 @@ namespace Server.Items
                 {
                     from.SendLocalizedMessage(1152924); // That is not a valid pet.
                 }
-                else if (target is BaseTalismanSummon)
+			    else if (target is BaseTalismanSummon)
                 {
                     from.SendLocalizedMessage(1152924); // That is not a valid pet.
                 }

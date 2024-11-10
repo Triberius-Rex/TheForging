@@ -1,7 +1,7 @@
+using System;
 using Server.Engines.Craft;
 using Server.Multis;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
@@ -9,7 +9,7 @@ namespace Server.Items
     public abstract class BaseAddonContainerDeed : Item, ICraftable
     {
         public abstract BaseAddonContainer Addon { get; }
-
+		
         private CraftResource m_Resource;
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -21,11 +21,11 @@ namespace Server.Items
             }
             set
             {
-                if (m_Resource != value)
+                if (this.m_Resource != value)
                 {
                     m_Resource = value;
-                    Hue = CraftResources.GetHue(m_Resource);
-
+                    Hue = CraftResources.GetHue(this.m_Resource);
+					
                     InvalidateProperties();
                 }
             }
@@ -35,6 +35,9 @@ namespace Server.Items
             : base(0x14F0)
         {
             Weight = 1.0;
+
+            if (!Core.AOS)
+                LootType = LootType.Newbied;
         }
 
         public BaseAddonContainerDeed(Serial serial)
@@ -58,7 +61,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     m_Resource = (CraftResource)reader.ReadInt();
@@ -78,8 +81,8 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            if (!CraftResources.IsStandard(m_Resource))
-                list.Add(CraftResources.GetLocalizationNumber(m_Resource));
+            if (!CraftResources.IsStandard(this.m_Resource))
+                list.Add(CraftResources.GetLocalizationNumber(this.m_Resource));
         }
 
         #region ICraftable
@@ -119,15 +122,15 @@ namespace Server.Items
                 IPoint3D p = targeted as IPoint3D;
                 Map map = from.Map;
 
-                if (p == null || map == null || m_Deed.Deleted)
+                if (p == null || map == null || this.m_Deed.Deleted)
                     return;
 
-                if (m_Deed.IsChildOf(from.Backpack))
+                if (this.m_Deed.IsChildOf(from.Backpack))
                 {
-                    BaseAddonContainer addon = m_Deed.Addon;
-                    addon.Resource = m_Deed.Resource;
+                    BaseAddonContainer addon = this.m_Deed.Addon;
+                    addon.Resource = this.m_Deed.Resource;
 
-                    Spells.SpellHelper.GetSurfaceTop(ref p);
+                    Server.Spells.SpellHelper.GetSurfaceTop(ref p);
 
                     BaseHouse house = null;
 
@@ -139,6 +142,8 @@ namespace Server.Items
                         from.SendLocalizedMessage(500269); // You cannot build that there.
                     else if (res == AddonFitResult.NotInHouse)
                         from.SendLocalizedMessage(500274); // You can only place this in a house that you own!
+                    else if (res == AddonFitResult.DoorsNotClosed)
+                        from.SendMessage("You must close all house doors before placing this.");
                     else if (res == AddonFitResult.DoorTooClose)
                         from.SendLocalizedMessage(500271); // You cannot build near the door.
                     else if (res == AddonFitResult.NoWall)
@@ -146,8 +151,8 @@ namespace Server.Items
 
                     if (res == AddonFitResult.Valid)
                     {
-                        m_Deed.Delete();
-                        house.Addons[addon] = from;
+                        this.m_Deed.Delete();
+                        house.Addons[addon] = from;                        
 
                         if (addon is GardenShedAddon)
                         {
@@ -171,5 +176,5 @@ namespace Server.Items
                 }
             }
         }
-    }    
+    }
 }

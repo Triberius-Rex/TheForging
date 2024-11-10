@@ -1,16 +1,17 @@
-using Server.Engines.Craft;
 using System;
+using Server.Mobiles;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
-    [Flipable(0x9DB1, 0x9DB2)]
+    [FlipableAttribute(0x9DB1, 0x9DB2)]
     public class KotlAutomatonHead : Item, ICraftable
     {
         private bool _Activated;
         private CraftResource _Resource;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public CraftResource Resource { get { return _Resource; } set { _Resource = value; Hue = CraftResources.GetHue(_Resource); InvalidateProperties(); } }
+        public CraftResource Resource { get { return _Resource; } set { _Resource = value; Hue = CraftResources.GetHue(this._Resource); InvalidateProperties(); } }
 
         [Constructable]
         public KotlAutomatonHead()
@@ -23,7 +24,7 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1157022, string.Format("#{0}", CraftResources.GetLocalizationNumber(_Resource))); // Rebuilt ~1_MATTYPE~ Automaton Head
+            list.Add(1157022, String.Format("#{0}", CraftResources.GetLocalizationNumber(_Resource))); // Rebuilt ~1_MATTYPE~ Automaton Head
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -67,10 +68,8 @@ namespace Server.Items
 
         public virtual KotlAutomaton GetAutomaton(Mobile master)
         {
-            KotlAutomaton automaton = new KotlAutomaton
-            {
-                Resource = _Resource
-            };
+            KotlAutomaton automaton = new KotlAutomaton();
+            automaton.Resource = _Resource;
 
             return automaton;
         }
@@ -96,7 +95,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

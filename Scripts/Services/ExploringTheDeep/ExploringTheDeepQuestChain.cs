@@ -20,18 +20,18 @@ namespace Server.Engines.Quests
 
         public ExploringTheDeepBaseChain(Type currentQuest, Type quester)
         {
-            m_CurrentQuest = currentQuest;
+            this.m_CurrentQuest = currentQuest;
         }
 
         public Type CurrentQuest
         {
             get
             {
-                return m_CurrentQuest;
+                return this.m_CurrentQuest;
             }
             set
             {
-                m_CurrentQuest = value;
+                this.m_CurrentQuest = value;
             }
         }
     }

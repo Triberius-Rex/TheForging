@@ -1,30 +1,36 @@
-using Server.Items;
-using Server.Spells;
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.Spells;
 using System.Linq;
+using Server.Network;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     public abstract class AreaEffect
     {
-        public virtual int ManaCost => 20;
-        public virtual int MaxRange => 3;
-        public virtual double TriggerChance => 1.0;
-        public virtual TimeSpan CooldownDuration => TimeSpan.FromSeconds(30);
-        public virtual bool RequiresCombatant => true;
+        public virtual int ManaCost { get { return 20; } }
+        public virtual int MaxRange { get { return 3; } }
+        public virtual double TriggerChance { get { return 1.0; } }
+        public virtual TimeSpan CooldownDuration { get { return TimeSpan.FromSeconds(30); } }
+        public virtual bool RequiresCombatant { get { return true; } }
 
-        public virtual int EffectRange => 5;
+        public virtual int EffectRange { get { return 5; } }
+
+        public AreaEffect()
+        {
+        }
 
         public static bool CheckThinkTrigger(BaseCreature bc)
         {
-            AbilityProfile profile = PetTrainingHelper.GetAbilityProfile(bc);
+            var profile = PetTrainingHelper.GetAbilityProfile(bc);
 
             if (profile != null)
             {
                 AreaEffect effect = null;
 
-                AreaEffect[] effects = profile.GetAreaEffects().Where(a => !a.IsInCooldown(bc)).ToArray();
+                var effects = profile.GetAreaEffects().Where(a => !a.IsInCooldown(bc)).ToArray();
 
                 if (effects != null && effects.Length > 0)
                 {
@@ -76,9 +82,9 @@ namespace Server.Mobiles
             if (creature.Map == null || creature.Map == Map.Internal)
                 return;
 
-            int count = 0;
+            var count = 0;
 
-            foreach (Mobile m in FindValidTargets(creature, EffectRange))
+            foreach (var m in FindValidTargets(creature, EffectRange))
             {
                 count++;
                 DoEffect(creature, m);
@@ -130,7 +136,7 @@ namespace Server.Mobiles
 
         public void AddToCooldown(BaseCreature bc)
         {
-            TimeSpan cooldown = GetCooldown(bc);
+            var cooldown = GetCooldown(bc);
 
             if (cooldown != TimeSpan.MinValue)
             {
@@ -138,7 +144,7 @@ namespace Server.Mobiles
                     _Cooldown = new List<BaseCreature>();
 
                 _Cooldown.Add(bc);
-                Timer.DelayCall(cooldown, RemoveFromCooldown, bc);
+                Timer.DelayCall<BaseCreature>(cooldown, RemoveFromCooldown, bc);
             }
         }
 
@@ -152,8 +158,8 @@ namespace Server.Mobiles
             _Cooldown.Remove(m);
         }
 
-        public static AreaEffect[] Effects => _Effects;
-        private static readonly AreaEffect[] _Effects;
+        public static AreaEffect[] Effects { get { return _Effects; } }
+        private static AreaEffect[] _Effects;
 
         static AreaEffect()
         {
@@ -168,23 +174,69 @@ namespace Server.Mobiles
             _Effects[6] = new PoisonBreath();
         }
 
-        public static AreaEffect AuraOfEnergy => _Effects[0];
+        public static AreaEffect AuraOfEnergy
+        {
+            get
+            {
+                return _Effects[0];
+            }
+        }
 
-        public static AreaEffect AuraOfNausea => _Effects[1];
+        public static AreaEffect AuraOfNausea
+        {
+            get
+            {
+                return _Effects[1];
+            }
+        }
 
-        public static AreaEffect EssenceOfDisease => _Effects[2];
+        public static AreaEffect EssenceOfDisease
+        {
+            get
+            {
+                return _Effects[2];
+            }
+        }
 
-        public static AreaEffect EssenceOfEarth => _Effects[3];
+        public static AreaEffect EssenceOfEarth
+        {
+            get
+            {
+                return _Effects[3];
+            }
+        }
 
-        public static AreaEffect ExplosiveGoo => _Effects[4];
+        public static AreaEffect ExplosiveGoo
+        {
+            get
+            {
+                return _Effects[4];
+            }
+        }
 
-        public static AreaEffect AuraDamage => _Effects[5];
+        public static AreaEffect AuraDamage
+        {
+            get
+            {
+                return _Effects[5];
+            }
+        }
 
-        public static AreaEffect PoisonBreath => _Effects[6];
+        public static AreaEffect PoisonBreath
+        {
+            get
+            {
+                return _Effects[6];
+            }
+        }
     }
 
     public class AuraOfEnergy : AreaEffect
     {
+        public AuraOfEnergy()
+        {
+        }
+
         public override void DoEffect(BaseCreature creature, Mobile defender)
         {
             AOS.Damage(defender, creature, Utility.RandomMinMax(20, 30), 0, 0, 0, 0, 100);
@@ -199,12 +251,16 @@ namespace Server.Mobiles
 
     public class AuraOfNausea : AreaEffect
     {
-        public override TimeSpan CooldownDuration => TimeSpan.FromSeconds(40 + Utility.RandomDouble() * 30);
-        public override int MaxRange => 4;
-        public override int EffectRange => 4;
-        public override int ManaCost => 100;
+        public override TimeSpan CooldownDuration { get { return TimeSpan.FromSeconds(40 + Utility.RandomDouble() * 30); } }
+        public override int MaxRange { get { return 4; } }
+        public override int EffectRange { get { return 4; } }
+        public override int ManaCost { get { return 100; } }
 
         public static Dictionary<Mobile, Timer> _Table;
+
+        public AuraOfNausea()
+        {
+        }
 
         public override void DoEffect(BaseCreature creature, Mobile defender)
         {
@@ -220,11 +276,11 @@ namespace Server.Mobiles
                 if (timer != null)
                     timer.Stop();
 
-                _Table[defender] = Timer.DelayCall(TimeSpan.FromSeconds(30), EndNausea, defender);
+                _Table[defender] = Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(30), EndNausea, defender);
             }
             else
             {
-                _Table.Add(defender, Timer.DelayCall(TimeSpan.FromSeconds(30), EndNausea, defender));
+                _Table.Add(defender, Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(30), EndNausea, defender));
             }
 
             defender.Animate(32, 5, 1, true, false, 0); // bow animation
@@ -255,6 +311,10 @@ namespace Server.Mobiles
 
     public class EssenceOfDisease : AreaEffect
     {
+        public EssenceOfDisease()
+        {
+        }
+
         public override void DoEffect(BaseCreature creature, Mobile defender)
         {
             AOS.Damage(defender, creature, Utility.RandomMinMax(20, 30), 0, 0, 0, 100, 0);
@@ -269,6 +329,10 @@ namespace Server.Mobiles
 
     public class EssenceOfEarth : AreaEffect
     {
+        public EssenceOfEarth()
+        {
+        }
+
         public override void DoEffect(BaseCreature creature, Mobile defender)
         {
             AOS.Damage(defender, creature, Utility.RandomMinMax(20, 30), 100, 0, 0, 0, 0);
@@ -283,9 +347,13 @@ namespace Server.Mobiles
 
     public class ExplosiveGoo : AreaEffect
     {
-        public override int ManaCost => 30;
+        public override int ManaCost { get { return 30; } }
 
         private bool _DoingEffect;
+
+        public ExplosiveGoo()
+        {
+        }
 
         public override void DoEffects(BaseCreature creature, Mobile combatant)
         {
@@ -306,7 +374,7 @@ namespace Server.Mobiles
 
         public override void DoEffect(BaseCreature creature, Mobile defender)
         {
-            Timer.DelayCall(TimeSpan.FromMilliseconds(Utility.RandomMinMax(10, 1000)), m =>
+            Timer.DelayCall<Mobile>(TimeSpan.FromMilliseconds(Utility.RandomMinMax(10, 1000)), m =>
             {
                 if (m.Alive && !m.Deleted && m.Map != null)
                 {
@@ -329,9 +397,13 @@ namespace Server.Mobiles
 
     public class PoisonBreath : AreaEffect
     {
-        public override double TriggerChance => 0.4;
-        public override int EffectRange => 10;
-        public override int ManaCost => 50;
+        public override double TriggerChance { get { return 0.4; } }
+        public override int EffectRange { get { return 10; } }
+        public override int ManaCost { get { return 50; } }
+
+        public PoisonBreath()
+        {
+        }
 
         public override void DoEffect(BaseCreature creature, Mobile m)
         {
@@ -341,7 +413,7 @@ namespace Server.Mobiles
                 EffectItem.Create(m.Location, m.Map, EffectItem.DefaultDuration), 0x36B0, 1, 14, 63, 7, 9915, 0);
 
             Server.Effects.PlaySound(m.Location, m.Map, 0x229);
-            int damage = GetDamage(creature);
+            var damage = GetDamage(creature);
 
             if (damage > 0)
             {
@@ -354,7 +426,7 @@ namespace Server.Mobiles
         {
             if (creature.Controlled)
             {
-                AbilityProfile profile = PetTrainingHelper.GetAbilityProfile(creature);
+                var profile = PetTrainingHelper.GetAbilityProfile(creature);
 
                 if ((profile != null && profile.HasAbility(MagicalAbility.Poisoning)) || 0.2 > Utility.RandomDouble())
                     creature.CheckSkill(SkillName.Poisoning, 0, creature.Skills[SkillName.Poisoning].Cap);
@@ -386,7 +458,7 @@ namespace Server.Mobiles
             return 0;
         }
 
-        private readonly Type[] _DamageCreatures =
+        private Type[] _DamageCreatures =
         {
             typeof(ValoriteElemental), typeof(BronzeElemental), typeof(Dimetrosaur), typeof(ChiefParoxysmus)
         };
@@ -394,10 +466,14 @@ namespace Server.Mobiles
 
     public class AuraDamage : AreaEffect
     {
-        public override double TriggerChance => 0.4;
-        public override int EffectRange => 3;
-        public override int ManaCost => 0;
-        public override bool RequiresCombatant => false;
+        public override double TriggerChance { get { return 0.4; } }
+        public override int EffectRange { get { return 10; } }
+        public override int ManaCost { get { return 0; } }
+        public override bool RequiresCombatant { get { return false; } }
+
+        public AuraDamage()
+        {
+        }
 
         public override TimeSpan GetCooldown(BaseCreature bc)
         {
@@ -406,7 +482,7 @@ namespace Server.Mobiles
 
         public override void DoEffect(BaseCreature creature, Mobile m)
         {
-            AuraDefinition def = AuraDefinition.GetDefinition(creature);
+            var def = AuraDefinition.GetDefinition(creature);
 
             if (def.Damage > 0)
             {
@@ -423,7 +499,6 @@ namespace Server.Mobiles
                     def.Direct,
                     DamageType.SpellAOE);
 
-                creature.DoHarmful(m); // Need to re-look at this.
                 m.RevealingAction();
             }
 
@@ -436,6 +511,7 @@ namespace Server.Mobiles
         public class AuraDefinition
         {
             public TimeSpan Cooldown { get; set; }
+            public int Range { get; set; }
 
             public int Damage { get; set; }
             public int Physical { get; set; }
@@ -449,18 +525,19 @@ namespace Server.Mobiles
             public Type[] Uses { get; private set; }
 
             public AuraDefinition()
-                : this(TimeSpan.FromSeconds(5), 5, 0, 0, 0, 0, 0, 0, 100, new Type[] { })
+                : this(TimeSpan.FromSeconds(5), 4, 5, 0, 0, 0, 0, 0, 0, 100, new Type[] { })
             {
             }
 
             public AuraDefinition(params Type[] uses)
-                : this(TimeSpan.FromSeconds(5), 5, 0, 100, 0, 0, 0, 0, 0, uses)
+                : this(TimeSpan.FromSeconds(5), 2, 5, 0, 100, 0, 0, 0, 0, 0, uses)
             {
             }
 
-            public AuraDefinition(TimeSpan cooldown, int baseDamage, int phys, int fire, int cold, int poison, int energy, int chaos, int direct, Type[] uses)
+            public AuraDefinition(TimeSpan cooldown, int range, int baseDamage, int phys, int fire, int cold, int poison, int energy, int chaos, int direct, Type[] uses)
             {
                 Cooldown = cooldown;
+                Range = range;
                 Damage = baseDamage;
                 Physical = phys;
                 Fire = fire;
@@ -485,31 +562,27 @@ namespace Server.Mobiles
                 defaul = new AuraDefinition();
                 Definitions.Add(defaul);
 
-                cora = new AuraDefinition(typeof(CoraTheSorceress))
-                {
-                    Damage = 10,
-                    Fire = 0
-                };
+                cora = new AuraDefinition(typeof(CoraTheSorceress));
+                cora.Range = 3;
+                cora.Damage = 10;
+                cora.Fire = 0;
                 Definitions.Add(cora);
 
-                fireAura = new AuraDefinition(typeof(FlameElemental), typeof(FireDaemon), typeof(LesserFlameElemental))
-                {
-                    Damage = 7
-                };
+                fireAura = new AuraDefinition(typeof(FlameElemental), typeof(FireDaemon), typeof(LesserFlameElemental));
+                fireAura.Range = 5;
+                fireAura.Damage = 7;
                 Definitions.Add(fireAura);
 
-                coldAura = new AuraDefinition(typeof(ColdDrake), typeof(FrostDrake), typeof(FrostDragon), typeof(SnowElemental), typeof(FrostMite), typeof(IceFiend), typeof(IceElemental), typeof(CorporealBrume))
-                {
-                    Damage = 15,
-                    Fire = 0,
-                    Cold = 100
-                };
+                coldAura = new AuraDefinition(typeof(ColdDrake), typeof(FrostDrake), typeof(FrostDragon), typeof(SnowElemental), typeof(FrostMite), typeof(IceFiend), typeof(IceElemental), typeof(CorporealBrume));
+                coldAura.Damage = 15;
+                coldAura.Fire = 0;
+                coldAura.Cold = 100;
                 Definitions.Add(coldAura);
             }
 
             public static AuraDefinition GetDefinition(BaseCreature bc)
             {
-                AuraDefinition def = Definitions.FirstOrDefault(d => d.Uses.Any(t => t == bc.GetType()));
+                var def = Definitions.FirstOrDefault(d => d.Uses.Any(t => t == bc.GetType()));
 
                 if (def == null)
                 {

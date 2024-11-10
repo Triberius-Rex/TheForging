@@ -1,7 +1,7 @@
+using System;
 using Server.Engines.Craft;
 using Server.Mobiles;
 using Server.Regions;
-using System;
 
 namespace Server.Items
 {
@@ -63,8 +63,14 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override bool DisplayLootType => true;
+        
+        public override bool DisplayLootType
+        {
+            get
+            {
+                return Core.ML;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public RepairSkillType RepairSkill
         {
@@ -87,7 +93,7 @@ namespace Server.Items
             }
             set
             {
-                m_SkillLevel = Math.Max(Math.Min(value, 120.0), 0);
+                m_SkillLevel = Math.Max(Math.Min(value, 120.0), 0) ;
                 InvalidateProperties();
             }
         }
@@ -117,7 +123,7 @@ namespace Server.Items
 
         public override void AddNameProperty(ObjectPropertyList list)
         {
-            list.Add(1061133, string.Format("{0}\t{1}", GetSkillTitle(m_SkillLevel).ToString(), RepairSkillInfo.GetInfo(m_Skill).Name)); // A repair service contract from ~1_SKILL_TITLE~ ~2_SKILL_NAME~.
+            list.Add(1061133, String.Format("{0}\t{1}", GetSkillTitle(m_SkillLevel).ToString(), RepairSkillInfo.GetInfo(m_Skill).Name)); // A repair service contract from ~1_SKILL_TITLE~ ~2_SKILL_NAME~.
         }
 
         public override void AddWeightProperty(ObjectPropertyList list)
@@ -133,10 +139,10 @@ namespace Server.Items
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
+            
+            list.Add(1071345, String.Format("{0:F1}", m_SkillLevel)); // Skill: ~1_val~
 
-            list.Add(1071345, string.Format("{0:F1}", m_SkillLevel)); // Skill: ~1_val~
-
-            TextDefinition desc = RepairSkillInfo.GetInfo(m_Skill).Description;
+            var desc = RepairSkillInfo.GetInfo(m_Skill).Description;
 
             if (desc != null)
             {
@@ -168,63 +174,14 @@ namespace Server.Items
             if (!m.Region.IsPartOf<TownRegion>())
                 return false;
 
-            return IsNearType(m, RepairSkillInfo.GetInfo(m_Skill).NearbyTypes, 6);
-        }
-
-        public static bool IsNearType(Mobile mob, Type type, int range)
-        {
-            bool mobs = type.IsSubclassOf(typeof(Mobile));
-            bool items = type.IsSubclassOf(typeof(Item));
-
-            IPooledEnumerable eable;
-
-            if (mobs)
-                eable = mob.GetMobilesInRange(range);
-            else if (items)
-                eable = mob.GetItemsInRange(range);
-            else
-                return false;
-
-            foreach (object obj in eable)
-            {
-                if (type.IsAssignableFrom(obj.GetType()))
-                {
-                    eable.Free();
-                    return true;
-                }
-            }
-
-            eable.Free();
-            return false;
-        }
-
-        public static bool IsNearType(Mobile mob, Type[] types, int range)
-        {
-            IPooledEnumerable eable = mob.GetObjectsInRange(range);
-
-            foreach (object obj in eable)
-            {
-                Type objType = obj.GetType();
-
-                for (int i = 0; i < types.Length; i++)
-                {
-                    if (types[i].IsAssignableFrom(objType))
-                    {
-                        eable.Free();
-                        return true;
-                    }
-                }
-            }
-
-            eable.Free();
-            return false;
+            return Server.Factions.Faction.IsNearType(m, RepairSkillInfo.GetInfo(m_Skill).NearbyTypes, 6);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write((int)m_Skill);
             writer.Write(m_SkillLevel);
@@ -237,7 +194,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch( version )
             {
                 case 0:
                     {
@@ -259,7 +216,7 @@ namespace Server.Items
             else if (skill >= 5)
                 return (1061123 + skill - 5);
 
-            switch (skill)
+            switch( skill )
             {
                 case 4:
                     return "a Novice";
@@ -268,7 +225,7 @@ namespace Server.Items
                 default:
                     return "a Newbie";		//On OSI, it shouldn't go below 50, but, this is for 'custom' support.
             }
-        }
+        }        
     }
 
     public class RepairSkillInfo
@@ -304,12 +261,48 @@ namespace Server.Items
         {
         }
 
-        public static RepairSkillInfo[] Table => m_Table;
-        public TextDefinition NotNearbyMessage => m_NotNearbyMessage;
-        public TextDefinition Name => m_Name;
-        public TextDefinition Description => m_Description;
-        public CraftSystem System => m_System;
-        public Type[] NearbyTypes => m_NearbyTypes;
+        public static RepairSkillInfo[] Table
+        {
+            get
+            {
+                return m_Table;
+            }
+        }
+        public TextDefinition NotNearbyMessage
+        {
+            get
+            {
+                return m_NotNearbyMessage;
+            }
+        }
+        public TextDefinition Name
+        {
+            get
+            {
+                return m_Name;
+            }
+        }
+        public TextDefinition Description
+        {
+            get
+            {
+                return m_Description;
+            }
+        }
+        public CraftSystem System
+        {
+            get
+            {
+                return m_System;
+            }
+        }
+        public Type[] NearbyTypes
+        {
+            get
+            {
+                return m_NearbyTypes;
+            }
+        }
         public static RepairSkillInfo GetInfo(RepairSkillType type)
         {
             int v = (int)type;

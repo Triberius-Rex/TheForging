@@ -7,12 +7,12 @@ namespace Server.Commands.Generic
     {
         public RegionCommandImplementor()
         {
-            Accessors = new string[] { "Region" };
-            SupportRequirement = CommandSupport.Region;
-            SupportsConditionals = true;
-            AccessLevel = AccessLevel.GameMaster;
-            Usage = "Region <command> [condition]";
-            Description = "Invokes the command on all appropriate mobiles in your current region. Optional condition arguments can further restrict the set of objects.";
+            this.Accessors = new string[] { "Region" };
+            this.SupportRequirement = CommandSupport.Region;
+            this.SupportsConditionals = true;
+            this.AccessLevel = AccessLevel.GameMaster;
+            this.Usage = "Region <command> [condition]";
+            this.Description = "Invokes the command on all appropriate mobiles in your current region. Optional condition arguments can further restrict the set of objects.";
         }
 
         public override void Compile(Mobile from, BaseCommand command, ref string[] args, ref object obj)
@@ -23,7 +23,7 @@ namespace Server.Commands.Generic
 
                 bool items, mobiles;
 
-                if (!CheckObjectTypes(from, command, ext, out items, out mobiles))
+                if (!this.CheckObjectTypes(from, command, ext, out items, out mobiles))
                     return;
 
                 Region reg = from.Region;
@@ -54,7 +54,6 @@ namespace Server.Commands.Generic
             catch (Exception ex)
             {
                 from.SendMessage(ex.Message);
-                Diagnostics.ExceptionLogging.LogException(ex);
             }
         }
     }

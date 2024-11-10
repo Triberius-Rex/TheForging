@@ -1,17 +1,17 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Items
 {
     public class MysticalPolymorphTotem : Item
     {
-        public override int LabelNumber => 1158780;  // Mystical Polymorph Totem
+        public override int LabelNumber { get { return 1158780; } } // Mystical Polymorph Totem
 
         private int m_Body = 0;
         private int m_Hue = -1;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public int Duration { get; set; }
+        public int Duration { get; set; }        
 
         [CommandProperty(AccessLevel.GameMaster)]
         public string CostumeCreatureName { get; set; }
@@ -51,7 +51,7 @@ namespace Server.Items
 
             if (CostumeCreatureName != null)
             {
-                list.Add(1158707, string.Format("{0}", CostumeCreatureName)); // a ~1_name~ costume
+                list.Add(1158707, String.Format("{0}", CostumeCreatureName)); // a ~1_name~ costume
             }
         }
 
@@ -175,7 +175,6 @@ namespace Server.Items
 
                     m_Totem.CostumeCreatureName = costume.CreatureName;
                     m_Totem.CostumeBody = costume.CostumeBody;
-                    m_Totem.CostumeHue = costume.Hue;
 
                     m_Totem.InvalidateProperties();
 
@@ -187,17 +186,17 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(CostumeCreatureName);
-            writer.Write(CostumeBody);
-            writer.Write(CostumeHue);
+            writer.Write((int)CostumeBody);
+            writer.Write((int)CostumeHue);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
             CostumeCreatureName = reader.ReadString();
             CostumeBody = reader.ReadInt();

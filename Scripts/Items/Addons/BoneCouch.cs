@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class BoneCouchComponent : AddonComponent
@@ -12,13 +14,19 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074477;// Bone couch
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074477;
+            }
+        }// Bone couch
         public override bool OnMoveOver(Mobile m)
         {
             bool allow = base.OnMoveOver(m);
 
             if (allow && m.Alive && m.Player && (m.IsPlayer() || !m.Hidden))
-                Effects.PlaySound(Location, Map, Utility.RandomMinMax(0x547, 0x54A));
+                Effects.PlaySound(this.Location, this.Map, Utility.RandomMinMax(0x547, 0x54A));
 
             return allow;
         }
@@ -45,10 +53,10 @@ namespace Server.Items
         public BoneCouchAddon()
             : base()
         {
-            Direction = Direction.South;
+            this.Direction = Direction.South;
 
-            AddComponent(new BoneCouchComponent(0x2A5A), 0, 0, 0);
-            AddComponent(new BoneCouchComponent(0x2A5B), -1, 0, 0);
+            this.AddComponent(new BoneCouchComponent(0x2A5A), 0, 0, 0);
+            this.AddComponent(new BoneCouchComponent(0x2A5B), -1, 0, 0);
         }
 
         public BoneCouchAddon(Serial serial)
@@ -56,7 +64,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new BoneCouchDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new BoneCouchDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -73,15 +87,15 @@ namespace Server.Items
 
         public virtual void Flip(Mobile from, Direction direction)
         {
-            switch (direction)
+            switch ( direction )
             {
                 case Direction.East:
-                    AddComponent(new BoneCouchComponent(0x2A80), 0, 0, 0);
-                    AddComponent(new BoneCouchComponent(0x2A7F), 0, 1, 0);
+                    this.AddComponent(new BoneCouchComponent(0x2A80), 0, 0, 0);
+                    this.AddComponent(new BoneCouchComponent(0x2A7F), 0, 1, 0);
                     break;
                 case Direction.South:
-                    AddComponent(new BoneCouchComponent(0x2A5A), 0, 0, 0);
-                    AddComponent(new BoneCouchComponent(0x2A5B), -1, 0, 0);
+                    this.AddComponent(new BoneCouchComponent(0x2A5A), 0, 0, 0);
+                    this.AddComponent(new BoneCouchComponent(0x2A5B), -1, 0, 0);
                     break;
             }
         }
@@ -93,7 +107,7 @@ namespace Server.Items
         public BoneCouchDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public BoneCouchDeed(Serial serial)
@@ -101,8 +115,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new BoneCouchAddon();
-        public override int LabelNumber => 1074477;// Bone couch
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new BoneCouchAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074477;
+            }
+        }// Bone couch
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

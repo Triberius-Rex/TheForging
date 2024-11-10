@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -38,7 +39,9 @@ namespace Server.Mobiles
             Fame = 6500;
             Karma = 0;
 
-            SetWearable(new Bow(), dropChance: 1);
+            VirtualArmor = 50;
+            AddItem(new Bow());
+            PackItem(new Arrow(Utility.RandomMinMax(80, 90))); // OSI it is different: in a sub backpack, this is probably just a limitation of their engine
         }
 
         public Centaur(Serial serial)
@@ -46,23 +49,47 @@ namespace Server.Mobiles
         {
         }
 
-        public override TribeType Tribe => TribeType.Fey;
+        public override TribeType Tribe { get { return TribeType.Fey; } }
 
-        public override int Meat => 1;
-        public override int Hides => 8;
-        public override HideType HideType => HideType.Spined;
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override HideType HideType
+        {
+            get
+            {
+                return HideType.Spined;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Average);
             AddLoot(LootPack.Gems);
-            AddLoot(LootPack.LootItem<Arrow>(Utility.RandomMinMax(80, 90)));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

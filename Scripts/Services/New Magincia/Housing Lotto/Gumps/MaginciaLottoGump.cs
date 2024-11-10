@@ -1,14 +1,16 @@
-using Server.Gumps;
-using Server.Mobiles;
-using Server.Network;
 using System;
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Network;
 
 namespace Server.Engines.NewMagincia
 {
     public class MaginciaLottoGump : Gump
     {
-        private readonly MaginciaHousingPlot m_Plot;
-        private readonly Mobile m_From;
+        private MaginciaHousingPlot m_Plot;
+        private Mobile m_From;
 
         private readonly int BlueColor = 0x00BFFF;
         private readonly int LabelColor = 0xFFFFFF;
@@ -34,18 +36,18 @@ namespace Server.Engines.NewMagincia
             AddHtmlLocalized(10, 10, 200, 20, 1150460, BlueColor, false, false); // New Magincia Housing Lottery
 
             AddHtmlLocalized(10, 50, 75, 20, 1150461, BlueColor, false, false); // This Facet:
-            AddHtml(170, 50, 100, 16, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", LabelColor, plot.Map.ToString()), false, false);
+            AddHtml(170, 50, 100, 16, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", LabelColor, plot.Map.ToString()), false, false);
 
             AddHtmlLocalized(10, 70, 75, 20, 1150462, BlueColor, false, false); // This Plot:
-            AddHtml(170, 70, 100, 16, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, plot.Identifier), false, false);
+            AddHtml(170, 70, 100, 16, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, plot.Identifier), false, false);
 
             AddHtmlLocalized(10, 95, 130, 20, 1150463, BlueColor, false, false); // Total Tickets Sold:
-            AddHtml(170, 95, 100, 16, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, totalTicketsSold.ToString()), false, false);
+            AddHtml(170, 95, 100, 16, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, totalTicketsSold.ToString()), false, false);
 
             AddHtmlLocalized(10, 110, 320, 40, prime ? 1150464 : 1150465, LabelColor, false, false);
 
             AddHtmlLocalized(10, 160, 90, 20, 1150466, BlueColor, false, false); // Your Tickets:
-            AddHtml(170, 160, 100, 20, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, ticketsBought.ToString()), false, false);
+            AddHtml(170, 160, 100, 20, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, ticketsBought.ToString()), false, false);
 
             if (ticketsBought == 0)
                 AddHtmlLocalized(10, 175, 320, 40, 1150467, LabelColor, false, false); // You have not bought a ticket, so you have no chance of winning this plot.
@@ -57,7 +59,7 @@ namespace Server.Engines.NewMagincia
             }
 
             AddHtmlLocalized(10, 225, 115, 20, 1150472, BlueColor, false, false); // Price Per Ticket:
-            AddHtml(170, 225, 100, 20, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, plot.LottoPrice.ToString("###,###,###")), false, false);
+            AddHtml(170, 225, 100, 20, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", EntryColor, plot.LottoPrice.ToString("###,###,###")), false, false);
 
             if (plot.LottoOngoing)
             {
@@ -85,8 +87,8 @@ namespace Server.Engines.NewMagincia
             TimeSpan ts = plot.LottoEnds - DateTime.UtcNow;
 
             AddHtmlLocalized(10, 300, 320, 40, 1150476, LabelColor, false, false); // Ticket purchases are NONREFUNDABLE. Odds of winning may vary.
-
-            if (ts.Days > 0)
+            
+            if(ts.Days > 0)
                 AddHtmlLocalized(10, 340, 320, 20, 1150504, ts.Days.ToString(), LabelColor, false, false); // There are ~1_DAYS~ days left before the drawing.
             else
                 AddHtmlLocalized(10, 340, 320, 20, 1150503, LabelColor, false, false); // The lottery drawing will happen in less than 1 day.
@@ -116,26 +118,23 @@ namespace Server.Engines.NewMagincia
                 {
                     toBuy = Convert.ToInt32(text);
                 }
-                catch (Exception e)
-                {
-                    Diagnostics.ExceptionLogging.LogException(e);
-                }
+                catch { }
 
                 if (toBuy <= 0)
                     return;
             }
 
-            if (toBuy > 1)
+            if(toBuy > 1)
                 total = toBuy * pricePer;
 
             if (Banker.Withdraw(m_From, total))
             {
                 MaginciaLottoSystem.GoldSink += total;
-                m_From.SendLocalizedMessage(1150480, string.Format("{0}\t{1}\t{2}", toBuy.ToString(), pricePer.ToString(), total.ToString())); // Purchase of ~1_COUNT~ ticket(s) at ~2_PRICE~gp each costs a total of ~3_TOTAL~. The funds have been withdrawn from your bank box and your ticket purchase has been recorded.
+                m_From.SendLocalizedMessage(1150480, String.Format("{0}\t{1}\t{2}", toBuy.ToString(), pricePer.ToString(), total.ToString())); // Purchase of ~1_COUNT~ ticket(s) at ~2_PRICE~gp each costs a total of ~3_TOTAL~. The funds have been withdrawn from your bank box and your ticket purchase has been recorded.
                 m_Plot.PurchaseLottoTicket(m_From, toBuy);
             }
             else
-                m_From.SendLocalizedMessage(1150479, string.Format("{0}\t{1}\t{2}", toBuy.ToString(), pricePer.ToString(), total.ToString())); // Purchase of ~1_COUNT~ ticket(s) at ~2_PRICE~gp each costs a total of ~3_TOTAL~. You do not have the required funds in your bank box to make the purchase.
+                m_From.SendLocalizedMessage(1150479, String.Format("{0}\t{1}\t{2}", toBuy.ToString(), pricePer.ToString(), total.ToString())); // Purchase of ~1_COUNT~ ticket(s) at ~2_PRICE~gp each costs a total of ~3_TOTAL~. You do not have the required funds in your bank box to make the purchase.
         }
     }
 }

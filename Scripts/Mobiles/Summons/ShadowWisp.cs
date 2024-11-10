@@ -9,33 +9,33 @@ namespace Server.Mobiles
         private DateTime m_NextFlare;
         public ShadowWispFamiliar()
         {
-            Name = "a shadow wisp";
-            Body = 165;
-            Hue = 0x901;
-            BaseSoundID = 466;
+            this.Name = "a shadow wisp";
+            this.Body = 165;
+            this.Hue = 0x901;
+            this.BaseSoundID = 466;
 
-            SetStr(50);
-            SetDex(60);
-            SetInt(100);
+            this.SetStr(50);
+            this.SetDex(60);
+            this.SetInt(100);
 
-            SetHits(50);
-            SetStam(60);
-            SetMana(0);
+            this.SetHits(50);
+            this.SetStam(60);
+            this.SetMana(0);
 
-            SetDamage(5, 10);
+            this.SetDamage(5, 10);
 
-            SetDamageType(ResistanceType.Energy, 100);
+            this.SetDamageType(ResistanceType.Energy, 100);
 
-            SetResistance(ResistanceType.Physical, 10, 15);
-            SetResistance(ResistanceType.Fire, 10, 15);
-            SetResistance(ResistanceType.Cold, 10, 15);
-            SetResistance(ResistanceType.Poison, 10, 15);
-            SetResistance(ResistanceType.Energy, 99);
+            this.SetResistance(ResistanceType.Physical, 10, 15);
+            this.SetResistance(ResistanceType.Fire, 10, 15);
+            this.SetResistance(ResistanceType.Cold, 10, 15);
+            this.SetResistance(ResistanceType.Poison, 10, 15);
+            this.SetResistance(ResistanceType.Energy, 99);
 
-            SetSkill(SkillName.Wrestling, 40.0);
-            SetSkill(SkillName.Tactics, 40.0);
+            this.SetSkill(SkillName.Wrestling, 40.0);
+            this.SetSkill(SkillName.Tactics, 40.0);
 
-            ControlSlots = 1;
+            this.ControlSlots = 1;
         }
 
         public ShadowWispFamiliar(Serial serial)
@@ -47,35 +47,37 @@ namespace Server.Mobiles
         {
             base.OnThink();
 
-            if (DateTime.UtcNow < m_NextFlare)
+            if (DateTime.UtcNow < this.m_NextFlare)
                 return;
 
-            m_NextFlare = DateTime.UtcNow + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
+            this.m_NextFlare = DateTime.UtcNow + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
 
-            FixedEffect(0x37C4, 1, 12, 1109, 6);
-            PlaySound(0x1D3);
+            this.FixedEffect(0x37C4, 1, 12, 1109, 6);
+            this.PlaySound(0x1D3);
 
-            Timer.DelayCall(TimeSpan.FromSeconds(0.5), Flare);
+            Timer.DelayCall(TimeSpan.FromSeconds(0.5), new TimerCallback(Flare));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
 
         private void Flare()
         {
-            Mobile caster = ControlMaster;
+            Mobile caster = this.ControlMaster;
 
             if (caster == null)
-                caster = SummonMaster;
+                caster = this.SummonMaster;
 
             if (caster == null)
                 return;

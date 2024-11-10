@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class MrPlainsCookies : Food
     {
@@ -17,12 +19,18 @@
         {
         }
 
-        public override string DefaultName => "Mr Plain's Cookies";
+        public override string DefaultName
+        {
+            get
+            {
+                return "Mr Plain's Cookies";
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)

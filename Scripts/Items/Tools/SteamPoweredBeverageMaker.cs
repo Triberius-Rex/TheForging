@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class SteamPoweredBeverageMaker : Item
     {
-        public override int LabelNumber => 1123598;  // Steam Powered Beverage Maker
+        public override int LabelNumber { get { return 1123598; } } // Steam Powered Beverage Maker
 
         [Constructable]
         public SteamPoweredBeverageMaker()
@@ -14,7 +16,7 @@ namespace Server.Items
         public SteamPoweredBeverageMaker(Serial serial)
             : base(serial)
         {
-        }
+        }       
 
         public override void Serialize(GenericWriter writer)
         {

@@ -1,6 +1,7 @@
-using Server.Regions;
 using System;
+using Server;
 using System.Collections.Generic;
+using Server.Regions;
 
 namespace Server.Items
 {
@@ -21,10 +22,10 @@ namespace Server.Items
     {
         public static void Initialize()
         {
-            EventSink.Speech += EventSink_Speech;
+            EventSink.Speech += new SpeechEventHandler(EventSink_Speech);
         }
 
-        public override int LabelNumber => 1079525;  // Ankh Pendant
+        public override int LabelNumber { get { return 1079525; } } // Ankh Pendant
 
         [Constructable]
         public AnkhPendant()
@@ -203,7 +204,7 @@ namespace Server.Items
             {
                 if (IsUnderEffects(from))
                 {
-                    from.SendLocalizedMessage(1079544, string.Format("#{0}", GetCliloc(m_Table[from].VType)));
+                    from.SendLocalizedMessage(1079544, String.Format("#{0}", GetCliloc(m_Table[from].VType)));
                     return false;
                 }
 
@@ -223,10 +224,10 @@ namespace Server.Items
             return atShrine;
         }
 
-        public static Rectangle2D[] ShrineLocs => m_ShrineLocs;
-        private static readonly Rectangle2D[] m_ShrineLocs = new Rectangle2D[]
-        {
-            new Rectangle2D(4208, 563, 2, 2), //Honesty
+        public static Rectangle2D[] ShrineLocs { get { return m_ShrineLocs; } }
+        private static Rectangle2D[] m_ShrineLocs = new Rectangle2D[]
+		{
+			new Rectangle2D(4208, 563, 2, 2), //Honesty
 			new Rectangle2D(1857, 874, 2, 2), //Compassion
 			new Rectangle2D(2491, 3930, 2, 2), //Valor
 			new Rectangle2D(1300, 633, 2, 2), //Justice
@@ -242,7 +243,7 @@ namespace Server.Items
 
             from.Delta(MobileDelta.WeaponDamage);
 
-            from.SendLocalizedMessage(1079546, string.Format("#{0}", GetCliloc(t)));
+            from.SendLocalizedMessage(1079546, String.Format("#{0}", GetCliloc(t)));
         }
 
         private static int GetCliloc(VirtueType t)
@@ -287,26 +288,26 @@ namespace Server.Items
             m_Cooldown[from] = DateTime.UtcNow + TimeSpan.FromHours(24);
         }
 
-        private static readonly Dictionary<Mobile, AnkhPendantBonusContext> m_Table = new Dictionary<Mobile, AnkhPendantBonusContext>();
-        private static readonly Dictionary<Mobile, DateTime> m_Cooldown = new Dictionary<Mobile, DateTime>();
+        private static Dictionary<Mobile, AnkhPendantBonusContext> m_Table = new Dictionary<Mobile, AnkhPendantBonusContext>();
+        private static Dictionary<Mobile, DateTime> m_Cooldown = new Dictionary<Mobile, DateTime>();
 
         private class AnkhPendantBonusContext
         {
-            private readonly Mobile m_Mobile;
-            private readonly VirtueType m_Type;
-            private readonly int m_Random;
-            private readonly bool m_DoBump;
-            private readonly bool m_DoBump2;
-            private readonly bool m_DoBump3;
-            private readonly DateTime m_Expires;
+            private Mobile m_Mobile;
+            private VirtueType m_Type;
+            private int m_Random;
+            private bool m_DoBump;
+            private bool m_DoBump2;
+            private bool m_DoBump3;
+            private DateTime m_Expires;
 
-            public VirtueType VType => m_Type;
-            public bool DoBump => m_DoBump;
-            public bool DoBump2 => m_DoBump2;
-            public bool DoBump3 => m_DoBump3;
-            public int Random => m_Random;
+            public VirtueType VType { get { return m_Type; } }
+            public bool DoBump { get { return m_DoBump; } }
+            public bool DoBump2 { get { return m_DoBump2; } }
+            public bool DoBump3 { get { return m_DoBump3; } }
+            public int Random { get { return m_Random; } }
 
-            public bool Expired => DateTime.UtcNow > m_Expires;
+            public bool Expired { get { return DateTime.UtcNow > m_Expires; } }
 
             public AnkhPendantBonusContext(Mobile from, VirtueType type)
             {
@@ -347,7 +348,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)

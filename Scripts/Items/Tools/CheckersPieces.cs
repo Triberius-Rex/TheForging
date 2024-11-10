@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class PieceWhiteChecker : BasePiece
@@ -12,11 +14,17 @@ namespace Server.Items
         {
         }
 
-        public override string DefaultName => "white checker";
+        public override string DefaultName
+        {
+            get
+            {
+                return "white checker";
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -38,11 +46,17 @@ namespace Server.Items
         {
         }
 
-        public override string DefaultName => "black checker";
+        public override string DefaultName
+        {
+            get
+            {
+                return "black checker";
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,23 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Server;
 using Server.Items;
 using Server.Mobiles;
-using Server.Engines.RisingTide;
-
-using System;
-using System.Linq;
+using Server.Engines.SeasonalEvents;
 
 namespace Server.Engines.Points
 {
     public class RisingTide : PointsSystem
     {
-        public override PointsType Loyalty => PointsType.RisingTide;
-        public override TextDefinition Name => m_Name;
-        public override bool AutoAdd => true;
-        public override double MaxPoints => double.MaxValue;
-        public override bool ShowOnLoyaltyGump => false;
+        public override PointsType Loyalty { get { return PointsType.RisingTide; } }
+        public override TextDefinition Name { get { return m_Name; } }
+        public override bool AutoAdd { get { return true; } }
+        public override double MaxPoints { get { return double.MaxValue; } }
+        public override bool ShowOnLoyaltyGump { get { return false; } }
 
-        private readonly TextDefinition m_Name = null;
+        public bool InSeason { get { return SeasonalEventSystem.IsActive(EventType.RisingTide); } }
+        private TextDefinition m_Name = null;
 
         public static readonly double CargoChance = 0.1;
+
+        public RisingTide()
+        {
+        }
 
         public override void SendMessage(PlayerMobile from, double old, double points, bool quest)
         {
@@ -26,10 +33,10 @@ namespace Server.Engines.Points
 
         public override void ProcessKill(Mobile victim, Mobile damager)
         {
-            if (RisingTideEvent.Instance.Running && victim is BaseCreature && damager is PlayerMobile)
+            if (Enabled && victim is BaseCreature && damager is PlayerMobile)
             {
-                BaseCreature bc = victim as BaseCreature;
-                PlunderBeaconAddon beacon = GetPlunderBeacon(bc);
+                var bc = victim as BaseCreature;
+                var beacon = GetPlunderBeacon(bc);
 
                 if (beacon != null)
                 {
@@ -50,7 +57,7 @@ namespace Server.Engines.Points
 
                     if (chance > Utility.RandomDouble())
                     {
-                        Container corpse = victim.Corpse;
+                        var corpse = victim.Corpse;
 
                         if (corpse != null)
                         {
@@ -61,7 +68,7 @@ namespace Server.Engines.Points
             }
         }
 
-        private readonly Type[] CargoDropsTypes =
+        private Type[] CargoDropsTypes =
         {
             typeof(PirateCaptain), typeof(MerchantCaptain), typeof(PirateCrew), typeof(MerchantCrew)
         };
@@ -70,9 +77,9 @@ namespace Server.Engines.Points
         {
             if (PlunderBeaconSpawner.Spawner != null)
             {
-                foreach (System.Collections.Generic.List<PlunderBeaconAddon> list in PlunderBeaconSpawner.Spawner.PlunderBeacons.Values)
+                foreach (var list in PlunderBeaconSpawner.Spawner.PlunderBeacons.Values)
                 {
-                    PlunderBeaconAddon addon = list.FirstOrDefault(beacon => beacon.Crew.Contains(bc) || (beacon.Spawn.ContainsKey(bc) && beacon.Spawn[bc]));
+                    var addon = list.FirstOrDefault(beacon => beacon.Crew.Contains(bc) || (beacon.Spawn.ContainsKey(bc) && beacon.Spawn[bc]));
 
                     if (addon != null)
                     {
@@ -84,10 +91,14 @@ namespace Server.Engines.Points
             return null;
         }
 
+        public bool Enabled { get; set; }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write(0);
+
+            writer.Write(Enabled);
 
             if (PlunderBeaconSpawner.Spawner != null)
             {
@@ -106,16 +117,11 @@ namespace Server.Engines.Points
 
             int version = reader.ReadInt();
 
-            if (version == 0)
-            {
-                reader.ReadBool();
-            }
+            Enabled = reader.ReadBool();
 
             if (reader.ReadInt() == 0)
             {
                 var spawner = new PlunderBeaconSpawner();
-                PlunderBeaconSpawner.Spawner = spawner;
-
                 spawner.Deserialize(reader);
             }
         }

@@ -1,9 +1,9 @@
+using System;
+using System.Collections;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
-using System.Collections;
 
 namespace Server.Spells.Fifth
 {
@@ -22,7 +22,13 @@ namespace Server.Spells.Fifth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fifth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fifth;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -75,7 +81,7 @@ namespace Server.Spells.Fifth
 
                 for (int i = 1; i <= 2; ++i)
                 {
-                    Timer.DelayCall(TimeSpan.FromMilliseconds(i * 300), index =>
+                    Timer.DelayCall<int>(TimeSpan.FromMilliseconds(i * 300), index =>
                     {
                         Point3D point = new Point3D(eastToWest ? pnt.X + index : pnt.X, eastToWest ? pnt.Y : pnt.Y + index, pnt.Z);
                         SpellHelper.AdjustField(ref point, Caster.Map, 16, false);
@@ -102,7 +108,7 @@ namespace Server.Spells.Fifth
             private DateTime m_End;
             private Mobile m_Caster;
 
-            public Mobile Caster => m_Caster;
+            public Mobile Caster { get { return m_Caster; } }
 
             public InternalItem(int itemID, Point3D loc, Mobile caster, Map map, TimeSpan duration)
                 : base(itemID)
@@ -128,7 +134,13 @@ namespace Server.Spells.Fifth
             {
             }
 
-            public override bool BlocksFit => true;
+            public override bool BlocksFit
+            {
+                get
+                {
+                    return true;
+                }
+            }
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
@@ -141,7 +153,7 @@ namespace Server.Spells.Fifth
             {
                 base.Serialize(writer);
 
-                writer.Write(1); // version
+                writer.Write((int)1); // version
 
                 writer.Write(m_Caster);
                 writer.WriteDeltaTime(m_End);
@@ -153,7 +165,7 @@ namespace Server.Spells.Fifth
 
                 int version = reader.ReadInt();
 
-                switch (version)
+                switch ( version )
                 {
                     case 1:
                         {
@@ -180,16 +192,23 @@ namespace Server.Spells.Fifth
 
                 Poison p;
 
-                int total = (m_Caster.Skills.Magery.Fixed + m_Caster.Skills.Poisoning.Fixed) / 2;
+                if (Core.AOS)
+                {
+                    int total = (m_Caster.Skills.Magery.Fixed + m_Caster.Skills.Poisoning.Fixed) / 2;
 
-                if (total >= 1000)
-                    p = Poison.Deadly;
-                else if (total > 850)
-                    p = Poison.Greater;
-                else if (total > 650)
-                    p = Poison.Regular;
+                    if (total >= 1000)
+                        p = Poison.Deadly;
+                    else if (total > 850)
+                        p = Poison.Greater;
+                    else if (total > 650)
+                        p = Poison.Regular;
+                    else
+                        p = Poison.Lesser;
+                }
                 else
-                    p = Poison.Lesser;
+                {
+                    p = Poison.Regular;
+                }
 
                 if (m.ApplyPoison(m_Caster, p) == ApplyPoisonResult.Poisoned)
                     if (SpellHelper.CanRevealCaster(m))
@@ -201,7 +220,7 @@ namespace Server.Spells.Fifth
 
             public override bool OnMoveOver(Mobile m)
             {
-                if (Visible && m_Caster != null && m != m_Caster && SpellHelper.ValidIndirectTarget(m_Caster, m) && m_Caster.CanBeHarmful(m, false))
+                if (Visible && m_Caster != null && (!Core.AOS || m != m_Caster) && SpellHelper.ValidIndirectTarget(m_Caster, m) && m_Caster.CanBeHarmful(m, false))
                 {
                     m_Caster.DoHarmful(m);
 
@@ -250,7 +269,7 @@ namespace Server.Spells.Fifth
 
                             foreach (Mobile m in eable)
                             {
-                                if ((m.Z + 16) > m_Item.Z && (m_Item.Z + 12) > m.Z && m != caster && SpellHelper.ValidIndirectTarget(caster, m) && caster.CanBeHarmful(m, false))
+                                if ((m.Z + 16) > m_Item.Z && (m_Item.Z + 12) > m.Z && (!Core.AOS || m != caster) && SpellHelper.ValidIndirectTarget(caster, m) && caster.CanBeHarmful(m, false))
                                     m_Queue.Enqueue(m);
                             }
 
@@ -275,7 +294,7 @@ namespace Server.Spells.Fifth
         {
             private readonly PoisonFieldSpell m_Owner;
             public InternalTarget(PoisonFieldSpell owner)
-                : base(15, true, TargetFlags.None)
+                : base(Core.TOL ? 15 : Core.ML ? 10 : 12, true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

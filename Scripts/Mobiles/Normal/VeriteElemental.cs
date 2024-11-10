@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -8,6 +8,12 @@ namespace Server.Mobiles
     {
         [Constructable]
         public VeriteElemental()
+            : this(25)
+        {
+        }
+
+        [Constructable]
+        public VeriteElemental(int oreAmount)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a verite elemental";
@@ -37,6 +43,12 @@ namespace Server.Mobiles
 
             Fame = 3500;
             Karma = -3500;
+
+            VirtualArmor = 35;
+
+            Item ore = new VeriteOre(oreAmount);
+            ore.ItemID = 0x19B9;
+            PackItem(ore);
         }
 
         public VeriteElemental(Serial serial)
@@ -44,9 +56,27 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-        public override bool BleedImmune => true;
-        public override int TreasureMapLevel => 1;
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public static void OnHit(Mobile defender, Item item, int damage)
         {
@@ -66,7 +96,7 @@ namespace Server.Mobiles
             }
             else
             {
-                defender.LocalOverheadMessage(Network.MessageType.Regular, 0x3B2, 1061121); // Your equipment is severely damaged.
+                defender.LocalOverheadMessage(Server.Network.MessageType.Regular, 0x3B2, 1061121); // Your equipment is severely damaged.
                 dur.MaxHitPoints = Math.Max(0, dur.MaxHitPoints - damage);
 
                 if (!item.Deleted && dur.MaxHitPoints == 0)
@@ -80,13 +110,12 @@ namespace Server.Mobiles
         {
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<VeriteOre>(25));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

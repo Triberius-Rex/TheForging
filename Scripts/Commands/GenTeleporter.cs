@@ -1,17 +1,17 @@
-using Server.Items;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Server.Items;
 using System.IO;
 
 namespace Server.Commands
 {
     class Location : IComparable
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Z { get; set; }
-        public Map Map { get; set; }
-
+        public int X;
+        public int Y;
+        public int Z;
+        public Map Map;
         public Location(int x, int y, int z, Map m)
         {
             X = x;
@@ -37,14 +37,9 @@ namespace Server.Commands
 
         public override int GetHashCode()
         {
-            string hashString = string.Format("{0}-{1}-{2}-{3}",
+            string hashString = String.Format("{0}-{1}-{2}-{3}",
                 X, Y, Z, Map.MapID);
             return hashString.GetHashCode();
-        }
-
-        public override bool Equals(object o)
-        {
-            return o is Location && ((Location)o).X == X && ((Location)o).Y == Y && ((Location)o).Z == Z && ((Location)o).Map == Map;
         }
     }
     class TelDef
@@ -61,13 +56,17 @@ namespace Server.Commands
     }
     public class GenTeleporter
     {
-        private static readonly string m_Path = Path.Combine("Data", "teleporters.csv");
-        private static readonly char[] m_Sep = { ',' };
+        private static string m_Path = Path.Combine("Data", "teleporters.csv");
+        private static char[] m_Sep = { ',' };
+
+        public GenTeleporter()
+        {
+        }
 
         public static void Initialize()
         {
-            CommandSystem.Register("TelGen", AccessLevel.Administrator, GenTeleporter_OnCommand);
-            CommandSystem.Register("TelGenDelete", AccessLevel.Administrator, TelGenDelete_OnCommand);
+            CommandSystem.Register("TelGen", AccessLevel.Administrator, new CommandEventHandler(GenTeleporter_OnCommand));
+            CommandSystem.Register("TelGenDelete", AccessLevel.Administrator, new CommandEventHandler(TelGenDelete_OnCommand));
         }
 
         private static void TelGenDelete_OnCommand(CommandEventArgs e)
@@ -87,16 +86,16 @@ namespace Server.Commands
 
             string line;
             int lineNum = 0;
-            while ((line = reader.ReadLine()) != null)
+            while((line = reader.ReadLine()) != null)
             {
                 ++lineNum;
                 line = line.Trim();
                 if (line.StartsWith("#"))
                     continue;
                 string[] parts = line.Split(m_Sep);
-                if (parts.Length != 9)
+                if(parts.Length != 9)
                 {
-                    e.Mobile.SendMessage(33, string.Format("Bad teleporter definition on line {0}", lineNum));
+                    e.Mobile.SendMessage(33, String.Format("Bad teleporter definition on line {0}", lineNum));
                     continue;
                 }
                 try
@@ -115,11 +114,11 @@ namespace Server.Commands
                 }
                 catch (FormatException)
                 {
-                    e.Mobile.SendMessage(33, string.Format("Bad number format on line {0}", lineNum));
+                    e.Mobile.SendMessage(33, String.Format("Bad number format on line {0}", lineNum));
                 }
-                catch (ArgumentException ex)
+                catch(ArgumentException ex)
                 {
-                    e.Mobile.SendMessage(33, string.Format("Argument Execption {0} on line {1}", ex.Message, lineNum));
+                    e.Mobile.SendMessage(33, String.Format("Argument Execption {0} on line {1}", ex.Message, lineNum));
                 }
             }
             reader.Close();
@@ -131,6 +130,9 @@ namespace Server.Commands
         {
             private static readonly Queue m_Queue = new Queue();
             private int m_Count;
+            public TeleportersCreator()
+            {
+            }
 
             public static bool FindTeleporter(Map map, Point3D p)
             {
@@ -159,20 +161,20 @@ namespace Server.Commands
             {
                 if (!FindTeleporter(mapLocation, pointLocation))
                 {
-                    m_Count++;
-
+                    this.m_Count++;
+				
                     Teleporter tel = new Teleporter(pointDestination, mapDestination);
-                    WeakEntityCollection.Add("tel", tel);
+					WeakEntityCollection.Add("tel", tel);
 
                     tel.MoveToWorld(pointLocation, mapLocation);
                 }
 
                 if (back && !FindTeleporter(mapDestination, pointDestination))
                 {
-                    m_Count++;
+                    this.m_Count++;
 
                     Teleporter telBack = new Teleporter(pointLocation, mapLocation);
-                    WeakEntityCollection.Add("tel", telBack);
+					WeakEntityCollection.Add("tel", telBack);
 
                     telBack.MoveToWorld(pointDestination, mapDestination);
                 }
@@ -180,12 +182,12 @@ namespace Server.Commands
 
             public void CreateTeleporter(int xLoc, int yLoc, int zLoc, int xDest, int yDest, int zDest, Map map, bool back)
             {
-                CreateTeleporter(new Point3D(xLoc, yLoc, zLoc), new Point3D(xDest, yDest, zDest), map, map, back);
+                this.CreateTeleporter(new Point3D(xLoc, yLoc, zLoc), new Point3D(xDest, yDest, zDest), map, map, back);
             }
 
             public void CreateTeleporter(int xLoc, int yLoc, int zLoc, int xDest, int yDest, int zDest, Map mapLocation, Map mapDestination, bool back)
             {
-                CreateTeleporter(new Point3D(xLoc, yLoc, zLoc), new Point3D(xDest, yDest, zDest), mapLocation, mapDestination, back);
+                this.CreateTeleporter(new Point3D(xLoc, yLoc, zLoc), new Point3D(xDest, yDest, zDest), mapLocation, mapDestination, back);
             }
         }
     }

@@ -1,20 +1,22 @@
+using System;
+
 namespace Server.Items
 {
     public class Evocaricus : VikingSword
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public Evocaricus()
             : base()
         {
-            SetHue = 0x76D;
-
-            Attributes.WeaponDamage = 50;
-
-            SetSelfRepair = 3;
-            SetAttributes.DefendChance = 10;
-            SetAttributes.BonusStr = 10;
-            SetAttributes.WeaponSpeed = 35;
+            this.SetHue = 0x76D;
+			
+            this.Attributes.WeaponDamage = 50;
+			
+            this.SetSelfRepair = 3;			
+            this.SetAttributes.DefendChance = 10;
+            this.SetAttributes.BonusStr = 10;
+            this.SetAttributes.WeaponSpeed = 35;
         }
 
         public Evocaricus(Serial serial)
@@ -22,14 +24,32 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1074309;// Evocaricus (Juggernaut Set)
-        public override SetItem SetID => SetItem.Juggernaut;
-        public override int Pieces => 2;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1074309;
+            }
+        }// Evocaricus (Juggernaut Set)
+        public override SetItem SetID
+        {
+            get
+            {
+                return SetItem.Juggernaut;
+            }
+        }
+        public override int Pieces
+        {
+            get
+            {
+                return 2;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

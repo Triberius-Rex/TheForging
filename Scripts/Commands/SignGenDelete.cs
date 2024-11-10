@@ -1,6 +1,7 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Server.Items;
 
 namespace Server.Commands
 {
@@ -9,15 +10,15 @@ namespace Server.Commands
         private static readonly Queue<Item> m_ToDelete = new Queue<Item>();
         public static void Initialize()
         {
-            CommandSystem.Register("SignGenDelete", AccessLevel.Administrator, SignGenDelete_OnCommand);
+            CommandSystem.Register("SignGenDelete", AccessLevel.Administrator, new CommandEventHandler(SignGenDelete_OnCommand));
         }
 
         [Usage("SignGenDelete")]
         [Description("Deletes world/shop signs on all facets.")]
         public static void SignGenDelete_OnCommand(CommandEventArgs c)
         {
-            WeakEntityCollection.Delete("sign");
-            // Retained for backward compatibility
+			WeakEntityCollection.Delete("sign");
+			// Retained for backward compatibility
             Parse(c.Mobile);
         }
 
@@ -59,7 +60,7 @@ namespace Server.Commands
                     SignEntry e = list[i];
                     Map[] maps = null;
 
-                    switch (e.m_Map)
+                    switch ( e.m_Map )
                     {
                         case 0:
                             maps = brit;
@@ -117,10 +118,10 @@ namespace Server.Commands
             public readonly int m_Map;
             public SignEntry(string text, Point3D pt, int itemID, int mapLoc)
             {
-                m_Text = text;
-                m_Location = pt;
-                m_ItemID = itemID;
-                m_Map = mapLoc;
+                this.m_Text = text;
+                this.m_Location = pt;
+                this.m_ItemID = itemID;
+                this.m_Map = mapLoc;
             }
         }
     }

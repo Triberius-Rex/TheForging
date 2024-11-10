@@ -1,10 +1,13 @@
 using System;
 
+using Server;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class TinctureOfSilver : Item
     {
-        public override int LabelNumber => 1155619;  // Tincture of Silver
+        public override int LabelNumber { get { return 1155619; } } // Tincture of Silver
 
         [Constructable]
         public TinctureOfSilver()
@@ -19,14 +22,14 @@ namespace Server.Items
             if (IsChildOf(m.Backpack))
             {
                 m.SendLocalizedMessage(1155613); // Target the weapon, spellbook, or instrument you wish to apply this to...
-                m.BeginTarget(-1, false, Targeting.TargetFlags.None, (from, targeted) =>
+                m.BeginTarget(-1, false, Server.Targeting.TargetFlags.None, (from, targeted) =>
                 {
                     if (targeted is Item && targeted is ISlayer)
                     {
-                        Item item = (Item)targeted;
-                        ISlayer slayer = (ISlayer)targeted;
+                        var item = (Item)targeted;
+                        var slayer = (ISlayer)targeted;
 
-                        SlayerSocket socket = item.GetSocket<SlayerSocket>();
+                        var socket = item.GetSocket<SlayerSocket>();
 
                         if (socket == null || socket.Slayer != SlayerName.Silver)
                         {

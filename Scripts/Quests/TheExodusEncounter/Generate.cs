@@ -1,5 +1,11 @@
-using Server.Commands;
+using Server;
+using System;
+using System.Collections.Generic;
+using Server.Mobiles;
 using Server.Items;
+using Server.Gumps;
+using System.Linq;
+using Server.Commands;
 
 namespace Server.Engines.Blackthorn
 {
@@ -16,7 +22,7 @@ namespace Server.Engines.Blackthorn
 
             Generate(Map.Ilshenar);
 
-            CommandSystem.Handle(m, CommandSystem.Prefix + "XmlLoad Spawns/TheExodusEncounterQuest.xml");
+            CommandSystem.Handle(m, Server.Commands.CommandSystem.Prefix + "XmlLoad Spawns/TheExodusEncounterQuest.xml");
         }
 
         public static void Generate(Map map)

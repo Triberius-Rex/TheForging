@@ -1,6 +1,6 @@
-﻿using Server.Mobiles;
+﻿using System;
+using Server.Mobiles;
 using Server.Spells;
-using System;
 
 namespace Server.Items
 {
@@ -16,7 +16,7 @@ namespace Server.Items
         public IcyPatch(int itemid)
             : base(itemid)
         {
-            Hue = 0x481;
+            this.Hue = 0x481;
         }
 
         public IcyPatch(Serial serial)
@@ -24,8 +24,20 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1095159;//An Icy Patch
-        public override double DefaultWeight => 5.0;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1095159;
+            }
+        }//An Icy Patch
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 5.0;
+            }
+        }
         public override bool OnMoveOver(Mobile m)
         {
             if (m is PlayerMobile && m.Alive && m.IsPlayer())
@@ -33,13 +45,13 @@ namespace Server.Items
                 switch (Utility.Random(3))
                 {
                     case 0:
-                        RunSequence(m, 1095160, false);
+                        this.RunSequence(m, 1095160, false);
                         break; //You steadily walk over the slippery surface.
                     case 1:
-                        RunSequence(m, 1095161, true);
+                        this.RunSequence(m, 1095161, true);
                         break; //You skillfully manage to maintain your balance.
                     default:
-                        RunSequence(m, 1095162, true);
+                        this.RunSequence(m, 1095162, true);
                         break; //You lose your footing and ungracefully splatter on the ground.
                 }
             }
@@ -65,9 +77,9 @@ namespace Server.Items
                     m.Mount.Rider = null;
                 }
 
-                Point3D p = new Point3D(Location);
+                Point3D p = new Point3D(this.Location);
 
-                if (SpellHelper.FindValidSpawnLocation(Map, ref p, true))
+                if (SpellHelper.FindValidSpawnLocation(this.Map, ref p, true))
                 {
                     Timer.DelayCall(TimeSpan.FromSeconds(0), new TimerStateCallback(Relocate_Callback), new object[] { m, p });
                 }
@@ -88,7 +100,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,13 @@
+using System;
+
 namespace Server.Items
 {
     public class RecipeScrollFilter
     {
-        public bool IsDefault => (Skill == 0 && Expansion == 0 && Amount == 0);
+        public bool IsDefault
+        {
+            get { return (Skill == 0 && Expansion == 0 && Amount == 0); }
+        }
 
         public void Clear()
         {
@@ -39,15 +44,15 @@ namespace Server.Items
         {
             if (IsDefault)
             {
-                writer.Write(0);
+                writer.Write((int)0);
             }
             else
             {
                 writer.Write(1);
 
-                writer.Write(Skill);
-                writer.Write(Expansion);
-                writer.Write(Amount);
+                writer.Write((int)Skill);
+                writer.Write((int)Expansion);
+                writer.Write((int)Amount);
             }
         }
     }

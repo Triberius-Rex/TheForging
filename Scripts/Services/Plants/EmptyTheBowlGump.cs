@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -7,7 +8,7 @@ namespace Server.Engines.Plants
     {
         private readonly PlantItem m_Plant;
 
-        public bool IsOtherPlant => m_Plant != null && m_Plant is MaginciaPlantItem || m_Plant is GardenBedPlantItem;
+        public bool IsOtherPlant => m_Plant != null && m_Plant is MaginciaPlantItem || m_Plant is RaisedGardenPlantItem;
 
         public EmptyTheBowlGump(PlantItem plant)
             : base(20, 20)

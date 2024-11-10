@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a stygian drake corpse")]
@@ -39,9 +41,13 @@ namespace Server.Mobiles
             Fame = 5500;
             Karma = -5500;
 
+            VirtualArmor = 46;
+
             Tamable = true;
             ControlSlots = 4;
             MinTameSkill = 85.0;
+
+            PackReg(3);
 
             SetMagicalAbility(MagicalAbility.MageryMastery);
         }
@@ -51,30 +57,30 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => !Controlled;
-        public override bool ReacquireOnMovement => !Controlled;
-        public override int TreasureMapLevel => 2;
-        public override int Meat => 10;
-        public override int DragonBlood => 8;
-        public override int Hides => 22;
-        public override HideType HideType => HideType.Horned;
-        public override int Scales => 2;
-        public override ScaleType ScaleType => ScaleType.Yellow;
-        public override FoodType FavoriteFood => FoodType.Meat | FoodType.Fish;
-        public override bool CanFly => true;
-        public override bool CanAngerOnTame => true;
+        public override bool AutoDispel { get { return !Controlled; } }
+        public override bool ReacquireOnMovement { get { return !Controlled; } }
+        public override int TreasureMapLevel { get { return 2; } }
+        public override int Meat { get { return 10; } }
+        public override int DragonBlood { get { return 8; } }
+        public override int Hides { get { return 22; } }
+        public override HideType HideType { get { return HideType.Horned; } }
+        public override int Scales { get { return 2; } }
+        public override ScaleType ScaleType { get { return ScaleType.Yellow; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat | FoodType.Fish; } }
+        public override bool CanFly { get { return true; } }
+        public override bool CanAngerOnTame { get { return true; } }
+        //public override bool StatLossAfterTame { get { return true; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.MedScrolls, 2);
-            AddLoot(LootPack.MageryRegs, 3);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

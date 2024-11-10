@@ -1,6 +1,6 @@
+using System;
 using Server.Engines.CannedEvil;
 using Server.Items;
-using System;
 
 namespace Server.Mobiles
 {
@@ -44,11 +44,25 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            VirtualArmor = 30;
             Female = true;
 
-			SetWearable(new HoodedShroudOfShadows());
-			SetWearable(new Scimitar { Skill = SkillName.Wrestling }, 38);
-			SetWearable(new VirtualMountItem(this));
+            Item shroud = new HoodedShroudOfShadows();
+
+            shroud.Movable = false;
+
+            AddItem(shroud);
+
+            Scimitar weapon = new Scimitar();
+
+            weapon.Skill = SkillName.Wrestling;
+            weapon.Hue = 38;
+            weapon.Movable = false;
+
+            AddItem(weapon);
+
+            //new SkeletalMount().Rider = this;
+            AddItem(new VirtualMountItem(this));
         }
 
         public Neira(Serial serial)
@@ -56,24 +70,97 @@ namespace Server.Mobiles
         {
         }
 
-        public override ChampionSkullType SkullType => ChampionSkullType.Death;
-        public override Type[] UniqueList => new[] { typeof(ShroudOfDeceit) };
-        public override Type[] SharedList => new[]
+        public override ChampionSkullType SkullType
+        {
+            get
+            {
+                return ChampionSkullType.Death;
+            }
+        }
+        public override Type[] UniqueList
+        {
+            get
+            {
+                return new Type[] { typeof(ShroudOfDeceit) };
+            }
+        }
+        public override Type[] SharedList
+        {
+            get
+            {
+                return new Type[]
                 {
                     typeof(ANecromancerShroud),
                     typeof(CaptainJohnsHat),
                     typeof(DetectiveBoots)
                 };
-        public override Type[] DecorativeList => new[] { typeof(WallBlood), typeof(TatteredAncientMummyWrapping) };
-        public override MonsterStatuetteType[] StatueTypes => new MonsterStatuetteType[] { };
-        public override bool AlwaysMurderer => true;
-        public override bool Unprovokable => true;
-        public override bool Uncalmable => true;
-        public override Poison PoisonImmune => Poison.Deadly;
-        public override bool ShowFameTitle => false;
-        public override bool ClickTitle => false;
+            }
+        }
+        public override Type[] DecorativeList
+        {
+            get
+            {
+                return new Type[] { typeof(WallBlood), typeof(TatteredAncientMummyWrapping) };
+            }
+        }
+        public override MonsterStatuetteType[] StatueTypes
+        {
+            get
+            {
+                return new MonsterStatuetteType[] { };
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return !Core.SE;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override bool Uncalmable
+        {
+            get
+            {
+                return Core.SE;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Deadly;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        public override bool ForceStayHome => true;
+        public override bool ForceStayHome { get { return true; } }
 
         public override void GenerateLoot()
         {
@@ -115,7 +202,7 @@ namespace Server.Mobiles
 
             if (0.1 >= Utility.RandomDouble()) // 10% chance to drop or throw an unholy bone
                 AddUnholyBone(defender, 0.25);
-
+				
             CheckSpeedBoost();
         }
 
@@ -156,7 +243,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
             writer.Write(m_SpeedBoost);
         }
 
@@ -165,8 +252,8 @@ namespace Server.Mobiles
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-
-            switch (version)
+			
+            switch( version )
             {
                 case 1:
                     {
@@ -239,15 +326,27 @@ namespace Server.Mobiles
                 m_Mount = new VirtualMount(this);
             }
 
-            public Mobile Rider => m_Rider;
-            public IMount Mount => m_Mount;
+            public Mobile Rider
+            {
+                get
+                {
+                    return m_Rider;
+                }
+            }
+            public IMount Mount
+            {
+                get
+                {
+                    return m_Mount;
+                }
+            }
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Rider);
+                writer.Write((Mobile)m_Rider);
             }
 
             public override void Deserialize(GenericReader reader)

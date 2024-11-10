@@ -1,11 +1,14 @@
+using System;
+using Server;
 using Server.Engines.Craft;
+using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class SewingMachine : CraftAddon
     {
-        public override BaseAddonDeed Deed => new SewingMachineDeed(Tools.Count > 0 ? Tools[0].UsesRemaining : 0);
-        public override CraftSystem CraftSystem => DefTailoring.CraftSystem;
+        public override BaseAddonDeed Deed { get { return new SewingMachineDeed(Tools.Count > 0 ? Tools[0].UsesRemaining : 0); } }
+        public override CraftSystem CraftSystem { get { return DefTailoring.CraftSystem; } }
 
         [Constructable]
         public SewingMachine(bool south, int uses)
@@ -31,7 +34,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -44,8 +47,8 @@ namespace Server.Items
 
     public class SewingMachineDeed : CraftAddonDeed
     {
-        public override int LabelNumber => 1123504;  // Sewing Machine
-        public override BaseAddon Addon => new SewingMachine(_South, UsesRemaining);
+        public override int LabelNumber { get { return 1123504; } } // Sewing Machine
+        public override BaseAddon Addon { get { return new SewingMachine(_South, UsesRemaining); } }
 
         private bool _South;
 
@@ -80,7 +83,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

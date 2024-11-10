@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class Web : Item
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         private static readonly int[] m_itemids = new int[]
         {
             0x10d7, 0x10d8, 0x10dd
@@ -27,7 +29,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,9 +1,12 @@
+using System;
+
 namespace Server.Items
 {
+    [Furniture]
     [Flipable(0x232A, 0x232B)]
     public class GiftBox : BaseContainer
     {
-        public override int LabelNumber => 1156382;  // Holiday Giftbox
+        public override int LabelNumber { get { return 1156382; } } // Holiday Giftbox
 
         [Constructable]
         public GiftBox()
@@ -15,8 +18,8 @@ namespace Server.Items
         public GiftBox(int hue)
             : base(Utility.Random(0x232A, 2))
         {
-            Weight = 2.0;
-            Hue = hue;
+            this.Weight = 2.0;
+            this.Hue = hue;
         }
 
         public GiftBox(Serial serial)
@@ -28,7 +31,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

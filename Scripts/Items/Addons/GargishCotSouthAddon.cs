@@ -1,18 +1,32 @@
+using System;
+
 namespace Server.Items
 {
     public class GargishCotSouthAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new GargishCotSouthDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new GargishCotSouthDeed();
+            }
+        }
 
         #region Mondain's Legacy
-        public override bool RetainDeedHue => true;
+        public override bool RetainDeedHue
+        {
+            get
+            {
+                return true;
+            }
+        }
         #endregion
 
         [Constructable]
         public GargishCotSouthAddon()
         {
-            AddComponent(new AddonComponent(0x400D), 0, 0, 0);
-            AddComponent(new AddonComponent(0x400C), 0, -1, 0);
+            this.AddComponent(new AddonComponent(0x400D), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x400C), 0, -1, 0);
         }
 
         public GargishCotSouthAddon(Serial serial)
@@ -37,8 +51,20 @@ namespace Server.Items
 
     public class GargishCotSouthDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new GargishCotSouthAddon();
-        public override int LabelNumber => 1111920;// gargish cot (south)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new GargishCotSouthAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1111920;
+            }
+        }// gargish cot (south)
 
         [Constructable]
         public GargishCotSouthDeed()

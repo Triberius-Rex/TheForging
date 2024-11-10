@@ -1,6 +1,6 @@
+using System;
 using Server.Items;
 using Server.Misc;
-using System;
 
 namespace Server.Mobiles
 {
@@ -11,7 +11,7 @@ namespace Server.Mobiles
         public DarkWisp()
             : base(AIType.AI_NecroMage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "a dark wisp";
+            Name = "a wisp";
             Body = 165;
             BaseSoundID = 466;
 
@@ -43,6 +43,8 @@ namespace Server.Mobiles
             Fame = 4000;
             Karma = -4000;
 
+            VirtualArmor = 40;
+
             AddItem(new LightSource());
         }
 
@@ -51,12 +53,34 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-
-        public override InhumanSpeech SpeechType => InhumanSpeech.Wisp;
-
-        public override TimeSpan ReacquireDelay => TimeSpan.FromSeconds(1.0);
-
+        public override InhumanSpeech SpeechType
+        {
+            get
+            {
+                return InhumanSpeech.Wisp;
+            }
+        }
+        /*public override Ethics.Ethic EthicAllegiance
+        {
+            get
+            {
+                return Ethics.Ethic.Evil;
+            }
+        }*/
+        public override TimeSpan ReacquireDelay
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.0);
+            }
+        }
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
@@ -66,7 +90,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

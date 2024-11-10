@@ -1,8 +1,8 @@
+using System;
+using System.Collections;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
-using System;
-using System.Collections;
 
 namespace Server.Spells.Necromancy
 {
@@ -16,10 +16,28 @@ namespace Server.Spells.Necromancy
             Reagent.GraveDust,
             Reagent.DaemonBlood);
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.25);
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.25);
+            }
+        }
 
-        public override double RequiredSkill => 30.0;
-        public override int RequiredMana => 17;
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 30.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 17;
+            }
+        }
 
         public SummonFamiliarSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
@@ -28,15 +46,21 @@ namespace Server.Spells.Necromancy
 
         private static readonly Hashtable m_Table = new Hashtable();
 
-        public static Hashtable Table => m_Table;
+        public static Hashtable Table
+        {
+            get
+            {
+                return m_Table;
+            }
+        }
 
         public override bool CheckCast()
         {
-            BaseCreature check = (BaseCreature)m_Table[Caster];
+            BaseCreature check = (BaseCreature)m_Table[this.Caster];
 
             if (check != null && !check.Deleted)
             {
-                Caster.SendLocalizedMessage(1061605); // You already have a familiar.
+                this.Caster.SendLocalizedMessage(1061605); // You already have a familiar.
                 return false;
             }
 
@@ -45,13 +69,13 @@ namespace Server.Spells.Necromancy
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
-                Caster.CloseGump(typeof(SummonFamiliarGump));
-                Caster.SendGump(new SummonFamiliarGump(Caster, m_Entries, this));
+                this.Caster.CloseGump(typeof(SummonFamiliarGump));
+                this.Caster.SendGump(new SummonFamiliarGump(this.Caster, m_Entries, this));
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private static readonly SummonFamiliarEntry[] m_Entries = new SummonFamiliarEntry[]
@@ -63,7 +87,13 @@ namespace Server.Spells.Necromancy
             new SummonFamiliarEntry(typeof(VampireBatFamiliar), 1060144, 100.0, 100.0)// Vampire Bat
         };
 
-        public static SummonFamiliarEntry[] Entries => m_Entries;
+        public static SummonFamiliarEntry[] Entries
+        {
+            get
+            {
+                return m_Entries;
+            }
+        }
     }
 
     public class SummonFamiliarEntry
@@ -73,17 +103,41 @@ namespace Server.Spells.Necromancy
         private readonly double m_ReqNecromancy;
         private readonly double m_ReqSpiritSpeak;
 
-        public Type Type => m_Type;
-        public object Name => m_Name;
-        public double ReqNecromancy => m_ReqNecromancy;
-        public double ReqSpiritSpeak => m_ReqSpiritSpeak;
+        public Type Type
+        {
+            get
+            {
+                return this.m_Type;
+            }
+        }
+        public object Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+        }
+        public double ReqNecromancy
+        {
+            get
+            {
+                return this.m_ReqNecromancy;
+            }
+        }
+        public double ReqSpiritSpeak
+        {
+            get
+            {
+                return this.m_ReqSpiritSpeak;
+            }
+        }
 
         public SummonFamiliarEntry(Type type, object name, double reqNecromancy, double reqSpiritSpeak)
         {
-            m_Type = type;
-            m_Name = name;
-            m_ReqNecromancy = reqNecromancy;
-            m_ReqSpiritSpeak = reqSpiritSpeak;
+            this.m_Type = type;
+            this.m_Name = name;
+            this.m_ReqNecromancy = reqNecromancy;
+            this.m_ReqSpiritSpeak = reqSpiritSpeak;
         }
     }
 
@@ -103,25 +157,25 @@ namespace Server.Spells.Necromancy
         public SummonFamiliarGump(Mobile from, SummonFamiliarEntry[] entries, SummonFamiliarSpell spell)
             : base(200, 100)
         {
-            m_From = from;
-            m_Entries = entries;
-            m_Spell = spell;
+            this.m_From = from;
+            this.m_Entries = entries;
+            this.m_Spell = spell;
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddBackground(10, 10, 250, 178, 9270);
-            AddAlphaRegion(20, 20, 230, 158);
+            this.AddBackground(10, 10, 250, 178, 9270);
+            this.AddAlphaRegion(20, 20, 230, 158);
 
-            AddImage(220, 20, 10464);
-            AddImage(220, 72, 10464);
-            AddImage(220, 124, 10464);
+            this.AddImage(220, 20, 10464);
+            this.AddImage(220, 72, 10464);
+            this.AddImage(220, 124, 10464);
 
-            AddItem(188, 16, 6883);
-            AddItem(198, 168, 6881);
-            AddItem(8, 15, 6882);
-            AddItem(2, 168, 6880);
+            this.AddItem(188, 16, 6883);
+            this.AddItem(198, 168, 6881);
+            this.AddItem(8, 15, 6882);
+            this.AddItem(2, 168, 6880);
 
-            AddHtmlLocalized(30, 26, 200, 20, 1060147, EnabledColor16, false, false); // Chose thy familiar...
+            this.AddHtmlLocalized(30, 26, 200, 20, 1060147, EnabledColor16, false, false); // Chose thy familiar...
 
             double necro = from.Skills[SkillName.Necromancy].Value;
             double spirit = from.Skills[SkillName.SpiritSpeak].Value;
@@ -132,12 +186,12 @@ namespace Server.Spells.Necromancy
 
                 bool enabled = (necro >= entries[i].ReqNecromancy && spirit >= entries[i].ReqSpiritSpeak);
 
-                AddButton(27, 53 + (i * 21), 9702, 9703, i + 1, GumpButtonType.Reply, 0);
+                this.AddButton(27, 53 + (i * 21), 9702, 9703, i + 1, GumpButtonType.Reply, 0);
 
                 if (name is int)
-                    AddHtmlLocalized(50, 51 + (i * 21), 150, 20, (int)name, enabled ? EnabledColor16 : DisabledColor16, false, false);
+                    this.AddHtmlLocalized(50, 51 + (i * 21), 150, 20, (int)name, enabled ? EnabledColor16 : DisabledColor16, false, false);
                 else if (name is string)
-                    AddHtml(50, 51 + (i * 21), 150, 20, string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", enabled ? EnabledColor32 : DisabledColor32, name), false, false);
+                    this.AddHtml(50, 51 + (i * 21), 150, 20, String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", enabled ? EnabledColor32 : DisabledColor32, name), false, false);
             }
         }
 
@@ -147,33 +201,33 @@ namespace Server.Spells.Necromancy
         {
             int index = info.ButtonID - 1;
 
-            if (index >= 0 && index < m_Entries.Length)
+            if (index >= 0 && index < this.m_Entries.Length)
             {
-                SummonFamiliarEntry entry = m_Entries[index];
+                SummonFamiliarEntry entry = this.m_Entries[index];
 
-                double necro = m_From.Skills[SkillName.Necromancy].Value;
-                double spirit = m_From.Skills[SkillName.SpiritSpeak].Value;
+                double necro = this.m_From.Skills[SkillName.Necromancy].Value;
+                double spirit = this.m_From.Skills[SkillName.SpiritSpeak].Value;
 
-                BaseCreature check = (BaseCreature)SummonFamiliarSpell.Table[m_From];
+                BaseCreature check = (BaseCreature)SummonFamiliarSpell.Table[this.m_From];
 
                 if (check != null && !check.Deleted)
                 {
-                    m_From.SendLocalizedMessage(1061605); // You already have a familiar.
+                    this.m_From.SendLocalizedMessage(1061605); // You already have a familiar.
                 }
                 else if (necro < entry.ReqNecromancy || spirit < entry.ReqSpiritSpeak)
                 {
                     // That familiar requires ~1_NECROMANCY~ Necromancy and ~2_SPIRIT~ Spirit Speak.
-                    m_From.SendLocalizedMessage(1061606, string.Format("{0:F1}\t{1:F1}", entry.ReqNecromancy, entry.ReqSpiritSpeak));
+                    this.m_From.SendLocalizedMessage(1061606, String.Format("{0:F1}\t{1:F1}", entry.ReqNecromancy, entry.ReqSpiritSpeak));
 
-                    m_From.CloseGump(typeof(SummonFamiliarGump));
-                    m_From.SendGump(new SummonFamiliarGump(m_From, SummonFamiliarSpell.Entries, m_Spell));
+                    this.m_From.CloseGump(typeof(SummonFamiliarGump));
+                    this.m_From.SendGump(new SummonFamiliarGump(this.m_From, SummonFamiliarSpell.Entries, this.m_Spell));
                 }
                 else if (entry.Type == null)
                 {
-                    m_From.SendMessage("That familiar has not yet been defined.");
+                    this.m_From.SendMessage("That familiar has not yet been defined.");
 
-                    m_From.CloseGump(typeof(SummonFamiliarGump));
-                    m_From.SendGump(new SummonFamiliarGump(m_From, SummonFamiliarSpell.Entries, m_Spell));
+                    this.m_From.CloseGump(typeof(SummonFamiliarGump));
+                    this.m_From.SendGump(new SummonFamiliarGump(this.m_From, SummonFamiliarSpell.Entries, this.m_Spell));
                 }
                 else
                 {
@@ -181,24 +235,23 @@ namespace Server.Spells.Necromancy
                     {
                         BaseCreature bc = (BaseCreature)Activator.CreateInstance(entry.Type);
 
-                        bc.Skills.MagicResist = m_From.Skills.MagicResist;
+                        bc.Skills.MagicResist = this.m_From.Skills.MagicResist;
 
-                        if (BaseCreature.Summon(bc, m_From, m_From.Location, -1, TimeSpan.FromDays(1.0)))
+                        if (BaseCreature.Summon(bc, this.m_From, this.m_From.Location, -1, TimeSpan.FromDays(1.0)))
                         {
-                            m_From.FixedParticles(0x3728, 1, 10, 9910, EffectLayer.Head);
+                            this.m_From.FixedParticles(0x3728, 1, 10, 9910, EffectLayer.Head);
                             bc.PlaySound(bc.GetIdleSound());
-                            SummonFamiliarSpell.Table[m_From] = bc;
+                            SummonFamiliarSpell.Table[this.m_From] = bc;
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        Diagnostics.ExceptionLogging.LogException(e);
                     }
                 }
             }
             else
             {
-                m_From.SendLocalizedMessage(1061825); // You decide not to summon a familiar.
+                this.m_From.SendLocalizedMessage(1061825); // You decide not to summon a familiar.
             }
         }
     }

@@ -1,19 +1,22 @@
+using System;
+using Server;
 using Server.Items;
 using Server.Mobiles;
-using System;
+using Server.Gumps;
+using Server.Guilds;
 using System.Collections.Generic;
 
 namespace Server.Engines.VvV
 {
     public class SilverTrader : BaseVendor
     {
-        public override bool IsActiveVendor => false;
-        public override bool DisallowAllMoves => true;
-        public override bool ClickTitle => true;
-        public override bool CanTeach => false;
+        public override bool IsActiveVendor { get { return false; } }
+        public override bool DisallowAllMoves { get { return true; } }
+        public override bool ClickTitle { get { return true; } }
+        public override bool CanTeach { get { return false; } }
 
         protected List<SBInfo> m_SBInfos = new List<SBInfo>();
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos { get { return this.m_SBInfos; } }
         public override void InitSBInfo() { }
 
         [Constructable]
@@ -34,11 +37,9 @@ namespace Server.Engines.VvV
 
         public override void InitOutfit()
         {
-            Robe robe = new Robe
-            {
-                ItemID = 0x2684,
-                Name = "a robe"
-            };
+            Robe robe = new Robe();
+            robe.ItemID = 0x2684;
+            robe.Name = "a robe";
 
             SetWearable(robe, 1109);
 
@@ -82,7 +83,7 @@ namespace Server.Engines.VvV
         public void StockInventory()
         {
             if (Backpack == null)
-				SetWearable(new Backpack());
+                AddItem(new Backpack());
 
             foreach (CollectionItem item in VvVRewards.Rewards)
             {
@@ -129,7 +130,7 @@ namespace Server.Engines.VvV
             }
         }
 
-        private readonly Type[][] _Table =
+        private Type[][] _Table =
         {
             new Type[] { typeof(CrimsonCincture), typeof(GargishCrimsonCincture) },
             new Type[] { typeof(MaceAndShieldGlasses), typeof(GargishMaceAndShieldGlasses) },
@@ -139,18 +140,13 @@ namespace Server.Engines.VvV
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
-            if (dropped.GetSocket<HonestyItemSocket>() != null)
-            {
-                return base.OnDragDrop(from, dropped);
-            }
-
             if (ViceVsVirtueSystem.IsVvV(from))
             {
                 if (!(dropped is IOwnerRestricted) || ((IOwnerRestricted)dropped).Owner == from)
                 {
                     if (dropped is IVvVItem && from.Race == Race.Gargoyle)
                     {
-                        foreach (Type[] t in _Table)
+                        foreach (var t in _Table)
                         {
                             if (dropped.GetType() == t[0])
                             {
@@ -158,7 +154,7 @@ namespace Server.Engines.VvV
 
                                 if (dur != null && dur.MaxHitPoints == 255 && dur.HitPoints == 255)
                                 {
-                                    Item item = Loot.Construct(t[1]);
+                                    var item = Loot.Construct(t[1]);
 
                                     if (item != null)
                                     {
@@ -181,10 +177,10 @@ namespace Server.Engines.VvV
 
                                         if (item is GargishWizardsCrystalGlasses)
                                         {
-                                            ((GargishWizardsCrystalGlasses)item).PhysicalBonus = 5;
-                                            ((GargishWizardsCrystalGlasses)item).FireBonus = 5;
-                                            ((GargishWizardsCrystalGlasses)item).ColdBonus = 5;
-                                            ((GargishWizardsCrystalGlasses)item).PoisonBonus = 5;
+                                            ((GargishWizardsCrystalGlasses)item).PhysicalBonus = 5;                                            
+                                            ((GargishWizardsCrystalGlasses)item).FireBonus = 5;                                            
+                                            ((GargishWizardsCrystalGlasses)item).ColdBonus = 5;                                            
+                                            ((GargishWizardsCrystalGlasses)item).PoisonBonus = 5;                                            
                                             ((GargishWizardsCrystalGlasses)item).EnergyBonus = 5;
                                         }
 
@@ -227,7 +223,7 @@ namespace Server.Engines.VvV
             {
                 Timer.DelayCall(() =>
                     {
-                        ColUtility.SafeDelete(Backpack.Items, null);
+                        ColUtility.SafeDelete<Item>(Backpack.Items, null);
                     });
             }
 

@@ -1,7 +1,9 @@
+using System;
+using System.Collections;
 using Server.Mobiles;
+using Server.Targeting;
+using Server.Targets;
 using Server.Network;
-using Server.Spells;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,91 +16,91 @@ namespace Server.Items
         void OnHarmfulSpell(Mobile attacker);
     }
 
-    public class DamageableItem : Item, IDamageableItem
-    {
-        public enum ItemLevel
-        {
-            NotSet,
-            VeryEasy,
-            Easy,
-            Average,
-            Hard,
-            VeryHard,
-            Insane
-        }
+	public class DamageableItem : Item, IDamageableItem
+	{
+		public enum ItemLevel
+		{
+			NotSet,
+			VeryEasy,
+			Easy,
+			Average,
+			Hard,
+			VeryHard,
+			Insane
+		}
 
-        private int m_Hits;
-        private int m_HitsMax;
-        private int m_StartID;
-        private int m_DestroyedID;
-        private int m_HalfHitsID;
-        private ItemLevel m_ItemLevel;
+		private int m_Hits;
+		private int m_HitsMax;
+		private int m_StartID;
+		private int m_DestroyedID;
+		private int m_HalfHitsID;
+		private ItemLevel m_ItemLevel;
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public ItemLevel Level
-        {
-            get
-            {
-                return m_ItemLevel;
-            }
-            set
-            {
-                m_ItemLevel = value;
+		[CommandProperty(AccessLevel.GameMaster)]
+		public ItemLevel Level
+		{
+			get
+			{
+				return m_ItemLevel;
+			}
+			set
+			{
+				m_ItemLevel = value;
 
-                double bonus = ((int)m_ItemLevel * 100.0) * ((int)m_ItemLevel * 5);
+				double bonus = (double)(((int)m_ItemLevel * 100.0) * ((int)m_ItemLevel * 5));
 
-                HitsMax = ((int)(100 + bonus));
-                Hits = ((int)(100 + bonus));
-            }
-        }
+				HitsMax = ((int)(100 + bonus));
+				Hits = ((int)(100 + bonus));
+			}
+		}
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int IDStart
-        {
-            get
-            {
-                return m_StartID;
-            }
-            set
-            {
-                if (value < 0)
-                    m_StartID = 0;
-                else if (value > int.MaxValue)
-                    m_StartID = int.MaxValue;
-                else
-                    m_StartID = value;
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int IDStart
+		{
+			get
+			{
+				return m_StartID;
+			}
+			set
+			{
+				if (value < 0)
+					m_StartID = 0;
+				else if (value > int.MaxValue)
+					m_StartID = int.MaxValue;
+				else
+					m_StartID = value;
 
-                if (m_Hits >= (m_HitsMax * IDChange))
-                {
-                    if (ItemID != m_StartID)
-                        ItemID = m_StartID;
-                }
-            }
-        }
+				if (m_Hits >= (m_HitsMax * IDChange))
+				{
+					if (ItemID != m_StartID)
+						ItemID = m_StartID;
+				}
+			}
+		}
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int IDHalfHits
-        {
-            get
-            {
-                return m_HalfHitsID;
-            }
-            set
-            {
-                if (value < 0)
-                    m_HalfHitsID = 0;
-                else if (value > int.MaxValue)
-                    m_HalfHitsID = int.MaxValue;
-                else
-                    m_HalfHitsID = value;
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int IDHalfHits
+		{
+			get
+			{
+				return m_HalfHitsID;
+			}
+			set
+			{
+				if (value < 0)
+					m_HalfHitsID = 0;
+				else if (value > int.MaxValue)
+					m_HalfHitsID = int.MaxValue;
+				else
+					m_HalfHitsID = value;
 
-                if (m_Hits < (m_HitsMax * IDChange))
-                {
-                    if (ItemID != m_HalfHitsID)
-                        ItemID = m_HalfHitsID;
-                }
-            }
-        }
+				if (m_Hits < (m_HitsMax * IDChange))
+				{
+					if (ItemID != m_HalfHitsID)
+						ItemID = m_HalfHitsID;
+				}
+			}
+		}
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int IDDestroyed
@@ -115,16 +117,16 @@ namespace Server.Items
                     m_DestroyedID = value;
             }
         }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int Hits
-        {
-            get
-            {
-                return m_Hits;
-            }
-            set
-            {
+		
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int Hits
+		{
+			get
+			{
+				return m_Hits;
+			}
+			set
+			{
                 if (value > HitsMax)
                 {
                     value = HitsMax;
@@ -150,33 +152,33 @@ namespace Server.Items
                     ItemID = m_HalfHitsID;
                     OnIDChange(id);
                 }
-
+                
                 if (m_Hits < 0)
                 {
                     Destroy();
                     return;
                 }
-            }
-        }
+			}
+		}
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int HitsMax
-        {
-            get
-            {
-                return m_HitsMax;
-            }
-            set
-            {
-                if (value > int.MaxValue)
-                    m_HitsMax = int.MaxValue;
-                else
-                    m_HitsMax = value;
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int HitsMax
+		{
+			get
+			{
+				return m_HitsMax;
+			}
+			set
+			{
+				if (value > int.MaxValue)
+					m_HitsMax = int.MaxValue;
+				else
+					m_HitsMax = value;
 
-                if (Hits > m_HitsMax)
-                    Hits = m_HitsMax;
-            }
-        }
+				if (Hits > m_HitsMax)
+					Hits = m_HitsMax;
+			}
+		}
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Destroyed { get; set; }
@@ -198,20 +200,20 @@ namespace Server.Items
 
         public Dictionary<Mobile, int> DamageStore { get; set; }
 
-        public virtual int HitEffect => -1;
-        public virtual int DestroySound => 0x3B3;
-        public virtual double IDChange => 0.5;
-        public virtual bool DeleteOnDestroy => true;
-        public virtual bool Alive => !Destroyed;
-        public virtual bool CanDamage => true;
+        public virtual int HitEffect { get { return -1; } }
+        public virtual int DestroySound { get { return 0x3B3; } }
+        public virtual double IDChange { get { return 0.5; } }
+        public virtual bool DeleteOnDestroy { get { return true; } }
+        public virtual bool Alive { get { return !Destroyed; } }
+        public virtual bool CanDamage { get { return true; } }
 
-        public override int PhysicalResistance => ResistBasePhys;
-        public override int FireResistance => ResistBaseFire;
-        public override int ColdResistance => ResistBaseCold;
-        public override int PoisonResistance => ResistBasePoison;
-        public override int EnergyResistance => ResistBaseEnergy;
+        public override int PhysicalResistance { get { return ResistBasePhys; } }
+        public override int FireResistance { get { return ResistBaseFire; } }
+        public override int ColdResistance { get { return ResistBaseCold; } }
+        public override int PoisonResistance { get { return ResistBasePoison; } }
+        public override int EnergyResistance { get { return ResistBaseEnergy; } }
 
-        public override bool ForceShowProperties => false;
+        public override bool ForceShowProperties { get { return false; } }
 
         [Constructable]
         public DamageableItem(int startID)
@@ -225,19 +227,19 @@ namespace Server.Items
         {
         }
 
-        [Constructable]
+		[Constructable]
         public DamageableItem(int startID, int halfID, int destroyID = -1)
             : base(startID)
-        {
-            Hue = 0;
-            Movable = false;
+		{
+			Hue = 0;
+			Movable = false;
 
-            Level = ItemLevel.NotSet;
+			Level = ItemLevel.NotSet;
 
-            IDStart = startID;
-            IDHalfHits = halfID;
+			IDStart = startID;
+			IDHalfHits = halfID;
             IDDestroyed = destroyID;
-        }
+		}
 
         public override void OnDoubleClick(Mobile m)
         {
@@ -254,7 +256,7 @@ namespace Server.Items
         {
         }
 
-        public virtual bool CheckReflect(Spell spell, IDamageable caster)
+        public virtual bool CheckReflect(int circle, IDamageable caster)
         {
             return false;
         }
@@ -269,7 +271,7 @@ namespace Server.Items
 
         public virtual void UpdateDelta()
         {
-            IPooledEnumerable<NetState> eable = Map.GetClientsInRange(Location);
+            var eable = Map.GetClientsInRange(Location);
             Mobile beholder = null;
 
             Packet status = Packet.Acquire(new MobileHitsN(this));
@@ -289,17 +291,17 @@ namespace Server.Items
         }
 
         public virtual void OnHitsChange(int oldhits)
-        {
+        {       
         }
 
-        public virtual bool OnBeforeDestroyed()
-        {
-            return true;
-        }
+		public virtual bool OnBeforeDestroyed()
+		{
+			return true;
+		}
 
-        public virtual void OnAfterDestroyed()
-        {
-        }
+		public virtual void OnAfterDestroyed()
+		{
+		}
 
         public virtual int Damage(int amount, Mobile from)
         {
@@ -321,7 +323,7 @@ namespace Server.Items
 
             OnDamage(amount, from, Hits < 0);
 
-            return amount;
+			return amount;
         }
 
         public virtual void SendDamagePacket(Mobile from, int amount)
@@ -346,7 +348,7 @@ namespace Server.Items
 
         public void RegisterDamage(Mobile m, int damage)
         {
-            if (m == null)
+            if(m == null)
                 return;
 
             if (DamageStore == null)
@@ -373,10 +375,10 @@ namespace Server.Items
         {
         }
 
-        public bool Destroy()
-        {
-            if (this == null || Deleted || Destroyed)
-                return false;
+		public bool Destroy()
+		{
+			if (this == null || Deleted || Destroyed)
+				return false;
 
             Effects.PlaySound(Location, Map, DestroySound);
 
@@ -400,8 +402,8 @@ namespace Server.Items
                 return true;
             }
 
-            return false;
-        }
+			return false;
+		}
 
         public override void OnAfterDelete()
         {
@@ -427,7 +429,7 @@ namespace Server.Items
             {
                 Packet p = Packet.Acquire(new PlaySound(soundID, this));
 
-                IPooledEnumerable<NetState> eable = Map.GetClientsInRange(Location);
+                var eable = Map.GetClientsInRange(Location);
 
                 foreach (NetState state in eable)
                 {
@@ -586,23 +588,23 @@ namespace Server.Items
         }
         #endregion
 
-        public DamageableItem(Serial serial)
-            : base(serial)
-        {
-        }
+		public DamageableItem(Serial serial)
+			: base(serial)
+		{
+		}
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
 
-            writer.Write(0); // version
+			writer.Write((int)0); // version
 
-            writer.Write(m_StartID);
-            writer.Write(m_HalfHitsID);
-            writer.Write(m_DestroyedID);
-            writer.Write((int)m_ItemLevel);
-            writer.Write(m_Hits);
-            writer.Write(m_HitsMax);
+			writer.Write((int)m_StartID);
+			writer.Write((int)m_HalfHitsID);
+			writer.Write((int)m_DestroyedID);
+			writer.Write((int)m_ItemLevel);
+			writer.Write((int)m_Hits);
+			writer.Write((int)m_HitsMax);
             writer.Write(Destroyed);
 
             writer.Write(ResistBasePhys);
@@ -610,20 +612,20 @@ namespace Server.Items
             writer.Write(ResistBaseCold);
             writer.Write(ResistBasePoison);
             writer.Write(ResistBaseEnergy);
-        }
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
 
-            int version = reader.ReadInt();
+			int version = reader.ReadInt();
 
-            m_StartID = reader.ReadInt();
-            m_HalfHitsID = reader.ReadInt();
-            m_DestroyedID = reader.ReadInt();
-            m_ItemLevel = (ItemLevel)reader.ReadInt();
-            m_Hits = reader.ReadInt();
-            m_HitsMax = reader.ReadInt();
+			m_StartID = (int)reader.ReadInt();
+			m_HalfHitsID = (int)reader.ReadInt();
+			m_DestroyedID = (int)reader.ReadInt();
+			m_ItemLevel = (ItemLevel)reader.ReadInt();
+			m_Hits = (int)reader.ReadInt();
+			m_HitsMax = (int)reader.ReadInt();
             Destroyed = reader.ReadBool();
 
             ResistBasePhys = reader.ReadInt();
@@ -631,8 +633,8 @@ namespace Server.Items
             ResistBaseCold = reader.ReadInt();
             ResistBasePoison = reader.ReadInt();
             ResistBaseEnergy = reader.ReadInt();
-        }
-    }
+		}
+	}
 
     public class TestDamageableItem : DamageableItem
     {
@@ -644,20 +646,20 @@ namespace Server.Items
         }
 
         public TestDamageableItem(Serial serial)
-            : base(serial)
-        {
-        }
+			: base(serial)
+		{
+		}
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // version
-        }
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write((int)0); // version
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+		}
     }
 }

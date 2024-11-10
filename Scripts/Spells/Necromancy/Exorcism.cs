@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Server.Engines.CannedEvil;
 using Server.Engines.PartySystem;
+using Server.Factions;
 using Server.Guilds;
 using Server.Items;
 using Server.Regions;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Spells.Necromancy
 {
@@ -16,7 +17,7 @@ namespace Server.Spells.Necromancy
             9031,
             Reagent.NoxCrystal,
             Reagent.GraveDust);
-        private static readonly int Range = 48;
+        private static readonly int Range = (Core.ML ? 48 : 18);
         private static readonly Point3D[] m_BritanniaLocs = new Point3D[]
         {
             new Point3D(1470, 843, 0),
@@ -54,10 +55,34 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.0);
-        public override double RequiredSkill => 80.0;
-        public override int RequiredMana => 40;
-        public override bool DelayedDamage => false;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.0);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 80.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override bool CheckCast()
         {
             if (Caster.Skills.SpiritSpeak.Value < 100.0)
@@ -183,6 +208,11 @@ namespace Server.Spells.Necromancy
                 if (mGuild == cGuild)
                     return false;
             }
+
+            Faction f = Faction.Find(m);
+
+            if (Faction.Facet == m.Map && f != null && f == Faction.Find(Caster))
+                return false;
 
             return true;
         }

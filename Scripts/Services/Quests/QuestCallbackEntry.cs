@@ -1,3 +1,4 @@
+using System;
 using Server.ContextMenus;
 
 namespace Server.Engines.Quests
@@ -13,13 +14,13 @@ namespace Server.Engines.Quests
         public QuestCallbackEntry(int number, int range, QuestCallback callback)
             : base(number, range)
         {
-            m_Callback = callback;
+            this.m_Callback = callback;
         }
 
         public override void OnClick()
         {
-            if (m_Callback != null)
-                m_Callback();
+            if (this.m_Callback != null)
+                this.m_Callback();
         }
     }
 }

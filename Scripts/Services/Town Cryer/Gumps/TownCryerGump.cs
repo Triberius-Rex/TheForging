@@ -1,11 +1,12 @@
-using Server.Engines.CityLoyalty;
-using Server.Engines.Quests;
-using Server.Guilds;
-using Server.Gumps;
-using Server.Mobiles;
+using Server;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Engines.CityLoyalty;
+using Server.Gumps;
+using Server.Guilds;
+using Server.Engines.Quests;
 
 namespace Server.Services.TownCryer
 {
@@ -30,7 +31,7 @@ namespace Server.Services.TownCryer
             get { return _City; }
             set
             {
-                City city = _City;
+                var city = _City;
 
                 if (city != value)
                 {
@@ -84,11 +85,11 @@ namespace Server.Services.TownCryer
             int y = 170;
             int start = Page * perPage;
 
-            Pages = (int)Math.Ceiling(TownCryerSystem.NewsEntries.Count / (double)perPage);
+            Pages = (int)Math.Ceiling((double)TownCryerSystem.NewsEntries.Count / (double)perPage);
 
             for (int i = start; i < TownCryerSystem.NewsEntries.Count && i < perPage; i++)
             {
-                TownCryerNewsEntry entry = TownCryerSystem.NewsEntries[i];
+                var entry = TownCryerSystem.NewsEntries[i];
 
                 AddButton(50, y, 0x5FB, 0x5FC, 100 + i, GumpButtonType.Reply, 0);
                 bool doneQuest = entry.QuestType != null && QuestHelper.CheckDoneOnce(User, entry.QuestType, Cryer, false);
@@ -112,7 +113,7 @@ namespace Server.Services.TownCryer
                 AddButton(430, 570, 0x607, 0x608, 7, GumpButtonType.Reply, 0);
                 AddButton(455, 570, 0x603, 0x604, 8, GumpButtonType.Reply, 0);
 
-                AddHtml(395, 570, 35, 20, Center(string.Format("{0}/{1}", (Page + 1).ToString(), (Pages + 1).ToString())), false, false);
+                AddHtml(395, 570, 35, 20, Center(String.Format("{0}/{1}", (Page + 1).ToString(), (Pages + 1).ToString())), false, false);
             }
         }
 
@@ -124,7 +125,7 @@ namespace Server.Services.TownCryer
 
             for (int i = 0; i < TownCryerSystem.ModeratorEntries.Count && i < perPage; i++)
             {
-                TownCryerModeratorEntry entry = TownCryerSystem.ModeratorEntries[i];
+                var entry = TownCryerSystem.ModeratorEntries[i];
 
                 AddButton(50, y, 0x5FB, 0x5FC, 200 + i, GumpButtonType.Reply, 0);
                 AddLabelCropped(87, y, 631, 20, 0, entry.Title);
@@ -145,10 +146,10 @@ namespace Server.Services.TownCryer
         {
             AddButton(233, 150, City == City.Britain ? 0x5E5 : 0x5E4, City == City.Britain ? 0x5E5 : 0x5E4, 10, GumpButtonType.Reply, 0);
             AddTooltip(CityLoyaltySystem.GetCityLocalization(City.Britain));
-
+            
             AddButton(280, 150, City == City.Jhelom ? 0x5E7 : 0x5E6, City == City.Jhelom ? 0x5E7 : 0x5E6, 11, GumpButtonType.Reply, 0);
             AddTooltip(CityLoyaltySystem.GetCityLocalization(City.Jhelom));
-
+            
             AddButton(327, 150, City == City.Minoc ? 0x5E5 : 0x5E4, City == City.Minoc ? 0x5E5 : 0x5E4, 12, GumpButtonType.Reply, 0);
             AddTooltip(CityLoyaltySystem.GetCityLocalization(City.Minoc));
 
@@ -170,21 +171,21 @@ namespace Server.Services.TownCryer
             AddButton(601, 150, City == City.Yew ? 0x5E9 : 0x5E8, City == City.Yew ? 0x5E9 : 0x5E8, 18, GumpButtonType.Reply, 0);
             AddTooltip(CityLoyaltySystem.GetCityLocalization(City.Yew));
 
-            AddHtmlLocalized(0, 260, 854, 20, CenterLoc, string.Format("#{0}", TownCryerSystem.GetCityLoc(City)), 0, false, false); // The Latest News from the City of ~1_CITY~
+            AddHtmlLocalized(0, 260, 854, 20, CenterLoc, String.Format("#{0}", TownCryerSystem.GetCityLoc(this.City)), 0, false, false); // The Latest News from the City of ~1_CITY~
 
             int y = 300;
 
             for (int i = 0; i < TownCryerSystem.CityEntries.Count && i < TownCryerSystem.MaxPerCityGoverrnorEntries; i++)
             {
-                TownCryerCityEntry entry = TownCryerSystem.CityEntries[i];
+                var entry = TownCryerSystem.CityEntries[i];
 
-                if (entry.City != City)
+                if (entry.City != this.City)
                     continue;
 
                 AddButton(50, y, 0x5FB, 0x5FC, 300 + i, GumpButtonType.Reply, 0);
                 AddLabelCropped(87, y, 700, 20, 0, entry.Title);
 
-                CityLoyaltySystem city = CityLoyaltySystem.GetCitizenship(User, false);
+                var city = CityLoyaltySystem.GetCitizenship(User, false);
 
                 if ((city != null && city.Governor == User) || User.AccessLevel >= AccessLevel.GameMaster) // Only Governors
                 {
@@ -200,19 +201,19 @@ namespace Server.Services.TownCryer
 
         private void BuildGuildPage()
         {
-            List<TownCryerGuildEntry> list = TownCryerSystem.GuildEntries.OrderBy(e => e.EventTime).ToList();
+            var list = TownCryerSystem.GuildEntries.OrderBy(e => e.EventTime).ToList();
 
             int perPage = 20;
             int y = 170;
 
             int start = Page * perPage;
-            Guild guild = User.Guild as Guild;
+            var guild = User.Guild as Guild;
 
-            Pages = (int)Math.Ceiling(list.Count / (double)perPage);
+            Pages = (int)Math.Ceiling((double)list.Count / (double)perPage);
 
             for (int i = start; i < list.Count && i < perPage; i++)
             {
-                TownCryerGuildEntry entry = TownCryerSystem.GuildEntries[i];
+                var entry = TownCryerSystem.GuildEntries[i];
 
                 AddButton(50, y, 0x5FB, 0x5FC, 400 + TownCryerSystem.GuildEntries.IndexOf(entry), GumpButtonType.Reply, 0);
 
@@ -233,7 +234,7 @@ namespace Server.Services.TownCryer
             AddButton(430, 570, 0x607, 0x608, 7, GumpButtonType.Reply, 0);
             AddButton(455, 570, 0x603, 0x604, 8, GumpButtonType.Reply, 0);
 
-            AddHtml(395, 570, 35, 20, Center(string.Format("{0}/{1}", (Page + 1).ToString(), (Pages + 1).ToString())), false, false);
+            AddHtml(395, 570, 35, 20, Center(String.Format("{0}/{1}", (Page + 1).ToString(), (Pages + 1).ToString())), false, false);
         }
 
         private void SetDefaultCity()
@@ -242,7 +243,7 @@ namespace Server.Services.TownCryer
             {
                 LastCity = new Dictionary<PlayerMobile, City>();
 
-                CityLoyaltySystem system = CityLoyaltySystem.GetCitizenship(User, false);
+                var system = CityLoyaltySystem.GetCitizenship(User, false);
 
                 if (system != null)
                 {
@@ -363,7 +364,7 @@ namespace Server.Services.TownCryer
 
                             if (id >= 0 && id < TownCryerSystem.NewsEntries.Count)
                             {
-                                SendGump(new TownCryerNewsGump(User, Cryer, TownCryerSystem.NewsEntries[id]));
+                                BaseGump.SendGump(new TownCryerNewsGump(User, Cryer, TownCryerSystem.NewsEntries[id]));
                             }
                         }
                         else if (id < 300)
@@ -372,7 +373,7 @@ namespace Server.Services.TownCryer
 
                             if (id >= 0 && id < TownCryerSystem.ModeratorEntries.Count)
                             {
-                                SendGump(new TownCryerEventModeratorGump(User, Cryer, TownCryerSystem.ModeratorEntries[id]));
+                                BaseGump.SendGump(new TownCryerEventModeratorGump(User, Cryer, TownCryerSystem.ModeratorEntries[id]));
                             }
                         }
                         else if (id < 400)
@@ -381,7 +382,7 @@ namespace Server.Services.TownCryer
 
                             if (id >= 0 && id < TownCryerSystem.CityEntries.Count)
                             {
-                                SendGump(new TownCryerCityGump(User, Cryer, TownCryerSystem.CityEntries[id]));
+                                BaseGump.SendGump(new TownCryerCityGump(User, Cryer, TownCryerSystem.CityEntries[id]));
                             }
                         }
                         else if (id < 600)
@@ -390,7 +391,7 @@ namespace Server.Services.TownCryer
 
                             if (id >= 0 && id < TownCryerSystem.GuildEntries.Count)
                             {
-                                SendGump(new TownCryerGuildGump(User, Cryer, TownCryerSystem.GuildEntries[id]));
+                                BaseGump.SendGump(new TownCryerGuildGump(User, Cryer, TownCryerSystem.GuildEntries[id]));
                             }
                         }
                         else if (id < 3000)
@@ -401,7 +402,7 @@ namespace Server.Services.TownCryer
 
                                 if (id >= 0 && id < TownCryerSystem.ModeratorEntries.Count)
                                 {
-                                    SendGump(new CreateEMEntryGump(User, Cryer, TownCryerSystem.ModeratorEntries[id]));
+                                    BaseGump.SendGump(new CreateEMEntryGump(User, Cryer, TownCryerSystem.ModeratorEntries[id]));
                                 }
                             }
                             else
@@ -418,7 +419,7 @@ namespace Server.Services.TownCryer
                         }
                         else if (id < 4000)
                         {
-                            CityLoyaltySystem city = CityLoyaltySystem.GetCitizenship(User, false);
+                            var city = CityLoyaltySystem.GetCitizenship(User, false);
 
                             if ((city != null && city.Governor == User) || User.AccessLevel >= AccessLevel.GameMaster) // Only Governors
                             {
@@ -428,7 +429,7 @@ namespace Server.Services.TownCryer
 
                                     if (id >= 0 && id < TownCryerSystem.CityEntries.Count)
                                     {
-                                        SendGump(new CreateCityEntryGump(User, Cryer, City, TownCryerSystem.CityEntries[id]));
+                                        BaseGump.SendGump(new CreateCityEntryGump(User, Cryer, City, TownCryerSystem.CityEntries[id]));
                                     }
                                 }
                                 else
@@ -452,7 +453,7 @@ namespace Server.Services.TownCryer
 
                                 if (id >= 0 && id < TownCryerSystem.GuildEntries.Count)
                                 {
-                                    SendGump(new CreateGuildEntryGump(User, Cryer, TownCryerSystem.GuildEntries[id]));
+                                    BaseGump.SendGump(new CreateGuildEntryGump(User, Cryer, TownCryerSystem.GuildEntries[id]));
                                 }
                             }
                             else

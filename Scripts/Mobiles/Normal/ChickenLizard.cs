@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -9,11 +9,11 @@ namespace Server.Mobiles
         private DateTime m_NextEgg;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime NextEgg => m_NextEgg;
+        public DateTime NextEgg { get { return m_NextEgg; } }
 
         [Constructable]
         public ChickenLizard()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a chicken lizard";
             Body = 716;
@@ -23,8 +23,8 @@ namespace Server.Mobiles
             SetInt(6, 10);
 
             SetHits(74, 95);
-            SetMana(6, 10);
-            SetStam(78, 95);
+			SetMana(6, 10);
+			SetStam(78, 95);
 
             SetDamage(2, 5);
 
@@ -40,16 +40,14 @@ namespace Server.Mobiles
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 0.0;
+
+            if (0.05 > Utility.RandomDouble())
+                PackItem(new ChickenLizardEgg());
         }
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.LootItem<ChickenLizardEgg>(5.0));
-        }
-
-        public override int Meat => 3;
-        public override MeatType MeatType => MeatType.Bird;
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override int Meat { get { return 3; } }
+        public override MeatType MeatType { get { return MeatType.Bird; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat; } }
 
         public override int GetIdleSound() { return 1511; }
         public override int GetAngerSound() { return 1508; }
@@ -93,7 +91,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
 
             writer.Write(m_NextEgg);
         }
@@ -103,7 +101,7 @@ namespace Server.Mobiles
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            switch (version)
+            switch(version)
             {
                 case 1:
                     m_NextEgg = reader.ReadDateTime();

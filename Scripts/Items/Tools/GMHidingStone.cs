@@ -5,8 +5,9 @@ Version: 1.0
 Public Release: 01/01/09
 Updated Release: 01/01/09
 Purpose: A stone that allows for multiple hide/appear effects for GM and above.
-*/
+*/                                                            
 using System;
+using CustomsFramework;
 
 namespace Server.Items
 {
@@ -17,14 +18,14 @@ namespace Server.Items
         FlameStrike3,
         FlameStrikeLightningBolt,
         Sparkle1,
-        Sparkle3,
+        Sparkle3, 
         Explosion,
         ExplosionLightningBolt,
         DefaultRunUO,
         Snow,
         Glow,
         PoisonField,
-        Fireball,
+        Fireball, 
         FireStorm1,
         FireStorm2,
         RedSparkle,
@@ -109,7 +110,7 @@ namespace Server.Items
         }
         public override void OnDoubleClick(Mobile m)
         {
-            if (m.IsStaff())
+            if (Utilities.IsStaff(m))
             {
                 if (m.Hidden)
                 {
@@ -142,7 +143,7 @@ namespace Server.Items
                     Timer.DelayCall(TimeSpan.FromSeconds(0.65), new TimerStateCallback(InternalShowGate), new object[] { m, effHue });
                     Timer.DelayCall(TimeSpan.FromSeconds(1.5), new TimerStateCallback(InternalHideGate), new object[] { m, effHue });
                     break;
-                //[/s7]
+                    //[/s7]
                 case StoneEffect.FlameStrike1:
                     Effects.SendLocationEffect(new Point3D(m.X, m.Y, m.Z + 1), m.Map, 0x3709, 15, effHue, 0);
                     Effects.PlaySound(new Point3D(m.X, m.Y, m.Z), m.Map, 0x208);
@@ -246,7 +247,7 @@ namespace Server.Items
                     t1.Start();
                     break;
                 case StoneEffect.RedSparkle:
-                    Effects.SendLocationEffect(new Point3D(m.X, m.Y + 1, m.Z), m.Map, 0x374A, 15);
+                    Effects.SendLocationEffect(new Point3D(m.X , m.Y + 1, m.Z), m.Map, 0x374A, 15);
                     Effects.PlaySound(new Point3D(m.X, m.Y, m.Z), m.Map, 0x1f7);
                     break;
                 case StoneEffect.RedSparkle2:
@@ -314,7 +315,7 @@ namespace Server.Items
                     Effects.SendLocationEffect(new Point3D(m.X - 5, m.Y + 5, m.Z), m.Map, 0x3709, 17, effHue, 0);
                     Timer t2 = new FireStormTimer(DateTime.UtcNow, m, effHue, 5, -1);
                     t2.Start();
-                    Effects.SendLocationEffect(new Point3D(m.X, m.Y + 1, m.Z), m.Map, 0x374A, 15);
+                    Effects.SendLocationEffect(new Point3D(m.X , m.Y + 1, m.Z), m.Map, 0x374A, 15);
                     Effects.PlaySound(new Point3D(m.X, m.Y, m.Z), m.Map, 0x1f7);
                     Effects.SendLocationEffect(new Point3D(m.X, m.Y, m.Z + 1), m.Map, 0x374A, 15);
                     Effects.SendLocationEffect(new Point3D(m.X + 1, m.Y, m.Z), m.Map, 0x374A, 15);
@@ -360,7 +361,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version 
+            writer.Write((int)2); // version 
             writer.Write((int)mAppearEffect);
             writer.Write((int)mHideEffect);
             writer.Write(mAppearEffectHue);

@@ -1,13 +1,13 @@
-using Server.Engines.Craft;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
 
 namespace Server.Engines.BulkOrders
 {
     [TypeAlias("Scripts.Engines.BulkOrders.SmallSmithBOD")]
     public class SmallSmithBOD : SmallBOD
     {
-        public override BODType BODType => BODType.Smith;
+        public override BODType BODType { get { return BODType.Smith; } }
 
         public static double[] m_BlacksmithMaterialChances = new double[]
         {
@@ -217,7 +217,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -16,12 +16,12 @@ namespace Server.Items
         public BaseTreasureChest(int itemID, TreasureLevel level)
             : base(itemID)
         {
-            m_TreasureLevel = level;
-            Locked = true;
-            Movable = false;
+            this.m_TreasureLevel = level;
+            this.Locked = true;
+            this.Movable = false;
 
-            SetLockLevel();
-            GenerateTreasure();
+            this.SetLockLevel();
+            this.GenerateTreasure();
         }
 
         public BaseTreasureChest(Serial serial)
@@ -31,10 +31,10 @@ namespace Server.Items
 
         public enum TreasureLevel
         {
-            Level1,
-            Level2,
-            Level3,
-            Level4,
+            Level1, 
+            Level2, 
+            Level3, 
+            Level4, 
             Level5,
             Level6,
         }
@@ -43,11 +43,11 @@ namespace Server.Items
         {
             get
             {
-                return m_TreasureLevel;
+                return this.m_TreasureLevel;
             }
             set
             {
-                m_TreasureLevel = value;
+                this.m_TreasureLevel = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -55,11 +55,11 @@ namespace Server.Items
         {
             get
             {
-                return m_MaxSpawnTime;
+                return this.m_MaxSpawnTime;
             }
             set
             {
-                m_MaxSpawnTime = value;
+                this.m_MaxSpawnTime = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -67,11 +67,11 @@ namespace Server.Items
         {
             get
             {
-                return m_MinSpawnTime;
+                return this.m_MinSpawnTime;
             }
             set
             {
-                m_MinSpawnTime = value;
+                this.m_MinSpawnTime = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -86,18 +86,24 @@ namespace Server.Items
                 if (base.Locked != value)
                 {
                     base.Locked = value;
-
+					
                     if (!value)
-                        StartResetTimer();
+                        this.StartResetTimer();
                 }
             }
         }
-        public override bool IsDecoContainer => false;
+        public override bool IsDecoContainer
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override string DefaultName
         {
             get
             {
-                if (Locked)
+                if (this.Locked)
                     return "a locked treasure chest";
 
                 return "a treasure chest";
@@ -107,10 +113,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
-            writer.Write((byte)m_TreasureLevel);
-            writer.Write(m_MinSpawnTime);
-            writer.Write(m_MaxSpawnTime);
+            writer.Write((int)0);
+            writer.Write((byte)this.m_TreasureLevel);
+            writer.Write(this.m_MinSpawnTime);
+            writer.Write(this.m_MaxSpawnTime);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -119,57 +125,57 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_TreasureLevel = (TreasureLevel)reader.ReadByte();
-            m_MinSpawnTime = reader.ReadShort();
-            m_MaxSpawnTime = reader.ReadShort();
+            this.m_TreasureLevel = (TreasureLevel)reader.ReadByte();
+            this.m_MinSpawnTime = reader.ReadShort();
+            this.m_MaxSpawnTime = reader.ReadShort();
 
-            if (!Locked)
-                StartResetTimer();
+            if (!this.Locked)
+                this.StartResetTimer();
         }
 
         public void ClearContents()
         {
-            for (int i = Items.Count - 1; i >= 0; --i)
+            for (int i = this.Items.Count - 1; i >= 0; --i)
             {
-                if (i < Items.Count)
-                    Items[i].Delete();
+                if (i < this.Items.Count)
+                    this.Items[i].Delete();
             }
         }
 
         public void Reset()
         {
-            if (m_ResetTimer != null)
+            if (this.m_ResetTimer != null)
             {
-                if (m_ResetTimer.Running)
-                    m_ResetTimer.Stop();
+                if (this.m_ResetTimer.Running)
+                    this.m_ResetTimer.Stop();
             }
 
-            Locked = true;
-            ClearContents();
-            GenerateTreasure();
+            this.Locked = true;
+            this.ClearContents();
+            this.GenerateTreasure();
         }
 
         protected virtual void SetLockLevel()
         {
-            switch (m_TreasureLevel)
+            switch( this.m_TreasureLevel )
             {
                 case TreasureLevel.Level1:
-                    RequiredSkill = LockLevel = 5;
+                    this.RequiredSkill = this.LockLevel = 5;
                     break;
                 case TreasureLevel.Level2:
-                    RequiredSkill = LockLevel = 20;
+                    this.RequiredSkill = this.LockLevel = 20;
                     break;
                 case TreasureLevel.Level3:
-                    RequiredSkill = LockLevel = 50;
+                    this.RequiredSkill = this.LockLevel = 50;
                     break;
                 case TreasureLevel.Level4:
-                    RequiredSkill = LockLevel = 70;
+                    this.RequiredSkill = this.LockLevel = 70;
                     break;
                 case TreasureLevel.Level5:
-                    RequiredSkill = LockLevel = 90;
+                    this.RequiredSkill = this.LockLevel = 90;
                     break;
                 case TreasureLevel.Level6:
-                    RequiredSkill = LockLevel = 100;
+                    this.RequiredSkill = this.LockLevel = 100;
                     break;
             }
         }
@@ -179,7 +185,7 @@ namespace Server.Items
             int MinGold = 1;
             int MaxGold = 2;
 
-            switch (m_TreasureLevel)
+            switch( this.m_TreasureLevel )
             {
                 case TreasureLevel.Level1:
                     MinGold = 100;
@@ -207,17 +213,17 @@ namespace Server.Items
                     break;
             }
 
-            DropItem(new Gold(MinGold, MaxGold));
+            this.DropItem(new Gold(MinGold, MaxGold));
         }
 
         private void StartResetTimer()
         {
-            if (m_ResetTimer == null)
-                m_ResetTimer = new TreasureResetTimer(this);
+            if (this.m_ResetTimer == null)
+                this.m_ResetTimer = new TreasureResetTimer(this);
             else
-                m_ResetTimer.Delay = TimeSpan.FromMinutes(Utility.Random(m_MinSpawnTime, m_MaxSpawnTime));
+                this.m_ResetTimer.Delay = TimeSpan.FromMinutes(Utility.Random(this.m_MinSpawnTime, this.m_MaxSpawnTime));
 
-            m_ResetTimer.Start();
+            this.m_ResetTimer.Start();
         }
 
         private class TreasureResetTimer : Timer
@@ -226,15 +232,15 @@ namespace Server.Items
             public TreasureResetTimer(BaseTreasureChest chest)
                 : base(TimeSpan.FromMinutes(Utility.Random(chest.MinSpawnTime, chest.MaxSpawnTime)))
             {
-                m_Chest = chest;
-                Priority = TimerPriority.OneMinute;
+                this.m_Chest = chest;
+                this.Priority = TimerPriority.OneMinute;
             }
 
             protected override void OnTick()
             {
-                m_Chest.Reset();
+                this.m_Chest.Reset();
             }
         }
-        ;
+        ; 
     }
 }

@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class ValentinesTable : Item
     {
-        public override int LabelNumber => 1098492;  // table
+        public override int LabelNumber { get { return 1098492; } } // table
 
         [Constructable]
         public ValentinesTable()
@@ -28,7 +30,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -41,7 +43,7 @@ namespace Server.Items
     [Flipable(0xA05C, 0xA05D, 0xA05E, 0xA05F)]
     public class ValentinesChair : Item
     {
-        public override int LabelNumber => 1098456;  // chair
+        public override int LabelNumber { get { return 1098456; } } // chair
 
         [Constructable]
         public ValentinesChair()
@@ -59,7 +61,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

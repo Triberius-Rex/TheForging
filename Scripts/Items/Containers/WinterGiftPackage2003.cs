@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x232A, 0x232B)]
@@ -6,10 +8,10 @@ namespace Server.Items
         [Constructable]
         public WinterGiftPackage2003()
         {
-            DropItem(new Snowman());
-            DropItem(new WreathDeed());
-            DropItem(new BlueSnowflake());
-            DropItem(new RedPoinsettia());
+            this.DropItem(new Snowman());
+            this.DropItem(new WreathDeed());
+            this.DropItem(new BlueSnowflake());
+            this.DropItem(new RedPoinsettia());
         }
 
         public WinterGiftPackage2003(Serial serial)
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

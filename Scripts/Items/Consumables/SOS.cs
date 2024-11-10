@@ -1,5 +1,5 @@
-using Server.Gumps;
 using System;
+using Server.Gumps;
 
 namespace Server.Items
 {
@@ -23,7 +23,13 @@ namespace Server.Items
         private int m_MessageIndex;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsAncient => (m_Level >= 4);
+        public bool IsAncient
+        {
+            get
+            {
+                return (m_Level >= 4);
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int Level
@@ -122,7 +128,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(4); // version
+            writer.Write((int)4); // version
 
             writer.Write(m_Level);
 
@@ -137,7 +143,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 4:
                 case 3:
@@ -177,7 +183,7 @@ namespace Server.Items
             if (version < 4 && m_TargetMap == Map.Tokuno)
                 m_TargetMap = Map.Trammel;
         }
-
+		
         public override void OnDoubleClick(Mobile from)
         {
             if (IsChildOf(from.Backpack))
@@ -275,7 +281,7 @@ namespace Server.Items
             return water;
         }
 
-#if false
+        #if false
 		private class MessageGump : Gump
 		{
 			public MessageGump( MessageEntry entry, Map map, Point3D loc ) : base( (640 - entry.Width) / 2, (480 - entry.Height) / 2 )
@@ -295,7 +301,7 @@ namespace Server.Items
 				AddHtml( 38, 38, entry.Width - 83, entry.Height - 86, String.Format( entry.Message, fmt ), false, false );
 			}
 		}
-#else
+        #else
         private class MessageGump : Gump
         {
             public MessageGump(MessageEntry entry, Map map, Point3D loc)
@@ -307,18 +313,36 @@ namespace Server.Items
                 string fmt;
 
                 if (Sextant.Format(loc, map, ref xLong, ref yLat, ref xMins, ref yMins, ref xEast, ref ySouth))
-                    fmt = string.Format("{0}o {1}'{2}, {3}o {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
+                    fmt = String.Format("{0}o {1}'{2}, {3}o {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
                 else
                     fmt = "?????";
 
                 AddPage(0);
 
-                AddBackground(0, 0, 250, 350, 9390);
+                if (Core.ML)
+                {
+                    AddBackground(0, 0, 250, 350, 9390);
 
-                AddHtmlLocalized(30, 50, 190, 420, entry.Message, fmt, 0, false, false);
+                    AddHtmlLocalized(30, 50, 190, 420, entry.Message, fmt, 0, false, false);
+                }
+                else
+                {
+                    AddBackground(0, 40, 350, 300, 2520);
+
+                    AddHtmlLocalized(30, 80, 285, 160, 1018326, true, true); /* This is a message hastily scribbled by a passenger aboard a sinking ship.
+                                                                              * While it is probably too late to save the passengers and crew,
+                                                                              * perhaps some treasure went down with the ship!
+                                                                              * The message gives the ship's last known sextant co-ordinates.
+                                                                              */
+
+                    AddHtmlLocalized(35, 240, 230, 20, entry.Message, fmt, 0, false, false);
+
+                    AddButton(35, 265, 4005, 4007, 0, GumpButtonType.Reply, 0);
+                    AddHtmlLocalized(70, 265, 100, 20, 1011036, false, false); // OKAY
+                }
             }
         }
-#endif
+        #endif
 
         private class MessageEntry
         {
@@ -326,9 +350,27 @@ namespace Server.Items
             private readonly int m_Height;
             private readonly int m_Message;
 
-            public int Width => m_Width;
-            public int Height => m_Height;
-            public int Message => m_Message;
+            public int Width
+            {
+                get
+                {
+                    return m_Width;
+                }
+            }
+            public int Height
+            {
+                get
+                {
+                    return m_Height;
+                }
+            }
+            public int Message
+            {
+                get
+                {
+                    return m_Message;
+                }
+            }
 
             public MessageEntry(int width, int height, int message)
             {
@@ -355,7 +397,13 @@ namespace Server.Items
                 new MessageEntry(280, 250, 1153550),
             };
 
-            public static MessageEntry[] Entries => m_Entries;
+            public static MessageEntry[] Entries
+            {
+                get
+                {
+                    return m_Entries;
+                }
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 using Server.Network;
 
@@ -17,8 +18,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -48,8 +54,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -79,8 +90,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -110,8 +126,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
-
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -133,7 +154,7 @@ namespace Server.Items
         public SnowStatueDeed()
             : base(0x14F0)
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public SnowStatueDeed(Serial serial)
@@ -141,11 +162,23 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1114296;// snow statue deed
-        public override double DefaultWeight => 1.0;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1114296;
+            }
+        }// snow statue deed
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 1.0;
+            }
+        }
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsChildOf(from.Backpack))
+            if (this.IsChildOf(from.Backpack))
             {
                 from.CloseGump(typeof(InternalGump));
                 from.SendGump(new InternalGump(this));
@@ -176,40 +209,40 @@ namespace Server.Items
             public InternalGump(SnowStatueDeed deed)
                 : base(100, 200)
             {
-                m_Deed = deed;
+                this.m_Deed = deed;
 
-                Closable = true;
-                Disposable = true;
-                Dragable = true;
-                Resizable = false;
+                this.Closable = true;
+                this.Disposable = true;
+                this.Dragable = true;
+                this.Resizable = false;
 
-                AddPage(0);
-                AddBackground(0, 0, 360, 225, 0xA28);
+                this.AddPage(0);
+                this.AddBackground(0, 0, 360, 225, 0xA28);
 
-                AddPage(1);
-                AddLabel(45, 15, 0, "Select One:");
+                this.AddPage(1);
+                this.AddLabel(45, 15, 0, "Select One:");
 
-                AddItem(35, 75, 0x456E);
-                AddButton(65, 50, 0x845, 0x846, 1, GumpButtonType.Reply, 0);
+                this.AddItem(35, 75, 0x456E);
+                this.AddButton(65, 50, 0x845, 0x846, 1, GumpButtonType.Reply, 0);
 
-                AddItem(120, 75, 0x4578);
-                AddButton(135, 50, 0x845, 0x846, 2, GumpButtonType.Reply, 0);
+                this.AddItem(120, 75, 0x4578);
+                this.AddButton(135, 50, 0x845, 0x846, 2, GumpButtonType.Reply, 0);
 
-                AddItem(190, 75, 0x457A);
-                AddButton(205, 50, 0x845, 0x846, 3, GumpButtonType.Reply, 0);
+                this.AddItem(190, 75, 0x457A);
+                this.AddButton(205, 50, 0x845, 0x846, 3, GumpButtonType.Reply, 0);
 
-                AddItem(250, 75, 0x457C);
-                AddButton(275, 50, 0x845, 0x846, 4, GumpButtonType.Reply, 0);
+                this.AddItem(250, 75, 0x457C);
+                this.AddButton(275, 50, 0x845, 0x846, 4, GumpButtonType.Reply, 0);
             }
 
             public override void OnResponse(NetState sender, RelayInfo info)
             {
-                if (m_Deed == null || m_Deed.Deleted)
+                if (this.m_Deed == null || this.m_Deed.Deleted)
                     return;
 
                 Mobile from = sender.Mobile;
 
-                if (!m_Deed.IsChildOf(from.Backpack))
+                if (!this.m_Deed.IsChildOf(from.Backpack))
                 {
                     from.SendLocalizedMessage(1042038); // You must have the object in your backpack to use it
                     return;
@@ -217,7 +250,7 @@ namespace Server.Items
 
                 Item statue = null;
 
-                switch (info.ButtonID)
+                switch ( info.ButtonID )
                 {
                     case 1:
                         statue = new SnowStatuePegasus();
@@ -243,7 +276,7 @@ namespace Server.Items
                 }
                 else
                 {
-                    m_Deed.Delete();
+                    this.m_Deed.Delete();
                 }
             }
         }

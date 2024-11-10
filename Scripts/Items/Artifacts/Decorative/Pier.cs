@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Pier : Item
@@ -15,7 +17,7 @@ namespace Server.Items
         * is kind of senseless, so it is what it is.
         * 
         */
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         private static readonly int[] m_itemids = new int[]
         {
             0x3486, 0x348b, 0x3ae
@@ -40,7 +42,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

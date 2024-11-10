@@ -1,15 +1,13 @@
-using Server.Items;
-using Server.Network;
 using System;
 using System.Collections.Generic;
+using Server.Items;
+using Server.Network;
 
 namespace Server.Misc
 {
     public class Weather
     {
         private static readonly Dictionary<Map, List<Weather>> m_WeatherByFacet = new Dictionary<Map, List<Weather>>();
-        private static readonly string m_TimerID = "WeatherTimer";
-
         private static Map[] m_Facets;
         private readonly Map m_Facet;
         private Rectangle2D[] m_Area;
@@ -25,108 +23,113 @@ namespace Server.Misc
         private bool m_ExtremeTemperature;
         public Weather(Map facet, Rectangle2D[] area, int temperature, int chanceOfPercipitation, int chanceOfExtremeTemperature, TimeSpan interval)
         {
-            m_Facet = facet;
-            m_Area = area;
-            m_Temperature = temperature;
-            m_ChanceOfPercipitation = chanceOfPercipitation;
-            m_ChanceOfExtremeTemperature = chanceOfExtremeTemperature;
+            this.m_Facet = facet;
+            this.m_Area = area;
+            this.m_Temperature = temperature;
+            this.m_ChanceOfPercipitation = chanceOfPercipitation;
+            this.m_ChanceOfExtremeTemperature = chanceOfExtremeTemperature;
 
             List<Weather> list = GetWeatherList(facet);
 
             if (list != null)
                 list.Add(this);
 
-            TimerRegistry.Register(m_TimerID, this, interval, TimeSpan.FromSeconds((0.2 + (Utility.RandomDouble() * 0.8)) * interval.TotalSeconds), false, weather => weather.OnTick());
+            Timer.DelayCall(TimeSpan.FromSeconds((0.2 + (Utility.RandomDouble() * 0.8)) * interval.TotalSeconds), interval, new TimerCallback(OnTick));
         }
 
-        public Map Facet => m_Facet;
-
+        public Map Facet
+        {
+            get
+            {
+                return this.m_Facet;
+            }
+        }
         public Rectangle2D[] Area
         {
             get
             {
-                return m_Area;
+                return this.m_Area;
             }
             set
             {
-                m_Area = value;
+                this.m_Area = value;
             }
         }
         public int Temperature
         {
             get
             {
-                return m_Temperature;
+                return this.m_Temperature;
             }
             set
             {
-                m_Temperature = value;
+                this.m_Temperature = value;
             }
         }
         public int ChanceOfPercipitation
         {
             get
             {
-                return m_ChanceOfPercipitation;
+                return this.m_ChanceOfPercipitation;
             }
             set
             {
-                m_ChanceOfPercipitation = value;
+                this.m_ChanceOfPercipitation = value;
             }
         }
         public int ChanceOfExtremeTemperature
         {
             get
             {
-                return m_ChanceOfExtremeTemperature;
+                return this.m_ChanceOfExtremeTemperature;
             }
             set
             {
-                m_ChanceOfExtremeTemperature = value;
+                this.m_ChanceOfExtremeTemperature = value;
             }
         }
         public Rectangle2D Bounds
         {
             get
             {
-                return m_Bounds;
+                return this.m_Bounds;
             }
             set
             {
-                m_Bounds = value;
+                this.m_Bounds = value;
             }
         }
         public int MoveSpeed
         {
             get
             {
-                return m_MoveSpeed;
+                return this.m_MoveSpeed;
             }
             set
             {
-                m_MoveSpeed = value;
+                this.m_MoveSpeed = value;
             }
         }
         public int MoveAngleX
         {
             get
             {
-                return m_MoveAngleX;
+                return this.m_MoveAngleX;
             }
             set
             {
-                m_MoveAngleX = value;
+                this.m_MoveAngleX = value;
             }
         }
         public int MoveAngleY
         {
             get
             {
-                return m_MoveAngleY;
+                return this.m_MoveAngleY;
             }
             set
             {
-                m_MoveAngleY = value;
+                this.m_MoveAngleY = value;
             }
         }
         public static void Initialize()
@@ -193,11 +196,10 @@ namespace Server.Misc
                 if (!isValid)
                     continue;
 
-                _ = new Weather(m_Facets[i], new Rectangle2D[] { area }, temperature, chanceOfPercipitation, chanceOfExtremeTemperature, TimeSpan.FromSeconds(30.0))
-                {
-                    m_Bounds = bounds,
-                    m_MoveSpeed = moveSpeed
-                };
+                Weather w = new Weather(m_Facets[i], new Rectangle2D[] { area }, temperature, chanceOfPercipitation, chanceOfExtremeTemperature, TimeSpan.FromSeconds(30.0));
+
+                w.m_Bounds = bounds;
+                w.m_MoveSpeed = moveSpeed;
             }
         }
 
@@ -261,9 +263,9 @@ namespace Server.Misc
 
         public virtual bool IntersectsWith(Rectangle2D area)
         {
-            for (int i = 0; i < m_Area.Length; ++i)
+            for (int i = 0; i < this.m_Area.Length; ++i)
             {
-                if (CheckIntersection(area, m_Area[i]))
+                if (CheckIntersection(area, this.m_Area[i]))
                     return true;
             }
 
@@ -272,20 +274,20 @@ namespace Server.Misc
 
         public virtual void Reposition()
         {
-            if (m_Area.Length == 0)
+            if (this.m_Area.Length == 0)
                 return;
 
-            int width = m_Area[0].Width;
-            int height = m_Area[0].Height;
+            int width = this.m_Area[0].Width;
+            int height = this.m_Area[0].Height;
 
             Rectangle2D area = new Rectangle2D();
             bool isValid = false;
 
             for (int j = 0; j < 10; ++j)
             {
-                area = new Rectangle2D(m_Bounds.X + Utility.Random(m_Bounds.Width - width), m_Bounds.Y + Utility.Random(m_Bounds.Height - height), width, height);
+                area = new Rectangle2D(this.m_Bounds.X + Utility.Random(this.m_Bounds.Width - width), this.m_Bounds.Y + Utility.Random(this.m_Bounds.Height - height), width, height);
 
-                if (!CheckWeatherConflict(m_Facet, this, area))
+                if (!CheckWeatherConflict(this.m_Facet, this, area))
                     isValid = true;
 
                 if (isValid)
@@ -295,7 +297,7 @@ namespace Server.Misc
             if (!isValid)
                 return;
 
-            m_Area[0] = area;
+            this.m_Area[0] = area;
         }
 
         public virtual void RecalculateMovementAngle()
@@ -305,66 +307,66 @@ namespace Server.Misc
             double cos = Math.Cos(angle);
             double sin = Math.Sin(angle);
 
-            m_MoveAngleX = (int)(100 * cos);
-            m_MoveAngleY = (int)(100 * sin);
+            this.m_MoveAngleX = (int)(100 * cos);
+            this.m_MoveAngleY = (int)(100 * sin);
         }
 
         public virtual void MoveForward()
         {
-            if (m_Area.Length == 0)
+            if (this.m_Area.Length == 0)
                 return;
 
             for (int i = 0; i < 5; ++i) // try 5 times to find a valid spot
             {
-                int xOffset = (m_MoveSpeed * m_MoveAngleX) / 100;
-                int yOffset = (m_MoveSpeed * m_MoveAngleY) / 100;
+                int xOffset = (this.m_MoveSpeed * this.m_MoveAngleX) / 100;
+                int yOffset = (this.m_MoveSpeed * this.m_MoveAngleY) / 100;
 
-                Rectangle2D oldArea = m_Area[0];
+                Rectangle2D oldArea = this.m_Area[0];
                 Rectangle2D newArea = new Rectangle2D(oldArea.X + xOffset, oldArea.Y + yOffset, oldArea.Width, oldArea.Height);
 
-                if (!CheckWeatherConflict(m_Facet, this, newArea) && CheckContains(m_Bounds, newArea))
+                if (!CheckWeatherConflict(this.m_Facet, this, newArea) && CheckContains(this.m_Bounds, newArea))
                 {
-                    m_Area[0] = newArea;
+                    this.m_Area[0] = newArea;
                     break;
                 }
 
-                RecalculateMovementAngle();
+                this.RecalculateMovementAngle();
             }
         }
 
         public virtual void OnTick()
         {
-            if (m_Stage == 0)
+            if (this.m_Stage == 0)
             {
-                m_Active = (m_ChanceOfPercipitation > Utility.Random(100));
-                m_ExtremeTemperature = (m_ChanceOfExtremeTemperature > Utility.Random(100));
+                this.m_Active = (this.m_ChanceOfPercipitation > Utility.Random(100));
+                this.m_ExtremeTemperature = (this.m_ChanceOfExtremeTemperature > Utility.Random(100));
 
-                if (m_MoveSpeed > 0)
+                if (this.m_MoveSpeed > 0)
                 {
-                    Reposition();
-                    RecalculateMovementAngle();
+                    this.Reposition();
+                    this.RecalculateMovementAngle();
                 }
             }
 
-            if (m_Active)
+            if (this.m_Active)
             {
-                if (m_Stage > 0 && m_MoveSpeed > 0)
-                    MoveForward();
+                if (this.m_Stage > 0 && this.m_MoveSpeed > 0)
+                    this.MoveForward();
 
                 int type, density, temperature;
 
-                temperature = m_Temperature;
+                temperature = this.m_Temperature;
 
-                if (m_ExtremeTemperature)
+                if (this.m_ExtremeTemperature)
                     temperature *= -1;
 
-                if (m_Stage < 15)
+                if (this.m_Stage < 15)
                 {
-                    density = m_Stage * 5;
+                    density = this.m_Stage * 5;
                 }
                 else
                 {
-                    density = 150 - (m_Stage * 5);
+                    density = 150 - (this.m_Stage * 5);
 
                     if (density < 10)
                         density = 10;
@@ -388,19 +390,19 @@ namespace Server.Misc
                     NetState ns = states[i];
                     Mobile mob = ns.Mobile;
 
-                    if (mob == null || mob.Map != m_Facet)
+                    if (mob == null || mob.Map != this.m_Facet)
                         continue;
 
-                    bool contains = (m_Area.Length == 0);
+                    bool contains = (this.m_Area.Length == 0);
 
-                    for (int j = 0; !contains && j < m_Area.Length; ++j)
-                        contains = m_Area[j].Contains(mob.Location);
+                    for (int j = 0; !contains && j < this.m_Area.Length; ++j)
+                        contains = this.m_Area[j].Contains(mob.Location);
 
                     if (!contains)
                         continue;
 
                     if (weatherPacket == null)
-                        weatherPacket = Packet.Acquire(new Network.Weather(type, density, temperature));
+                        weatherPacket = Packet.Acquire(new Server.Network.Weather(type, density, temperature));
 
                     ns.Send(weatherPacket);
                 }
@@ -408,8 +410,8 @@ namespace Server.Misc
                 Packet.Release(weatherPacket);
             }
 
-            m_Stage++;
-            m_Stage %= 30;
+            this.m_Stage++;
+            this.m_Stage %= 30;
         }
     }
 
@@ -418,7 +420,7 @@ namespace Server.Misc
         [Constructable]
         public WeatherMap()
         {
-            SetDisplay(0, 0, 5119, 4095, 400, 400);
+            this.SetDisplay(0, 0, 5119, 4095, 400, 400);
         }
 
         public WeatherMap(Serial serial)
@@ -426,8 +428,13 @@ namespace Server.Misc
         {
         }
 
-        public override string DefaultName => "weather map";
-
+        public override string DefaultName
+        {
+            get
+            {
+                return "weather map";
+            }
+        }
         public override void OnDoubleClick(Mobile from)
         {
             Map facet = from.Map;
@@ -437,14 +444,14 @@ namespace Server.Misc
 
             List<Weather> list = Weather.GetWeatherList(facet);
 
-            ClearPins();
+            this.ClearPins();
 
             for (int i = 0; i < list.Count; ++i)
             {
                 Weather w = list[i];
 
                 for (int j = 0; j < w.Area.Length; ++j)
-                    AddWorldPin(w.Area[j].X + (w.Area[j].Width / 2), w.Area[j].Y + (w.Area[j].Height / 2));
+                    this.AddWorldPin(w.Area[j].X + (w.Area[j].Width / 2), w.Area[j].Y + (w.Area[j].Height / 2));
             }
 
             base.OnDoubleClick(from);
@@ -453,12 +460,14 @@ namespace Server.Misc
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

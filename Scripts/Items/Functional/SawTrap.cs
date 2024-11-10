@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -35,7 +35,7 @@ namespace Server.Items
         {
             get
             {
-                switch (ItemID)
+                switch ( this.ItemID )
                 {
                     case 0x1103:
                         return SawTrapType.NorthWall;
@@ -51,16 +51,40 @@ namespace Server.Items
             }
             set
             {
-                ItemID = GetBaseID(value);
+                this.ItemID = GetBaseID(value);
             }
         }
-        public override bool PassivelyTriggered => false;
-        public override TimeSpan PassiveTriggerDelay => TimeSpan.Zero;
-        public override int PassiveTriggerRange => 0;
-        public override TimeSpan ResetDelay => TimeSpan.FromSeconds(0.0);
+        public override bool PassivelyTriggered
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override TimeSpan PassiveTriggerDelay
+        {
+            get
+            {
+                return TimeSpan.Zero;
+            }
+        }
+        public override int PassiveTriggerRange
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override TimeSpan ResetDelay
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.0);
+            }
+        }
         public static int GetBaseID(SawTrapType type)
         {
-            switch (type)
+            switch ( type )
             {
                 case SawTrapType.NorthWall:
                     return 0x1103;
@@ -80,8 +104,8 @@ namespace Server.Items
             if (!from.Alive || from.IsStaff())
                 return;
 
-            Effects.SendLocationEffect(Location, Map, GetBaseID(Type) + 1, 6, 3, GetEffectHue(), 0);
-            Effects.PlaySound(Location, Map, 0x21C);
+            Effects.SendLocationEffect(this.Location, this.Map, GetBaseID(this.Type) + 1, 6, 3, this.GetEffectHue(), 0);
+            Effects.PlaySound(this.Location, this.Map, 0x21C);
 
             Spells.SpellHelper.Damage(TimeSpan.FromTicks(1), from, from, Utility.RandomMinMax(5, 15));
 
@@ -92,7 +116,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

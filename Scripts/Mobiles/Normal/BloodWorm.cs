@@ -1,5 +1,7 @@
+using System;
 using Server.Items;
 using Server.Network;
+using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
@@ -27,7 +29,7 @@ namespace Server.Mobiles
 
             SetDamageType(ResistanceType.Physical, 60);
             SetDamageType(ResistanceType.Poison, 40);
-
+				
             SetResistance(ResistanceType.Physical, 52, 55);
             SetResistance(ResistanceType.Fire, 42, 50);
             SetResistance(ResistanceType.Cold, 29, 31);
@@ -56,8 +58,8 @@ namespace Server.Mobiles
         {
             base.OnDeath(c);
 
-            if (Utility.RandomDouble() < 0.02)
-                c.DropItem(new LuckyCoin());
+            if (Utility.RandomDouble() < 0.02)            
+                c.DropItem(new LuckyCoin());            
         }
 
         public override int GetIdleSound()
@@ -122,7 +124,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,5 +1,6 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -9,8 +10,8 @@ namespace Server.Mobiles
         [Constructable]
         public Athialon()
             : base("the expeditionist")
-        {
-            Name = "Athialon";
+        { 
+            this.Name = "Athialon";
         }
 
         public Athialon(Serial serial)
@@ -18,47 +19,79 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanTeach => false;
-        public override bool IsInvulnerable => true;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override void InitSBInfo()
+        public override bool CanTeach
         {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
+        public override void InitSBInfo()
+        { 
         }
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            Race = Race.Elf;
-
-            Hue = 0x8382;
-            HairItemID = 0x2FC0;
-            HairHue = 0x35;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x8382;
+            this.HairItemID = 0x2FC0;
+            this.HairHue = 0x35;			
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new ElvenBoots(), 0x901, 1);
-            SetWearable(new DiamondMace(), dropChance: 1);
-            SetWearable(new WoodlandBelt(), dropChance: 1);
-			SetWearable(new WoodlandLegs(), 0x3B2, 1);
-			SetWearable(new WoodlandChest(), 0x3B2, 1);
-			SetWearable(new WoodlandArms(), 0x3B2, 1); 
-			SetWearable(new WingedHelm(), 0x3B2, 1); 
+            this.AddItem(new ElvenBoots(0x901));
+            this.AddItem(new DiamondMace());
+            this.AddItem(new WoodlandBelt());
+			
+            Item item;
+			
+            item = new WoodlandLegs();
+            item.Hue = 0x3B2;
+            this.AddItem(item);			
+			
+            item = new WoodlandChest();
+            item.Hue = 0x3B2;
+            this.AddItem(item);
+			
+            item = new WoodlandArms();
+            item.Hue = 0x3B2;
+            this.AddItem(item);
+			
+            item = new WingedHelm();
+            item.Hue = 0x3B2;
+            this.AddItem(item);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+	
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+	
             int version = reader.ReadInt();
         }
     }

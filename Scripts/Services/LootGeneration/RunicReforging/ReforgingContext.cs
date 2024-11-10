@@ -1,4 +1,7 @@
+using System;
+using Server;
 using System.Collections.Generic;
+using Server.Items;
 using Server.Gumps;
 using System.IO;
 
@@ -6,65 +9,50 @@ namespace Server.Items
 {
     public class ReforgingContext
     {
-        public Dictionary<BaseTool, ReforgingInfo> Contexts { get; set; }
+        public Dictionary<BaseTool, ReforgingOption> Contexts { get; set; }
+
+        public ReforgedPrefix Prefix { get; set; }
+        public ReforgedSuffix Suffix { get; set; }
 
         public ReforgingContext(Mobile m)
         {
-            Contexts = new Dictionary<BaseTool, ReforgingInfo>();
+            Contexts = new Dictionary<BaseTool, ReforgingOption>();
 
             ReforgingContexts[m] = this;
         }
 
         public ReforgingContext(GenericReader reader)
         {
-            Contexts = new Dictionary<BaseTool, ReforgingInfo>();
+            Contexts = new Dictionary<BaseTool, ReforgingOption>();
 
             int version = reader.ReadInt();
 
-            switch (version)
+            Prefix = (ReforgedPrefix)reader.ReadInt();
+            Suffix = (ReforgedSuffix)reader.ReadInt();
+
+            int count = reader.ReadInt();
+            for (int i = 0; i < count; i++)
             {
-                case 1:
-                    int count = reader.ReadInt();
+                BaseTool tool = reader.ReadItem() as BaseTool;
+                ReforgingOption option = (ReforgingOption)reader.ReadInt();
 
-                    for (int i = 0; i < count; i++)
-                    {
-                        BaseTool tool = reader.ReadItem() as BaseTool;
-                        var info = new ReforgingInfo((ReforgingOption)reader.ReadInt(), (ReforgedPrefix)reader.ReadInt(), (ReforgedSuffix)reader.ReadInt());
-
-                        if (tool != null)
-                        {
-                            Contexts[tool] = info;
-                        }
-                    }
-                    break;
-                case 0:
-                    reader.ReadInt();
-                    reader.ReadInt();
-
-                    int count2 = reader.ReadInt();
-                    for (int i = 0; i < count2; i++)
-                    {
-                        BaseTool tool = reader.ReadItem() as BaseTool;
-                        ReforgingOption option = (ReforgingOption)reader.ReadInt();
-
-                        if (tool != null)
-                            Contexts[tool] = new ReforgingInfo(option);
-                    }
-                    break;
+                if (tool != null)
+                    Contexts[tool] = option;
             }
         }
 
         public void Serialize(GenericWriter writer)
         {
-            writer.Write(1);
+            writer.Write(0);
+
+            writer.Write((int)Prefix);
+            writer.Write((int)Suffix);
 
             writer.Write(Contexts.Count);
             foreach (var kvp in Contexts)
             {
                 writer.Write(kvp.Key);
-                writer.Write((int)kvp.Value.Options);
-                writer.Write((int)kvp.Value.Prefix);
-                writer.Write((int)kvp.Value.Suffix);
+                writer.Write((int)kvp.Value);
             }
         }
 
@@ -129,28 +117,5 @@ namespace Server.Items
                 });
         }
         #endregion
-    }
-
-    public class ReforgingInfo
-    {
-        public ReforgedPrefix Prefix { get; set; }
-        public ReforgedSuffix Suffix { get; set; }
-        public ReforgingOption Options { get; set; }
-
-        public ReforgingInfo()
-        {
-        }
-
-        public ReforgingInfo(ReforgingOption option)
-        {
-            Options = option;
-        }
-
-        public ReforgingInfo(ReforgingOption option, ReforgedPrefix prefix, ReforgedSuffix suffix)
-        {
-            Options = option;
-            Prefix = prefix;
-            Suffix = suffix;
-        }
     }
 }

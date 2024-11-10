@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -22,7 +23,7 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DeleteOnRelease => true;
+        public override bool DeleteOnRelease { get { return true; } }
 
         public override void GetProperties(ObjectPropertyList list)
         {

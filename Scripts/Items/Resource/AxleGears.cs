@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x1051, 0x1052)]
@@ -13,9 +15,9 @@ namespace Server.Items
         public AxleGears(int amount)
             : base(0x1051)
         {
-            Stackable = true;
-            Amount = amount;
-            Weight = 1.0;
+            this.Stackable = true;
+            this.Amount = amount;
+            this.Weight = 1.0;
         }
 
         public AxleGears(Serial serial)
@@ -27,7 +29,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

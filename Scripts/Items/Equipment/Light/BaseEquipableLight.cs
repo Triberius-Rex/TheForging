@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public abstract class BaseEquipableLight : BaseLight
@@ -51,7 +53,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,5 +1,6 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -9,8 +10,8 @@ namespace Server.Mobiles
         [Constructable]
         public Nythalia()
             : base("the student")
-        {
-            Name = "Nythalia";
+        { 
+            this.Name = "Nythalia";
         }
 
         public Nythalia(Serial serial)
@@ -18,43 +19,61 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanTeach => false;
-        public override bool IsInvulnerable => true;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
-        public override void InitSBInfo()
+        public override bool CanTeach
         {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool IsInvulnerable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
+        public override void InitSBInfo()
+        { 
         }
 
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = true;
-            Race = Race.Elf;
-
-            Hue = 0x840C;
-            HairItemID = 0x2045;
-            HairHue = 0x453;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = true;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x840C;
+            this.HairItemID = 0x2045;
+            this.HairHue = 0x453;			
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new Backpack());
-            SetWearable(new Sandals(), 0x74A, 1);
-			SetWearable(new Robe(), 0x498, 1);
+            this.AddItem(new Backpack());
+            this.AddItem(new Sandals(0x74A));
+            this.AddItem(new Robe(0x498));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+	
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+	
             int version = reader.ReadInt();
         }
     }

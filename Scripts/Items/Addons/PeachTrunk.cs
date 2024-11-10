@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class PeachTrunkAddon : BaseAddon
@@ -6,7 +8,7 @@ namespace Server.Items
         public PeachTrunkAddon()
             : base()
         {
-            AddComponent(new LocalizedAddonComponent(0xD9C, 1076786), 0, 0, 0);
+            this.AddComponent(new LocalizedAddonComponent(0xD9C, 1076786), 0, 0, 0);
         }
 
         public PeachTrunkAddon(Serial serial)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new PeachTrunkDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new PeachTrunkDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -36,7 +44,7 @@ namespace Server.Items
         public PeachTrunkDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public PeachTrunkDeed(Serial serial)
@@ -44,8 +52,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new PeachTrunkAddon();
-        public override int LabelNumber => 1076786;// Peach Trunk
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new PeachTrunkAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076786;
+            }
+        }// Peach Trunk
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

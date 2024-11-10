@@ -26,17 +26,15 @@ namespace Server.Items
         SmallMarbleWorkshop,
         #region Veteran Rewards
         MalasMountainPass,
-        ChurchAtNight,
+        ChurchAtNight
         #endregion
-        RobinsNest,
-        TheSpires
     }
 
     public class MiniHouseAddonComponent : AddonComponent
     {
         private MiniHouseType Type { get; set; }
 
-        public override int LabelNumber => ((MiniHouseAddon)Addon).LabelNumber;
+        public override int LabelNumber { get { return ((MiniHouseAddon)Addon).LabelNumber; } }
 
         public MiniHouseAddonComponent(int itemID)
             : base(itemID)
@@ -51,7 +49,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write((int)Type);
         }
@@ -59,7 +57,7 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
             Type = (MiniHouseType)reader.ReadInt();
         }
@@ -67,7 +65,7 @@ namespace Server.Items
 
     public class MiniHouseAddon : BaseAddon
     {
-        public override int LabelNumber => MiniHouseInfo.GetInfo(m_Type).LabelNumber;
+        public override int LabelNumber { get { return MiniHouseInfo.GetInfo(m_Type).LabelNumber; } }
 
         private MiniHouseType m_Type;
 
@@ -99,8 +97,11 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override BaseAddonDeed Deed => new MiniHouseDeed(m_Type);
+                
+        public override BaseAddonDeed Deed
+        {
+            get { return new MiniHouseDeed(m_Type); }
+        }       
 
         public void Construct()
         {
@@ -126,7 +127,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)m_Type);
         }
@@ -147,7 +148,7 @@ namespace Server.Items
             }
 
             if (version == 0)
-                Timer.DelayCall(TimeSpan.FromSeconds(30.0), Construct);
+                Timer.DelayCall(TimeSpan.FromSeconds(30.0), new TimerCallback(Construct));
         }
     }
 
@@ -163,10 +164,6 @@ namespace Server.Items
                         return 1062692; // Mini House: Contest Winning House Design
                     case MiniHouseType.ChurchAtNight:
                         return 1072216; // Mini House: Contest 2004 Winning House Design
-                    case MiniHouseType.RobinsNest:
-                        return 1159527; // Mini Keep - Robin's Nest
-                    case MiniHouseType.TheSpires:
-                        return 1159526; // Mini Castle - The Spires
                     default:
                         return 1062096; // a mini house deed
                 }
@@ -186,7 +183,7 @@ namespace Server.Items
             }
         }
 
-        public override BaseAddon Addon => new MiniHouseAddon(m_Type);
+        public override BaseAddon Addon { get { return new MiniHouseAddon(m_Type); } }
 
         [Constructable]
         public MiniHouseDeed()
@@ -205,8 +202,8 @@ namespace Server.Items
         public MiniHouseDeed(Serial serial)
             : base(serial)
         {
-        }
-
+        }       
+        
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
@@ -217,7 +214,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write((int)m_Type);
         }
@@ -235,12 +232,16 @@ namespace Server.Items
                         break;
                     }
             }
+
+            if (Weight == 0.0)
+                Weight = 1.0;
         }
     }
 
     public class MiniHouseInfo
     {
-        public static MiniHouseInfo[] Info { get; } = new MiniHouseInfo[]
+        public static MiniHouseInfo[] Info { get { return m_Info; } }
+        private static readonly MiniHouseInfo[] m_Info = new MiniHouseInfo[]
         {
             /* Stone and plaster house           */ new MiniHouseInfo(0x22C4, 1, 1011303),
             /* Field stone house                 */ new MiniHouseInfo(0x22DE, 1, 1011304),
@@ -263,39 +264,40 @@ namespace Server.Items
             /* Small stone workshop              */ new MiniHouseInfo(0x22F6, 1, 1011321),
             /* Small marble workshop             */ new MiniHouseInfo(0x22F4, 1, 1011322),
             /* Malas Mountain Pass               */ new MiniHouseInfo(1062692, 0x2316, 0x2315, 0x2314, 0x2313),
-            /* Church At Night                   */ new MiniHouseInfo(1072215, 0x2318, 0x2317, 0x2319, 0x1),
-            /* Robin’s Nest                      */ new MiniHouseInfo(1126529, 0xA609, 0xA60A, 0xA60C, 0xA60B, 0xA60D, 0xA60F, 0xA60E, 0xA610, 0xA611),
-            /* The Spires                        */ new MiniHouseInfo(1126538, 0xA612, 0xA613, 0xA615, 0xA614, 0xA616, 0xA618, 0xA617, 0xA619, 0xA61A)
+            /* Church At Night                   */ new MiniHouseInfo(1072215, 0x2318, 0x2317, 0x2319, 0x1)
         };
+
+        private readonly int[] m_Graphics;
+        private readonly int m_LabelNumber;
 
         public MiniHouseInfo(int start, int count, int labelNumber)
         {
-            Graphics = new int[count];
+            m_Graphics = new int[count];
 
             for (int i = 0; i < count; ++i)
-                Graphics[i] = start + i;
+                m_Graphics[i] = start + i;
 
-            LabelNumber = labelNumber;
+            m_LabelNumber = labelNumber;
         }
 
         public MiniHouseInfo(int labelNumber, params int[] graphics)
         {
-            LabelNumber = labelNumber;
-            Graphics = graphics;
+            m_LabelNumber = labelNumber;
+            m_Graphics = graphics;
         }
 
-        public int[] Graphics { get; }
+        public int[] Graphics { get { return m_Graphics; } }
 
-        public int LabelNumber { get; }
+        public int LabelNumber { get { return m_LabelNumber; } }
 
         public static MiniHouseInfo GetInfo(MiniHouseType type)
         {
             int v = (int)type;
 
-            if (v < 0 || v >= Info.Length)
+            if (v < 0 || v >= m_Info.Length)
                 v = 0;
 
-            return Info[v];
+            return m_Info[v];
         }
     }
 }

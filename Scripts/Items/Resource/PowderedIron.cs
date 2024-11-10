@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class PowderedIron : Item
@@ -12,8 +14,8 @@ namespace Server.Items
         public PowderedIron(int amount)
             : base(0x573D)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public PowderedIron(Serial serial)
@@ -21,12 +23,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113353;// powdered iron
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113353;
+            }
+        }// powdered iron
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

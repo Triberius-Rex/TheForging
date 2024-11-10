@@ -1,13 +1,20 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Items;
-using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
     [CorpseName("a giant beetle corpse")]
     public class Beetle : BaseMount
     {
-        public virtual double BoostedSpeed => 0.1;
+        public virtual double BoostedSpeed
+        {
+            get
+            {
+                return 0.1;
+            }
+        }
 
         [Constructable]
         public Beetle()
@@ -15,8 +22,20 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool SubdueBeforeTame => true;// Must be beaten into submission
-        public override bool ReduceSpeedWithDamage => false;
+        public override bool SubdueBeforeTame
+        {
+            get
+            {
+                return true;
+            }
+        }// Must be beaten into submission
+        public override bool ReduceSpeedWithDamage
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         [Constructable]
         public Beetle(string name)
@@ -54,10 +73,8 @@ namespace Server.Mobiles
             if (pack != null)
                 pack.Delete();
 
-            pack = new StrongBackpack
-            {
-                Movable = false
-            };
+            pack = new StrongBackpack();
+            pack.Movable = false;
 
             AddItem(pack);
         }
@@ -87,9 +104,15 @@ namespace Server.Mobiles
             return 0x21D;
         }
 
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
 
-        public override bool CanAutoStable => (Backpack == null || Backpack.Items.Count == 0) && base.CanAutoStable;
+        public override bool CanAutoStable { get { return (Backpack == null || Backpack.Items.Count == 0) && base.CanAutoStable; } }
 
         public Beetle(Serial serial)
             : base(serial)
@@ -109,6 +132,16 @@ namespace Server.Mobiles
         }
 
         #region Pack Animal Methods
+        public override bool OnBeforeDeath()
+        {
+            if (!base.OnBeforeDeath())
+                return false;
+
+            PackAnimal.CombineBackpacks(this);
+
+            return true;
+        }
+
         public override DeathMoveResult GetInventoryMoveResultFor(Item item)
         {
             return DeathMoveResult.MoveToCorpse;
@@ -152,13 +185,14 @@ namespace Server.Mobiles
 
             PackAnimal.GetContextMenuEntries(this, from, list);
         }
+
         #endregion
 
         public override void OnAfterTame(Mobile tamer)
         {
             base.OnAfterTame(tamer);
 
-            if (Owners.Count == 0)
+            if (Owners.Count == 0 && PetTrainingHelper.Enabled)
             {
                 SetInt(500);
             }
@@ -168,7 +202,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -176,6 +210,23 @@ namespace Server.Mobiles
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
+
+            if (version < 1 && PetTrainingHelper.Enabled && ControlSlots <= 3)
+            {
+                var profile = PetTrainingHelper.GetAbilityProfile(this);
+
+                if (profile == null || !profile.HasCustomized())
+                {
+                    MinTameSkill = 98.7;
+                    ControlSlotsMin = 1;
+                    ControlSlots = 1;
+                }
+
+                if ((ControlMaster != null || IsStabled) && Int < 500)
+                {
+                    SetInt(500);
+                }
+            }
         }
     }
 }

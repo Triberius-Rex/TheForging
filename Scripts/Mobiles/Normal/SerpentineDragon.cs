@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a dragon corpse")]
@@ -39,6 +41,11 @@ namespace Server.Mobiles
             Fame = 15000;
             Karma = 15000;
 
+            VirtualArmor = 36;
+
+            if (Core.ML && Utility.RandomDouble() < .33)
+                PackItem(Engines.Plants.Seed.RandomPeculiarSeed(3));
+
             Tamable = true;
             ControlSlots = 3;
             MinTameSkill = 108.0;
@@ -51,24 +58,29 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool ReacquireOnMovement => !Controlled;
+        public override bool ReacquireOnMovement { get { return !Controlled; } }
+        
+        public override double BonusPetDamageScalar { get { return Controlled ? 1.0 : (Core.SE) ? 3.0 : 1.0; } }
+        public override bool AutoDispel { get { return !Controlled; } }
+        public override HideType HideType { get { return HideType.Barbed; } }
+        public override int Hides { get { return 20; } }
+        public override int Meat { get { return 19; } }
+        public override int Scales { get { return 6; } }
 
-        public override double BonusPetDamageScalar => Controlled ? 1.0 : 3.0;
-        public override bool AutoDispel => !Controlled;
-        public override HideType HideType => HideType.Barbed;
-        public override int Hides => 20;
-        public override int Meat => 19;
-        public override int Scales => 6;
-
-        public override ScaleType ScaleType => (Utility.RandomBool() ? ScaleType.Black : ScaleType.White);
-        public override int TreasureMapLevel => 4;
-        public override bool CanAngerOnTame => true;
+        public override ScaleType ScaleType
+        {
+            get
+            {
+                return (Utility.RandomBool() ? ScaleType.Black : ScaleType.White);
+            }
+        }
+        public override int TreasureMapLevel { get { return 4; } }
+        public override bool CanAngerOnTame { get { return true; } }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 2);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.PeculiarSeed3);
         }
 
         public override int GetIdleSound()
@@ -96,10 +108,27 @@ namespace Server.Mobiles
             return 0x2C3;
         }
 
+        public override void OnGotMeleeAttack(Mobile attacker)
+        {
+            base.OnGotMeleeAttack(attacker);
+
+            if (!Core.SE && 0.2 > Utility.RandomDouble() && attacker is BaseCreature)
+            {
+                BaseCreature c = (BaseCreature)attacker;
+
+                if (c.Controlled && c.ControlMaster != null)
+                {
+                    c.ControlTarget = c.ControlMaster;
+                    c.ControlOrder = OrderType.Attack;
+                    c.Combatant = c.ControlMaster;
+                }
+            }
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

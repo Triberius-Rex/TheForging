@@ -1,9 +1,13 @@
+using System;
 using Server.Items;
+using Server.Mobiles;
+using System.Collections.Generic;
+using Server.Gumps;
 namespace Server.Engines.Quests
 {
     public class IronChain : Item
     {
-        public override int LabelNumber => 1075788;  // Iron Chain
+        public override int LabelNumber { get { return 1075788; } } // Iron Chain
 
         [Constructable]
         public IronChain() : base(0x1A07)
@@ -14,12 +18,12 @@ namespace Server.Engines.Quests
             : base(serial)
         {
         }
-
+ 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -32,7 +36,7 @@ namespace Server.Engines.Quests
 
     public class GreyCloak : Cloak
     {
-        public override int LabelNumber => 1075789;  // A Plain Grey Cloak
+        public override int LabelNumber { get { return 1075789; } } // A Plain Grey Cloak
 
         [Constructable]
         public GreyCloak()
@@ -48,7 +52,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -57,14 +61,14 @@ namespace Server.Engines.Quests
 
             int version = reader.ReadInt();
 
-            if (version == 0)
+            if(version == 0)
                 reader.ReadMobile();
         }
     }
 
     public class SeasonedSkillet : Item
     {
-        public override int LabelNumber => 1075774;  // Seasoned Skillet
+        public override int LabelNumber { get { return 1075774; } } // Seasoned Skillet
 
         [Constructable]
         public SeasonedSkillet() : base(0x097F)
@@ -80,7 +84,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -93,7 +97,7 @@ namespace Server.Engines.Quests
 
     public class VillageCauldron : Item
     {
-        public override int LabelNumber => 1075775;  // Village Cauldron
+        public override int LabelNumber { get { return 1075775; } } // Village Cauldron
 
         [Constructable]
         public VillageCauldron()
@@ -110,7 +114,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -123,7 +127,7 @@ namespace Server.Engines.Quests
 
     public class ShortStool : Stool
     {
-        public override int LabelNumber => 1075776;  // Short Stool
+        public override int LabelNumber { get { return 1075776; } } // Short Stool
 
         [Constructable]
         public ShortStool()
@@ -139,7 +143,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -152,7 +156,7 @@ namespace Server.Engines.Quests
 
     public class FriendshipMug : CeramicMug
     {
-        public override int LabelNumber => 1075777;  // Friendship Mug
+        public override int LabelNumber { get { return 1075777; } } // Friendship Mug
 
         [Constructable]
         public FriendshipMug()
@@ -168,7 +172,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -181,7 +185,7 @@ namespace Server.Engines.Quests
 
     public class BrassRing : GoldRing
     {
-        public override int LabelNumber => 1075778;  // Brass Ring
+        public override int LabelNumber { get { return 1075778; } } // Brass Ring
 
         [Constructable]
         public BrassRing()
@@ -197,7 +201,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -210,7 +214,7 @@ namespace Server.Engines.Quests
 
     public class WornHammer : Item
     {
-        public override int LabelNumber => 1075779;  // Worn Hammer
+        public override int LabelNumber { get { return 1075779; } } // Worn Hammer
 
         [Constructable]
         public WornHammer() : base(0x102A)
@@ -226,7 +230,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -239,7 +243,7 @@ namespace Server.Engines.Quests
 
     public class PairOfWorkGloves : LeatherGloves
     {
-        public override int LabelNumber => 1075780;  // Pair of Work Gloves
+        public override int LabelNumber { get { return 1075780; } } // Pair of Work Gloves
 
         [Constructable]
         public PairOfWorkGloves()
@@ -255,7 +259,7 @@ namespace Server.Engines.Quests
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

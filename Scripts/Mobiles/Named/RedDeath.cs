@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -41,6 +42,11 @@ namespace Server.Mobiles
             Fame = 28000;
             Karma = -28000;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetWeaponAbility(WeaponAbility.WhirlwindAttack);
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
@@ -49,23 +55,40 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
-        public override bool CanBeParagon => false;
-        public override bool GivesMLMinorArtifact => true;
-        public override bool AlwaysMurderer => true;
+		public override bool CanBeParagon { get { return false; } }
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 3);
             AddLoot(LootPack.MedScrolls, 2);
             AddLoot(LootPack.HighScrolls, 2);
-            AddLoot(LootPack.ArcanistScrolls);
-            AddLoot(LootPack.LootItem<ResolvesBridle>());
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            c.DropItem(new ResolvesBridle());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

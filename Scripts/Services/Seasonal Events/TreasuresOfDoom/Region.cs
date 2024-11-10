@@ -1,3 +1,6 @@
+using System;
+
+using Server;
 using Server.Spells;
 
 namespace Server.Regions
@@ -10,7 +13,7 @@ namespace Server.Regions
         }
 
         public MonestaryRegion()
-            : base("Doom Monestary", Map.Malas, DefaultPriority, new Rectangle2D(64, 204, 99, 37))
+            : base("Doom Monestary", Map.Malas, Region.DefaultPriority, new Rectangle2D(64, 204, 99, 37))
         {
             GoLocation = new Point3D(79, 223, -1);
 
@@ -25,6 +28,6 @@ namespace Server.Regions
             }
 
             return type == TravelCheckType.TeleportTo || type == TravelCheckType.TeleportFrom;
-        }
+        } 
     }
 }

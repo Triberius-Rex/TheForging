@@ -1,12 +1,15 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class WindOfCorruption : Cyclone
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1150358;  // Wind of Corruption
+	{
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1150358; } } // Wind of Corruption
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         [Constructable]
         public WindOfCorruption()
@@ -28,7 +31,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -40,10 +43,10 @@ namespace Server.Items
 
     public class WindOfCorruptionHuman : Bow
     {
-        public override int LabelNumber => 1150358;  // Wind of Corruption
+        public override int LabelNumber { get { return 1150358; } } // Wind of Corruption
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         [Constructable]
         public WindOfCorruptionHuman()
@@ -65,7 +68,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

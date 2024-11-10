@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -12,9 +13,9 @@ namespace Server.Items
         public BaseBoard(int itemID)
             : base(itemID)
         {
-            CreatePieces();
+            this.CreatePieces();
 
-            Weight = 5.0;
+            this.Weight = 5.0;
         }
 
         public BaseBoard(Serial serial)
@@ -27,18 +28,34 @@ namespace Server.Items
         {
             get
             {
-                return m_Level;
+                return this.m_Level;
             }
             set
             {
-                m_Level = value;
+                this.m_Level = value;
             }
         }
-
-        public override bool DisplaysContent => false;// Do not display (x items, y stones)
-
-        public override bool IsDecoContainer => false;
-
+        public override bool DisplaysContent
+        {
+            get
+            {
+                return false;
+            }
+        }// Do not display (x items, y stones)
+        public override bool IsDecoContainer
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override TimeSpan DecayTime
+        {
+            get
+            {
+                return TimeSpan.FromDays(1.0);
+            }
+        }
         public static bool ValidateDefault(Mobile from, BaseBoard board)
         {
             if (from.AccessLevel >= AccessLevel.GameMaster)
@@ -67,27 +84,27 @@ namespace Server.Items
 
         public void Reset()
         {
-            for (int i = Items.Count - 1; i >= 0; --i)
+            for (int i = this.Items.Count - 1; i >= 0; --i)
             {
-                if (i < Items.Count)
-                    Items[i].Delete();
+                if (i < this.Items.Count)
+                    this.Items[i].Delete();
             }
 
-            CreatePieces();
+            this.CreatePieces();
         }
 
         public void CreatePiece(BasePiece piece, int x, int y)
         {
-            AddItem(piece);
+            this.AddItem(piece);
             piece.Location = new Point3D(x, y, 0);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write((int)m_Level);
+            writer.Write((int)this.m_Level);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -95,8 +112,11 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            m_Level = (SecureLevel)reader.ReadInt();
+            if (version == 1)
+                this.m_Level = (SecureLevel)reader.ReadInt();
 
+            if (this.Weight == 1.0)
+                this.Weight = 5.0;
         }
 
         public override bool OnDragDrop(Mobile from, Item dropped)
@@ -112,17 +132,17 @@ namespace Server.Items
 
             if (piece != null && piece.Board == this && base.OnDragDropInto(from, dropped, point))
             {
-                Packet p = new PlaySound(0x127, GetWorldLocation());
+                Packet p = new PlaySound(0x127, this.GetWorldLocation());
 
                 p.Acquire();
 
-                if (RootParent == from)
+                if (this.RootParent == from)
                 {
                     from.Send(p);
                 }
                 else
                 {
-                    foreach (NetState state in GetClientsInRange(2))
+                    foreach (NetState state in this.GetClientsInRange(2))
                         state.Send(p);
                 }
 
@@ -153,14 +173,14 @@ namespace Server.Items
             public DefaultEntry(Mobile from, BaseBoard board)
                 : base(6162, from.AccessLevel >= AccessLevel.GameMaster ? -1 : 1)
             {
-                m_From = from;
-                m_Board = board;
+                this.m_From = from;
+                this.m_Board = board;
             }
 
             public override void OnClick()
             {
-                if (ValidateDefault(m_From, m_Board))
-                    m_Board.Reset();
+                if (BaseBoard.ValidateDefault(this.m_From, this.m_Board))
+                    this.m_Board.Reset();
             }
         }
     }

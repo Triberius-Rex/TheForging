@@ -1,10 +1,10 @@
-using Server.Commands;
-using Server.Gumps;
-using Server.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Server.Commands;
+using Server.Gumps;
+using Server.Items;
 
 namespace Server
 {
@@ -33,20 +33,20 @@ namespace Server
                                                    "Do you wish to proceed?";
         public static void Initialize()
         {
-            CommandSystem.Register("Freeze", AccessLevel.Administrator, Freeze_OnCommand);
-            CommandSystem.Register("FreezeMap", AccessLevel.Administrator, FreezeMap_OnCommand);
-            CommandSystem.Register("FreezeWorld", AccessLevel.Administrator, FreezeWorld_OnCommand);
+            CommandSystem.Register("Freeze", AccessLevel.Administrator, new CommandEventHandler(Freeze_OnCommand));
+            CommandSystem.Register("FreezeMap", AccessLevel.Administrator, new CommandEventHandler(FreezeMap_OnCommand));
+            CommandSystem.Register("FreezeWorld", AccessLevel.Administrator, new CommandEventHandler(FreezeWorld_OnCommand));
 
-            CommandSystem.Register("Unfreeze", AccessLevel.Administrator, Unfreeze_OnCommand);
-            CommandSystem.Register("UnfreezeMap", AccessLevel.Administrator, UnfreezeMap_OnCommand);
-            CommandSystem.Register("UnfreezeWorld", AccessLevel.Administrator, UnfreezeWorld_OnCommand);
+            CommandSystem.Register("Unfreeze", AccessLevel.Administrator, new CommandEventHandler(Unfreeze_OnCommand));
+            CommandSystem.Register("UnfreezeMap", AccessLevel.Administrator, new CommandEventHandler(UnfreezeMap_OnCommand));
+            CommandSystem.Register("UnfreezeWorld", AccessLevel.Administrator, new CommandEventHandler(UnfreezeWorld_OnCommand));
         }
 
         [Usage("Freeze")]
         [Description("Makes a targeted area of dynamic items static.")]
         public static void Freeze_OnCommand(CommandEventArgs e)
         {
-            BoundingBoxPicker.Begin(e.Mobile, FreezeBox_Callback, null);
+            BoundingBoxPicker.Begin(e.Mobile, new BoundingBoxCallback(FreezeBox_Callback), null);
         }
 
         [Usage("FreezeMap")]
@@ -56,19 +56,19 @@ namespace Server
             Map map = e.Mobile.Map;
 
             if (map != null && map != Map.Internal)
-                SendWarning(e.Mobile, "You are about to freeze <u>all items in {0}</u>.", BaseFreezeWarning, map, NullP3D, NullP3D, FreezeWarning_Callback);
+                SendWarning(e.Mobile, "You are about to freeze <u>all items in {0}</u>.", BaseFreezeWarning, map, NullP3D, NullP3D, new WarningGumpCallback(FreezeWarning_Callback));
         }
 
         [Usage("FreezeWorld")]
         [Description("Makes every dynamic item on all maps static.")]
         public static void FreezeWorld_OnCommand(CommandEventArgs e)
         {
-            SendWarning(e.Mobile, "You are about to freeze <u>every item on every map</u>.", BaseFreezeWarning, null, NullP3D, NullP3D, FreezeWarning_Callback);
+            SendWarning(e.Mobile, "You are about to freeze <u>every item on every map</u>.", BaseFreezeWarning, null, NullP3D, NullP3D, new WarningGumpCallback(FreezeWarning_Callback));
         }
 
         public static void SendWarning(Mobile m, string header, string baseWarning, Map map, Point3D start, Point3D end, WarningGumpCallback callback)
         {
-            m.SendGump(new WarningGump(1060635, 30720, string.Format(baseWarning, string.Format(header, map)), 0xFFC000, 420, 400, callback, new StateInfo(map, start, end)));
+            m.SendGump(new WarningGump(1060635, 30720, String.Format(baseWarning, String.Format(header, map)), 0xFFC000, 420, 400, callback, new StateInfo(map, start, end)));
         }
 
         public static void Freeze(Mobile from, Map targetMap, Point3D start3d, Point3D end3d)
@@ -266,14 +266,14 @@ namespace Server
             if (totalFrozen == 0 && badDataFile)
                 from.SendGump(new NoticeGump(1060637, 30720, "Output data files could not be opened and the freeze operation has been aborted.<br><br>This probably means your server and client are using the same data files.  Instructions on how to resolve this can be found in the first warning window.", 0xFFC000, 320, 240, null, null));
             else
-                from.SendGump(new NoticeGump(1060637, 30720, string.Format("Freeze operation completed successfully.<br><br>{0} item{1} frozen.<br><br>You must restart your client and update it's data files to see the changes.", totalFrozen, totalFrozen != 1 ? "s were" : " was"), 0xFFC000, 320, 240, null, null));
+                from.SendGump(new NoticeGump(1060637, 30720, String.Format("Freeze operation completed successfully.<br><br>{0} item{1} frozen.<br><br>You must restart your client and update it's data files to see the changes.", totalFrozen, totalFrozen != 1 ? "s were" : " was"), 0xFFC000, 320, 240, null, null));
         }
 
         [Usage("Unfreeze")]
         [Description("Makes a targeted area of static items dynamic.")]
         public static void Unfreeze_OnCommand(CommandEventArgs e)
         {
-            BoundingBoxPicker.Begin(e.Mobile, UnfreezeBox_Callback, null);
+            BoundingBoxPicker.Begin(e.Mobile, new BoundingBoxCallback(UnfreezeBox_Callback), null);
         }
 
         [Usage("UnfreezeMap")]
@@ -283,14 +283,14 @@ namespace Server
             Map map = e.Mobile.Map;
 
             if (map != null && map != Map.Internal)
-                SendWarning(e.Mobile, "You are about to unfreeze <u>all items in {0}</u>.", BaseUnfreezeWarning, map, NullP3D, NullP3D, UnfreezeWarning_Callback);
+                SendWarning(e.Mobile, "You are about to unfreeze <u>all items in {0}</u>.", BaseUnfreezeWarning, map, NullP3D, NullP3D, new WarningGumpCallback(UnfreezeWarning_Callback));
         }
 
         [Usage("UnfreezeWorld")]
         [Description("Makes every static item on all maps dynamic.")]
         public static void UnfreezeWorld_OnCommand(CommandEventArgs e)
         {
-            SendWarning(e.Mobile, "You are about to unfreeze <u>every item on every map</u>.", BaseUnfreezeWarning, null, NullP3D, NullP3D, UnfreezeWarning_Callback);
+            SendWarning(e.Mobile, "You are about to unfreeze <u>every item on every map</u>.", BaseUnfreezeWarning, null, NullP3D, NullP3D, new WarningGumpCallback(UnfreezeWarning_Callback));
         }
 
         public static void DoUnfreeze(Map map, ref bool badDataFile, ref int totalUnfrozen)
@@ -329,12 +329,12 @@ namespace Server
             if (totalUnfrozen == 0 && badDataFile)
                 from.SendGump(new NoticeGump(1060637, 30720, "Output data files could not be opened and the unfreeze operation has been aborted.<br><br>This probably means your server and client are using the same data files.  Instructions on how to resolve this can be found in the first warning window.", 0xFFC000, 320, 240, null, null));
             else
-                from.SendGump(new NoticeGump(1060637, 30720, string.Format("Unfreeze operation completed successfully.<br><br>{0} item{1} unfrozen.<br><br>You must restart your client and update it's data files to see the changes.", totalUnfrozen, totalUnfrozen != 1 ? "s were" : " was"), 0xFFC000, 320, 240, null, null));
+                from.SendGump(new NoticeGump(1060637, 30720, String.Format("Unfreeze operation completed successfully.<br><br>{0} item{1} unfrozen.<br><br>You must restart your client and update it's data files to see the changes.", totalUnfrozen, totalUnfrozen != 1 ? "s were" : " was"), 0xFFC000, 320, 240, null, null));
         }
 
         private static void FreezeBox_Callback(Mobile from, Map map, Point3D start, Point3D end, object state)
         {
-            SendWarning(from, "You are about to freeze a section of items.", BaseFreezeWarning, map, start, end, FreezeWarning_Callback);
+            SendWarning(from, "You are about to freeze a section of items.", BaseFreezeWarning, map, start, end, new WarningGumpCallback(FreezeWarning_Callback));
         }
 
         private static void FreezeWarning_Callback(Mobile from, bool okay, object state)
@@ -349,7 +349,7 @@ namespace Server
 
         private static void UnfreezeBox_Callback(Mobile from, Map map, Point3D start, Point3D end, object state)
         {
-            SendWarning(from, "You are about to unfreeze a section of items.", BaseUnfreezeWarning, map, start, end, UnfreezeWarning_Callback);
+            SendWarning(from, "You are about to unfreeze a section of items.", BaseUnfreezeWarning, map, start, end, new WarningGumpCallback(UnfreezeWarning_Callback));
         }
 
         private static void UnfreezeWarning_Callback(Mobile from, bool okay, object state)
@@ -422,10 +422,9 @@ namespace Server
                                 {
                                     ++totalUnfrozen;
 
-                                    Item item = new Static(oldTile.ID)
-                                    {
-                                        Hue = oldTile.Hue
-                                    };
+                                    Item item = new Static(oldTile.ID);
+
+                                    item.Hue = oldTile.Hue;
 
                                     item.MoveToWorld(new Point3D(px + xTileStart, py + yTileStart, oldTile.Z), map);
                                 }
@@ -482,9 +481,8 @@ namespace Server
             {
                 return new FileStream(orig.Name, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
                 return null;
             }
         }
@@ -529,14 +527,13 @@ namespace Server
                     for (int i = 0; i < count; ++i)
                     {
                         staTiles[i].Set((ushort)(m_Buffer[index++] | (m_Buffer[index++] << 8)),
-                            m_Buffer[index++], m_Buffer[index++], (sbyte)m_Buffer[index++],
+                            (byte)m_Buffer[index++], (byte)m_Buffer[index++], (sbyte)m_Buffer[index++],
                             (short)(m_Buffer[index++] | (m_Buffer[index++] << 8)));
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(e);
                 count = -1;
             }
 
@@ -550,9 +547,9 @@ namespace Server
             public readonly List<Item> m_List;
             public DeltaState(Point2D p)
             {
-                m_X = p.X;
-                m_Y = p.Y;
-                m_List = new List<Item>();
+                this.m_X = p.X;
+                this.m_Y = p.Y;
+                this.m_List = new List<Item>();
             }
         }
 
@@ -563,9 +560,9 @@ namespace Server
             public readonly Point3D m_End;
             public StateInfo(Map map, Point3D start, Point3D end)
             {
-                m_Map = map;
-                m_Start = start;
-                m_End = end;
+                this.m_Map = map;
+                this.m_Start = start;
+                this.m_End = end;
             }
         }
     }

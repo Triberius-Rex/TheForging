@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class OrnateElvenTableSouthAddon : BaseAddon
@@ -5,9 +7,9 @@ namespace Server.Items
         [Constructable]
         public OrnateElvenTableSouthAddon()
         {
-            AddComponent(new AddonComponent(0x308E), -1, 0, 0);
-            AddComponent(new AddonComponent(0x308D), 0, 0, 0);
-            AddComponent(new AddonComponent(0x308C), 1, 0, 0);
+			this.AddComponent(new AddonComponent(0x308E), -1, 0, 0);
+			this.AddComponent(new AddonComponent(0x308D), 0, 0, 0);
+			this.AddComponent(new AddonComponent(0x308C), 1, 0, 0);
         }
 
         public OrnateElvenTableSouthAddon(Serial serial)
@@ -15,7 +17,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new OrnateElvenTableSouthDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new OrnateElvenTableSouthDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -43,8 +51,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new OrnateElvenTableSouthAddon();
-        public override int LabelNumber => 1072869;// ornate table (south)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new OrnateElvenTableSouthAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072869;
+            }
+        }// ornate table (south)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

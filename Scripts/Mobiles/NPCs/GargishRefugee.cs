@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -6,25 +7,25 @@ namespace Server.Mobiles
     {
         [Constructable]
         public GargishRefugee()
-            : base(AIType.AI_Melee, FightMode.None, 10, 1, 0.2, 0.4)
+            : base(AIType.AI_Animal, FightMode.None, 10, 1, 0.2, 0.4)
         {
-            Name = "Refugee";
-            if (Female = Utility.RandomBool())
+            this.Name = "Refugee";
+            if (this.Female = Utility.RandomBool())
             {
-                Body = 667;
-                HairItemID = 17067;
-                HairHue = 1762;
-                SetWearable(new GargishClothChest(), dropChance: 1);
-                SetWearable(new GargishClothKilt(), Utility.RandomNeutralHue(), 1);
+                this.Body = 667;
+                this.HairItemID = 17067;
+                this.HairHue = 1762;
+                this.AddItem(new GargishClothChest());
+                this.AddItem(new GargishClothKilt(Utility.RandomNeutralHue()));
             }
             else
             {
-                Body = 666;
-                HairItemID = 16987;
-                HairHue = 1801;
-                SetWearable(new GargishClothChest(), dropChance: 1);
-                SetWearable(new GargishClothKilt(), dropChance: 1);
-				SetWearable(new GargishClothLegs(), Utility.RandomNeutralHue(), 1);
+                this.Body = 666;
+                this.HairItemID = 16987;
+                this.HairHue = 1801;
+                this.AddItem(new GargishClothChest());
+                this.AddItem(new GargishClothKilt());
+                this.AddItem(new GargishClothLegs(Utility.RandomNeutralHue()));
             }
         }
 
@@ -37,7 +38,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

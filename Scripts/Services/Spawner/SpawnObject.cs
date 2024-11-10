@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Server.Mobiles
@@ -7,7 +8,7 @@ namespace Server.Mobiles
         public string SpawnName { get; set; }
         public int MaxCount { get; set; }
 
-        public int CurrentCount => SpawnedObjects.Count;
+        public int CurrentCount { get { return SpawnedObjects.Count; } }
 
         public List<ISpawnable> SpawnedObjects { get; set; }
 
@@ -48,12 +49,12 @@ namespace Server.Mobiles
             writer.Write(0);
 
             writer.Write(SpawnedObjects.Count);
-            foreach (ISpawnable sp in SpawnedObjects)
+            foreach (var sp in SpawnedObjects)
             {
-                if (sp is Item item)
-                    writer.Write(item);
-                else if (sp is Mobile mobile)
-                    writer.Write(mobile);
+                if (sp is Item)
+                    writer.Write((Item)sp);
+                else if (sp is Mobile)
+                    writer.Write((Mobile)sp);
                 else
                     writer.Write(Serial.MinusOne);
             }

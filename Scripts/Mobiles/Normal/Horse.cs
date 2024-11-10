@@ -1,6 +1,9 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a horse corpse")]
+    [TypeAlias("Server.Mobiles.BrownHorse", "Server.Mobiles.DirtyHorse", "Server.Mobiles.GrayHorse", "Server.Mobiles.TanHorse")]
     public class Horse : BaseMount
     {
         private static readonly int[] m_IDs = new int[]
@@ -18,7 +21,7 @@ namespace Server.Mobiles
 
         [Constructable]
         public Horse(string name)
-            : base(name, 0xE2, 0x3EA0, AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.2, 0.4)
+            : base(name, 0xE2, 0x3EA0, AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             int random = Utility.Random(4);
 
@@ -56,18 +59,38 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 3;
-        public override int Hides => 10;
-        public override FoodType FavoriteFood => FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+        public override int Meat
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.FruitsAndVegies | FoodType.GrainsAndHay;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

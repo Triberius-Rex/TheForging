@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -10,7 +11,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Spellweaving, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a shimmering effusion";
-            Body = 0x105;
+            Body = 0x105;			
 
             SetStr(500, 550);
             SetDex(350, 400);
@@ -19,13 +20,13 @@ namespace Server.Mobiles
             SetHits(20000);
 
             SetDamage(27, 31);
-
+			
             SetDamageType(ResistanceType.Physical, 20);
             SetDamageType(ResistanceType.Fire, 20);
             SetDamageType(ResistanceType.Cold, 20);
             SetDamageType(ResistanceType.Poison, 20);
             SetDamageType(ResistanceType.Energy, 20);
-
+			
             SetResistance(ResistanceType.Physical, 60, 80);
             SetResistance(ResistanceType.Fire, 60, 80);
             SetResistance(ResistanceType.Cold, 60, 80);
@@ -42,30 +43,85 @@ namespace Server.Mobiles
 
             Fame = 30000;
             Karma = -30000;
-        }
+			
+            PackResources(8);
+            PackTalismans(5);
 
+            for (int i = 0; i < Utility.RandomMinMax(1, 6); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+        }
+		
         public override void GenerateLoot()
         {
             AddLoot(LootPack.SuperBoss, 8);
             AddLoot(LootPack.Parrot, 2);
             AddLoot(LootPack.HighScrolls, 3);
             AddLoot(LootPack.MedScrolls, 3);
-            AddLoot(LootPack.ArcanistScrolls, Utility.RandomMinMax(1, 6));
-            AddLoot(LootPack.PeerlessResource, 8);
-            AddLoot(LootPack.Talisman, 5);
-            AddLoot(LootPack.LootItem<CapturedEssence>());
-            AddLoot(LootPack.LootItem<ShimmeringCrystals>());
-
-            AddLoot(LootPack.RandomLootItem(new[] { typeof(ShimmeringEffusionStatuette), typeof(CorporealBrumeStatuette), typeof(MantraEffervescenceStatuette), typeof(FetidEssenceStatuette) }, 5.0, 1));
-
-            AddLoot(LootPack.LootItem<FerretImprisonedInCrystal>(5.0));
-            AddLoot(LootPack.LootItem<CrystallineRing>(2.25));
         }
+		
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);		
+			
+            c.DropItem(new CapturedEssence());
+            c.DropItem(new ShimmeringCrystals());			
+			
+            if (Utility.RandomDouble() < 0.05)
+            {
+                switch ( Utility.Random(4) )
+                {
+                    case 0:
+                        c.DropItem(new ShimmeringEffusionStatuette());
+                        break;
+                    case 1:
+                        c.DropItem(new CorporealBrumeStatuette());
+                        break;
+                    case 2:
+                        c.DropItem(new MantraEffervescenceStatuette());
+                        break;
+                    case 3:
+                        c.DropItem(new FetidEssenceStatuette());
+                        break;
+                }
+            }
 
-        public override bool AutoDispel => true;
-        public override int TreasureMapLevel => 5;
-        public override bool HasFireRing => true;
-        public override double FireRingChance => 0.1;
+            if (Utility.RandomDouble() < 0.05)
+                c.DropItem(new FerretImprisonedInCrystal());		
+						
+            if (Utility.RandomDouble() < 0.025)
+                c.DropItem(new CrystallineRing());	
+        }
+			
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override bool HasFireRing
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override double FireRingChance
+        {
+            get
+            {
+                return 0.1;
+            }
+        }
 
         public override int GetIdleSound()
         {
@@ -86,25 +142,43 @@ namespace Server.Mobiles
         {
             return 0x1C2;
         }
-
+		
         #region Helpers
-        public override bool CanSpawnHelpers => true;
-        public override int MaxHelpersWaves => 4;
-        public override double SpawnHelpersChance => 0.1;
-
+        public override bool CanSpawnHelpers
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int MaxHelpersWaves
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        public override double SpawnHelpersChance
+        {
+            get
+            {
+                return 0.1;
+            }
+        }
+		
         public override void SpawnHelpers()
         {
             int amount = 1;
-
+		
             if (Altar != null)
                 amount = Altar.Fighters.Count;
-
+				
             if (amount > 5)
                 amount = 5;
-
-            for (int i = 0; i < amount; i++)
-            {
-                switch (Utility.Random(3))
+			
+            for (int i = 0; i < amount; i ++)
+            { 
+                switch ( Utility.Random(3) )
                 {
                     case 0:
                         SpawnHelper(new MantraEffervescence(), 2);
@@ -129,14 +203,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
     }

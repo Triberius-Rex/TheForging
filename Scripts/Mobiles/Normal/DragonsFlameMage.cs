@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -18,10 +19,10 @@ namespace Server.Mobiles
             HairHue = Race.RandomHairHue();
             Race.RandomFacialHair(this);
 
-			SetWearable(new NinjaTabi(), dropChance: 1);
-			SetWearable(new FancyShirt(), 0x51D, 1);
-			SetWearable(new Hakama(), 0x51D, 1);
-			SetWearable(new Kasa(), 0x51D, 1);
+            AddItem(new NinjaTabi());
+            AddItem(new FancyShirt(0x51D));
+            AddItem(new Hakama(0x51D));
+            AddItem(new Kasa(0x51D));
 
             SetStr(340, 360);
             SetDex(200, 215);
@@ -50,6 +51,8 @@ namespace Server.Mobiles
 
             Fame = 13000;
             Karma = -13000;
+
+            VirtualArmor = 58;
         }
 
         public DragonsFlameMage(Serial serial)
@@ -57,12 +60,12 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override bool ShowFameTitle { get { return false; } }
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich, 4);
+            AddLoot(LootPack.AosFilthyRich, 4);
         }
 
         public override void AlterSpellDamageFrom(Mobile from, ref int damage)
@@ -76,13 +79,13 @@ namespace Server.Mobiles
             base.OnDeath(c);
 
             if (Utility.RandomDouble() < 0.3)
-                c.DropItem(new DragonFlameSectBadge());
+                c.DropItem(new DragonFlameSectBadge());      
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

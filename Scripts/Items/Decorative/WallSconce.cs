@@ -9,11 +9,11 @@ namespace Server.Items
         public WallSconce()
             : base(0x9FB)
         {
-            Movable = false;
-            Duration = TimeSpan.Zero; // Never burnt out
-            Burning = false;
-            Light = LightType.WestBig;
-            Weight = 3.0;
+            this.Movable = false;
+            this.Duration = TimeSpan.Zero; // Never burnt out
+            this.Burning = false;
+            this.Light = LightType.WestBig;
+            this.Weight = 3.0;
         }
 
         public WallSconce(Serial serial)
@@ -25,7 +25,7 @@ namespace Server.Items
         {
             get
             {
-                if (ItemID == 0x9FB)
+                if (this.ItemID == 0x9FB)
                     return 0x9FD;
                 else
                     return 0xA02;
@@ -35,7 +35,7 @@ namespace Server.Items
         {
             get
             {
-                if (ItemID == 0x9FD)
+                if (this.ItemID == 0x9FD)
                     return 0x9FB;
                 else
                     return 0xA00;
@@ -43,24 +43,24 @@ namespace Server.Items
         }
         public void Flip()
         {
-            if (Light == LightType.WestBig)
-                Light = LightType.NorthBig;
-            else if (Light == LightType.NorthBig)
-                Light = LightType.WestBig;
+            if (this.Light == LightType.WestBig)
+                this.Light = LightType.NorthBig;
+            else if (this.Light == LightType.NorthBig)
+                this.Light = LightType.WestBig;
 
-            switch (ItemID)
+            switch ( this.ItemID )
             {
                 case 0x9FB:
-                    ItemID = 0xA00;
+                    this.ItemID = 0xA00;
                     break;
                 case 0x9FD:
-                    ItemID = 0xA02;
+                    this.ItemID = 0xA02;
                     break;
                 case 0xA00:
-                    ItemID = 0x9FB;
+                    this.ItemID = 0x9FB;
                     break;
                 case 0xA02:
-                    ItemID = 0x9FD;
+                    this.ItemID = 0x9FD;
                     break;
             }
         }
@@ -68,7 +68,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

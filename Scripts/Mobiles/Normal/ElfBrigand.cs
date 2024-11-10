@@ -1,7 +1,8 @@
+using System;
 using Server.Items;
 
-namespace Server.Mobiles
-{
+namespace Server.Mobiles 
+{ 
     [CorpseName("an elf corpse")]
     public class ElfBrigand : BaseCreature
     {
@@ -48,33 +49,33 @@ namespace Server.Mobiles
             Karma = -1000;
 
             // outfit
-            SetWearable(new Shirt(), Utility.RandomNeutralHue(), 1);
+            AddItem(new Shirt(Utility.RandomNeutralHue()));
 
             switch (Utility.Random(4))
             {
                 case 0:
-					SetWearable(new Sandals(), dropChance: 1);
+                    AddItem(new Sandals());
                     break;
                 case 1:
-					SetWearable(new Shoes(), dropChance: 1);
+                    AddItem(new Shoes());
                     break;
                 case 2:
-					SetWearable(new Boots(), dropChance: 1);
+                    AddItem(new Boots());
                     break;
                 case 3:
-					SetWearable(new ThighBoots(), dropChance: 1);
+                    AddItem(new ThighBoots());
                     break;
             }
 
             if (Female)
             {
                 if (Utility.RandomBool())
-					SetWearable(new Skirt(), Utility.RandomNeutralHue(), 1);
+                    AddItem(new Skirt(Utility.RandomNeutralHue()));
                 else
-					SetWearable(new Kilt(), Utility.RandomNeutralHue(), 1);
+                    AddItem(new Kilt(Utility.RandomNeutralHue()));
             }
             else
-				SetWearable(new ShortPants(), Utility.RandomNeutralHue(), 1);
+                AddItem(new ShortPants(Utility.RandomNeutralHue()));
 
             // hair, facial hair			
             HairItemID = Race.RandomHair(Female);
@@ -83,10 +84,12 @@ namespace Server.Mobiles
             // weapon, shield
             Item weapon = Loot.RandomWeapon();
 
-			SetWearable(weapon, dropChance: 1);
+            AddItem(weapon);
 
             if (weapon.Layer == Layer.OneHanded && Utility.RandomBool())
-                SetWearable(Loot.RandomShield(), dropChance: 1);
+                AddItem(Loot.RandomShield());
+
+            PackGold(50, 150);
         }
 
         public ElfBrigand(Serial serial)
@@ -94,24 +97,39 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
-
-        public override void GenerateLoot()
+        public override bool AlwaysMurderer
         {
-            AddLoot(LootPack.LootGold(50, 150));
-            AddLoot(LootPack.LootItem<SeveredElfEars>(75.0, 1));
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (Utility.RandomDouble() < 0.75)
+                c.DropItem(new SeveredElfEars());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

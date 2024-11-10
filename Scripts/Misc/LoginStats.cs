@@ -1,4 +1,9 @@
+using System;
 using Server.Network;
+using Server.Engines.Quests;
+using Server.Mobiles;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Misc
 {
@@ -7,7 +12,7 @@ namespace Server.Misc
         public static void Initialize()
         {
             // Register our event handler
-            EventSink.Login += EventSink_Login;
+            EventSink.Login += new LoginEventHandler(EventSink_Login);
         }
 
         private static void EventSink_Login(LoginEventArgs args)
@@ -27,7 +32,7 @@ namespace Server.Misc
 
             if (m.IsStaff())
             {
-                Engines.Help.PageQueue.Pages_OnCalled(m);
+                Server.Engines.Help.PageQueue.Pages_OnCalled(m);
             }
         }
     }

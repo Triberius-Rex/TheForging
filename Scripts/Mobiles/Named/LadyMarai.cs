@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -36,6 +37,11 @@ namespace Server.Mobiles
             Fame = 18000;
             Karma = -18000;
 
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetWeaponAbility(WeaponAbility.CrushingBlow);
         }
 
@@ -43,22 +49,35 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
+		public override bool CanBeParagon { get { return false; } }
+        public override void OnDeath( Container c )
+        {
+            base.OnDeath( c );
 
-        public override bool CanBeParagon => false;
+            if ( Utility.RandomDouble() < 0.15 )
+            c.DropItem( new DisintegratingThesisNotes() );
 
+            if ( Utility.RandomDouble() < 0.1 )
+            c.DropItem( new ParrotItem() );
+        }
+
+        /*public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }*/
         public override void GenerateLoot()
         {
             AddLoot(LootPack.UltraRich, 3);
-            AddLoot(LootPack.ArcanistScrolls);
-            AddLoot(LootPack.LootItem<DisintegratingThesisNotes>(15.0));
-            AddLoot(LootPack.Parrot);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

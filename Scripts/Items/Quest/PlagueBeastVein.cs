@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -10,7 +10,7 @@ namespace Server.Items
         public PlagueBeastVein(int itemID, int hue)
             : base(itemID, hue)
         {
-            m_Cut = false;
+            this.m_Cut = false;
         }
 
         public PlagueBeastVein(Serial serial)
@@ -18,14 +18,20 @@ namespace Server.Items
         {
         }
 
-        public bool Cut => m_Cut;
+        public bool Cut
+        {
+            get
+            {
+                return this.m_Cut;
+            }
+        }
         public override bool Scissor(Mobile from, Scissors scissors)
         {
-            if (IsAccessibleTo(from))
+            if (this.IsAccessibleTo(from))
             {
-                if (!m_Cut && m_Timer == null)
+                if (!this.m_Cut && this.m_Timer == null)
                 {
-                    m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(3), CuttingDone, from);
+                    this.m_Timer = Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(3), new TimerStateCallback<Mobile>(CuttingDone), from);
                     scissors.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071899); // You begin cutting through the vein.
                     return true;
                 }
@@ -38,8 +44,8 @@ namespace Server.Items
 
         public override void OnAfterDelete()
         {
-            if (m_Timer != null && m_Timer.Running)
-                m_Timer.Stop();
+            if (this.m_Timer != null && this.m_Timer.Running)
+                this.m_Timer.Stop();
         }
 
         public override void Serialize(GenericWriter writer)
@@ -48,7 +54,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_Cut);
+            writer.Write((bool)this.m_Cut);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -57,22 +63,22 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Cut = reader.ReadBool();
+            this.m_Cut = reader.ReadBool();
         }
 
         private void CuttingDone(Mobile from)
         {
-            m_Cut = true;
+            this.m_Cut = true;
 
-            if (ItemID == 0x1B1C)
-                ItemID = 0x1B1B;
+            if (this.ItemID == 0x1B1C)
+                this.ItemID = 0x1B1B;
             else
-                ItemID = 0x1B1C;
+                this.ItemID = 0x1B1C;
 
-            if (Owner != null)
-                Owner.PlaySound(0x199);
+            if (this.Owner != null)
+                this.Owner.PlaySound(0x199);
 
-            PlagueBeastRubbleOrgan organ = Organ as PlagueBeastRubbleOrgan;
+            PlagueBeastRubbleOrgan organ = this.Organ as PlagueBeastRubbleOrgan;
 
             if (organ != null)
                 organ.OnVeinCut(from, this);

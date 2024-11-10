@@ -1,5 +1,10 @@
-using Server.Commands;
+using Server;
 using System;
+using Server.Mobiles;
+using Server.Items;
+using Server.Gumps;
+using Server.Commands;
+using System.Collections.Generic;
 
 namespace Server.Engines.NewMagincia
 {
@@ -7,9 +12,9 @@ namespace Server.Engines.NewMagincia
     {
         public static void Initialize()
         {
-            CommandSystem.Register("ViewLottos", AccessLevel.GameMaster, ViewLottos_OnCommand);
+            CommandSystem.Register("ViewLottos", AccessLevel.GameMaster, new CommandEventHandler(ViewLottos_OnCommand));
 
-            CommandSystem.Register("GenNewMagincia", AccessLevel.GameMaster, GenNewMagincia_OnCommand);
+            CommandSystem.Register("GenNewMagincia", AccessLevel.GameMaster, new CommandEventHandler(GenNewMagincia_OnCommand));
             CommandSystem.Register("DeleteNewMagincia", AccessLevel.Administrator, Delete);
         }
 

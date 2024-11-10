@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,33 +10,38 @@ namespace Server.Mobiles
         public SavageRider()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.15, 0.4)
         {
-            Name = NameList.RandomName("savage rider");
+            this.Name = NameList.RandomName("savage rider");
 
-            Body = 185;
+            this.Body = 185;
 
-            SetStr(151, 170);
-            SetDex(92, 130);
-            SetInt(51, 65);
+            this.SetStr(151, 170);
+            this.SetDex(92, 130);
+            this.SetInt(51, 65);
 
-            SetDamage(29, 34);
+            this.SetDamage(29, 34);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetSkill(SkillName.Fencing, 72.5, 95.0);
-            SetSkill(SkillName.Healing, 60.3, 90.0);
-            SetSkill(SkillName.Macing, 72.5, 95.0);
-            SetSkill(SkillName.Poisoning, 60.0, 82.5);
-            SetSkill(SkillName.MagicResist, 72.5, 95.0);
-            SetSkill(SkillName.Swords, 72.5, 95.0);
-            SetSkill(SkillName.Tactics, 72.5, 95.0);
+            this.SetSkill(SkillName.Fencing, 72.5, 95.0);
+            this.SetSkill(SkillName.Healing, 60.3, 90.0);
+            this.SetSkill(SkillName.Macing, 72.5, 95.0);
+            this.SetSkill(SkillName.Poisoning, 60.0, 82.5);
+            this.SetSkill(SkillName.MagicResist, 72.5, 95.0);
+            this.SetSkill(SkillName.Swords, 72.5, 95.0);
+            this.SetSkill(SkillName.Tactics, 72.5, 95.0);
 
-            Fame = 1000;
-            Karma = -1000;
+            this.Fame = 1000;
+            this.Karma = -1000;
 
-            SetWearable(new TribalSpear(), dropChance: 1);
-            SetWearable(new BoneArms(), dropChance: 1);
-            SetWearable(new BoneLegs(), dropChance: 1);
-            SetWearable(new BearMask(), dropChance: 1);
+            this.PackItem(new Bandage(Utility.RandomMinMax(1, 15)));
+
+            if (0.1 > Utility.RandomDouble())
+                this.PackItem(new BolaBall());
+
+            this.AddItem(new TribalSpear());
+            this.AddItem(new BoneArms());
+            this.AddItem(new BoneLegs());
+            this.AddItem(new BearMask());
 
             new SavageRidgeback().Rider = this;
         }
@@ -46,23 +51,45 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        public override TribeType Tribe => TribeType.Savage;
+        public override TribeType Tribe { get { return TribeType.Savage; } }
 
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.SavagesAndOrcs;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Average);
-            AddLoot(LootPack.LootItem<BolaBall>(10.0));
-            AddLoot(LootPack.LootItem<Bandage>(1, 15, true));
-            AddLoot(LootPack.LootItem<SeveredHumanEars>(75.0, 1));
+            this.AddLoot(LootPack.Average);
         }
 
         public override bool OnBeforeDeath()
         {
-            IMount mount = Mount;
+            IMount mount = this.Mount;
 
             if (mount != null)
                 mount.Rider = null;
@@ -108,7 +135,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

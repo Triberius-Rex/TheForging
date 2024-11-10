@@ -1,8 +1,10 @@
+using Server;
+
 namespace Server.Items
 {
     public class BrassOrrery : Item
     {
-        public override int LabelNumber => 1125363;  // orrery
+        public override int LabelNumber { get { return 1125363; } } // orrery
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Active { get; set; }

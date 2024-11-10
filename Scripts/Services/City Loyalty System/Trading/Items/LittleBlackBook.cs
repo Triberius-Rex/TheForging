@@ -1,8 +1,13 @@
+using System;
+using Server;
+using Server.Mobiles;
+using Server.Engines.CityLoyalty;
+
 namespace Server.Items
 {
     public class LittleBlackBook : Item
     {
-        public override int LabelNumber => 1151751;  // Slim the Fence's little black book
+        public override int LabelNumber { get { return 1151751; } } // Slim the Fence's little black book
 
         [Constructable]
         public LittleBlackBook()

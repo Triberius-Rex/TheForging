@@ -1,8 +1,9 @@
 using System;
+using Server.Mobiles;
 
 namespace Server.Items
 {
-    [Flipable(0x9DB1, 0x9DB2)]
+    [FlipableAttribute(0x9DB1, 0x9DB2)]
     public class BrokenAutomatonHead : Item
     {
         public static int RepairAmount = 75;
@@ -17,14 +18,14 @@ namespace Server.Items
         {
             get
             {
-                if (_Automaton == null)
+                if(_Automaton == null)
                     return typeof(IronIngot);
 
                 return _Automaton.RepairResource;
             }
         }
 
-        public override bool Nontransferable => true;
+        public override bool Nontransferable { get { return true; } }
 
         public BrokenAutomatonHead(KotlAutomaton automaton)
             : base(0x9DB1)
@@ -39,10 +40,10 @@ namespace Server.Items
         {
             if (_Automaton != null)
             {
-                if (_Automaton is BlackrockAutomaton)
-                    list.Add(1157046, string.Format("{0}\t#{1}", _Automaton.Name, "1157178")); // ~1_NAME~'s Broken ~2_TYPE~ Automaton Head
+                if(_Automaton is BlackrockAutomaton)
+                    list.Add(1157046, String.Format("{0}\t#{1}", _Automaton.Name, "1157178")); // ~1_NAME~'s Broken ~2_TYPE~ Automaton Head
                 else
-                    list.Add(1157046, string.Format("{0}\t#{1}", _Automaton.Name, CraftResources.GetLocalizationNumber(_Automaton.Resource).ToString())); // ~1_NAME~'s Broken ~2_TYPE~ Automaton Head
+                    list.Add(1157046, String.Format("{0}\t#{1}", _Automaton.Name, CraftResources.GetLocalizationNumber(_Automaton.Resource).ToString())); // ~1_NAME~'s Broken ~2_TYPE~ Automaton Head
             }
             else
             {
@@ -63,9 +64,9 @@ namespace Server.Items
                 else if (from.Backpack.GetAmount(res) < RepairAmount)
                 {
                     if (res == typeof(CrystallineBlackrock))
-                        from.SendLocalizedMessage(1157179, string.Format("\t{0}", _Automaton.Name));
+                        from.SendLocalizedMessage(1157179, String.Format("\t{0}", _Automaton.Name));
                     else
-                        from.SendLocalizedMessage(1157050, string.Format("#{0}\t{1}", CraftResources.GetLocalizationNumber(_Automaton.Resource).ToString(), _Automaton.Name)); // You need 75 ~1_MATERIAL~ ingots to repair the ~2_CREATURE~.
+                        from.SendLocalizedMessage(1157050, String.Format("#{0}\t{1}", CraftResources.GetLocalizationNumber(_Automaton.Resource).ToString(), _Automaton.Name)); // You need 75 ~1_MATERIAL~ ingots to repair the ~2_CREATURE~.
                 }
                 else
                 {
@@ -131,7 +132,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(_Automaton);
         }

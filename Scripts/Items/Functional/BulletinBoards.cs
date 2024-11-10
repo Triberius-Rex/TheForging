@@ -1,6 +1,6 @@
-using Server.Network;
 using System;
 using System.Collections.Generic;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -33,7 +33,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -56,8 +56,8 @@ namespace Server.Items
         public BaseBulletinBoard(int itemID)
             : base(itemID)
         {
-            m_BoardName = "bulletin board";
-            Movable = false;
+            this.m_BoardName = "bulletin board";
+            this.Movable = false;
         }
 
         public BaseBulletinBoard(Serial serial)
@@ -70,11 +70,11 @@ namespace Server.Items
         {
             get
             {
-                return m_BoardName;
+                return this.m_BoardName;
             }
             set
             {
-                m_BoardName = value;
+                this.m_BoardName = value;
             }
         }
         public static bool CheckTime(DateTime time, TimeSpan range)
@@ -89,16 +89,16 @@ namespace Server.Items
             int minutes = totalSeconds / 60;
 
             if (minutes != 0 && seconds != 0)
-                return string.Format("{0} minute{1} and {2} second{3}", minutes, minutes == 1 ? "" : "s", seconds, seconds == 1 ? "" : "s");
+                return String.Format("{0} minute{1} and {2} second{3}", minutes, minutes == 1 ? "" : "s", seconds, seconds == 1 ? "" : "s");
             else if (minutes != 0)
-                return string.Format("{0} minute{1}", minutes, minutes == 1 ? "" : "s");
+                return String.Format("{0} minute{1}", minutes, minutes == 1 ? "" : "s");
             else
-                return string.Format("{0} second{1}", seconds, seconds == 1 ? "" : "s");
+                return String.Format("{0} second{1}", seconds, seconds == 1 ? "" : "s");
         }
 
         public static void Initialize()
         {
-            PacketHandlers.Register(0x71, 0, true, BBClientRequest);
+            PacketHandlers.Register(0x71, 0, true, new OnPacketReceive(BBClientRequest));
         }
 
         public static void BBClientRequest(NetState state, PacketReader pvSrc)
@@ -111,7 +111,7 @@ namespace Server.Items
             if (board == null || !board.CheckRange(from))
                 return;
 
-            switch (packetID)
+            switch ( packetID )
             {
                 case 3:
                     BBRequestContent(from, board, pvSrc);
@@ -206,7 +206,7 @@ namespace Server.Items
 
         public virtual void Cleanup()
         {
-            List<Item> items = Items;
+            List<Item> items = this.Items;
 
             for (int i = items.Count - 1; i >= 0; --i)
             {
@@ -221,14 +221,14 @@ namespace Server.Items
                 if (msg.Thread == null && CheckTime(msg.LastPostTime, ThreadDeletionTime))
                 {
                     msg.Delete();
-                    RecurseDelete(msg); // A root-level thread has expired
+                    this.RecurseDelete(msg); // A root-level thread has expired
                 }
             }
         }
 
         public virtual bool GetLastPostTime(Mobile poster, bool onlyCheckRoot, ref DateTime lastPostTime)
         {
-            List<Item> items = Items;
+            List<Item> items = this.Items;
             bool wasSet = false;
 
             for (int i = 0; i < items.Count; ++i)
@@ -253,14 +253,17 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (CheckRange(from))
+            if (this.CheckRange(from))
             {
-                Cleanup();
+                this.Cleanup();
 
                 NetState state = from.NetState;
 
                 state.Send(new BBDisplayBoard(this));
-                state.Send(new ContainerContent(from, this));
+                if (state.ContainerGridLines)
+                    state.Send(new ContainerContent6017(from, this));
+                else
+                    state.Send(new ContainerContent(from, this));
             }
             else
             {
@@ -273,7 +276,7 @@ namespace Server.Items
             if (from.AccessLevel >= AccessLevel.GameMaster)
                 return true;
 
-            return (from.Map == Map && from.InRange(GetWorldLocation(), 2));
+            return (from.Map == this.Map && from.InRange(this.GetWorldLocation(), 2));
         }
 
         public void PostMessage(Mobile from, BulletinMessage thread, string subject, string[] lines)
@@ -281,16 +284,16 @@ namespace Server.Items
             if (thread != null)
                 thread.LastPostTime = DateTime.UtcNow;
 
-            AddItem(new BulletinMessage(from, thread, subject, lines));
+            this.AddItem(new BulletinMessage(from, thread, subject, lines));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_BoardName);
+            writer.Write((string)this.m_BoardName);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -299,11 +302,11 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_BoardName = reader.ReadString();
+                        this.m_BoardName = reader.ReadString();
                         break;
                     }
             }
@@ -312,7 +315,7 @@ namespace Server.Items
         private void RecurseDelete(BulletinMessage msg)
         {
             List<Item> found = new List<Item>();
-            List<Item> items = Items;
+            List<Item> items = this.Items;
 
             for (int i = items.Count - 1; i >= 0; --i)
             {
@@ -332,7 +335,7 @@ namespace Server.Items
             }
 
             for (int i = 0; i < found.Count; ++i)
-                RecurseDelete((BulletinMessage)found[i]);
+                this.RecurseDelete((BulletinMessage)found[i]);
         }
     }
 
@@ -350,17 +353,17 @@ namespace Server.Items
         public BulletinMessage(Mobile poster, BulletinMessage thread, string subject, string[] lines)
             : base(0xEB0)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Poster = poster;
-            m_Subject = subject;
-            m_Time = DateTime.UtcNow;
-            m_LastPostTime = m_Time;
-            m_Thread = thread;
-            m_PostedName = m_Poster.Name;
-            m_PostedBody = m_Poster.Body;
-            m_PostedHue = m_Poster.Hue;
-            m_Lines = lines;
+            this.m_Poster = poster;
+            this.m_Subject = subject;
+            this.m_Time = DateTime.UtcNow;
+            this.m_LastPostTime = this.m_Time;
+            this.m_Thread = thread;
+            this.m_PostedName = this.m_Poster.Name;
+            this.m_PostedBody = this.m_Poster.Body;
+            this.m_PostedHue = this.m_Poster.Hue;
+            this.m_Lines = lines;
 
             List<BulletinEquip> list = new List<BulletinEquip>();
 
@@ -372,7 +375,7 @@ namespace Server.Items
                     list.Add(new BulletinEquip(item.ItemID, item.Hue));
             }
 
-            m_PostedEquip = list.ToArray();
+            this.m_PostedEquip = list.ToArray();
         }
 
         public BulletinMessage(Serial serial)
@@ -380,32 +383,86 @@ namespace Server.Items
         {
         }
 
-        public Mobile Poster => m_Poster;
-        public BulletinMessage Thread => m_Thread;
-        public string Subject => m_Subject;
-        public DateTime Time => m_Time;
+        public Mobile Poster
+        {
+            get
+            {
+                return this.m_Poster;
+            }
+        }
+        public BulletinMessage Thread
+        {
+            get
+            {
+                return this.m_Thread;
+            }
+        }
+        public string Subject
+        {
+            get
+            {
+                return this.m_Subject;
+            }
+        }
+        public DateTime Time
+        {
+            get
+            {
+                return this.m_Time;
+            }
+        }
         public DateTime LastPostTime
         {
             get
             {
-                return m_LastPostTime;
+                return this.m_LastPostTime;
             }
             set
             {
-                m_LastPostTime = value;
+                this.m_LastPostTime = value;
             }
         }
-        public string PostedName => m_PostedName;
-        public int PostedBody => m_PostedBody;
-        public int PostedHue => m_PostedHue;
-        public BulletinEquip[] PostedEquip => m_PostedEquip;
-        public string[] Lines => m_Lines;
+        public string PostedName
+        {
+            get
+            {
+                return this.m_PostedName;
+            }
+        }
+        public int PostedBody
+        {
+            get
+            {
+                return this.m_PostedBody;
+            }
+        }
+        public int PostedHue
+        {
+            get
+            {
+                return this.m_PostedHue;
+            }
+        }
+        public BulletinEquip[] PostedEquip
+        {
+            get
+            {
+                return this.m_PostedEquip;
+            }
+        }
+        public string[] Lines
+        {
+            get
+            {
+                return this.m_Lines;
+            }
+        }
         public string GetTimeAsString()
         {
-            return m_Time.ToString("MMM dd, yyyy");
+            return this.m_Time.ToString("MMM dd, yyyy");
         }
 
-        public override bool CheckTarget(Mobile from, Targeting.Target targ, object targeted)
+        public override bool CheckTarget(Mobile from, Server.Targeting.Target targ, object targeted)
         {
             return false;
         }
@@ -419,30 +476,30 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_Poster);
-            writer.Write(m_Subject);
-            writer.Write(m_Time);
-            writer.Write(m_LastPostTime);
-            writer.Write(m_Thread != null);
-            writer.Write(m_Thread);
-            writer.Write(m_PostedName);
-            writer.Write(m_PostedBody);
-            writer.Write(m_PostedHue);
+            writer.Write((Mobile)this.m_Poster);
+            writer.Write((string)this.m_Subject);
+            writer.Write((DateTime)this.m_Time);
+            writer.Write((DateTime)this.m_LastPostTime);
+            writer.Write((bool)(this.m_Thread != null));
+            writer.Write((Item)this.m_Thread);
+            writer.Write((string)this.m_PostedName);
+            writer.Write((int)this.m_PostedBody);
+            writer.Write((int)this.m_PostedHue);
 
-            writer.Write(m_PostedEquip.Length);
+            writer.Write((int)this.m_PostedEquip.Length);
 
-            for (int i = 0; i < m_PostedEquip.Length; ++i)
+            for (int i = 0; i < this.m_PostedEquip.Length; ++i)
             {
-                writer.Write(m_PostedEquip[i].itemID);
-                writer.Write(m_PostedEquip[i].hue);
+                writer.Write((int)this.m_PostedEquip[i].itemID);
+                writer.Write((int)this.m_PostedEquip[i].hue);
             }
 
-            writer.Write(m_Lines.Length);
+            writer.Write((int)this.m_Lines.Length);
 
-            for (int i = 0; i < m_Lines.Length; ++i)
-                writer.Write(m_Lines[i]);
+            for (int i = 0; i < this.m_Lines.Length; ++i)
+                writer.Write((string)this.m_Lines[i]);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -451,36 +508,36 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                 case 0:
                     {
-                        m_Poster = reader.ReadMobile();
-                        m_Subject = reader.ReadString();
-                        m_Time = reader.ReadDateTime();
-                        m_LastPostTime = reader.ReadDateTime();
+                        this.m_Poster = reader.ReadMobile();
+                        this.m_Subject = reader.ReadString();
+                        this.m_Time = reader.ReadDateTime();
+                        this.m_LastPostTime = reader.ReadDateTime();
                         bool hasThread = reader.ReadBool();
-                        m_Thread = reader.ReadItem() as BulletinMessage;
-                        m_PostedName = reader.ReadString();
-                        m_PostedBody = reader.ReadInt();
-                        m_PostedHue = reader.ReadInt();
+                        this.m_Thread = reader.ReadItem() as BulletinMessage;
+                        this.m_PostedName = reader.ReadString();
+                        this.m_PostedBody = reader.ReadInt();
+                        this.m_PostedHue = reader.ReadInt();
 
-                        m_PostedEquip = new BulletinEquip[reader.ReadInt()];
+                        this.m_PostedEquip = new BulletinEquip[reader.ReadInt()];
 
-                        for (int i = 0; i < m_PostedEquip.Length; ++i)
+                        for (int i = 0; i < this.m_PostedEquip.Length; ++i)
                         {
-                            m_PostedEquip[i].itemID = reader.ReadInt();
-                            m_PostedEquip[i].hue = reader.ReadInt();
+                            this.m_PostedEquip[i].itemID = reader.ReadInt();
+                            this.m_PostedEquip[i].hue = reader.ReadInt();
                         }
 
-                        m_Lines = new string[reader.ReadInt()];
+                        this.m_Lines = new string[reader.ReadInt()];
 
-                        for (int i = 0; i < m_Lines.Length; ++i)
-                            m_Lines[i] = reader.ReadString();
+                        for (int i = 0; i < this.m_Lines.Length; ++i)
+                            this.m_Lines[i] = reader.ReadString();
 
-                        if (hasThread && m_Thread == null)
-                            Delete();
+                        if (hasThread && this.m_Thread == null)
+                            this.Delete();
 
                         if (version == 0)
                             ValidationQueue<BulletinMessage>.Add(this);
@@ -492,8 +549,8 @@ namespace Server.Items
 
         public void Validate()
         {
-            if (!(Parent is BulletinBoard && ((BulletinBoard)Parent).Items.Contains(this)))
-                Delete();
+            if (!(this.Parent is BulletinBoard && ((BulletinBoard)this.Parent).Items.Contains(this)))
+                this.Delete();
         }
     }
 
@@ -507,23 +564,23 @@ namespace Server.Items
             if (name == null)
                 name = "";
 
-            EnsureCapacity(38);
+            this.EnsureCapacity(38);
 
             byte[] buffer = Utility.UTF8.GetBytes(name);
 
-            m_Stream.Write((byte)0x00); // PacketID
-            m_Stream.Write(board.Serial); // Bulletin board serial
+            this.m_Stream.Write((byte)0x00); // PacketID
+            this.m_Stream.Write((int)board.Serial); // Bulletin board serial
 
             // Bulletin board name
             if (buffer.Length >= 29)
             {
-                m_Stream.Write(buffer, 0, 29);
-                m_Stream.Write((byte)0);
+                this.m_Stream.Write(buffer, 0, 29);
+                this.m_Stream.Write((byte)0);
             }
             else
             {
-                m_Stream.Write(buffer, 0, buffer.Length);
-                m_Stream.Fill(30 - buffer.Length);
+                this.m_Stream.Write(buffer, 0, buffer.Length);
+                this.m_Stream.Fill(30 - buffer.Length);
             }
         }
     }
@@ -533,26 +590,26 @@ namespace Server.Items
         public BBMessageHeader(BaseBulletinBoard board, BulletinMessage msg)
             : base(0x71)
         {
-            string poster = SafeString(msg.PostedName);
-            string subject = SafeString(msg.Subject);
-            string time = SafeString(msg.GetTimeAsString());
+            string poster = this.SafeString(msg.PostedName);
+            string subject = this.SafeString(msg.Subject);
+            string time = this.SafeString(msg.GetTimeAsString());
 
-            EnsureCapacity(22 + poster.Length + subject.Length + time.Length);
+            this.EnsureCapacity(22 + poster.Length + subject.Length + time.Length);
 
-            m_Stream.Write((byte)0x01); // PacketID
-            m_Stream.Write(board.Serial); // Bulletin board serial
-            m_Stream.Write(msg.Serial); // Message serial
+            this.m_Stream.Write((byte)0x01); // PacketID
+            this.m_Stream.Write((int)board.Serial); // Bulletin board serial
+            this.m_Stream.Write((int)msg.Serial); // Message serial
 
             BulletinMessage thread = msg.Thread;
 
             if (thread == null)
-                m_Stream.Write(0); // Thread serial--root
+                this.m_Stream.Write((int)0); // Thread serial--root
             else
-                m_Stream.Write(thread.Serial); // Thread serial--parent
+                this.m_Stream.Write((int)thread.Serial); // Thread serial--parent
 
-            WriteString(poster);
-            WriteString(subject);
-            WriteString(time);
+            this.WriteString(poster);
+            this.WriteString(subject);
+            this.WriteString(time);
         }
 
         public void WriteString(string v)
@@ -563,15 +620,15 @@ namespace Server.Items
             if (len > 255)
                 len = 255;
 
-            m_Stream.Write((byte)len);
-            m_Stream.Write(buffer, 0, len - 1);
-            m_Stream.Write((byte)0);
+            this.m_Stream.Write((byte)len);
+            this.m_Stream.Write(buffer, 0, len - 1);
+            this.m_Stream.Write((byte)0);
         }
 
         public string SafeString(string v)
         {
             if (v == null)
-                return string.Empty;
+                return String.Empty;
 
             return v;
         }
@@ -582,36 +639,36 @@ namespace Server.Items
         public BBMessageContent(BaseBulletinBoard board, BulletinMessage msg)
             : base(0x71)
         {
-            string poster = SafeString(msg.PostedName);
-            string subject = SafeString(msg.Subject);
-            string time = SafeString(msg.GetTimeAsString());
+            string poster = this.SafeString(msg.PostedName);
+            string subject = this.SafeString(msg.Subject);
+            string time = this.SafeString(msg.GetTimeAsString());
 
-            EnsureCapacity(22 + poster.Length + subject.Length + time.Length);
+            this.EnsureCapacity(22 + poster.Length + subject.Length + time.Length);
 
-            m_Stream.Write((byte)0x02); // PacketID
-            m_Stream.Write(board.Serial); // Bulletin board serial
-            m_Stream.Write(msg.Serial); // Message serial
+            this.m_Stream.Write((byte)0x02); // PacketID
+            this.m_Stream.Write((int)board.Serial); // Bulletin board serial
+            this.m_Stream.Write((int)msg.Serial); // Message serial
 
-            WriteString(poster);
-            WriteString(subject);
-            WriteString(time);
+            this.WriteString(poster);
+            this.WriteString(subject);
+            this.WriteString(time);
 
-            m_Stream.Write((short)msg.PostedBody);
-            m_Stream.Write((short)msg.PostedHue);
+            this.m_Stream.Write((short)msg.PostedBody);
+            this.m_Stream.Write((short)msg.PostedHue);
 
             int len = msg.PostedEquip.Length;
 
             if (len > 255)
                 len = 255;
 
-            m_Stream.Write((byte)len);
+            this.m_Stream.Write((byte)len);
 
             for (int i = 0; i < len; ++i)
             {
                 BulletinEquip eq = msg.PostedEquip[i];
 
-                m_Stream.Write((short)eq.itemID);
-                m_Stream.Write((short)eq.hue);
+                this.m_Stream.Write((short)eq.itemID);
+                this.m_Stream.Write((short)eq.hue);
             }
 
             len = msg.Lines.Length;
@@ -619,15 +676,15 @@ namespace Server.Items
             if (len > 255)
                 len = 255;
 
-            m_Stream.Write((byte)len);
+            this.m_Stream.Write((byte)len);
 
             for (int i = 0; i < len; ++i)
-                WriteString(msg.Lines[i], true);
+                this.WriteString(msg.Lines[i], true);
         }
 
         public void WriteString(string v)
         {
-            WriteString(v, false);
+            this.WriteString(v, false);
         }
 
         public void WriteString(string v, bool padding)
@@ -639,19 +696,19 @@ namespace Server.Items
             if (len > 255)
                 len = 255;
 
-            m_Stream.Write((byte)len);
-            m_Stream.Write(buffer, 0, len - tail);
+            this.m_Stream.Write((byte)len);
+            this.m_Stream.Write(buffer, 0, len - tail);
 
             if (padding)
-                m_Stream.Write((short)0); // padding compensates for a client bug
+                this.m_Stream.Write((short)0); // padding compensates for a client bug
             else
-                m_Stream.Write((byte)0);
+                this.m_Stream.Write((byte)0);
         }
 
         public string SafeString(string v)
         {
             if (v == null)
-                return string.Empty;
+                return String.Empty;
 
             return v;
         }

@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -7,6 +8,12 @@ namespace Server.Mobiles
     {
         [Constructable]
         public CopperElemental()
+            : this(25)
+        {
+        }
+
+        [Constructable]
+        public CopperElemental(int oreAmount)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
             Name = "a copper elemental";
@@ -35,6 +42,12 @@ namespace Server.Mobiles
 
             Fame = 4800;
             Karma = -4800;
+
+            VirtualArmor = 26;
+
+            Item ore = new CopperOre(oreAmount);
+            ore.ItemID = 0x19B9;
+            PackItem(ore);
         }
 
         public CopperElemental(Serial serial)
@@ -42,15 +55,31 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-        public override bool BleedImmune => true;
-        public override int TreasureMapLevel => 1;
-
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Average);
             AddLoot(LootPack.Gems, 2);
-            AddLoot(LootPack.LootItem<CopperOre>(25));
         }
 
         public override void CheckReflect(Mobile caster, ref bool reflect)
@@ -66,7 +95,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

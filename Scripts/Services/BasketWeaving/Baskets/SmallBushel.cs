@@ -1,35 +1,40 @@
+using System;
+using Server;
 using Server.Items;
 
-namespace Server.Services.BasketWeaving.Baskets
+public class SmallBushel : BaseContainer
 {
-    public class SmallBushel : BaseContainer
+    [Constructable]
+    public SmallBushel()
+        : base(0x09B1)
     {
-        [Constructable]
-        public SmallBushel()
-            : base(0x09B1)
+        this.Weight = 1.0; 
+    }
+
+    public SmallBushel(Serial serial)
+        : base(serial)
+    {
+    }
+
+    public override int LabelNumber
+    {
+        get
         {
-            Weight = 1.0;
+            return 1112337;
         }
+    }// small bushel
 
-        public SmallBushel(Serial serial)
-            : base(serial)
-        {
-        }
+    public override void Serialize(GenericWriter writer)
+    {
+        base.Serialize(writer);
 
-        public override int LabelNumber => 1112337;// small bushel
+        writer.Write((int)0); // version
+    }
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+    public override void Deserialize(GenericReader reader)
+    {
+        base.Deserialize(reader);
 
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-
-            int version = reader.ReadInt();
-        }
+        int version = reader.ReadInt();
     }
 }

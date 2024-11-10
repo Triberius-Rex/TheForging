@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -17,35 +18,35 @@ namespace Server
             readonly IPAddress m_Address;
             public IPFirewallEntry(IPAddress address)
             {
-                m_Address = address;
+                this.m_Address = address;
             }
 
             public bool IsBlocked(IPAddress address)
             {
-                return m_Address.Equals(address);
+                return this.m_Address.Equals(address);
             }
 
             public override string ToString()
             {
-                return m_Address.ToString();
+                return this.m_Address.ToString();
             }
 
             public override bool Equals(object obj)
             {
                 if (obj is IPAddress)
                 {
-                    return obj.Equals(m_Address);
+                    return obj.Equals(this.m_Address);
                 }
                 else if (obj is string)
                 {
                     IPAddress otherAddress;
 
                     if (IPAddress.TryParse((string)obj, out otherAddress))
-                        return otherAddress.Equals(m_Address);
+                        return otherAddress.Equals(this.m_Address);
                 }
                 else if (obj is IPFirewallEntry)
                 {
-                    return m_Address.Equals(((IPFirewallEntry)obj).m_Address);
+                    return this.m_Address.Equals(((IPFirewallEntry)obj).m_Address);
                 }
 
                 return false;
@@ -53,7 +54,7 @@ namespace Server
 
             public override int GetHashCode()
             {
-                return m_Address.GetHashCode();
+                return this.m_Address.GetHashCode();
             }
         }
 
@@ -64,18 +65,18 @@ namespace Server
 
             public CIDRFirewallEntry(IPAddress cidrPrefix, int cidrLength)
             {
-                m_CIDRPrefix = cidrPrefix;
-                m_CIDRLength = cidrLength;
+                this.m_CIDRPrefix = cidrPrefix;
+                this.m_CIDRLength = cidrLength;
             }
 
             public bool IsBlocked(IPAddress address)
             {
-                return Utility.IPMatchCIDR(m_CIDRPrefix, address, m_CIDRLength);
+                return Utility.IPMatchCIDR(this.m_CIDRPrefix, address, this.m_CIDRLength);
             }
 
             public override string ToString()
             {
-                return string.Format("{0}/{1}", m_CIDRPrefix, m_CIDRLength);
+                return String.Format("{0}/{1}", this.m_CIDRPrefix, this.m_CIDRLength);
             }
 
             public override bool Equals(object obj)
@@ -95,7 +96,7 @@ namespace Server
                             int cidrLength;
 
                             if (int.TryParse(str[1], out cidrLength))
-                                return m_CIDRPrefix.Equals(cidrPrefix) && m_CIDRLength.Equals(cidrLength);
+                                return this.m_CIDRPrefix.Equals(cidrPrefix) && this.m_CIDRLength.Equals(cidrLength);
                         }
                     }
                 }
@@ -103,7 +104,7 @@ namespace Server
                 {
                     CIDRFirewallEntry entry = obj as CIDRFirewallEntry;
 
-                    return m_CIDRPrefix.Equals(entry.m_CIDRPrefix) && m_CIDRLength.Equals(entry.m_CIDRLength);
+                    return this.m_CIDRPrefix.Equals(entry.m_CIDRPrefix) && this.m_CIDRLength.Equals(entry.m_CIDRLength);
                 }
 
                 return false;
@@ -111,7 +112,7 @@ namespace Server
 
             public override int GetHashCode()
             {
-                return m_CIDRPrefix.GetHashCode() ^ m_CIDRLength.GetHashCode();
+                return this.m_CIDRPrefix.GetHashCode() ^ this.m_CIDRLength.GetHashCode();
             }
         }
 
@@ -123,40 +124,40 @@ namespace Server
 
             public WildcardIPFirewallEntry(string entry)
             {
-                m_Entry = entry;
+                this.m_Entry = entry;
             }
 
             public bool IsBlocked(IPAddress address)
             {
-                if (!m_Valid)
+                if (!this.m_Valid)
                     return false;	//Why process if it's invalid?  it'll return false anyway after processing it.
 
-                return Utility.IPMatch(m_Entry, address, ref m_Valid);
+                return Utility.IPMatch(this.m_Entry, address, ref this.m_Valid);
             }
 
             public override string ToString()
             {
-                return m_Entry.ToString();
+                return this.m_Entry.ToString();
             }
 
             public override bool Equals(object obj)
             {
                 if (obj is string)
-                    return obj.Equals(m_Entry);
+                    return obj.Equals(this.m_Entry);
                 else if (obj is WildcardIPFirewallEntry)
-                    return m_Entry.Equals(((WildcardIPFirewallEntry)obj).m_Entry);
+                    return this.m_Entry.Equals(((WildcardIPFirewallEntry)obj).m_Entry);
 
                 return false;
             }
 
             public override int GetHashCode()
             {
-                return m_Entry.GetHashCode();
+                return this.m_Entry.GetHashCode();
             }
         }
         #endregion
 
-        private static readonly List<IFirewallEntry> m_Blocked;
+        private static List<IFirewallEntry> m_Blocked;
 
         static Firewall()
         {
@@ -192,7 +193,13 @@ namespace Server
             }
         }
 
-        public static List<IFirewallEntry> List => m_Blocked;
+        public static List<IFirewallEntry> List
+        {
+            get
+            {
+                return m_Blocked;
+            }
+        }
 
         public static IFirewallEntry ToFirewallEntry(object entry)
         {

@@ -1,8 +1,9 @@
+using System;
+using System.Xml;
 using Server.Spells.Chivalry;
 using Server.Spells.Fourth;
 using Server.Spells.Seventh;
 using Server.Spells.Sixth;
-using System.Xml;
 
 namespace Server.Regions
 {
@@ -10,7 +11,7 @@ namespace Server.Regions
     {
         public MondainRegion(XmlElement xml, Map map, Region parent)
             : base(xml, map, parent)
-        {
+        { 
         }
 
         public override bool OnBeginSpellCast(Mobile m, ISpell s)
@@ -28,7 +29,7 @@ namespace Server.Regions
                     return false;
                 }
             }
-
+			
             return base.OnBeginSpellCast(m, s);
         }
     }

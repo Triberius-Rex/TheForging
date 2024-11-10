@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 namespace Server.Engines.Mahjong
@@ -13,58 +14,82 @@ namespace Server.Engines.Mahjong
         private int m_DealerPosition;
         public MahjongPlayers(MahjongGame game, int maxPlayers, int baseScore)
         {
-            m_Game = game;
-            m_Spectators = new ArrayList();
+            this.m_Game = game;
+            this.m_Spectators = new ArrayList();
 
-            m_Players = new Mobile[maxPlayers];
-            m_InGame = new bool[maxPlayers];
-            m_PublicHand = new bool[maxPlayers];
-            m_Scores = new int[maxPlayers];
+            this.m_Players = new Mobile[maxPlayers];
+            this.m_InGame = new bool[maxPlayers];
+            this.m_PublicHand = new bool[maxPlayers];
+            this.m_Scores = new int[maxPlayers];
 
-            for (int i = 0; i < m_Scores.Length; i++)
-                m_Scores[i] = baseScore;
+            for (int i = 0; i < this.m_Scores.Length; i++)
+                this.m_Scores[i] = baseScore;
         }
 
         public MahjongPlayers(MahjongGame game, GenericReader reader)
         {
-            m_Game = game;
-            m_Spectators = new ArrayList();
+            this.m_Game = game;
+            this.m_Spectators = new ArrayList();
 
             int version = reader.ReadInt();
 
             int seats = reader.ReadInt();
-            m_Players = new Mobile[seats];
-            m_InGame = new bool[seats];
-            m_PublicHand = new bool[seats];
-            m_Scores = new int[seats];
+            this.m_Players = new Mobile[seats];
+            this.m_InGame = new bool[seats];
+            this.m_PublicHand = new bool[seats];
+            this.m_Scores = new int[seats];
 
             for (int i = 0; i < seats; i++)
             {
-                m_Players[i] = reader.ReadMobile();
-                m_PublicHand[i] = reader.ReadBool();
-                m_Scores[i] = reader.ReadInt();
+                this.m_Players[i] = reader.ReadMobile();
+                this.m_PublicHand[i] = reader.ReadBool();
+                this.m_Scores[i] = reader.ReadInt();
             }
 
-            m_DealerPosition = reader.ReadInt();
+            this.m_DealerPosition = reader.ReadInt();
         }
 
-        public MahjongGame Game => m_Game;
-        public int Seats => m_Players.Length;
-        public Mobile Dealer => m_Players[m_DealerPosition];
-        public int DealerPosition => m_DealerPosition;
+        public MahjongGame Game
+        {
+            get
+            {
+                return this.m_Game;
+            }
+        }
+        public int Seats
+        {
+            get
+            {
+                return this.m_Players.Length;
+            }
+        }
+        public Mobile Dealer
+        {
+            get
+            {
+                return this.m_Players[this.m_DealerPosition];
+            }
+        }
+        public int DealerPosition
+        {
+            get
+            {
+                return this.m_DealerPosition;
+            }
+        }
         public Mobile GetPlayer(int index)
         {
-            if (index < 0 || index >= m_Players.Length)
+            if (index < 0 || index >= this.m_Players.Length)
                 return null;
             else
-                return m_Players[index];
+                return this.m_Players[index];
         }
 
         public int GetPlayerIndex(Mobile mobile)
         {
-            for (int i = 0; i < m_Players.Length; i++)
+            for (int i = 0; i < this.m_Players.Length; i++)
             {
-                if (m_Players[i] == mobile)
+                if (this.m_Players[i] == mobile)
                     return i;
             }
             return -1;
@@ -72,59 +97,59 @@ namespace Server.Engines.Mahjong
 
         public bool IsInGameDealer(Mobile mobile)
         {
-            if (Dealer != mobile)
+            if (this.Dealer != mobile)
                 return false;
             else
-                return m_InGame[m_DealerPosition];
+                return this.m_InGame[this.m_DealerPosition];
         }
 
         public bool IsInGamePlayer(int index)
         {
-            if (index < 0 || index >= m_Players.Length || m_Players[index] == null)
+            if (index < 0 || index >= this.m_Players.Length || this.m_Players[index] == null)
                 return false;
             else
-                return m_InGame[index];
+                return this.m_InGame[index];
         }
 
         public bool IsInGamePlayer(Mobile mobile)
         {
-            int index = GetPlayerIndex(mobile);
+            int index = this.GetPlayerIndex(mobile);
 
-            return IsInGamePlayer(index);
+            return this.IsInGamePlayer(index);
         }
 
         public bool IsSpectator(Mobile mobile)
         {
-            return m_Spectators.Contains(mobile);
+            return this.m_Spectators.Contains(mobile);
         }
 
         public int GetScore(int index)
         {
-            if (index < 0 || index >= m_Scores.Length)
+            if (index < 0 || index >= this.m_Scores.Length)
                 return 0;
             else
-                return m_Scores[index];
+                return this.m_Scores[index];
         }
 
         public bool IsPublic(int index)
         {
-            if (index < 0 || index >= m_PublicHand.Length)
+            if (index < 0 || index >= this.m_PublicHand.Length)
                 return false;
             else
-                return m_PublicHand[index];
+                return this.m_PublicHand[index];
         }
 
         public void SetPublic(int index, bool value)
         {
-            if (index < 0 || index >= m_PublicHand.Length || m_PublicHand[index] == value)
+            if (index < 0 || index >= this.m_PublicHand.Length || this.m_PublicHand[index] == value)
                 return;
 
-            m_PublicHand[index] = value;
+            this.m_PublicHand[index] = value;
 
-            SendTilesPacket(true, !m_Game.SpectatorVision);
+            this.SendTilesPacket(true, !this.m_Game.SpectatorVision);
 
-            if (IsInGamePlayer(index))
-                m_Players[index].SendLocalizedMessage(value ? 1062775 : 1062776); // Your hand is [not] publicly viewable.
+            if (this.IsInGamePlayer(index))
+                this.m_Players[index].SendLocalizedMessage(value ? 1062775 : 1062776); // Your hand is [not] publicly viewable.
         }
 
         public ArrayList GetInGameMobiles(bool players, bool spectators)
@@ -133,16 +158,16 @@ namespace Server.Engines.Mahjong
 
             if (players)
             {
-                for (int i = 0; i < m_Players.Length; i++)
+                for (int i = 0; i < this.m_Players.Length; i++)
                 {
-                    if (IsInGamePlayer(i))
-                        list.Add(m_Players[i]);
+                    if (this.IsInGamePlayer(i))
+                        list.Add(this.m_Players[i]);
                 }
             }
 
             if (spectators)
             {
-                list.AddRange(m_Spectators);
+                list.AddRange(this.m_Spectators);
             }
 
             return list;
@@ -152,40 +177,40 @@ namespace Server.Engines.Mahjong
         {
             bool removed = false;
 
-            for (int i = 0; i < m_Players.Length; i++)
+            for (int i = 0; i < this.m_Players.Length; i++)
             {
-                Mobile player = m_Players[i];
+                Mobile player = this.m_Players[i];
 
                 if (player != null)
                 {
                     if (player.Deleted)
                     {
-                        m_Players[i] = null;
+                        this.m_Players[i] = null;
 
-                        SendPlayerExitMessage(player);
-                        UpdateDealer(true);
+                        this.SendPlayerExitMessage(player);
+                        this.UpdateDealer(true);
 
                         removed = true;
                     }
-                    else if (m_InGame[i])
+                    else if (this.m_InGame[i])
                     {
                         if (player.NetState == null)
                         {
-                            m_InGame[i] = false;
+                            this.m_InGame[i] = false;
 
-                            SendPlayerExitMessage(player);
-                            UpdateDealer(true);
+                            this.SendPlayerExitMessage(player);
+                            this.UpdateDealer(true);
 
                             removed = true;
                         }
-                        else if (!m_Game.IsAccessibleTo(player) || player.Map != m_Game.Map || !player.InRange(m_Game.GetWorldLocation(), 5))
+                        else if (!this.m_Game.IsAccessibleTo(player) || player.Map != this.m_Game.Map || !player.InRange(this.m_Game.GetWorldLocation(), 5))
                         {
-                            m_InGame[i] = false;
+                            this.m_InGame[i] = false;
 
-                            player.Send(new MahjongRelieve(m_Game));
+                            player.Send(new MahjongRelieve(this.m_Game));
 
-                            SendPlayerExitMessage(player);
-                            UpdateDealer(true);
+                            this.SendPlayerExitMessage(player);
+                            this.UpdateDealer(true);
 
                             removed = true;
                         }
@@ -193,19 +218,19 @@ namespace Server.Engines.Mahjong
                 }
             }
 
-            for (int i = 0; i < m_Spectators.Count;)
+            for (int i = 0; i < this.m_Spectators.Count;)
             {
-                Mobile mobile = (Mobile)m_Spectators[i];
+                Mobile mobile = (Mobile)this.m_Spectators[i];
 
                 if (mobile.NetState == null || mobile.Deleted)
                 {
-                    m_Spectators.RemoveAt(i);
+                    this.m_Spectators.RemoveAt(i);
                 }
-                else if (!m_Game.IsAccessibleTo(mobile) || mobile.Map != m_Game.Map || !mobile.InRange(m_Game.GetWorldLocation(), 5))
+                else if (!this.m_Game.IsAccessibleTo(mobile) || mobile.Map != this.m_Game.Map || !mobile.InRange(this.m_Game.GetWorldLocation(), 5))
                 {
-                    m_Spectators.RemoveAt(i);
+                    this.m_Spectators.RemoveAt(i);
 
-                    mobile.Send(new MahjongRelieve(m_Game));
+                    mobile.Send(new MahjongRelieve(this.m_Game));
                 }
                 else
                 {
@@ -213,141 +238,141 @@ namespace Server.Engines.Mahjong
                 }
             }
 
-            if (removed && !UpdateSpectators())
-                SendPlayersPacket(true, true);
+            if (removed && !this.UpdateSpectators())
+                this.SendPlayersPacket(true, true);
         }
 
         public void Join(Mobile mobile)
         {
-            int index = GetPlayerIndex(mobile);
+            int index = this.GetPlayerIndex(mobile);
 
             if (index >= 0)
             {
-                AddPlayer(mobile, index, true);
+                this.AddPlayer(mobile, index, true);
             }
             else
             {
-                int nextSeat = GetNextSeat();
+                int nextSeat = this.GetNextSeat();
 
                 if (nextSeat >= 0)
                 {
-                    AddPlayer(mobile, nextSeat, true);
+                    this.AddPlayer(mobile, nextSeat, true);
                 }
                 else
                 {
-                    AddSpectator(mobile);
+                    this.AddSpectator(mobile);
                 }
             }
         }
 
         public void LeaveGame(Mobile player)
         {
-            int index = GetPlayerIndex(player);
+            int index = this.GetPlayerIndex(player);
             if (index >= 0)
             {
-                m_InGame[index] = false;
+                this.m_InGame[index] = false;
 
-                SendPlayerExitMessage(player);
-                UpdateDealer(true);
+                this.SendPlayerExitMessage(player);
+                this.UpdateDealer(true);
 
-                SendPlayersPacket(true, true);
+                this.SendPlayersPacket(true, true);
             }
             else
             {
-                m_Spectators.Remove(player);
+                this.m_Spectators.Remove(player);
             }
         }
 
         public void ResetScores(int value)
         {
-            for (int i = 0; i < m_Scores.Length; i++)
+            for (int i = 0; i < this.m_Scores.Length; i++)
             {
-                m_Scores[i] = value;
+                this.m_Scores[i] = value;
             }
 
-            SendPlayersPacket(true, m_Game.ShowScores);
+            this.SendPlayersPacket(true, this.m_Game.ShowScores);
 
-            SendLocalizedMessage(1062697); // The dealer redistributes the score sticks evenly.
+            this.SendLocalizedMessage(1062697); // The dealer redistributes the score sticks evenly.
         }
 
         public void TransferScore(Mobile from, int toPosition, int amount)
         {
-            int fromPosition = GetPlayerIndex(from);
-            Mobile to = GetPlayer(toPosition);
+            int fromPosition = this.GetPlayerIndex(from);
+            Mobile to = this.GetPlayer(toPosition);
 
-            if (fromPosition < 0 || to == null || m_Scores[fromPosition] < amount)
+            if (fromPosition < 0 || to == null || this.m_Scores[fromPosition] < amount)
                 return;
 
-            m_Scores[fromPosition] -= amount;
-            m_Scores[toPosition] += amount;
+            this.m_Scores[fromPosition] -= amount;
+            this.m_Scores[toPosition] += amount;
 
-            if (m_Game.ShowScores)
+            if (this.m_Game.ShowScores)
             {
-                SendPlayersPacket(true, true);
+                this.SendPlayersPacket(true, true);
             }
             else
             {
-                from.Send(new MahjongPlayersInfo(m_Game, from));
-                to.Send(new MahjongPlayersInfo(m_Game, to));
+                from.Send(new MahjongPlayersInfo(this.m_Game, from));
+                to.Send(new MahjongPlayersInfo(this.m_Game, to));
             }
 
-            SendLocalizedMessage(1062774, string.Format("{0}\t{1}\t{2}", from.Name, to.Name, amount)); // ~1_giver~ gives ~2_receiver~ ~3_number~ points.
+            this.SendLocalizedMessage(1062774, string.Format("{0}\t{1}\t{2}", from.Name, to.Name, amount)); // ~1_giver~ gives ~2_receiver~ ~3_number~ points.
         }
 
         public void OpenSeat(int index)
         {
-            Mobile player = GetPlayer(index);
+            Mobile player = this.GetPlayer(index);
             if (player == null)
                 return;
 
-            if (m_InGame[index])
-                player.Send(new MahjongRelieve(m_Game));
+            if (this.m_InGame[index])
+                player.Send(new MahjongRelieve(this.m_Game));
 
-            m_Players[index] = null;
+            this.m_Players[index] = null;
 
-            SendLocalizedMessage(1062699, player.Name); // ~1_name~ is relieved from the game by the dealer.
+            this.SendLocalizedMessage(1062699, player.Name); // ~1_name~ is relieved from the game by the dealer.
 
-            UpdateDealer(true);
+            this.UpdateDealer(true);
 
-            if (!UpdateSpectators())
-                SendPlayersPacket(true, true);
+            if (!this.UpdateSpectators())
+                this.SendPlayersPacket(true, true);
         }
 
         public void AssignDealer(int index)
         {
-            Mobile to = GetPlayer(index);
+            Mobile to = this.GetPlayer(index);
 
-            if (to == null || !m_InGame[index])
+            if (to == null || !this.m_InGame[index])
                 return;
 
-            int oldDealer = m_DealerPosition;
+            int oldDealer = this.m_DealerPosition;
 
-            m_DealerPosition = index;
+            this.m_DealerPosition = index;
 
-            if (IsInGamePlayer(oldDealer))
-                m_Players[oldDealer].Send(new MahjongPlayersInfo(m_Game, m_Players[oldDealer]));
+            if (this.IsInGamePlayer(oldDealer))
+                this.m_Players[oldDealer].Send(new MahjongPlayersInfo(this.m_Game, this.m_Players[oldDealer]));
 
-            to.Send(new MahjongPlayersInfo(m_Game, to));
+            to.Send(new MahjongPlayersInfo(this.m_Game, to));
 
-            SendDealerChangedMessage();
+            this.SendDealerChangedMessage();
         }
 
         public void SendPlayersPacket(bool players, bool spectators)
         {
-            foreach (Mobile mobile in GetInGameMobiles(players, spectators))
+            foreach (Mobile mobile in this.GetInGameMobiles(players, spectators))
             {
-                mobile.Send(new MahjongPlayersInfo(m_Game, mobile));
+                mobile.Send(new MahjongPlayersInfo(this.m_Game, mobile));
             }
         }
 
         public void SendGeneralPacket(bool players, bool spectators)
         {
-            ArrayList mobiles = GetInGameMobiles(players, spectators);
+            ArrayList mobiles = this.GetInGameMobiles(players, spectators);
 
             if (mobiles.Count == 0)
                 return;
 
-            MahjongGeneralInfo generalInfo = new MahjongGeneralInfo(m_Game);
+            MahjongGeneralInfo generalInfo = new MahjongGeneralInfo(this.m_Game);
 
             generalInfo.Acquire();
 
@@ -361,15 +386,15 @@ namespace Server.Engines.Mahjong
 
         public void SendTilesPacket(bool players, bool spectators)
         {
-            foreach (Mobile mobile in GetInGameMobiles(players, spectators))
+            foreach (Mobile mobile in this.GetInGameMobiles(players, spectators))
             {
-                mobile.Send(new MahjongTilesInfo(m_Game, mobile));
+                mobile.Send(new MahjongTilesInfo(this.m_Game, mobile));
             }
         }
 
         public void SendTilePacket(MahjongTile tile, bool players, bool spectators)
         {
-            foreach (Mobile mobile in GetInGameMobiles(players, spectators))
+            foreach (Mobile mobile in this.GetInGameMobiles(players, spectators))
             {
                 mobile.Send(new MahjongTileInfo(tile, mobile));
             }
@@ -377,12 +402,12 @@ namespace Server.Engines.Mahjong
 
         public void SendRelievePacket(bool players, bool spectators)
         {
-            ArrayList mobiles = GetInGameMobiles(players, spectators);
+            ArrayList mobiles = this.GetInGameMobiles(players, spectators);
 
             if (mobiles.Count == 0)
                 return;
 
-            MahjongRelieve relieve = new MahjongRelieve(m_Game);
+            MahjongRelieve relieve = new MahjongRelieve(this.m_Game);
 
             relieve.Acquire();
 
@@ -396,7 +421,7 @@ namespace Server.Engines.Mahjong
 
         public void SendLocalizedMessage(int number)
         {
-            foreach (Mobile mobile in GetInGameMobiles(true, true))
+            foreach (Mobile mobile in this.GetInGameMobiles(true, true))
             {
                 mobile.SendLocalizedMessage(number);
             }
@@ -404,7 +429,7 @@ namespace Server.Engines.Mahjong
 
         public void SendLocalizedMessage(int number, string args)
         {
-            foreach (Mobile mobile in GetInGameMobiles(true, true))
+            foreach (Mobile mobile in this.GetInGameMobiles(true, true))
             {
                 mobile.SendLocalizedMessage(number, args);
             }
@@ -412,46 +437,46 @@ namespace Server.Engines.Mahjong
 
         public void Save(GenericWriter writer)
         {
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(Seats);
+            writer.Write(this.Seats);
 
-            for (int i = 0; i < Seats; i++)
+            for (int i = 0; i < this.Seats; i++)
             {
-                writer.Write(m_Players[i]);
-                writer.Write(m_PublicHand[i]);
-                writer.Write(m_Scores[i]);
+                writer.Write(this.m_Players[i]);
+                writer.Write(this.m_PublicHand[i]);
+                writer.Write(this.m_Scores[i]);
             }
 
-            writer.Write(m_DealerPosition);
+            writer.Write(this.m_DealerPosition);
         }
 
         private void UpdateDealer(bool message)
         {
-            if (IsInGamePlayer(m_DealerPosition))
+            if (this.IsInGamePlayer(this.m_DealerPosition))
                 return;
 
-            for (int i = m_DealerPosition + 1; i < m_Players.Length; i++)
+            for (int i = this.m_DealerPosition + 1; i < this.m_Players.Length; i++)
             {
-                if (IsInGamePlayer(i))
+                if (this.IsInGamePlayer(i))
                 {
-                    m_DealerPosition = i;
+                    this.m_DealerPosition = i;
 
                     if (message)
-                        SendDealerChangedMessage();
+                        this.SendDealerChangedMessage();
 
                     return;
                 }
             }
 
-            for (int i = 0; i < m_DealerPosition; i++)
+            for (int i = 0; i < this.m_DealerPosition; i++)
             {
-                if (IsInGamePlayer(i))
+                if (this.IsInGamePlayer(i))
                 {
-                    m_DealerPosition = i;
+                    this.m_DealerPosition = i;
 
                     if (message)
-                        SendDealerChangedMessage();
+                        this.SendDealerChangedMessage();
 
                     return;
                 }
@@ -460,15 +485,15 @@ namespace Server.Engines.Mahjong
 
         private int GetNextSeat()
         {
-            for (int i = m_DealerPosition; i < m_Players.Length; i++)
+            for (int i = this.m_DealerPosition; i < this.m_Players.Length; i++)
             {
-                if (m_Players[i] == null)
+                if (this.m_Players[i] == null)
                     return i;
             }
 
-            for (int i = 0; i < m_DealerPosition; i++)
+            for (int i = 0; i < this.m_DealerPosition; i++)
             {
-                if (m_Players[i] == null)
+                if (this.m_Players[i] == null)
                     return i;
             }
 
@@ -477,20 +502,20 @@ namespace Server.Engines.Mahjong
 
         private bool UpdateSpectators()
         {
-            if (m_Spectators.Count == 0)
+            if (this.m_Spectators.Count == 0)
                 return false;
 
-            int nextSeat = GetNextSeat();
+            int nextSeat = this.GetNextSeat();
 
             if (nextSeat >= 0)
             {
-                Mobile newPlayer = (Mobile)m_Spectators[0];
+                Mobile newPlayer = (Mobile)this.m_Spectators[0];
 
-                m_Spectators.RemoveAt(0);
+                this.m_Spectators.RemoveAt(0);
 
-                AddPlayer(newPlayer, nextSeat, false);
+                this.AddPlayer(newPlayer, nextSeat, false);
 
-                UpdateSpectators();
+                this.UpdateSpectators();
 
                 return true;
             }
@@ -502,47 +527,47 @@ namespace Server.Engines.Mahjong
 
         private void AddPlayer(Mobile player, int index, bool sendJoinGame)
         {
-            m_Players[index] = player;
-            m_InGame[index] = true;
+            this.m_Players[index] = player;
+            this.m_InGame[index] = true;
 
-            UpdateDealer(false);
+            this.UpdateDealer(false);
 
             if (sendJoinGame)
-                player.Send(new MahjongJoinGame(m_Game));
+                player.Send(new MahjongJoinGame(this.m_Game));
 
-            SendPlayersPacket(true, true);
+            this.SendPlayersPacket(true, true);
 
-            player.Send(new MahjongGeneralInfo(m_Game));
-            player.Send(new MahjongTilesInfo(m_Game, player));
+            player.Send(new MahjongGeneralInfo(this.m_Game));
+            player.Send(new MahjongTilesInfo(this.m_Game, player));
 
-            if (m_DealerPosition == index)
-                SendLocalizedMessage(1062773, player.Name); // ~1_name~ has entered the game as the dealer.
+            if (this.m_DealerPosition == index)
+                this.SendLocalizedMessage(1062773, player.Name); // ~1_name~ has entered the game as the dealer.
             else
-                SendLocalizedMessage(1062772, player.Name); // ~1_name~ has entered the game as a player.
+                this.SendLocalizedMessage(1062772, player.Name); // ~1_name~ has entered the game as a player.
         }
 
         private void AddSpectator(Mobile mobile)
         {
-            if (!IsSpectator(mobile))
+            if (!this.IsSpectator(mobile))
             {
-                m_Spectators.Add(mobile);
+                this.m_Spectators.Add(mobile);
             }
 
-            mobile.Send(new MahjongJoinGame(m_Game));
-            mobile.Send(new MahjongPlayersInfo(m_Game, mobile));
-            mobile.Send(new MahjongGeneralInfo(m_Game));
-            mobile.Send(new MahjongTilesInfo(m_Game, mobile));
+            mobile.Send(new MahjongJoinGame(this.m_Game));
+            mobile.Send(new MahjongPlayersInfo(this.m_Game, mobile));
+            mobile.Send(new MahjongGeneralInfo(this.m_Game));
+            mobile.Send(new MahjongTilesInfo(this.m_Game, mobile));
         }
 
         private void SendDealerChangedMessage()
         {
-            if (Dealer != null)
-                SendLocalizedMessage(1062698, Dealer.Name); // ~1_name~ is assigned the dealer.
+            if (this.Dealer != null)
+                this.SendLocalizedMessage(1062698, this.Dealer.Name); // ~1_name~ is assigned the dealer.
         }
 
         private void SendPlayerExitMessage(Mobile who)
         {
-            SendLocalizedMessage(1062762, who.Name); // ~1_name~ has left the game.
+            this.SendLocalizedMessage(1062762, who.Name); // ~1_name~ has left the game.
         }
     }
 }

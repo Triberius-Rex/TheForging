@@ -1,12 +1,12 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class ScouringToxin : Item, IUsesRemaining, ICommodity
     {
-        public override int LabelNumber => 1112292;  // scouring toxin
+        public override int LabelNumber { get { return 1112292; } } // scouring toxin
 
         private int m_UsesRemaining;
 
@@ -41,7 +41,7 @@ namespace Server.Items
             if (IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(1112348); // Which item do you wish to scour?
-                from.BeginTarget(-1, false, Targeting.TargetFlags.None, OnTarget);
+                from.BeginTarget(-1, false, Server.Targeting.TargetFlags.None, new TargetCallback(OnTarget));
             }
         }
 
@@ -49,7 +49,7 @@ namespace Server.Items
         {
             if (targeted is Item)
             {
-                Item item = (Item)targeted;
+                var item = (Item)targeted;
 
                 if (item.Parent is Mobile)
                 {
@@ -74,7 +74,7 @@ namespace Server.Items
                         DryReeds reed1 = (DryReeds)targeted;
                         Container cont = from.Backpack;
 
-                        Engines.Plants.PlantHue hue = reed1.PlantHue;
+                        Server.Engines.Plants.PlantHue hue = reed1.PlantHue;
 
                         if (!reed1.IsChildOf(from.Backpack))
                             from.SendLocalizedMessage(1116249); //That must be in your backpack for you to use it.
@@ -177,14 +177,14 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
             writer.Write(m_UsesRemaining);
         }
 

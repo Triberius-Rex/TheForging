@@ -1,11 +1,16 @@
+using System;
+
 namespace Server.Items
 {
-    public class PeerlessKey : BaseDecayingItem
+    public class PeerlessKey : Item
     {
+        private int m_Lifespan;
+        private Timer m_Timer;
+
         private Map m_Map;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Map PeerlessMap
+        public Map _Map
         {
             get { return m_Map; }
             set
@@ -20,6 +25,12 @@ namespace Server.Items
             : base(itemID)
         {
             LootType = LootType.Blessed;
+
+            if (Lifespan > 0)
+            {
+                m_Lifespan = Lifespan;
+                StartTimer();
+            }
         }
 
         public PeerlessKey(Serial serial)
@@ -27,38 +38,147 @@ namespace Server.Items
         {
         }
 
-        public override int Lifespan => 604800;
-        public override bool UseSeconds => false;
+        public virtual int Lifespan { get { return 604800; } }
+        public virtual bool UseSeconds { get { return false; } }
 
-        public override void AddItemSocketProperties(ObjectPropertyList list)
+        [CommandProperty(AccessLevel.GameMaster)]
+        public int TimeLeft
         {
-            if (PeerlessMap != null)
+            get { return m_Lifespan; }
+            set
             {
-                if (PeerlessMap == Map.Felucca)
+                m_Lifespan = value;
+                InvalidateProperties();
+            }
+        }
+
+        public override void GetProperties(ObjectPropertyList list)
+        {
+            base.GetProperties(list);
+
+            if (_Map != null)
+            {
+                if (_Map == Map.Felucca)
                     list.Add(1012001); // Felucca
-                else if (PeerlessMap == Map.Trammel)
+                else if (_Map == Map.Trammel)
                     list.Add(1012000); // Trammel
-                else if (PeerlessMap == Map.Ilshenar)
+                else if (_Map == Map.Ilshenar)
                     list.Add(1012002); // Ilshenar
-                else if (PeerlessMap == Map.Malas)
+                else if (_Map == Map.Malas)
                     list.Add(1060643); // Malas
-                else if (PeerlessMap == Map.Tokuno)
+                else if (_Map == Map.Tokuno)
                     list.Add(1063258); // Tokuno Islands
             }
 
-            base.AddItemSocketProperties(list);
+            if (Lifespan > 0)
+            {
+                if (UseSeconds)
+                    list.Add(1072517, m_Lifespan.ToString()); // Lifespan: ~1_val~ seconds
+                else
+                {
+                    TimeSpan t = TimeSpan.FromSeconds(TimeLeft);
+
+                    int weeks = (int)t.Days / 7;
+                    int days = t.Days;
+                    int hours = t.Hours;
+                    int minutes = t.Minutes;
+
+                    if (weeks > 1)
+                        list.Add(1153092, (t.Days / 7).ToString()); // Lifespan: ~1_val~ weeks
+                    else if (days > 1)
+                        list.Add(1153091, t.Days.ToString()); // Lifespan: ~1_val~ days
+                    else if (hours > 1)
+                        list.Add(1153090, t.Hours.ToString()); // Lifespan: ~1_val~ hours
+                    else if (minutes > 1)
+                        list.Add(1153089, t.Minutes.ToString()); // Lifespan: ~1_val~ minutes
+                    else
+                        list.Add(1072517, t.Seconds.ToString()); // Lifespan: ~1_val~ seconds
+                }
+            }
+        }
+
+        public virtual void StartTimer()
+        {
+            if (m_Timer != null)
+                return;
+
+            m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), new TimerCallback(Slice));
+            m_Timer.Priority = TimerPriority.OneSecond;
+        }
+
+        public virtual void StopTimer()
+        {
+            if (m_Timer != null)
+                m_Timer.Stop();
+
+            m_Timer = null;
+        }
+
+        public virtual void Slice()
+        {
+            m_Lifespan -= 10;
+
+            InvalidateProperties();
+
+            if (m_Lifespan <= 0)
+                Decay();
+        }
+
+        public virtual void Decay()
+        {
+            if (RootParent is Mobile)
+            {
+                Mobile parent = (Mobile)RootParent;
+
+                if (Name == null)
+                    parent.SendLocalizedMessage(1072515, "#" + LabelNumber); // The ~1_name~ expired...
+                else
+                    parent.SendLocalizedMessage(1072515, Name); // The ~1_name~ expired...
+
+                Effects.SendLocationParticles(EffectItem.Create(parent.Location, parent.Map, EffectItem.DefaultDuration), 0x3728, 8, 20, 5042);
+                Effects.PlaySound(parent.Location, parent.Map, 0x201);
+            }
+            else
+            {
+                Effects.SendLocationParticles(EffectItem.Create(Location, Map, EffectItem.DefaultDuration), 0x3728, 8, 20, 5042);
+                Effects.PlaySound(Location, Map, 0x201);
+            }
+
+            StopTimer();
+            Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)1); // version
+
+            writer.Write(m_Map);
+            writer.Write((int)m_Lifespan);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            switch (version)
+            {
+                case 1:
+                    {
+                        m_Map = reader.ReadMap();
+
+                        goto case 0;
+                    }
+                case 0:
+                    {
+                        m_Lifespan = reader.ReadInt();
+
+                        break;
+                    }
+            }
+
+            StartTimer();
         }
     }
 }

@@ -1,8 +1,12 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a clan ribbon courtier corpse")]
     public class ClanRC : BaseCreature
     {
+        //public override InhumanSpeech SpeechType{ get{ return InhumanSpeech.Ratman; } }
         [Constructable]
         public ClanRC()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
@@ -34,6 +38,8 @@ namespace Server.Mobiles
 
             Fame = 1500;
             Karma = -1500;
+
+            VirtualArmor = 48;
         }
 
         public ClanRC(Serial serial)
@@ -41,19 +47,37 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanRummageCorpses => true;
-        public override int Hides => 8;
-        public override HideType HideType => HideType.Spined;
+        public override bool CanRummageCorpses
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override HideType HideType
+        {
+            get
+            {
+                return HideType.Spined;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);
             AddLoot(LootPack.Average);
         }
-
+      
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

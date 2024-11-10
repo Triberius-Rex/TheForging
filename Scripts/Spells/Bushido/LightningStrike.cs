@@ -1,14 +1,49 @@
+using System;
 using Server.Mobiles;
 
 namespace Server.Spells.Bushido
 {
     public class LightningStrike : SamuraiMove
     {
-        public override int BaseMana => 10;
-        public override double RequiredSkill => 50.0;
-        public override TextDefinition AbilityMessage => new TextDefinition(1063167);// You prepare to strike quickly.
-        public override bool DelayedContext => true;
-        public override bool ValidatesDuringHit => false;
+        public LightningStrike()
+        {
+        }
+
+        public override int BaseMana
+        {
+            get
+            {
+                return Core.SA ? 10 : 5;
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 50.0;
+            }
+        }
+        public override TextDefinition AbilityMessage
+        {
+            get
+            {
+                return new TextDefinition(1063167);
+            }
+        }// You prepare to strike quickly.
+        public override bool DelayedContext
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool ValidatesDuringHit
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override int GetAccuracyBonus(Mobile attacker)
         {
             return 50;
@@ -19,8 +54,8 @@ namespace Server.Spells.Bushido
             bool isValid = base.Validate(from);
             if (isValid)
             {
-                PlayerMobile ThePlayer = from as PlayerMobile;
-                if (ThePlayer != null)
+                var ThePlayer = from as PlayerMobile;
+                if(ThePlayer != null)
                 {
                     ThePlayer.ExecutesLightningStrike = BaseMana;
                 }
@@ -63,7 +98,7 @@ namespace Server.Spells.Bushido
         public override void CheckGain(Mobile m)
         {
             // Lighning strike will gain to 120, albeit slow
-            if (m.Skills[MoveSkill].Value >= 87.5)
+            if (Core.SA && m.Skills[MoveSkill].Value >= 87.5)
             {
                 if (0.25 > Utility.RandomDouble())
                 {
@@ -85,13 +120,13 @@ namespace Server.Spells.Bushido
 
             m.Delta(MobileDelta.WeaponDamage);
 
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.LightningStrike, 1060599, 1153811, string.Format("50\t{0}", criticalChance)));
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.LightningStrike, 1060599, 1153811, String.Format("50\t{0}", criticalChance)));
         }
 
         public override void OnClearMove(Mobile attacker)
         {
-            PlayerMobile ThePlayer = attacker as PlayerMobile; // this can be deletet if the PlayerMobile parts are moved to Server.Mobile 
-            if (ThePlayer != null)
+            var ThePlayer = attacker as PlayerMobile; // this can be deletet if the PlayerMobile parts are moved to Server.Mobile 
+            if(ThePlayer != null)
             {
                 ThePlayer.ExecutesLightningStrike = 0;
             }

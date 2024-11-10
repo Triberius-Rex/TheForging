@@ -1,3 +1,6 @@
+using System;
+using Reward = Server.Engines.Quests.BaseReward;
+
 namespace Server.Items
 {
     public class JaacarBox : WoodenBox
@@ -17,12 +20,18 @@ namespace Server.Items
         {
         }
 
-        public override string DefaultName => "Jaacar Reward Box";
+        public override string DefaultName
+        {
+            get
+            {
+                return "Jaacar Reward Box";
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

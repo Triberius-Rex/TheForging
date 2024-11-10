@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     [Furniture]
     public class Countertop : Item
     {
-        public override int LabelNumber => 1125714;  // countertop
+        public override int LabelNumber { get { return 1125714; } } // countertop
 
         [Constructable]
         public Countertop()
@@ -20,7 +22,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

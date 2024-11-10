@@ -1,11 +1,13 @@
+using System;
+using Server;
 using Server.Items;
 
 namespace Server.Engines.VvV
 {
     public class VvVWand1 : BaseWand, IArcaneEquip
-    {
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+	{
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         #region Arcane Impl
         private int m_MaxArcaneCharges, m_CurArcaneCharges;
@@ -41,7 +43,13 @@ namespace Server.Engines.VvV
         public int TempHue { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsArcane => m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0;
+        public bool IsArcane
+        {
+            get
+            {
+                return m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0;
+            }
+        }
 
         public override void AddCraftedProperties(ObjectPropertyList list)
         {
@@ -52,7 +60,13 @@ namespace Server.Engines.VvV
         }
         #endregion
 
-        public override int LabelNumber => 1023570; // Wand
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1023570; // Wand
+            }
+        }
 
         public VvVWand1()
             : base(WandEffect.None, 0, 0)
@@ -68,20 +82,20 @@ namespace Server.Engines.VvV
 
         public VvVWand1(Serial serial)
             : base(serial)
-        {
-        }
+		{
+		}
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             if (IsArcane)
             {
                 writer.Write(true);
                 writer.Write(TempHue);
-                writer.Write(m_CurArcaneCharges);
-                writer.Write(m_MaxArcaneCharges);
+                writer.Write((int)m_CurArcaneCharges);
+                writer.Write((int)m_MaxArcaneCharges);
             }
             else
             {
@@ -90,9 +104,9 @@ namespace Server.Engines.VvV
         }
 
         public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
 
             switch (version)
             {
@@ -121,13 +135,13 @@ namespace Server.Engines.VvV
 
             if (version == 0)
                 Timer.DelayCall(() => ViceVsVirtueSystem.Instance.AddVvVItem(this));
-        }
-    }
+		}
+	}
 
     public class VvVWand2 : BaseWand, IArcaneEquip
     {
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
 
         #region Arcane Impl
         private int m_MaxArcaneCharges, m_CurArcaneCharges;
@@ -157,7 +171,13 @@ namespace Server.Engines.VvV
         public int TempHue { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsArcane => m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0;
+        public bool IsArcane
+        {
+            get
+            {
+                return m_MaxArcaneCharges > 0 && m_CurArcaneCharges >= 0;
+            }
+        }
 
         public override void AddCraftedProperties(ObjectPropertyList list)
         {
@@ -168,7 +188,13 @@ namespace Server.Engines.VvV
         }
         #endregion
 
-        public override int LabelNumber => 1023570; // Wand
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1023570; // Wand
+            }
+        }
 
         public VvVWand2()
             : base(WandEffect.None, 0, 0)
@@ -190,14 +216,14 @@ namespace Server.Engines.VvV
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             if (IsArcane)
             {
                 writer.Write(true);
                 writer.Write(TempHue);
-                writer.Write(m_CurArcaneCharges);
-                writer.Write(m_MaxArcaneCharges);
+                writer.Write((int)m_CurArcaneCharges);
+                writer.Write((int)m_MaxArcaneCharges);
             }
             else
             {

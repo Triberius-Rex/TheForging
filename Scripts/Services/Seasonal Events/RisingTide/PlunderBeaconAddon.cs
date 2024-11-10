@@ -1,16 +1,16 @@
-using Server.Mobiles;
-using Server.Engines.RisingTide;
-
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class PlunderBeaconAddon : BaseAddon
     {
         public static readonly int MaxSpawn = 5;
-        private static readonly string _TimerID = "PlunderBeacon";
 
         [CommandProperty(AccessLevel.GameMaster)]
         public PlunderBeacon Beacon { get; set; }
@@ -19,11 +19,12 @@ namespace Server.Items
         public Dictionary<BaseCreature, bool> Spawn { get; set; }
         public List<MannedCannon> Cannons { get; set; }
 
-        public bool CannonsOperational => Crew.Any(c => c.Alive && !c.Deleted);
-        public bool BeaconVulnerable => !CannonsOperational;
+        public bool CannonsOperational { get { return Crew.Any(c => c.Alive && !c.Deleted); } }
+        public bool BeaconVulnerable { get { return !CannonsOperational; } }
 
-        public override BaseAddonDeed Deed => null;
+        public override BaseAddonDeed Deed { get { return null; } }
 
+        public Timer Timer { get; set; }
         public DateTime NextShoot { get; set; }
         public DateTime NextSpawn { get; set; }
         public bool InitialSpawn { get; set; }
@@ -34,8 +35,8 @@ namespace Server.Items
             for (int i = 0; i < m_AddOnSimpleComponents.Length / 4; i++)
                 AddComponent(new AddonComponent(m_AddOnSimpleComponents[i, 0]), m_AddOnSimpleComponents[i, 1], m_AddOnSimpleComponents[i, 2], m_AddOnSimpleComponents[i, 3]);
 
-            AddComplexComponent(this, 2572, 0, 2, 37, 0, 5, "", 1);
-            AddComplexComponent(this, 2567, 2, 0, 37, 0, 5, "", 1);
+            AddComplexComponent((BaseAddon)this, 2572, 0, 2, 37, 0, 5, "", 1);
+            AddComplexComponent((BaseAddon)this, 2567, 2, 0, 37, 0, 5, "", 1);
 
             Crew = new List<BaseCreature>();
             Spawn = new Dictionary<BaseCreature, bool>();
@@ -61,6 +62,8 @@ namespace Server.Items
             AddCannon(Direction.East, CannonPower.Light, 2, -2, 12, false);
             AddCannon(Direction.East, CannonPower.Light, 2, 0, 12, false);
             AddCannon(Direction.East, CannonPower.Light, 2, 2, 12, false);
+
+            Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), OnTick);
         }
 
         private void AddCannon(Direction d, CannonPower type, int xOffset, int yOffset, int zOffset, bool oper = true)
@@ -70,10 +73,8 @@ namespace Server.Items
 
             if (oper)
             {
-                mob = new PirateCrew
-                {
-                    CantWalk = true
-                };
+                mob = new PirateCrew();
+                mob.CantWalk = true;
 
                 Crew.Add(mob);
             }
@@ -122,17 +123,17 @@ namespace Server.Items
         {
             base.OnLocationChange(old);
 
-            foreach (MannedCannon c in Cannons)
+            foreach (var c in Cannons)
             {
                 c.Location = new Point3D(X + (c.X - old.X), Y + (c.Y - old.Y), Z + (c.Z - old.Z));
             }
 
-            foreach (BaseCreature c in Crew)
+            foreach (var c in Crew)
             {
                 c.Location = new Point3D(X + (c.X - old.X), Y + (c.Y - old.Y), Z + (c.Z - old.Z));
             }
 
-            foreach (BaseCreature c in Spawn.Keys.Where(c => c != null && !c.Deleted))
+            foreach (var c in Spawn.Keys.Where(c => c != null && !c.Deleted))
             {
                 c.Location = new Point3D(X + (c.X - old.X), Y + (c.Y - old.Y), Z + (c.Z - old.Z));
             }
@@ -147,17 +148,17 @@ namespace Server.Items
         {
             base.OnMapChange();
 
-            foreach (MannedCannon c in Cannons)
+            foreach (var c in Cannons)
             {
                 c.Map = Map;
             }
 
-            foreach (BaseCreature c in Crew.Where(c => c != null && !c.Deleted))
+            foreach (var c in Crew.Where(c => c != null && !c.Deleted))
             {
                 c.Map = Map;
             }
 
-            foreach (BaseCreature c in Spawn.Keys.Where(c => c != null && !c.Deleted))
+            foreach (var c in Spawn.Keys.Where(c => c != null && !c.Deleted))
             {
                 c.Map = Map;
             }
@@ -189,36 +190,24 @@ namespace Server.Items
 
         public override void OnSectorActivate()
         {
-            TimerRegistry.Register(_TimerID, this, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), false, addon => addon.OnTick());
+            if (Timer == null)
+            {
+                Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), OnTick);
+            }
         }
 
         public override void OnSectorDeactivate()
         {
-            TimerRegistry.RemoveFromRegistry(_TimerID, this);
+            if (Timer != null && SpawnCount() >= MaxSpawn)
+            {
+                Timer.Stop();
+                Timer = null;
+            }
         }
-
-        private bool _CheckSpawn;
 
         public void OnTick()
         {
-            if (_CheckSpawn)
-            {
-                if (BaseCreature.IsSoulboundEnemies && Spawn != null)
-                {
-                    foreach (BaseCreature bc in Spawn.Keys)
-                    {
-                        if (!bc.Deleted)
-                        {
-                            bc.IsSoulBound = true;
-                        }
-                    }
-
-                }
-
-                _CheckSpawn = false;
-            }
-
-            Map map = Map;
+            var map = Map;
 
             if (map == null)
             {
@@ -234,7 +223,7 @@ namespace Server.Items
             }
             else if (CannonsOperational && NextShoot < DateTime.UtcNow)
             {
-                foreach (MannedCannon cannon in Cannons.Where(c => c != null && !c.Deleted && (c.CanFireUnmanned || (c.Operator != null && !c.Operator.Deleted && c.Operator.Alive))))
+                foreach (var cannon in Cannons.Where(c => c != null && !c.Deleted && (c.CanFireUnmanned || (c.Operator != null && !c.Operator.Deleted && c.Operator.Alive))))
                 {
                     cannon.Scan(true);
                 }
@@ -260,8 +249,8 @@ namespace Server.Items
                 return;
 
             Point3D p = Location;
-            Map map = Map;
-            int range = 15;
+            var map = Map;
+            var range = 15;
 
             if (Beacon.LastDamager != null && Beacon.LastDamager.InRange(Location, 20))
             {
@@ -273,7 +262,7 @@ namespace Server.Items
 
             for (int i = 0; i < 50; i++)
             {
-                Point3D spawnLoc = new Point3D(Utility.RandomMinMax(p.X - range, p.X + range), Utility.RandomMinMax(p.Y - range, p.Y + range), -5);
+                var spawnLoc = new Point3D(Utility.RandomMinMax(p.X - range, p.X + range), Utility.RandomMinMax(p.Y - range, p.Y + range), -5);
 
                 if (map.CanFit(spawnLoc.X, spawnLoc.Y, spawnLoc.Z, 16, true, true, false, creature))
                 {
@@ -283,8 +272,8 @@ namespace Server.Items
                         creature.Home = spawnLoc;
                         creature.RangeHome = 10;
 
-                        if (BaseCreature.IsSoulboundEnemies)
-                            creature.IsSoulBound = true;
+                        if (creature.IsSoulboundEnemies)
+                            creature.IsSoulbound = true;
 
                         Spawn.Add(creature, initial);
 
@@ -302,7 +291,7 @@ namespace Server.Items
             return Spawn.Keys.Where(s => s != null && !s.Deleted).Count();
         }
 
-        private readonly Type[] _SpawnTypes =
+        private Type[] _SpawnTypes =
         {
             typeof(WaterElemental),
             typeof(SeaSerpent),
@@ -318,17 +307,23 @@ namespace Server.Items
                 Beacon.Delete();
             }
 
-            foreach (BaseCreature bc in Crew.Where(c => c != null && !c.Deleted))
+            if (Timer != null)
+            {
+                Timer.Stop();
+                Timer = null;
+            }
+
+            foreach (var bc in Crew.Where(c => c != null && !c.Deleted))
             {
                 bc.Kill();
             }
 
-            foreach (BaseCreature bc in Spawn.Keys.Where(sp => sp != null && !sp.Deleted))
+            foreach (var bc in Spawn.Keys.Where(sp => sp != null && !sp.Deleted))
             {
                 bc.Kill();
             }
 
-            foreach (MannedCannon cannon in Cannons)
+            foreach (var cannon in Cannons)
             {
                 cannon.Delete();
             }
@@ -344,9 +339,9 @@ namespace Server.Items
             return p.X >= X - 8 && p.X <= X + 8 && p.Y >= Y - 8 && p.Y <= Y + 8;
         }
 
-        public PlunderBeaconAddon(Serial serial) : base(serial)
-        {
-        }
+        public PlunderBeaconAddon( Serial serial ) : base( serial )
+		{
+		}
 
         public override void Serialize(GenericWriter writer)
         {
@@ -355,7 +350,7 @@ namespace Server.Items
 
             writer.Write(InitialSpawn);
 
-            writer.WriteItem(Beacon);
+            writer.WriteItem<PlunderBeacon>(Beacon);
 
             writer.WriteItemList(Cannons, true);
             writer.WriteMobileList(Crew, true);
@@ -363,7 +358,7 @@ namespace Server.Items
 
             writer.Write(Spawn.Count);
 
-            foreach (KeyValuePair<BaseCreature, bool> kvp in Spawn)
+            foreach (var kvp in Spawn)
             {
                 writer.WriteMobile(kvp.Key);
                 writer.Write(kvp.Value);
@@ -392,7 +387,7 @@ namespace Server.Items
                         //Spawn = reader.ReadStrongMobileList<BaseCreature>();
                         List<BaseCreature> list = reader.ReadStrongMobileList<BaseCreature>();
 
-                        foreach (BaseCreature bc in list)
+                        foreach (var bc in list)
                         {
                             Spawn[bc] = true;
                         }
@@ -403,8 +398,8 @@ namespace Server.Items
 
                         for (int i = 0; i < count; i++)
                         {
-                            BaseCreature bc = reader.ReadMobile<BaseCreature>();
-                            bool initial = reader.ReadBool();
+                            var bc = reader.ReadMobile<BaseCreature>();
+                            var initial = reader.ReadBool();
 
                             if (bc != null)
                             {
@@ -416,7 +411,7 @@ namespace Server.Items
                     break;
             }
 
-            _CheckSpawn = true;
+            Timer = Timer.DelayCall(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), OnTick);
         }
 
         #region Components
@@ -429,7 +424,7 @@ namespace Server.Items
         {
             AddonComponent ac;
             ac = new AddonComponent(item);
-            if (!string.IsNullOrEmpty(name))
+            if (name != null && name.Length > 0)
                 ac.Name = name;
             if (hue != 0)
                 ac.Hue = hue;
@@ -443,7 +438,7 @@ namespace Server.Items
             addon.AddComponent(ac, xoffset, yoffset, zoffset);
         }
 
-        private static readonly int[,] m_AddOnSimpleComponents = new int[,] {
+        private static int[,] m_AddOnSimpleComponents = new int[,] {
               {16017, -5, -3, 4}, {16011, -2, 4, 4}// 1	 2	 3	 
 			, {16011, -2, -4, 4}, {16020, -5, -5, 4}, {16008, -2, -5, 4}// 4	 5	 6	 
 			, {16014, -4, -3, 4}, {16011, 3, -4, 4}, {16008, -2, 3, 4}// 7	 8	 9	 
@@ -501,54 +496,5 @@ namespace Server.Items
 		};
 
         #endregion
-
-        public static List<PlunderBeaconAddon> Beacons { get; set; }
-
-        public static void AddBeacon(PlunderBeaconAddon beacon)
-        {
-            if (Beacons == null)
-            {
-                Beacons = new List<PlunderBeaconAddon>();
-            }
-
-            Beacons.Add(beacon);
-        }
-
-        public static void RemoveBeacon(PlunderBeaconAddon beacon)
-        {
-            if (Beacons != null && Beacons.Contains(beacon))
-            {
-                Beacons.Remove(beacon);
-            }
-        }
-
-        public static void Initialize()
-        {
-            if (RisingTideEvent.Instance.Running)
-            {
-                EventSink.CreatureDeath += OnCreatureDeath;
-            }
-        }
-
-        public static void OnCreatureDeath(CreatureDeathEventArgs e)
-        {
-            var killed = e.Creature as BaseCreature;
-
-            if (killed != null && Beacons != null && Beacons.Any(b => b.Spawn != null && b.Spawn.ContainsKey(killed)))
-            {
-                double chance = killed is PirateCrew ? 0.15 : 0.025;
-
-                if (chance >= Utility.RandomDouble())
-                {
-                    var m = killed.RandomPlayerWithLootingRights();
-
-                    if (m != null)
-                    {
-                        m.AddToBackpack(new MaritimeCargo());
-                        m.SendLocalizedMessage(1158907); // You recover maritime trade cargo!
-                    }
-                }
-            }
-        }
     }
 }

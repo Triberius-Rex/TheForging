@@ -1,5 +1,5 @@
-using Server.Engines.Craft;
 using System;
+using Server.Engines.Craft;
 using System.Collections.Generic;
 
 namespace Server.Items
@@ -10,7 +10,13 @@ namespace Server.Items
         /* DO NOT USE! Only used in serialization of old furniture that originally derived from BaseContainer */
         private bool m_InheritsItem;
 
-        protected bool InheritsItem => m_InheritsItem;
+        protected bool InheritsItem
+        {
+            get
+            {
+                return m_InheritsItem;
+            }
+        }
         #endregion
 
         private Mobile m_Crafter;
@@ -113,7 +119,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             writer.Write(m_PlayerConstructed);
             writer.Write((int)m_Resource);
@@ -167,7 +173,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -196,7 +202,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -225,7 +231,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -254,7 +260,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -283,7 +289,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -312,7 +318,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -341,7 +347,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -370,7 +376,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -399,7 +405,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -428,7 +434,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -463,7 +469,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -500,7 +506,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -561,7 +567,7 @@ namespace Server.Items
 
             if (c is Armoire || c is FancyArmoire)
             {
-                switch (c.ItemID)
+                switch ( c.ItemID )
                 {
                     case 0xA4C:
                         c.ItemID = 0xA4D;
@@ -603,7 +609,8 @@ namespace Server.Items
     [Furniture]
     public class ChinaCabinet : FurnitureContainer, IFlipable
     {
-        public override int LabelNumber => 1158974;  // China Cabinet
+        public override int LabelNumber { get { return 1158974; } } // China Cabinet
+        public override int DefaultGumpID { get { return 0x4F; } }
 
         [Constructable]
         public ChinaCabinet()
@@ -640,7 +647,7 @@ namespace Server.Items
                 ItemID--;
 
             if (DynamicFurniture.Open(this, m))
-                base.DisplayTo(m);
+                base.DisplayTo(m);            
         }
 
         public ChinaCabinet(Serial serial)
@@ -651,7 +658,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -664,8 +671,8 @@ namespace Server.Items
     [Furniture]
     public class PieSafe : FurnitureContainer, IFlipable
     {
-        public override int LabelNumber => 1158973;  // Pie Safe
-        public override int DefaultGumpID => 0x4F;
+        public override int LabelNumber { get { return 1158973; } } // Pie Safe
+        public override int DefaultGumpID { get { return 0x4F; } }
 
         [Constructable]
         public PieSafe()
@@ -712,7 +719,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

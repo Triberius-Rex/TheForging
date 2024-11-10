@@ -1,4 +1,5 @@
 using System;
+using Server.Mobiles;
 using CalcMoves = Server.Movement.Movement;
 using MoveImpl = Server.Movement.MovementImpl;
 
@@ -24,9 +25,9 @@ namespace Server.PathAlgorithms.SlowAStar
         private Point3D m_Goal;
         public int Heuristic(int x, int y, int z)
         {
-            x -= m_Goal.X;
-            y -= m_Goal.Y;
-            z -= m_Goal.Z;
+            x -= this.m_Goal.X;
+            y -= this.m_Goal.Y;
+            z -= this.m_Goal.Z;
 
             x *= 11;
             y *= 11;
@@ -41,24 +42,22 @@ namespace Server.PathAlgorithms.SlowAStar
 
         public override Direction[] Find(IPoint3D p, Map map, Point3D start, Point3D goal)
         {
-            m_Goal = goal;
+            this.m_Goal = goal;
+
+            BaseCreature bc = p as BaseCreature;
 
             PathNode curNode;
 
-            PathNode goalNode = new PathNode
-            {
-                x = goal.X,
-                y = goal.Y,
-                z = goal.Z
-            };
+            PathNode goalNode = new PathNode();
+            goalNode.x = goal.X;
+            goalNode.y = goal.Y;
+            goalNode.z = goal.Z;
 
-            PathNode startNode = new PathNode
-            {
-                x = start.X,
-                y = start.Y,
-                z = start.Z
-            };
-            startNode.h = Heuristic(startNode.x, startNode.y, startNode.z);
+            PathNode startNode = new PathNode();
+            startNode.x = start.X;
+            startNode.y = start.Y;
+            startNode.z = start.Z;
+            startNode.h = this.Heuristic(startNode.x, startNode.y, startNode.z);
 
             PathNode[] closed = m_Closed, open = m_Open, successors = m_Successors;
             Direction[] path = m_Path;
@@ -152,11 +151,17 @@ namespace Server.PathAlgorithms.SlowAStar
 
                 sucCount = 0;
 
+                if (bc != null)
+                {
+                    MoveImpl.AlwaysIgnoreDoors = bc.CanOpenDoors;
+                    MoveImpl.IgnoreMovableImpassables = bc.CanMoveOverObstacles;
+                }
+
                 MoveImpl.Goal = goal;
 
                 for (int i = 0; i < 8; ++i)
                 {
-                    switch (i)
+                    switch ( i )
                     {
                         default:
                         case 0:
@@ -201,6 +206,8 @@ namespace Server.PathAlgorithms.SlowAStar
                     }
                 }
 
+                MoveImpl.AlwaysIgnoreDoors = false;
+                MoveImpl.IgnoreMovableImpassables = false;
                 MoveImpl.Goal = Point3D.Zero;
 
                 if (sucCount == 0 || ++depth > MaxDepth)
@@ -253,8 +260,8 @@ namespace Server.PathAlgorithms.SlowAStar
                     successors[i].px = curNode.x;
                     successors[i].py = curNode.y;
                     successors[i].pz = curNode.z;
-                    successors[i].dir = (int)GetDirection(curNode.x, curNode.y, x, y);
-                    successors[i].h = Heuristic(x, y, z);
+                    successors[i].dir = (int)this.GetDirection(curNode.x, curNode.y, x, y);
+                    successors[i].h = this.Heuristic(x, y, z);
 
                     if (openCount == MaxNodes)
                         break;

@@ -1,36 +1,38 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Items;
+using Server.Mobiles;
 using System.Collections.Generic;
 
 namespace Server.SkillHandlers
 {
     public class ImbuingDefinition
     {
-        private readonly object m_Attribute;
-        private readonly int m_AttributeName;
-        private readonly int m_Weight;
-        private readonly Type m_PrimaryRes;
-        private readonly Type m_GemRes;
-        private readonly Type m_SpecialRes;
-        private readonly int m_PrimaryName;
-        private readonly int m_GemName;
-        private readonly int m_SpecialName;
-        private readonly int m_MaxIntensity;
-        private readonly int m_IncAmount;
-        private readonly int m_Description;
+        private object m_Attribute;
+        private int m_AttributeName;
+        private int m_Weight;
+        private Type m_PrimaryRes;
+        private Type m_GemRes;
+        private Type m_SpecialRes;
+        private int m_PrimaryName;
+        private int m_GemName;
+        private int m_SpecialName;
+        private int m_MaxIntensity;
+        private int m_IncAmount;
+        private int m_Description;
 
-        public object Attribute => m_Attribute;
-        public int AttributeName => m_AttributeName;
-        public int Weight => m_Weight;
-        public Type PrimaryRes => m_PrimaryRes;
-        public Type GemRes => m_GemRes;
-        public Type SpecialRes => m_SpecialRes;
-        public int PrimaryName => m_PrimaryName;
-        public int GemName => m_GemName;
-        public int SpecialName => m_SpecialName;
-        public int MaxIntensity => m_MaxIntensity;
-        public int IncAmount => m_IncAmount;
-        public int Description => m_Description;
+        public object Attribute { get { return m_Attribute; } }
+        public int AttributeName { get { return m_AttributeName; } }
+        public int Weight { get { return m_Weight; } }
+        public Type PrimaryRes { get { return m_PrimaryRes; } }
+        public Type GemRes { get { return m_GemRes; } }
+        public Type SpecialRes { get { return m_SpecialRes; } }
+        public int PrimaryName { get { return m_PrimaryName; } }
+        public int GemName { get { return m_GemName; } }
+        public int SpecialName { get { return m_SpecialName; } }
+        public int MaxIntensity { get { return m_MaxIntensity; } }
+        public int IncAmount { get { return m_IncAmount; } }
+        public int Description { get { return m_Description; } }
 
         public bool Melee { get; set; }
         public bool Ranged { get; set; }
@@ -97,7 +99,7 @@ namespace Server.SkillHandlers
 
             if (LocBuffer.ContainsKey(type))
                 return LocBuffer[type];
-
+ 
             Item item = Loot.Construct(type);
 
             if (item != null)
@@ -108,7 +110,7 @@ namespace Server.SkillHandlers
                 return LocBuffer[type]; ;
             }
 
-            if (type != null)
+            if(type != null)
                 Console.WriteLine("Warning, missing name cliloc for type {0}.", type.Name);
             return -1;
         }

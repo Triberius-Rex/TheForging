@@ -1,10 +1,14 @@
-using Server.Accounting;
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Commands;
+using Server.Accounting;
+using Server.Multis;
+using Server.Gumps;
 
 namespace Server.Engines.NewMagincia
 {
@@ -18,14 +22,14 @@ namespace Server.Engines.NewMagincia
         private static MaginciaLottoSystem m_Instance;
         public static MaginciaLottoSystem Instance { get { return m_Instance; } set { m_Instance = value; } }
 
-        private static readonly List<MaginciaHousingPlot> m_Plots = new List<MaginciaHousingPlot>();
-        public static List<MaginciaHousingPlot> Plots => m_Plots;
+        private static List<MaginciaHousingPlot> m_Plots = new List<MaginciaHousingPlot>();
+        public static List<MaginciaHousingPlot> Plots { get { return m_Plots; } }
 
         private static Dictionary<Map, List<Rectangle2D>> m_FreeHousingZones;
-        public static Dictionary<Map, List<Rectangle2D>> FreeHousingZones => m_FreeHousingZones;
+        public static Dictionary<Map, List<Rectangle2D>> FreeHousingZones { get { return m_FreeHousingZones; } }
 
-        private static readonly Dictionary<Mobile, List<NewMaginciaMessage>> m_MessageQueue = new Dictionary<Mobile, List<NewMaginciaMessage>>();
-        public static Dictionary<Mobile, List<NewMaginciaMessage>> MessageQueue => m_MessageQueue;
+        private static Dictionary<Mobile, List<NewMaginciaMessage>> m_MessageQueue = new Dictionary<Mobile, List<NewMaginciaMessage>>();
+        public static Dictionary<Mobile, List<NewMaginciaMessage>> MessageQueue { get { return m_MessageQueue; } }
 
         private Timer m_Timer;
         private TimeSpan m_LottoDuration;
@@ -33,10 +37,10 @@ namespace Server.Engines.NewMagincia
 
         public static void Initialize()
         {
-            EventSink.Login += OnLogin;
+            EventSink.Login += new LoginEventHandler(OnLogin);
 
             if (m_Instance != null)
-                m_Instance.PruneMessages();
+                m_Instance.CheckMessages();
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -49,7 +53,7 @@ namespace Server.Engines.NewMagincia
                 {
                     foreach (MaginciaHousingPlot plot in m_Plots)
                     {
-                        if (plot.IsAvailable)
+                        if(plot.IsAvailable)
                             plot.LottoEnds = DateTime.UtcNow + m_LottoDuration;
                     }
                 }
@@ -92,7 +96,7 @@ namespace Server.Engines.NewMagincia
             m_FreeHousingZones[Map.Trammel] = new List<Rectangle2D>();
             m_FreeHousingZones[Map.Felucca] = new List<Rectangle2D>();
 
-            if (m_Enabled)
+            if(m_Enabled)
                 StartTimer();
 
             LoadPlots();
@@ -113,7 +117,7 @@ namespace Server.Engines.NewMagincia
             if (m_Timer != null)
                 m_Timer.Stop();
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), ProcessTick);
+            m_Timer = Timer.DelayCall(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new TimerCallback(ProcessTick));
             m_Timer.Priority = TimerPriority.OneMinute;
             m_Timer.Start();
         }
@@ -196,7 +200,7 @@ namespace Server.Engines.NewMagincia
 
         public static void CheckHousePlacement(Mobile from, Point3D center)
         {
-            MaginciaLottoSystem system = Instance;
+            MaginciaLottoSystem system = MaginciaLottoSystem.Instance;
 
             if (system != null && system.Enabled && from.Backpack != null && IsInMagincia(center.X, center.Y, from.Map))
             {
@@ -249,8 +253,8 @@ namespace Server.Engines.NewMagincia
             }
         }
 
-        public static Rectangle2D[] MagHousingZones => m_MagHousingZones;
-        private static readonly Rectangle2D[] m_MagHousingZones = new Rectangle2D[]
+        public static Rectangle2D[] MagHousingZones { get { return m_MagHousingZones; } }
+        private static Rectangle2D[] m_MagHousingZones = new Rectangle2D[]
         {
             new Rectangle2D(3686, 2125, 18, 18), // C1
             new Rectangle2D(3686, 2086, 18, 18), // C2 / Prime
@@ -280,7 +284,7 @@ namespace Server.Engines.NewMagincia
             new Rectangle2D(3715, 2090, 18, 18), // E7 / Prime            
         };
 
-        private static readonly Point3D[] m_StoneLocs = new Point3D[]
+        private static Point3D[] m_StoneLocs = new Point3D[]
         {
             new Point3D(3683, 2134, 20),
             new Point3D(3704, 2092, 5),
@@ -310,7 +314,7 @@ namespace Server.Engines.NewMagincia
             new Point3D(3711, 2087, 5)
         };
 
-        private static readonly string[] m_Identifiers = new string[]
+        private static string[] m_Identifiers = new string[]
         {
             "C-1",
             "C-2",
@@ -371,7 +375,7 @@ namespace Server.Engines.NewMagincia
 
             if (Sextant.Format(p, map, ref xLong, ref yLat, ref xMins, ref yMins, ref xEast, ref ySouth))
             {
-                return string.Format("{0}° {1}'{2}, {3}° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
+                return String.Format("{0}° {1}'{2}, {3}° {4}'{5}", yLat, yMins, ySouth ? "S" : "N", xLong, xMins, xEast ? "E" : "W");
             }
 
             return p.ToString();
@@ -392,15 +396,18 @@ namespace Server.Engines.NewMagincia
 
             if (from is PlayerMobile && from.NetState != null)
             {
-                from.CloseGump(typeof(NewMaginciaMessageGump));
-                from.CloseGump(typeof(NewMaginciaMessageListGump));
-                from.CloseGump(typeof(NewMaginciaMessageDetailGump));
+                if (from.HasGump(typeof(NewMaginciaMessageGump)))
+                    from.CloseGump(typeof(NewMaginciaMessageGump));
 
-                var messages = GetMessages(from);
+                if (from.HasGump(typeof(NewMaginciaMessageListGump)))
+                    from.CloseGump(typeof(NewMaginciaMessageListGump));
 
-                if (messages != null)
+                if (from.HasGump(typeof(NewMaginciaMessageDetailGump)))
+                    from.CloseGump(typeof(NewMaginciaMessageDetailGump));
+
+                if (HasMessageInQueue(from))
                 {
-                    BaseGump.SendGump(new NewMaginciaMessageGump((PlayerMobile)from, messages));
+                    BaseGump.SendGump(new NewMaginciaMessageGump((PlayerMobile)from));
                 }
             }
         }
@@ -408,9 +415,7 @@ namespace Server.Engines.NewMagincia
         public static void AddMessageToQueue(Mobile from, NewMaginciaMessage message)
         {
             if (!MessageQueue.ContainsKey(from) || m_MessageQueue[from] == null)
-            {
                 m_MessageQueue[from] = new List<NewMaginciaMessage>();
-            }
 
             m_MessageQueue[from].Add(message);
         }
@@ -425,59 +430,40 @@ namespace Server.Engines.NewMagincia
                 m_MessageQueue[from].Remove(message);
 
                 if (m_MessageQueue[from].Count == 0)
-                {
                     m_MessageQueue.Remove(from);
-                }
-
-                return;
             }
+        }
 
-            var account = from.Account as Account;
-
-            for (int i = 0; i < account.Length; i++)
-            {
-                var m = account[i];
-
-                if (m == from)
-                {
-                    continue;
-                }
-
-                if (m_MessageQueue.ContainsKey(m) && m_MessageQueue[m].Contains(message))
-                {
-                    m_MessageQueue[m].Remove(message);
-
-                    if (m_MessageQueue[m].Count == 0)
-                    {
-                        m_MessageQueue.Remove(m);
-                    }
-
-                    break;
-                }
-            }
+        public static bool HasMessageInQueue(Mobile from)
+        {
+            return from != null && m_MessageQueue.ContainsKey(from) && m_MessageQueue[from] != null && m_MessageQueue[from].Count > 0;
         }
 
         public static void OnLogin(LoginEventArgs e)
         {
             Mobile from = e.Mobile;
+            Account acct = from.Account as Account;
             CheckMessages(from);
 
-            var messages = GetMessages(from);
+            //TODO: Support for account wide messages?
 
-            if (messages != null)
+            if (m_MessageQueue.ContainsKey(from))
             {
-                from.CloseGump(typeof(NewMaginciaMessageGump));
-                BaseGump.SendGump(new NewMaginciaMessageGump((PlayerMobile)from, messages));
-            }
-            else if (from.Account != null)
-            {
-                var account = from.Account.Username;
+                if (m_MessageQueue[from] == null || m_MessageQueue[from].Count == 0)
+                {
+                    m_MessageQueue.Remove(from);
+                }
+                else if (from is PlayerMobile)
+                {
+                    from.CloseGump(typeof(NewMaginciaMessageGump));
+                    BaseGump.SendGump(new NewMaginciaMessageGump((PlayerMobile)from));
+                }
             }
 
             GetWinnerGump(from);
         }
 
-        public void PruneMessages()
+        public void CheckMessages()
         {
             List<Mobile> mobiles = new List<Mobile>(m_MessageQueue.Keys);
 
@@ -488,9 +474,7 @@ namespace Server.Engines.NewMagincia
                 foreach (NewMaginciaMessage message in messages)
                 {
                     if (m_MessageQueue.ContainsKey(m) && m_MessageQueue[m].Contains(message) && message.Expired)
-                    {
                         m_MessageQueue[m].Remove(message);
-                    }
                 }
 
                 ColUtility.Free(messages);
@@ -501,46 +485,12 @@ namespace Server.Engines.NewMagincia
 
         public static List<NewMaginciaMessage> GetMessages(Mobile m)
         {
-            List<NewMaginciaMessage> list = null;
-
             if (m_MessageQueue.ContainsKey(m))
             {
-                var messages = m_MessageQueue[m];
-
-                if (messages.Count == 0)
-                {
-                    m_MessageQueue.Remove(m);
-                }
-                else
-                {
-                    list = new List<NewMaginciaMessage>();
-
-                    list.AddRange(messages);
-                }
+                return m_MessageQueue[m];
             }
 
-            if (m.Account != null)
-            {
-                foreach (var kvp in m_MessageQueue.Where(kvp => kvp.Key != m && kvp.Key.Account != null && kvp.Key.Account.Username == m.Account.Username && kvp.Value.Any(message => message.AccountBound)))
-                {
-                    if (list == null)
-                    {
-                        list = new List<NewMaginciaMessage>();
-                    }
-
-                    foreach (var message in kvp.Value.Where(message => message.AccountBound))
-                    {
-                        list.Add(message);
-                    }
-                }
-            }
-
-            if (list != null)
-            {
-                list = list.OrderBy(message => message.Expires).ToList();
-            }
-
-            return list;
+            return null;
         }
 
         public static void CheckMessages(Mobile from)
@@ -592,7 +542,7 @@ namespace Server.Engines.NewMagincia
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_GoldSink);
             writer.Write(m_Enabled);
@@ -603,7 +553,7 @@ namespace Server.Engines.NewMagincia
                 m_Plots[i].Serialize(writer);
 
             writer.Write(m_FreeHousingZones[Map.Trammel].Count);
-            foreach (Rectangle2D rec in m_FreeHousingZones[Map.Trammel])
+            foreach(Rectangle2D rec in m_FreeHousingZones[Map.Trammel])
                 writer.Write(rec);
 
             writer.Write(m_FreeHousingZones[Map.Felucca].Count);
@@ -611,16 +561,16 @@ namespace Server.Engines.NewMagincia
                 writer.Write(rec);
 
             writer.Write(m_MessageQueue.Count);
-            foreach (KeyValuePair<Mobile, List<NewMaginciaMessage>> kvp in m_MessageQueue)
+            foreach(KeyValuePair<Mobile, List<NewMaginciaMessage>> kvp in m_MessageQueue)
             {
                 writer.Write(kvp.Key);
 
                 writer.Write(kvp.Value.Count);
-                foreach (NewMaginciaMessage message in kvp.Value)
+                foreach(NewMaginciaMessage message in kvp.Value)
                     message.Serialize(writer);
             }
 
-            Timer.DelayCall(TimeSpan.FromSeconds(30), PruneMessages);
+            Timer.DelayCall(TimeSpan.FromSeconds(30), new TimerCallback(CheckMessages));
         }
 
         public override void Deserialize(GenericReader reader)
@@ -656,7 +606,7 @@ namespace Server.Engines.NewMagincia
                 List<NewMaginciaMessage> messages = new List<NewMaginciaMessage>();
 
                 int count = reader.ReadInt();
-                for (int j = 0; j < count; j++)
+                for(int j = 0; j < count; j++)
                     messages.Add(new NewMaginciaMessage(reader));
 
                 if (m != null && messages.Count > 0)
@@ -673,13 +623,13 @@ namespace Server.Engines.NewMagincia
 
         public void ValidatePlots()
         {
-            for (int i = 0; i < m_Identifiers.Length; i++)
+            for(int i = 0; i < m_Identifiers.Length; i++)
             {
-                Rectangle2D rec = m_MagHousingZones[i];
-                string id = m_Identifiers[i];
+                var rec = m_MagHousingZones[i];
+                var id = m_Identifiers[i];
 
-                MaginciaHousingPlot plotTram = m_Plots.FirstOrDefault(p => p.Identifier == id && p.Map == Map.Trammel);
-                MaginciaHousingPlot plotFel = m_Plots.FirstOrDefault(p => p.Identifier == id && p.Map == Map.Felucca);
+                var plotTram = m_Plots.FirstOrDefault(p => p.Identifier == id && p.Map == Map.Trammel);
+                var plotFel = m_Plots.FirstOrDefault(p => p.Identifier == id && p.Map == Map.Felucca);
 
                 if (plotTram == null && !m_FreeHousingZones[Map.Trammel].Contains(rec))
                 {

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class WhitePearlBracelet : GoldBracelet
@@ -6,24 +8,24 @@ namespace Server.Items
         public WhitePearlBracelet()
             : base()
         {
-            Weight = 1.0;
-
-            Attributes.NightSight = 1;
+            this.Weight = 1.0;
+			
+            this.Attributes.NightSight = 1;
 
             BaseRunicTool.ApplyAttributesTo(this, true, 0, Utility.RandomMinMax(3, 5), 0, 100);
-
+			
             if (Utility.Random(100) < 50)
             {
-                switch (Utility.Random(3))
+                switch ( Utility.Random(3) )
                 {
                     case 0:
-                        Attributes.CastSpeed += 1;
+                        this.Attributes.CastSpeed += 1;
                         break;
                     case 1:
-                        Attributes.CastRecovery += 2;
+                        this.Attributes.CastRecovery += 2;
                         break;
                     case 2:
-                        Attributes.LowerRegCost += 10;
+                        this.Attributes.LowerRegCost += 10;
                         break;
                 }
             }
@@ -34,12 +36,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1073456;// white pearl bracelet
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073456;
+            }
+        }// white pearl bracelet
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

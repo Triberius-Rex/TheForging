@@ -1,8 +1,5 @@
-using Server.Commands;
-
 using System;
-using System.IO;
-using System.Diagnostics;
+using Server.Commands;
 
 namespace Server.Misc
 {
@@ -10,7 +7,7 @@ namespace Server.Misc
     {
         private static readonly TimeSpan RestartDelay = TimeSpan.FromSeconds(10);  // how long the server should remain active before restart (period of 'server wars')
         private static readonly TimeSpan WarningDelay = TimeSpan.FromMinutes(1.0); // at what interval should the shutdown message be displayed?
-
+        
         public static DateTime RestartTime { get; private set; }
         public static bool Restarting { get; private set; }
         public static Timer Timer { get; private set; }
@@ -20,9 +17,7 @@ namespace Server.Misc
         public static int Hour = Config.Get("AutoRestart.Hour", 12);
         public static int Minutes = Config.Get("AutoRestart.Minute", 0);
         public static int Frequency = Config.Get("AutoRestart.Frequency", 24);
-
-        public static readonly string RecompilePath = Path.Combine(Core.BaseDirectory, Core.Debug ? "Compile.WIN - Debug.bat" : "Compile.WIN - Release.bat");
-
+        
         public AutoRestart()
             : base(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(1.0))
         {
@@ -30,13 +25,13 @@ namespace Server.Misc
 
         public static void Initialize()
         {
-            CommandSystem.Register("Restart", AccessLevel.Administrator, Restart_OnCommand);
-            CommandSystem.Register("Shutdown", AccessLevel.Administrator, Shutdown_OnCommand);
+			CommandSystem.Register("Restart", AccessLevel.Administrator, new CommandEventHandler(Restart_OnCommand));
+			CommandSystem.Register("Shutdown", AccessLevel.Administrator, new CommandEventHandler(Shutdown_OnCommand));
 
             if (Enabled)
             {
-                DateTime now = DateTime.Now;
-                DateTime force = new DateTime(now.Year, now.Month, now.Day, Hour, Minutes, 0);
+                var now = DateTime.Now;
+                var force = new DateTime(now.Year, now.Month, now.Day, Hour, Minutes, 0);
 
                 if (now > force)
                 {
@@ -64,52 +59,37 @@ namespace Server.Misc
 
                 StopTimer();
 
-                bool recompile = e.Arguments.Length > 0 && e.Arguments[0].ToLower() == "true";
-
-                if (recompile)
-                {
-                    if (!File.Exists(RecompilePath))
-                    {
-                        e.Mobile.SendMessage("Unable to Re-Compile due to missing file: {0}", RecompilePath);
-                        recompile = false;
-                    }
-                    else
-                    {
-                        e.Mobile.SendMessage("Recompiling after restart!");
-                    }
-                }
-
-                DelayCall(TimeSpan.FromSeconds(1), () =>
+                Timer.DelayCall(TimeSpan.FromSeconds(1), () =>
                     {
                         AutoSave.Save();
 
                         Restarting = true;
-                        TimedShutdown(true, recompile);
+                        TimedShutdown(true);
                     });
             }
         }
 
-        public static void Shutdown_OnCommand(CommandEventArgs e)
-        {
-            if (Restarting)
-            {
-                e.Mobile.SendMessage("The server is already shutting down.");
-            }
-            else
-            {
-                e.Mobile.SendMessage("You have initiated server shutdown.");
+		public static void Shutdown_OnCommand(CommandEventArgs e)
+		{
+			if (Restarting)
+			{
+				e.Mobile.SendMessage("The server is already shutting down.");
+			}
+			else
+			{
+				e.Mobile.SendMessage("You have initiated server shutdown.");
 
                 StopTimer();
 
-                DelayCall(TimeSpan.FromSeconds(1), () =>
+                Timer.DelayCall(TimeSpan.FromSeconds(1), () =>
                 {
                     AutoSave.Save();
                     Restarting = true;
 
                     TimedShutdown(false);
                 });
-            }
-        }
+			}
+		}
 
         private static void BeginTimer()
         {
@@ -128,7 +108,7 @@ namespace Server.Misc
             }
         }
 
-        protected override void OnTick()
+		protected override void OnTick()
         {
             if (Restarting || !Enabled)
                 return;
@@ -154,25 +134,12 @@ namespace Server.Misc
 
         private static void TimedShutdown(bool restart)
         {
-            TimedShutdown(restart, false);
-        }
-
-        private static void TimedShutdown(bool restart, bool recompile)
-        {
-            World.Broadcast(0x22, true, string.Format("The server will be going down in about {0} seconds!", RestartDelay.TotalSeconds.ToString()));
-            DelayCall(RestartDelay, (rest, recomp) =>
+            World.Broadcast(0x22, true, String.Format("The server will be going down in about {0} seconds!", RestartDelay.TotalSeconds.ToString()));
+            Timer.DelayCall(RestartDelay, rest =>
                 {
-                    if (recomp)
-                    {
-                        Process.Start(RecompilePath);
-                        Core.Kill();
-                    }
-                    else
-                    {
-                        Core.Kill(rest);
-                    }
+                    Core.Kill(rest);
                 },
-                restart, recompile);
+                restart);
         }
     }
 }

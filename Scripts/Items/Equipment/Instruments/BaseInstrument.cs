@@ -1,8 +1,9 @@
-using Server.Engines.Craft;
-using Server.Mobiles;
-using Server.Targeting;
 using System;
 using System.Collections;
+using Server.Engines.Craft;
+using Server.Mobiles;
+using Server.Network;
+using Server.Targeting;
 
 namespace Server.Items
 {
@@ -90,7 +91,7 @@ namespace Server.Items
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool PlayerConstructed => m_Crafter != null;
+        public bool PlayerConstructed { get { return m_Crafter != null; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile Crafter
@@ -118,10 +119,28 @@ namespace Server.Items
             }
         }
 
-        public virtual int InitMinUses => 350;
-        public virtual int InitMaxUses => 450;
+        public virtual int InitMinUses
+        {
+            get
+            {
+                return 350;
+            }
+        }
+        public virtual int InitMaxUses
+        {
+            get
+            {
+                return 450;
+            }
+        }
 
-        public virtual TimeSpan ChargeReplenishRate => TimeSpan.FromMinutes(5.0);
+        public virtual TimeSpan ChargeReplenishRate
+        {
+            get
+            {
+                return TimeSpan.FromMinutes(5.0);
+            }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int UsesRemaining
@@ -162,12 +181,12 @@ namespace Server.Items
             {
                 return m_ReplenishesCharges;
             }
-            set
+            set 
             {
                 if (value != m_ReplenishesCharges && value)
                     m_LastReplenished = DateTime.UtcNow;
 
-                m_ReplenishesCharges = value;
+                m_ReplenishesCharges = value; 
             }
         }
 
@@ -324,7 +343,7 @@ namespace Server.Items
             if (bc == null)
                 return false;
 
-            AbilityProfile profile = bc.AbilityProfile;
+            var profile = bc.AbilityProfile;
 
             if (profile != null)
             {
@@ -386,7 +405,7 @@ namespace Server.Items
             if (bc != null && bc.IsParagon)
                 val += 40.0;
 
-            if (val > MaxBardingDifficulty)
+            if (Core.SE && val > MaxBardingDifficulty)
                 val = MaxBardingDifficulty;
 
             return val;
@@ -511,7 +530,60 @@ namespace Server.Items
             }
 
             if (m_UsesRemaining != oldUses)
-                Timer.DelayCall(TimeSpan.Zero, InvalidateProperties);
+                Timer.DelayCall(TimeSpan.Zero, new TimerCallback(InvalidateProperties));
+        }
+
+        public override void OnSingleClick(Mobile from)
+        {
+            ArrayList attrs = new ArrayList();
+
+            if (DisplayLootType)
+            {
+                if (LootType == LootType.Blessed)
+                    attrs.Add(new EquipInfoAttribute(1038021)); // blessed
+                else if (LootType == LootType.Cursed)
+                    attrs.Add(new EquipInfoAttribute(1049643)); // cursed
+            }
+
+            if (m_Quality == ItemQuality.Exceptional)
+                attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+
+            if (m_ReplenishesCharges)
+                attrs.Add(new EquipInfoAttribute(1070928)); // Replenish Charges
+
+            // TODO: Must this support item identification?
+            if (m_Slayer != SlayerName.None)
+            {
+                SlayerEntry entry = SlayerGroup.GetEntryByName(m_Slayer);
+                if (entry != null)
+                    attrs.Add(new EquipInfoAttribute(entry.Title));
+            }
+
+            if (m_Slayer2 != SlayerName.None)
+            {
+                SlayerEntry entry = SlayerGroup.GetEntryByName(m_Slayer2);
+                if (entry != null)
+                    attrs.Add(new EquipInfoAttribute(entry.Title));
+            }
+
+            int number;
+
+            if (Name == null)
+            {
+                number = LabelNumber;
+            }
+            else
+            {
+                LabelTo(from, Name);
+                number = 1041000;
+            }
+
+            if (attrs.Count == 0 && Crafter == null && Name != null)
+                return;
+
+            EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
+
+            from.Send(new DisplayEquipmentInfo(this, eqInfo));
         }
 
         public BaseInstrument(Serial serial)
@@ -523,7 +595,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(4); // version
+            writer.Write((int)4); // version
 
             writer.Write((int)m_Resource);
 
@@ -537,10 +609,10 @@ namespace Server.Items
             writer.WriteEncodedInt((int)m_Slayer);
             writer.WriteEncodedInt((int)m_Slayer2);
 
-            writer.WriteEncodedInt(UsesRemaining);
+            writer.WriteEncodedInt((int)UsesRemaining);
 
-            writer.WriteEncodedInt(m_WellSound);
-            writer.WriteEncodedInt(m_BadlySound);
+            writer.WriteEncodedInt((int)m_WellSound);
+            writer.WriteEncodedInt((int)m_BadlySound);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -549,7 +621,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 4:
                     {
@@ -577,7 +649,7 @@ namespace Server.Items
 
                         m_WellSound = reader.ReadEncodedInt();
                         m_BadlySound = reader.ReadEncodedInt();
-
+					
                         break;
                     }
                 case 1:
@@ -640,7 +712,7 @@ namespace Server.Items
             return ((m.Skills[SkillName.Musicianship].Value / 100) > Utility.RandomDouble());
         }
 
-        public virtual void PlayInstrumentWell(Mobile from)
+        public void PlayInstrumentWell(Mobile from)
         {
             from.PlaySound(m_WellSound);
         }

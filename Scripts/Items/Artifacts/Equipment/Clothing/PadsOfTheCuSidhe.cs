@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class PadsOfTheCuSidhe : FurBoots
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public PadsOfTheCuSidhe()
             : base(0x47E)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1075048;// Pads of the Cu Sidhe
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1075048;
+            }
+        }// Pads of the Cu Sidhe
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

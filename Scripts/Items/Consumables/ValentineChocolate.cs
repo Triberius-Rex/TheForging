@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ValentineChocolate : Food
@@ -28,7 +30,7 @@ namespace Server.Items
 			1114828, // "True Love"
 		};
 
-        public override int LabelNumber => m_Title;
+        public override int LabelNumber { get { return m_Title; } }
 
         private int m_Title, m_Label;
 
@@ -73,10 +75,10 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Title);
-            writer.Write(m_Label);
+            writer.Write((int)m_Title);
+            writer.Write((int)m_Label);
         }
 
         public override void Deserialize(GenericReader reader)

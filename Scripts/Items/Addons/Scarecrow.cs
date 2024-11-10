@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x1E34, 0x1E35)]
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1076608;// Scarecrow
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076608;
+            }
+        }// Scarecrow
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -35,7 +43,7 @@ namespace Server.Items
         public ScarecrowAddon()
             : base()
         {
-            AddComponent(new ScarecrowComponent(), 0, 0, 0);
+            this.AddComponent(new ScarecrowComponent(), 0, 0, 0);
         }
 
         public ScarecrowAddon(Serial serial)
@@ -43,7 +51,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ScarecrowDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ScarecrowDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -65,7 +79,7 @@ namespace Server.Items
         public ScarecrowDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public ScarecrowDeed(Serial serial)
@@ -73,8 +87,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ScarecrowAddon();
-        public override int LabelNumber => 1076608;// Scarecrow
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ScarecrowAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076608;
+            }
+        }// Scarecrow
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

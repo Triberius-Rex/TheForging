@@ -1,16 +1,16 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Engines.Quests
-{
+{ 
     public class Mielan : MondainQuester
-    {
+    { 
         [Constructable]
         public Mielan()
             : base("Mielan", "the arcanist")
-        {
-            SetSkill(SkillName.Meditation, 60.0, 83.0);
-            SetSkill(SkillName.Focus, 60.0, 83.0);
+        { 
+            this.SetSkill(SkillName.Meditation, 60.0, 83.0);
+            this.SetSkill(SkillName.Focus, 60.0, 83.0);
         }
 
         public Mielan(Serial serial)
@@ -18,35 +18,41 @@ namespace Server.Engines.Quests
         {
         }
 
-        public override Type[] Quests => new Type[]
+        public override Type[] Quests
+        { 
+            get
+            {
+                return new Type[] 
                 {
                     typeof(CircleOfLifeQuest)
                 };
+            }
+        }
         public override void InitBody()
         {
-            InitStats(100, 100, 25);
-
-            Female = false;
-            Race = Race.Elf;
-
-            Hue = 0x8376;
-            HairItemID = 0x2FCE;
-            HairHue = 0x368;
+            this.InitStats(100, 100, 25);
+			
+            this.Female = false;
+            this.Race = Race.Elf;
+			
+            this.Hue = 0x8376;
+            this.HairItemID = 0x2FCE;
+            this.HairHue = 0x368;
         }
 
         public override void InitOutfit()
         {
-            SetWearable(new ElvenBoots(), 0x901, 1);
-            SetWearable(new ElvenPants(), 0x901, 1);
-            SetWearable(new ElvenShirt(), dropChance: 1);
-			SetWearable(new GemmedCirclet(), dropChance: 1);
+            this.AddItem(new ElvenBoots(0x901));
+            this.AddItem(new ElvenPants(0x901));
+            this.AddItem(new ElvenShirt());
+            this.AddItem(new GemmedCirclet());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

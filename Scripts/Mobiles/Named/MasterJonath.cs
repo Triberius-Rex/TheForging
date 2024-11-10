@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -37,32 +38,53 @@ namespace Server.Mobiles
 
             Fame = 18000;
             Karma = -18000;
+
+            PackReg(7);
+            PackReg(7);
+            PackReg(8);
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
         }
 
         public MasterJonath(Serial serial)
             : base(serial)
         {
         }
-
-        public override bool CanBeParagon => false;
-
-        public override int TreasureMapLevel => 5;
-        public override void GenerateLoot()
+		public override bool CanBeParagon { get { return false; } }
+        public override void OnDeath( Container c )
         {
-            AddLoot(LootPack.UltraRich, 3);
-            AddLoot(LootPack.MedScrolls, 2);
-            AddLoot(LootPack.HighScrolls, 2);
-            AddLoot(LootPack.MageryRegs, 22);
-            AddLoot(LootPack.ArcanistScrolls, 0, 1);
-            AddLoot(LootPack.Parrot);
-            AddLoot(LootPack.LootItem<DisintegratingThesisNotes>(15.0));
+            base.OnDeath( c );
+
+            if ( Utility.RandomDouble() < 0.05 )
+            	c.DropItem( new ParrotItem() );
+
+            if ( Utility.RandomDouble() < 0.15 )
+            	c.DropItem( new DisintegratingThesisNotes() );
         }
 
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override void GenerateLoot()
+        {
+            this.AddLoot(LootPack.UltraRich, 3);
+            this.AddLoot(LootPack.MedScrolls, 2);
+            this.AddLoot(LootPack.HighScrolls, 2);
+        }
+
+        // TODO: Special move?
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

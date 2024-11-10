@@ -1,8 +1,8 @@
+using System;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
@@ -12,9 +12,9 @@ namespace Server.Items
         public HolidayTreeDeed()
             : base(0x14F0)
         {
-            Hue = 0x488;
-            Weight = 1.0;
-            LootType = LootType.Blessed;
+            this.Hue = 0x488;
+            this.Weight = 1.0;
+            this.LootType = LootType.Blessed;
         }
 
         public HolidayTreeDeed(Serial serial)
@@ -22,12 +22,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041116;// a deed for a holiday tree
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041116;
+            }
+        }// a deed for a holiday tree
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -36,7 +42,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public bool ValidatePlacement(Mobile from, Point3D loc)
@@ -44,7 +50,7 @@ namespace Server.Items
             if (from.AccessLevel >= AccessLevel.GameMaster)
                 return true;
 
-            if (!from.InRange(GetWorldLocation(), 1))
+            if (!from.InRange(this.GetWorldLocation(), 1))
             {
                 from.SendLocalizedMessage(500446); // That is too far away.
                 return false;
@@ -98,13 +104,13 @@ namespace Server.Items
             * That functionality may be desired. And so, it's included in this script.
             */
 
-            if (ValidatePlacement(from, loc))
-                EndPlace(from, (HolidayTreeType)state, loc);
+            if (this.ValidatePlacement(from, loc))
+                this.EndPlace(from, (HolidayTreeType)state, loc);
         }
 
         public void EndPlace(Mobile from, HolidayTreeType type, Point3D loc)
         {
-            Delete();
+            this.Delete();
             HolidayTree tree = new HolidayTree(from, type, loc);
             BaseHouse house = BaseHouse.FindHouseAt(tree);
             if (house != null)
@@ -125,36 +131,36 @@ namespace Server.Items
         public HolidayTreeChoiceGump(Mobile from, HolidayTreeDeed deed)
             : base(200, 200)
         {
-            m_From = from;
-            m_Deed = deed;
+            this.m_From = from;
+            this.m_Deed = deed;
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddBackground(0, 0, 220, 120, 5054);
-            AddBackground(10, 10, 200, 100, 3000);
+            this.AddBackground(0, 0, 220, 120, 5054);
+            this.AddBackground(10, 10, 200, 100, 3000);
 
-            AddButton(20, 35, 4005, 4007, 1, GumpButtonType.Reply, 0);
-            AddHtmlLocalized(55, 35, 145, 25, 1018322, false, false); // Classic
+            this.AddButton(20, 35, 4005, 4007, 1, GumpButtonType.Reply, 0);
+            this.AddHtmlLocalized(55, 35, 145, 25, 1018322, false, false); // Classic
 
-            AddButton(20, 65, 4005, 4007, 2, GumpButtonType.Reply, 0);
-            AddHtmlLocalized(55, 65, 145, 25, 1018321, false, false); // Modern
+            this.AddButton(20, 65, 4005, 4007, 2, GumpButtonType.Reply, 0);
+            this.AddHtmlLocalized(55, 65, 145, 25, 1018321, false, false); // Modern
         }
 
         public override void OnResponse(NetState sender, RelayInfo info)
         {
-            if (m_Deed.Deleted)
+            if (this.m_Deed.Deleted)
                 return;
 
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case 1:
                     {
-                        m_Deed.BeginPlace(m_From, HolidayTreeType.Classic);
+                        this.m_Deed.BeginPlace(this.m_From, HolidayTreeType.Classic);
                         break;
                     }
                 case 2:
                     {
-                        m_Deed.BeginPlace(m_From, HolidayTreeType.Modern);
+                        this.m_Deed.BeginPlace(this.m_From, HolidayTreeType.Modern);
                         break;
                     }
             }

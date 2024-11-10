@@ -1,7 +1,7 @@
-using Server.Misc;
 using System;
 using System.IO;
 using System.Net;
+using Server.Misc;
 
 namespace Server
 {
@@ -9,7 +9,7 @@ namespace Server
     {
         public static void Initialize()
         {
-            EventSink.SocketConnect += EventSink_SocketConnect;
+            EventSink.SocketConnect += new SocketConnectEventHandler(EventSink_SocketConnect);
         }
 
         private static void EventSink_SocketConnect(SocketConnectEventArgs e)
@@ -34,14 +34,13 @@ namespace Server
 
                     using (StreamWriter op = new StreamWriter("ipLimits.log", true))
                         op.WriteLine("{0}\tPast IP limit threshold\t{1}", ip, DateTime.UtcNow);
-
+	
                     e.AllowConnection = false;
                     return;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Diagnostics.ExceptionLogging.LogException(ex);
                 e.AllowConnection = false;
             }
         }

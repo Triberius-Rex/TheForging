@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a mongbat corpse")]
@@ -31,6 +33,8 @@ namespace Server.Mobiles
             Fame = 150;
             Karma = -150;
 
+            VirtualArmor = 10;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = -18.9;
@@ -41,10 +45,28 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
 
-        public override bool CanFly => true;
+        public override bool CanFly
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void GenerateLoot()
         {
@@ -54,7 +76,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

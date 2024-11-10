@@ -1,6 +1,6 @@
-using Server.Engines.Craft;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
 
 namespace Server.Engines.BulkOrders
 {
@@ -11,7 +11,7 @@ namespace Server.Engines.BulkOrders
     // tink 1109
     public class SmallAlchemyBOD : SmallBOD
     {
-        public override BODType BODType => BODType.Alchemy;
+        public override BODType BODType { get { return BODType.Alchemy; } }
 
         [Constructable]
         public SmallAlchemyBOD()
@@ -27,27 +27,27 @@ namespace Server.Engines.BulkOrders
 
                 SmallBulkEntry entry = entries[Utility.Random(entries.Length)];
 
-                Hue = 2505;
-                AmountMax = amountMax;
-                Type = entry.Type;
-                Number = entry.Number;
-                Graphic = entry.Graphic;
-                Material = material;
-                GraphicHue = entry.Hue;
+                this.Hue = 2505;
+                this.AmountMax = amountMax;
+                this.Type = entry.Type;
+                this.Number = entry.Number;
+                this.Graphic = entry.Graphic;
+                this.Material = material;
+                this.GraphicHue = entry.Hue;
             }
         }
 
         public SmallAlchemyBOD(int amountCur, int amountMax, Type type, int number, int graphic, bool reqExceptional, BulkMaterialType mat, int hue)
         {
-            Hue = 2505;
-            AmountMax = amountMax;
-            AmountCur = amountCur;
-            Type = type;
-            Number = number;
-            Graphic = graphic;
-            RequireExceptional = reqExceptional;
-            Material = mat;
-            GraphicHue = hue;
+            this.Hue = 2505;
+            this.AmountMax = amountMax;
+            this.AmountCur = amountCur;
+            this.Type = type;
+            this.Number = number;
+            this.Graphic = graphic;
+            this.RequireExceptional = reqExceptional;
+            this.Material = mat;
+            this.GraphicHue = hue;
         }
 
         public SmallAlchemyBOD(Serial serial)
@@ -57,12 +57,12 @@ namespace Server.Engines.BulkOrders
 
         private SmallAlchemyBOD(SmallBulkEntry entry, int amountMax)
         {
-            Hue = 2505;
-            AmountMax = amountMax;
-            Type = entry.Type;
-            Number = entry.Number;
-            Graphic = entry.Graphic;
-            GraphicHue = entry.Hue;
+            this.Hue = 2505;
+            this.AmountMax = amountMax;
+            this.Type = entry.Type;
+            this.Number = entry.Number;
+            this.Graphic = entry.Graphic;
+            this.GraphicHue = entry.Hue;
         }
 
         public static SmallAlchemyBOD CreateRandomFor(Mobile m)
@@ -164,7 +164,7 @@ namespace Server.Engines.BulkOrders
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

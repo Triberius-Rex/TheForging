@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Engines.Craft
 {
     public class CraftSkill
@@ -7,15 +9,31 @@ namespace Server.Engines.Craft
         private readonly double m_MaxSkill;
         public CraftSkill(SkillName skillToMake, double minSkill, double maxSkill)
         {
-            m_SkillToMake = skillToMake;
-            m_MinSkill = minSkill;
-            m_MaxSkill = maxSkill;
+            this.m_SkillToMake = skillToMake;
+            this.m_MinSkill = minSkill;
+            this.m_MaxSkill = maxSkill;
         }
 
-        public SkillName SkillToMake => m_SkillToMake;
-
-        public double MinSkill => m_MinSkill;
-
-        public double MaxSkill => m_MaxSkill;
+        public SkillName SkillToMake
+        {
+            get
+            {
+                return this.m_SkillToMake;
+            }
+        }
+        public double MinSkill
+        {
+            get
+            {
+                return this.m_MinSkill;
+            }
+        }
+        public double MaxSkill
+        {
+            get
+            {
+                return this.m_MaxSkill;
+            }
+        }
     }
 }

@@ -1,10 +1,13 @@
-using Server.Engines.Quests;
-using Server.Items;
-using Server.Mobiles;
-using Server.Network;
-using Server.Prompts;
-using Server.SkillHandlers;
 using System;
+using System.Collections.Generic;
+
+using Server;
+using Server.Prompts;
+using Server.Mobiles;
+using Server.Items;
+using Server.SkillHandlers;
+using Server.Network;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
@@ -13,7 +16,7 @@ namespace Server.Engines.Khaldun
         //public static readonly Point3D TeleportDestination1 = new Point3D(6242, 2892, 17);
 
         public Timer HideTimer { get; set; }
-        public bool CheckWhenHidden => true;
+        public bool CheckWhenHidden { get { return true; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Map DestinationMap { get; set; }
@@ -40,7 +43,7 @@ namespace Server.Engines.Khaldun
 
                 if (!current && _HasBeenExamined)
                 {
-                    HideTimer = Timer.DelayCall(TimeSpan.FromMinutes(20), () => Hide());
+                    HideTimer = Timer.DelayCall(TimeSpan.FromMinutes(20), () => Hide() );
                 }
             }
         }
@@ -107,7 +110,7 @@ namespace Server.Engines.Khaldun
             if (!m.Player)
                 return;
 
-            GoingGumshoeQuest2 quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
+            var quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
 
             if (quest != null && CheckPrerequisite(quest))
             {
@@ -144,7 +147,7 @@ namespace Server.Engines.Khaldun
 
         public override void OnDoubleClick(Mobile m)
         {
-            if (Destination == Point3D.Zero || DestinationMap == null || DestinationMap == Map.Internal || string.IsNullOrEmpty(Keyword))
+            if (Destination == Point3D.Zero || DestinationMap == null || DestinationMap == Map.Internal || String.IsNullOrEmpty(Keyword))
                 return;
 
             if (m.InRange(GetWorldLocation(), 2) && _HasBeenExamined)
@@ -155,7 +158,7 @@ namespace Server.Engines.Khaldun
 
         private class TrapDoorPrompt : Prompt
         {
-            public override int MessageCliloc => 1158557;
+            public override int MessageCliloc { get { return 1158557; } }
 
             public TrapDoor Door { get; set; }
 
@@ -166,7 +169,7 @@ namespace Server.Engines.Khaldun
 
             public override void OnResponse(Mobile from, string text)
             {
-                if (Door.Destination == Point3D.Zero || Door.DestinationMap == null || Door.DestinationMap == Map.Internal || string.IsNullOrEmpty(Door.Keyword))
+                if (Door.Destination == Point3D.Zero || Door.DestinationMap == null || Door.DestinationMap == Map.Internal || String.IsNullOrEmpty(Door.Keyword))
                     return;
 
                 if (!string.IsNullOrEmpty(text) && text.Trim().ToLower() == Door.Keyword.ToLower())
@@ -195,7 +198,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(Keyword);
             writer.Write(Destination);

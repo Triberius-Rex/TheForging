@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Engines.Plants
@@ -8,25 +9,25 @@ namespace Server.Engines.Plants
         public PlantPourTarget(PlantItem plant)
             : base(3, true, TargetFlags.None)
         {
-            m_Plant = plant;
+            this.m_Plant = plant;
         }
 
         protected override void OnTarget(Mobile from, object targeted)
         {
-            if (!m_Plant.Deleted && from.InRange(m_Plant.GetWorldLocation(), 3) && targeted is Item)
+            if (!this.m_Plant.Deleted && from.InRange(this.m_Plant.GetWorldLocation(), 3) && targeted is Item)
             {
-                m_Plant.Pour(from, (Item)targeted);
+                this.m_Plant.Pour(from, (Item)targeted);
             }
         }
 
         protected override void OnTargetFinish(Mobile from)
         {
-            if (!m_Plant.Deleted && m_Plant.PlantStatus < PlantStatus.DecorativePlant && from.InRange(m_Plant.GetWorldLocation(), 3) && m_Plant.IsUsableBy(from))
+            if (!this.m_Plant.Deleted && this.m_Plant.PlantStatus < PlantStatus.DecorativePlant && from.InRange(this.m_Plant.GetWorldLocation(), 3) && this.m_Plant.IsUsableBy(from))
             {
                 if (from.HasGump(typeof(MainPlantGump)))
                     from.CloseGump(typeof(MainPlantGump));
 
-                from.SendGump(new MainPlantGump(m_Plant));
+                from.SendGump(new MainPlantGump(this.m_Plant));
             }
         }
     }

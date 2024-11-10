@@ -1,10 +1,10 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using Server.Commands;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Server.Engines.Help
 {
@@ -21,7 +21,7 @@ namespace Server.Engines.Help
 
         public static void Initialize()
         {
-            CommandSystem.Register("SpeechLog", AccessLevel.GameMaster, SpeechLog_OnCommand);
+            CommandSystem.Register("SpeechLog", AccessLevel.GameMaster, new CommandEventHandler(SpeechLog_OnCommand));
         }
 
         [Usage("SpeechLog")]
@@ -69,36 +69,42 @@ namespace Server.Engines.Help
 
         private readonly Queue<SpeechLogEntry> m_Queue;
 
-        public int Count => m_Queue.Count;
+        public int Count
+        {
+            get
+            {
+                return this.m_Queue.Count;
+            }
+        }
 
         public SpeechLog()
         {
-            m_Queue = new Queue<SpeechLogEntry>();
+            this.m_Queue = new Queue<SpeechLogEntry>();
         }
 
         public void Add(Mobile from, string speech)
         {
-            Add(new SpeechLogEntry(from, speech));
+            this.Add(new SpeechLogEntry(from, speech));
         }
 
         public void Add(SpeechLogEntry entry)
         {
-            if (MaxLength > 0 && m_Queue.Count >= MaxLength)
-                m_Queue.Dequeue();
+            if (MaxLength > 0 && this.m_Queue.Count >= MaxLength)
+                this.m_Queue.Dequeue();
 
-            Clean();
+            this.Clean();
 
-            m_Queue.Enqueue(entry);
+            this.m_Queue.Enqueue(entry);
         }
 
         public void Clean()
         {
-            while (m_Queue.Count > 0)
+            while (this.m_Queue.Count > 0)
             {
-                SpeechLogEntry entry = m_Queue.Peek();
+                SpeechLogEntry entry = (SpeechLogEntry)this.m_Queue.Peek();
 
                 if (DateTime.UtcNow - entry.Created > EntryDuration)
-                    m_Queue.Dequeue();
+                    this.m_Queue.Dequeue();
                 else
                     break;
             }
@@ -106,14 +112,14 @@ namespace Server.Engines.Help
 
         public void CopyTo(SpeechLogEntry[] array, int index)
         {
-            m_Queue.CopyTo(array, index);
+            this.m_Queue.CopyTo(array, index);
         }
 
         #region IEnumerable<SpeechLogEntry> Members
 
         IEnumerator<SpeechLogEntry> IEnumerable<SpeechLogEntry>.GetEnumerator()
         {
-            return m_Queue.GetEnumerator();
+            return this.m_Queue.GetEnumerator();
         }
 
         #endregion
@@ -122,7 +128,7 @@ namespace Server.Engines.Help
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return m_Queue.GetEnumerator();
+            return this.m_Queue.GetEnumerator();
         }
         #endregion
     }
@@ -133,22 +139,34 @@ namespace Server.Engines.Help
         private readonly string m_Speech;
         private DateTime m_Created;
 
-        public Mobile From => m_From;
-        public string Speech => m_Speech;
-        public DateTime Created
+        public Mobile From
         {
             get
             {
-                return m_Created;
+                return this.m_From;
             }
-            set { m_Created = value; }
+        }
+        public string Speech
+        {
+            get
+            {
+                return this.m_Speech;
+            }
+        }
+        public DateTime Created
+        {
+	        get
+            {
+                return this.m_Created;
+            }
+	        set { this.m_Created = value; }
         }
 
-        public SpeechLogEntry(Mobile from, string speech)
+	    public SpeechLogEntry(Mobile from, string speech)
         {
-            m_From = from;
-            m_Speech = speech;
-            m_Created = DateTime.UtcNow;
+            this.m_From = from;
+            this.m_Speech = speech;
+            this.m_Created = DateTime.UtcNow;
         }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a Visceral corpse")]
@@ -39,6 +41,8 @@ namespace Server.Mobiles
             Fame = 2000;
             Karma = -2000;
 
+            VirtualArmor = 50;
+
             SetAreaEffect(AreaEffect.AuraOfNausea);
             SetSpecialAbility(SpecialAbility.StickySkin);
         }
@@ -54,8 +58,8 @@ namespace Server.Mobiles
             AddLoot(LootPack.Gems, Utility.Random(1, 3));
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Poison.Lethal;
+        public override Poison PoisonImmune { get { return Poison.Lethal; } }
+        public override Poison HitPoison { get { return Poison.Lethal; } }
 
         public override int GetIdleSound()
         {
@@ -80,7 +84,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)

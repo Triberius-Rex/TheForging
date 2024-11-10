@@ -1,5 +1,5 @@
-using Server.Commands;
 using System;
+using Server.Commands;
 
 namespace Server.Items
 {
@@ -26,16 +26,16 @@ namespace Server.Items
         public MarkContainer(bool bone, bool locked)
             : base(bone ? 0xECA : 0xE79)
         {
-            Movable = false;
+            this.Movable = false;
 
             if (bone)
-                Hue = 1102;
+                this.Hue = 1102;
 
-            m_AutoLock = locked;
-            Locked = locked;
+            this.m_AutoLock = locked;
+            this.Locked = locked;
 
             if (locked)
-                LockLevel = -255;
+                this.LockLevel = -255;
         }
 
         public MarkContainer(Serial serial)
@@ -48,16 +48,16 @@ namespace Server.Items
         {
             get
             {
-                return m_AutoLock;
+                return this.m_AutoLock;
             }
             set
             {
-                m_AutoLock = value;
+                this.m_AutoLock = value;
 
-                if (!m_AutoLock)
-                    StopTimer();
-                else if (!Locked && m_RelockTimer == null)
-                    m_RelockTimer = new InternalTimer(this);
+                if (!this.m_AutoLock)
+                    this.StopTimer();
+                else if (!this.Locked && this.m_RelockTimer == null)
+                    this.m_RelockTimer = new InternalTimer(this);
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -65,11 +65,11 @@ namespace Server.Items
         {
             get
             {
-                return m_TargetMap;
+                return this.m_TargetMap;
             }
             set
             {
-                m_TargetMap = value;
+                this.m_TargetMap = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -77,11 +77,11 @@ namespace Server.Items
         {
             get
             {
-                return m_Target;
+                return this.m_Target;
             }
             set
             {
-                m_Target = value;
+                this.m_Target = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -89,12 +89,12 @@ namespace Server.Items
         {
             get
             {
-                return ItemID == 0xECA;
+                return this.ItemID == 0xECA;
             }
             set
             {
-                ItemID = value ? 0xECA : 0xE79;
-                Hue = value ? 1102 : 0;
+                this.ItemID = value ? 0xECA : 0xE79;
+                this.Hue = value ? 1102 : 0;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -102,14 +102,20 @@ namespace Server.Items
         {
             get
             {
-                return m_Description;
+                return this.m_Description;
             }
             set
             {
-                m_Description = value;
+                this.m_Description = value;
             }
         }
-        public override bool IsDecoContainer => false;
+        public override bool IsDecoContainer
+        {
+            get
+            {
+                return false;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public override bool Locked
         {
@@ -121,29 +127,29 @@ namespace Server.Items
             {
                 base.Locked = value;
 
-                if (m_AutoLock)
+                if (this.m_AutoLock)
                 {
-                    StopTimer();
+                    this.StopTimer();
 
-                    if (!Locked)
-                        m_RelockTimer = new InternalTimer(this);
+                    if (!this.Locked)
+                        this.m_RelockTimer = new InternalTimer(this);
                 }
             }
         }
         public static void Initialize()
         {
-            CommandSystem.Register("SecretLocGen", AccessLevel.Administrator, SecretLocGen_OnCommand);
-            CommandSystem.Register("SecretLocDelete", AccessLevel.Administrator, SecretLocDelete_OnCommand);
-        }
+            CommandSystem.Register("SecretLocGen", AccessLevel.Administrator, new CommandEventHandler(SecretLocGen_OnCommand));
+			CommandSystem.Register("SecretLocDelete", AccessLevel.Administrator, new CommandEventHandler(SecretLocDelete_OnCommand));
+		}
 
-        [Usage("SecretLocDelete")]
-        [Description("Deletes mark containers to Malas secret locations.")]
-        public static void SecretLocDelete_OnCommand(CommandEventArgs e)
-        {
-            WeakEntityCollection.Delete("malas");
-        }
+		[Usage("SecretLocDelete")]
+		[Description("Deletes mark containers to Malas secret locations.")]
+		public static void SecretLocDelete_OnCommand(CommandEventArgs e)
+		{
+			WeakEntityCollection.Delete("malas");
+		}
 
-        [Usage("SecretLocGen")]
+		[Usage("SecretLocGen")]
         [Description("Generates mark containers to Malas secret locations.")]
         public static void SecretLocGen_OnCommand(CommandEventArgs e)
         {
@@ -159,25 +165,25 @@ namespace Server.Items
 
             e.Mobile.SendMessage("Secret mark containers have been created.");
 
-            Engines.GenerateForgottenPyramid.Generate(e.Mobile);
+            Server.Engines.GenerateForgottenPyramid.Generate(e.Mobile);
         }
 
         public void StopTimer()
         {
-            if (m_RelockTimer != null)
-                m_RelockTimer.Stop();
+            if (this.m_RelockTimer != null)
+                this.m_RelockTimer.Stop();
 
-            m_RelockTimer = null;
+            this.m_RelockTimer = null;
         }
 
         public void Mark(RecallRune rune)
         {
-            if (TargetMap != null)
+            if (this.TargetMap != null)
             {
                 rune.Marked = true;
-                rune.TargetMap = m_TargetMap;
-                rune.Target = m_Target;
-                rune.Description = m_Description;
+                rune.TargetMap = this.m_TargetMap;
+                rune.Target = this.m_Target;
+                rune.Description = this.m_Description;
                 rune.House = null;
             }
         }
@@ -188,7 +194,7 @@ namespace Server.Items
 
             if (rune != null && base.OnDragDrop(from, dropped))
             {
-                Mark(rune);
+                this.Mark(rune);
 
                 return true;
             }
@@ -204,7 +210,7 @@ namespace Server.Items
 
             if (rune != null && base.OnDragDropInto(from, dropped, p))
             {
-                Mark(rune);
+                this.Mark(rune);
 
                 return true;
             }
@@ -218,16 +224,16 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_AutoLock);
+            writer.Write(this.m_AutoLock);
 
-            if (!Locked && m_AutoLock)
-                writer.WriteDeltaTime(m_RelockTimer.RelockTime);
+            if (!this.Locked && this.m_AutoLock)
+                writer.WriteDeltaTime(this.m_RelockTimer.RelockTime);
 
-            writer.Write(m_TargetMap);
-            writer.Write(m_Target);
-            writer.Write(m_Description);
+            writer.Write(this.m_TargetMap);
+            writer.Write(this.m_Target);
+            writer.Write(this.m_Description);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -236,14 +242,14 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_AutoLock = reader.ReadBool();
+            this.m_AutoLock = reader.ReadBool();
 
-            if (!Locked && m_AutoLock)
-                m_RelockTimer = new InternalTimer(this, reader.ReadDeltaTime() - DateTime.UtcNow);
+            if (!this.Locked && this.m_AutoLock)
+                this.m_RelockTimer = new InternalTimer(this, reader.ReadDeltaTime() - DateTime.UtcNow);
 
-            m_TargetMap = reader.ReadMap();
-            m_Target = reader.ReadPoint3D();
-            m_Description = reader.ReadString();
+            this.m_TargetMap = reader.ReadMap();
+            this.m_Target = reader.ReadPoint3D();
+            this.m_Description = reader.ReadString();
         }
 
         private static bool FindMarkContainer(Point3D p, Map map)
@@ -271,7 +277,7 @@ namespace Server.Items
                 return;
 
             MarkContainer cont = new MarkContainer(bone, locked);
-            WeakEntityCollection.Add("malas", cont);
+			WeakEntityCollection.Add("malas", cont);
             cont.TargetMap = Map.Malas;
             cont.Target = new Point3D(xTarget, yTarget, zTarget);
             cont.Description = "strange location";
@@ -291,18 +297,30 @@ namespace Server.Items
             public InternalTimer(MarkContainer container, TimeSpan delay)
                 : base(delay)
             {
-                m_Container = container;
-                m_RelockTime = DateTime.UtcNow + delay;
+                this.m_Container = container;
+                this.m_RelockTime = DateTime.UtcNow + delay;
 
-                Start();
+                this.Start();
             }
 
-            public MarkContainer Container => m_Container;
-            public DateTime RelockTime => m_RelockTime;
+            public MarkContainer Container
+            {
+                get
+                {
+                    return this.m_Container;
+                }
+            }
+            public DateTime RelockTime
+            {
+                get
+                {
+                    return this.m_RelockTime;
+                }
+            }
             protected override void OnTick()
             {
-                m_Container.Locked = true;
-                m_Container.LockLevel = -255;
+                this.m_Container.Locked = true;
+                this.m_Container.LockLevel = -255;
             }
         }
     }

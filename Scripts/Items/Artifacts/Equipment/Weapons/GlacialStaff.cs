@@ -1,7 +1,9 @@
+using System;
+
 namespace Server.Items
 {
     public class GlacialStaff : BlackStaff
-    {
+	{
         [Constructable]
         public GlacialStaff()
         {
@@ -17,12 +19,18 @@ namespace Server.Items
         }
 
         //TODO: Pre-AoS stuff
-        public override int LabelNumber => 1017413;// Glacial Staff
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1017413;
+            }
+        }// Glacial Staff
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

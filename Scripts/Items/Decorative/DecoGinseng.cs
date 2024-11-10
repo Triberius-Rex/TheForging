@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class DecoGinseng : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public DecoGinseng()
             : base(0x18E9)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public DecoGinseng(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

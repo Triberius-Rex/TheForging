@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Spells.First
 {
@@ -30,27 +30,33 @@ namespace Server.Spells.First
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.First;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.First;
+            }
+        }
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
                 FoodInfo foodInfo = m_Food[Utility.Random(m_Food.Length)];
                 Item food = foodInfo.Create();
 
                 if (food != null)
                 {
-                    Caster.AddToBackpack(food);
+                    this.Caster.AddToBackpack(food);
 
                     // You magically create food in your backpack:
-                    Caster.SendLocalizedMessage(1042695, true, " " + foodInfo.Name);
+                    this.Caster.SendLocalizedMessage(1042695, true, " " + foodInfo.Name);
 
-                    Caster.FixedParticles(0, 10, 5, 2003, EffectLayer.RightHand);
-                    Caster.PlaySound(0x1E2);
+                    this.Caster.FixedParticles(0, 10, 5, 2003, EffectLayer.RightHand);
+                    this.Caster.PlaySound(0x1E2);
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
     }
 
@@ -60,35 +66,46 @@ namespace Server.Spells.First
         private string m_Name;
         public FoodInfo(Type type, string name)
         {
-            m_Type = type;
-            m_Name = name;
+            this.m_Type = type;
+            this.m_Name = name;
         }
 
         public Type Type
         {
             get
             {
-                return m_Type;
+                return this.m_Type;
             }
             set
             {
-                m_Type = value;
+                this.m_Type = value;
             }
         }
         public string Name
         {
             get
             {
-                return m_Name;
+                return this.m_Name;
             }
             set
             {
-                m_Name = value;
+                this.m_Name = value;
             }
         }
         public Item Create()
         {
-            return Loot.Construct(m_Type);
+            Item item;
+
+            try
+            {
+                item = (Item)Activator.CreateInstance(this.m_Type);
+            }
+            catch
+            {
+                item = null;
+            }
+
+            return item;
         }
     }
 }

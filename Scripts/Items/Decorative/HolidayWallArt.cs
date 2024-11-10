@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class BaseHolidayWallArt : BaseLight, IFlipable
     {
-        public override int LabelNumber => 1126181;  // glass tree
+        public override int LabelNumber { get { return 1126181; } } // glass tree
 
         private string _DisplayName;
 
@@ -33,7 +35,7 @@ namespace Server.Items
                 ItemID = NorthID;
         }
 
-        private static readonly string[] _Names =
+        private static string[] _Names =
         {
             "Minoc", "Britain", "Heartwood", "Empath Abbey", "The Lycaeum", "New Haven", "New Magincia", "Eodon", "Luna", "Delucia", "Buccaneer's Den", "Trinsic",
             "Wind", "Jhelom", "Zento", "Nujel'm", "Papua", "Moonglow", "Minoc", "Skara Brae"
@@ -57,7 +59,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(_DisplayName);
         }
@@ -73,11 +75,11 @@ namespace Server.Items
 
     public class HolidayWallArt1 : BaseHolidayWallArt
     {
-        public override int LitItemID => ItemID == 0xA4B3 ? 0xA4B4 : 0xA4B6;
-        public override int UnlitItemID => ItemID == 0xA4B4 ? 0xA4B3 : 0xA4B5;
+        public override int LitItemID { get { return ItemID == 0xA4B3 ? 0xA4B4 : 0xA4B6; } }
+        public override int UnlitItemID { get { return ItemID == 0xA4B4 ? 0xA4B3 : 0xA4B5; } }
 
-        public override int NorthID => Burning ? 0xA4B4 : 0xA4B3;
-        public override int WestID => Burning ? 0xA4B6 : 0xA4B5;
+        public override int NorthID { get { return Burning ? 0xA4B4 : 0xA4B3; } }
+        public override int WestID { get { return Burning ? 0xA4B6 : 0xA4B5; } }
 
         [Constructable]
         public HolidayWallArt1()
@@ -93,7 +95,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -105,11 +107,11 @@ namespace Server.Items
 
     public class HolidayWallArt2 : BaseHolidayWallArt
     {
-        public override int LitItemID => ItemID == 0xA4B7 ? 0xA4B8 : 0xA4BA;
-        public override int UnlitItemID => ItemID == 0xA4B8 ? 0xA4B7 : 0xA4B9;
+        public override int LitItemID { get { return ItemID == 0xA4B7 ? 0xA4B8 : 0xA4BA; } }
+        public override int UnlitItemID { get { return ItemID == 0xA4B8 ? 0xA4B7 : 0xA4B9; } }
 
-        public override int NorthID => Burning ? 0xA4B8 : 0xA4B7;
-        public override int WestID => Burning ? 0xA4BA : 0xA4B9;
+        public override int NorthID { get { return Burning ? 0xA4B8 : 0xA4B7; } }
+        public override int WestID { get { return Burning ? 0xA4BA : 0xA4B9; } }
 
         [Constructable]
         public HolidayWallArt2()
@@ -125,7 +127,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -137,11 +139,11 @@ namespace Server.Items
 
     public class HolidayWallArt3 : BaseHolidayWallArt
     {
-        public override int LitItemID => ItemID == 0xA4AD ? 0xA4AE : 0xA4B0;
-        public override int UnlitItemID => ItemID == 0xA4AE ? 0xA4AD : 0xA4AF;
+        public override int LitItemID { get { return ItemID == 0xA4AD ? 0xA4AE : 0xA4B0; } }
+        public override int UnlitItemID { get { return ItemID == 0xA4AE ? 0xA4AD : 0xA4AF; } }
 
-        public override int NorthID => Burning ? 0xA4AE : 0xA4AD;
-        public override int WestID => Burning ? 0xA4B0 : 0xA4AF;
+        public override int NorthID { get { return Burning ? 0xA4AE : 0xA4AD; } }
+        public override int WestID { get { return Burning ? 0xA4B0 : 0xA4AF; } }
 
         [Constructable]
         public HolidayWallArt3()
@@ -157,7 +159,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

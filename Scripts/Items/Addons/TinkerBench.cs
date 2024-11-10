@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Craft;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
@@ -6,7 +7,7 @@ namespace Server.Items
 {
     public class TinkerBenchAddon : CraftAddon
     {
-        public override CraftSystem CraftSystem => DefTinkering.CraftSystem;
+        public override CraftSystem CraftSystem { get { return DefTinkering.CraftSystem; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem { get; set; }
@@ -15,10 +16,8 @@ namespace Server.Items
         {
             get
             {
-                TinkerBenchDeed deed = new TinkerBenchDeed(Tools.Count > 0 ? Tools[0].UsesRemaining : 0)
-                {
-                    IsRewardItem = IsRewardItem
-                };
+                TinkerBenchDeed deed = new TinkerBenchDeed(Tools.Count > 0 ? Tools[0].UsesRemaining : 0);
+                deed.IsRewardItem = IsRewardItem;
 
                 return deed;
             }
@@ -48,9 +47,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(IsRewardItem);
+            writer.Write((bool)IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -64,16 +63,14 @@ namespace Server.Items
 
     public class TinkerBenchDeed : CraftAddonDeed, IRewardItem, IRewardOption
     {
-        public override int LabelNumber => 1125529;  // tinker bench
+        public override int LabelNumber { get { return 1125529; } } // tinker bench
 
         public override BaseAddon Addon
         {
             get
             {
-                TinkerBenchAddon addon = new TinkerBenchAddon(_Direction, UsesRemaining)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                TinkerBenchAddon addon = new TinkerBenchAddon(_Direction, UsesRemaining);
+                addon.IsRewardItem = m_IsRewardItem;
 
                 return addon;
             }
@@ -150,9 +147,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)

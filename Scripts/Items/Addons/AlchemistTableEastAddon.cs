@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class AlchemistTableEastAddon : BaseAddon
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new AlchemistTableEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new AlchemistTableEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -42,8 +50,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new AlchemistTableEastAddon();
-        public override int LabelNumber => 1073397;// alchemist table (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new AlchemistTableEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073397;
+            }
+        }// alchemist table (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

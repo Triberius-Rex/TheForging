@@ -1,17 +1,17 @@
-using Server.Network;
-using Server.Spells;
-using Server.Targeting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Server.Network;
+using Server.Spells;
+using Server.Targeting;
 
 namespace Server.Items
 {
     public class FearEssence : BasePotion
     {
-        public override int LabelNumber => 1115744;  // fear essence
-        public virtual int Radius => 20;
-        public override bool RequireFreeHand => false;
+        public override int LabelNumber { get { return 1115744; } } // fear essence
+        public virtual int Radius { get { return 20; } }
+        public override bool RequireFreeHand { get { return false; } }
 
         [Constructable]
         public FearEssence()
@@ -28,7 +28,7 @@ namespace Server.Items
 
         public override void Drink(Mobile from)
         {
-            if (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting))
+            if (Core.AOS && (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting)))
             {
                 from.SendLocalizedMessage(1062725); // You can not use that potion while paralyzed.
                 return;
@@ -58,7 +58,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -67,7 +67,7 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
 
-        private readonly List<Mobile> m_Users = new List<Mobile>();
+        private List<Mobile> m_Users = new List<Mobile>();
 
         public void Explode_Callback(object state)
         {
@@ -99,7 +99,7 @@ namespace Server.Items
             {
                 if (mobile != from && from.CanBeHarmful(mobile, false))
                 {
-                    double chance = ((4 * mobile.Skills[SkillName.MagicResist].Value) + 150) / 700;
+                    double chance = (double)(((4 * mobile.Skills[SkillName.MagicResist].Value) + 150) / 700);
 
                     if (chance < Utility.RandomDouble())
                     {
@@ -140,7 +140,7 @@ namespace Server.Items
         #endregion
 
         #region Delay
-        private static readonly Hashtable m_Delay = new Hashtable();
+        private static Hashtable m_Delay = new Hashtable();
 
         public static void AddDelay(Mobile m)
         {

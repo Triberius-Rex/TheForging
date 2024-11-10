@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Wasabi : Item
@@ -18,7 +20,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,7 +51,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -78,7 +80,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -118,7 +120,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -133,16 +135,9 @@ namespace Server.Items
     {
         [Constructable]
         public SushiRolls()
-            : this(1)
-        {
-        }
-
-        [Constructable]
-        public SushiRolls(int amount)
             : base(0x283E)
         {
-            Stackable = true;
-            Amount = amount;
+            Stackable = false;
             Weight = 3.0;
             FillFactor = 2;
         }
@@ -156,7 +151,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -171,16 +166,9 @@ namespace Server.Items
     {
         [Constructable]
         public SushiPlatter()
-            : this(1)
-        {
-        }
-
-        [Constructable]
-        public SushiPlatter(int amount)
             : base(0x2840)
         {
-            Stackable = true;
-            Amount = amount;
+            Stackable = Core.ML;
             Weight = 3.0;
             FillFactor = 2;
         }
@@ -194,7 +182,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -212,7 +200,7 @@ namespace Server.Items
             : base(0x284B)
         {
             Weight = 1.0;
-            Stackable = true;
+			Stackable = true;
         }
 
         public GreenTeaBasket(Serial serial)
@@ -224,7 +212,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -255,7 +243,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -286,7 +274,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -317,7 +305,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -348,7 +336,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -379,7 +367,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

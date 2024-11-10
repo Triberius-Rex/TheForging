@@ -1,11 +1,15 @@
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.SkillHandlers;
 
 namespace Server.Items
 {
     public class CylinderTrapTrainingKit : PuzzleChest, IRemoveTrapTrainingKit
     {
-        public override int LabelNumber => 1159015;  // Cylinder Trap Training Kit
-        public int Title => 1159017;  // A Cylinder Trap
+        public override int LabelNumber { get { return 1159015; } } // Cylinder Trap Training Kit
+        public int Title { get { return 1159017; } } // A Cylinder Trap
 
         [Constructable]
         public CylinderTrapTrainingKit()
@@ -33,9 +37,9 @@ namespace Server.Items
             else
                 solution = new PuzzleChestSolution(PuzzleChestCylinder.None, PuzzleChestCylinder.None, PuzzleChestCylinder.None, PuzzleChestCylinder.None, PuzzleChestCylinder.None);
 
-            from.CloseGump(typeof(PuzzleGump));
-            from.CloseGump(typeof(StatusGump));
-            from.SendGump(new PuzzleGump(from, this, solution, 0));
+            from.CloseGump(typeof(PuzzleChest.PuzzleGump));
+            from.CloseGump(typeof(PuzzleChest.StatusGump));
+            from.SendGump(new PuzzleChest.PuzzleGump(from, this, solution, 0));
         }
 
         public override void DoDamage(Mobile to)

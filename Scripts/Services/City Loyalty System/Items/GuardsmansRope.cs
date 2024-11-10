@@ -1,12 +1,15 @@
+using System;
+using Server;
 using Server.Mobiles;
+using Server.Engines.CityLoyalty;
 using Server.Targeting;
 
 namespace Server.Items
 {
     public class GuardsmansRope : BaseDecayingItem
-    {
-        public override int LabelNumber => 1152261;  // guardsman's rope
-        public override int Lifespan => 3600;
+	{
+        public override int LabelNumber { get { return 1152261; } } // guardsman's rope
+        public override int Lifespan { get { return 3600; } }
 
         public GuardsmansRope() : base(0x14F8)
         {
@@ -51,17 +54,17 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
-    }
+		
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+			writer.Write(0);
+		}
+		
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+		}
+	}
 }

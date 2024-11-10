@@ -1,3 +1,4 @@
+using System;
 using Server.Network;
 
 namespace Server.Items
@@ -21,15 +22,33 @@ namespace Server.Items
         {
         }
 
-        public override bool NeedsWall => true;
-        public override Point3D WallPosition => East ? new Point3D(-1, 0, 0) : new Point3D(0, -1, 0);
-        public bool East => ItemID == 0x1E2F;
+        public override bool NeedsWall
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Point3D WallPosition
+        {
+            get
+            {
+                return this.East ? new Point3D(-1, 0, 0) : new Point3D(0, -1, 0);
+            }
+        }
+        public bool East
+        {
+            get
+            {
+                return this.ItemID == 0x1E2F;
+            }
+        }
         public override void OnDoubleClick(Mobile from)
         {
             Direction dir;
-            if (from.Location != Location)
+            if (from.Location != this.Location)
                 dir = from.GetDirectionTo(this);
-            else if (East)
+            else if (this.East)
                 dir = Direction.West;
             else
                 dir = Direction.North;
@@ -40,13 +59,13 @@ namespace Server.Items
 
             if (!from.InRange(this, 4) || !from.InLOS(this))
                 canThrow = false;
-            else if (East)
+            else if (this.East)
                 canThrow = (dir == Direction.Left || dir == Direction.West || dir == Direction.Up);
             else
                 canThrow = (dir == Direction.Up || dir == Direction.North || dir == Direction.Right);
 
             if (canThrow)
-                Throw(from);
+                this.Throw(from);
             else
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
         }
@@ -61,8 +80,15 @@ namespace Server.Items
                 return;
             }
 
-            from.Animate(AnimationType.Attack, 4);
-
+            if (Core.SA)
+            {
+                from.Animate(AnimationType.Attack, 4);
+            }
+            else
+            {
+                from.Animate(from.Mounted ? 26 : 9, 7, 1, true, false, 0);
+            }
+            
             from.MovingEffect(this, knife.ItemID, 7, 1, false, false);
             from.PlaySound(0x238);
 
@@ -82,7 +108,7 @@ namespace Server.Items
             else
                 message = 500757; // Missed.
 
-            PublicOverheadMessage(MessageType.Regular, 0x3B2, message);
+            this.PublicOverheadMessage(MessageType.Regular, 0x3B2, message);
         }
 
         public override void Serialize(GenericWriter writer)
@@ -104,7 +130,7 @@ namespace Server.Items
     {
         public DartBoardEastAddon()
         {
-            AddComponent(new DartBoard(true), 0, 0, 0);
+            this.AddComponent(new DartBoard(true), 0, 0, 0);
         }
 
         public DartBoardEastAddon(Serial serial)
@@ -112,7 +138,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new DartBoardEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new DartBoardEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -140,8 +172,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new DartBoardEastAddon();
-        public override int LabelNumber => 1044326;// dartboard (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new DartBoardEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044326;
+            }
+        }// dartboard (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -161,7 +205,7 @@ namespace Server.Items
     {
         public DartBoardSouthAddon()
         {
-            AddComponent(new DartBoard(false), 0, 0, 0);
+            this.AddComponent(new DartBoard(false), 0, 0, 0);
         }
 
         public DartBoardSouthAddon(Serial serial)
@@ -169,7 +213,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new DartBoardSouthDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new DartBoardSouthDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -197,8 +247,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new DartBoardSouthAddon();
-        public override int LabelNumber => 1044325;// dartboard (south)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new DartBoardSouthAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1044325;
+            }
+        }// dartboard (south)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

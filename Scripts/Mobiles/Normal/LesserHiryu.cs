@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -40,6 +42,9 @@ namespace Server.Mobiles
             ControlSlots = 3;
             MinTameSkill = 98.7;
 
+            if (Utility.RandomDouble() < .33)
+                PackItem(Engines.Plants.Seed.RandomBonsaiSeed());
+
             SetWeaponAbility(WeaponAbility.Dismount);
             SetSpecialAbility(SpecialAbility.GraspingClaw);
         }
@@ -49,12 +54,48 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool StatLossAfterTame => true;
-        public override int TreasureMapLevel => 3;
-        public override int Meat => 16;
-        public override int Hides => 60;
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override bool CanAngerOnTame => true;
+        public override bool StatLossAfterTame
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 3;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 16;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 60;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override bool CanAngerOnTame
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override bool OverrideBondingReqs()
         {
@@ -92,16 +133,18 @@ namespace Server.Mobiles
         {
             AddLoot(LootPack.FilthyRich, 2);
             AddLoot(LootPack.Gems, 4);
-            AddLoot(LootPack.BonsaiSeed);
         }
 
         public override double GetControlChance(Mobile m, bool useBaseSkill)
         {
-            AbilityProfile profile = PetTrainingHelper.GetAbilityProfile(this);
-
-            if (profile != null && profile.HasCustomized())
+            if (PetTrainingHelper.Enabled)
             {
-                return base.GetControlChance(m, useBaseSkill);
+                var profile = PetTrainingHelper.GetAbilityProfile(this);
+
+                if (profile != null && profile.HasCustomized())
+                {
+                    return base.GetControlChance(m, useBaseSkill);
+                }
             }
 
             double tamingChance = base.GetControlChance(m, useBaseSkill);
@@ -129,13 +172,60 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(4);
+            writer.Write((int)4);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 0)
+                Timer.DelayCall(TimeSpan.Zero, delegate { Hue = GetHue(); });
+
+            if (version <= 1)
+                Timer.DelayCall(TimeSpan.Zero, delegate
+                {
+                    if (InternalItem != null)
+                    {
+                        InternalItem.Hue = Hue;
+                    }
+                });
+
+            if (version < 2)
+            {
+                for (int i = 0; i < Skills.Length; ++i)
+                {
+                    Skills[i].Cap = Math.Max(100.0, Skills[i].Cap * 0.9);
+
+                    if (Skills[i].Base > Skills[i].Cap)
+                    {
+                        Skills[i].Base = Skills[i].Cap;
+                    }
+                }
+            }
+
+            if (version < 3)
+            {
+                SetWeaponAbility(WeaponAbility.Dismount);
+            }
+
+            if (version < 3 && Controlled && RawStr >= 301 && ControlSlots == ControlSlotsMin)
+            {
+                Server.SkillHandlers.AnimalTaming.ScaleStats(this, 0.5);
+            }
+
+            if (version < 4 && PetTrainingHelper.Enabled && ControlSlots <= 3)
+            {
+                var profile = PetTrainingHelper.GetAbilityProfile(this);
+
+                if (profile == null || !profile.HasCustomized())
+                {
+                    MinTameSkill = 98.7;
+                    ControlSlotsMin = 1;
+                    ControlSlots = 1;
+                }
+            }
         }
 
         private static int GetHue()

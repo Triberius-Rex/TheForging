@@ -1,17 +1,18 @@
-using Server.ContextMenus;
-using Server.Engines.PartySystem;
-using Server.Gumps;
-using Server.Mobiles;
-using Server.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server.ContextMenus;
+using Server.Engines.PartySystem;
+using Server.Gumps;
+using Server.Network;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class TreasureMapChest : LockableContainer
     {
-        public static Type[] Artifacts => m_Artifacts;
+        public static Type[] Artifacts { get { return m_Artifacts; } }
         private static readonly Type[] m_Artifacts = new Type[]
         {
             typeof(CandelabraOfSouls), typeof(GoldBricks), typeof(PhillipsWoodenSteed),
@@ -25,42 +26,40 @@ namespace Server.Items
             typeof(AdmiralsHeartyRum)
         };
 
-        public static Type[] ArtifactsLevelFiveToSeven => m_LevelFiveToSeven;
-        private static readonly Type[] m_LevelFiveToSeven = new Type[]
+        public static Type[] ArtifactsLevelFiveToSeven { get { return m_LevelFiveToSeven; } }
+        private static Type[] m_LevelFiveToSeven = new Type[]
         {
             typeof(ForgedPardon), typeof(ManaPhasingOrb), typeof(RunedSashOfWarding), typeof(SurgeShield)
         };
 
-        public static Type[] ArtifactsLevelSeven => m_LevelSevenOnly;
-        private static readonly Type[] m_LevelSevenOnly = new Type[]
+        public static Type[] ArtifactsLevelSeven { get { return m_LevelSevenOnly; } }
+        private static Type[] m_LevelSevenOnly = new Type[]
         {
             typeof(CoffinPiece), typeof(MasterSkeletonKey)
         };
 
-        public static Type[] SOSArtifacts => m_SOSArtifacts;
-        private static readonly Type[] m_SOSArtifacts = new Type[]
+        public static Type[] SOSArtifacts { get { return m_SOSArtifacts; } }
+        private static Type[] m_SOSArtifacts = new Type[]
         {
             typeof(AntiqueWeddingDress),
             typeof(KelpWovenLeggings),
             typeof(RunedDriftwoodBow),
             typeof(ValkyrieArmor)
         };
-        public static Type[] SOSDecor => m_SOSDecor;
-        private static readonly Type[] m_SOSDecor = new Type[]
+        public static Type[] SOSDecor { get { return m_SOSDecor; } }
+        private static Type[] m_SOSDecor = new Type[]
         {
             typeof(GrapeVine),
             typeof(LargeFishingNet)
         };
 
-        public static Type[] ImbuingIngreds => m_ImbuingIngreds;
-        private static readonly Type[] m_ImbuingIngreds =
+        public static Type[] ImbuingIngreds {  get { return m_ImbuingIngreds; } }
+        private static Type[] m_ImbuingIngreds =
         {
             typeof(AbyssalCloth),   typeof(EssencePrecision), typeof(EssenceAchievement), typeof(EssenceBalance),
             typeof(EssenceControl), typeof(EssenceDiligence), typeof(EssenceDirection),   typeof(EssenceFeeling),
             typeof(EssenceOrder),   typeof(EssencePassion),   typeof(EssencePersistence), typeof(EssenceSingularity)
         };
-
-        private static readonly TimeSpan _DeleteTime = TimeSpan.FromHours(3);
 
         private List<Item> m_Lifted = new List<Item>();
 
@@ -77,13 +76,14 @@ namespace Server.Items
         {
             Owner = owner;
             Level = level;
-            DeleteTime = DateTime.UtcNow + _DeleteTime;
+            DeleteTime = DateTime.UtcNow + TimeSpan.FromHours(3.0);
 
             Temporary = temporary;
             Guardians = new List<Mobile>();
             AncientGuardians = new List<Mobile>();
 
-            TimerRegistry.Register("TreasureMapChest", this, _DeleteTime, chest => chest.Delete());
+            Timer = new DeleteTimer(this, DeleteTime);
+            Timer.Start();
         }
 
         public TreasureMapChest(Serial serial)
@@ -91,7 +91,7 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 3000541;
+        public override int LabelNumber { get { return 3000541; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int Level { get; set; }
@@ -141,12 +141,18 @@ namespace Server.Items
 
         public bool FailedLockpick { get; set; }
 
-        public override bool IsDecoContainer => false;
+        public override bool IsDecoContainer
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public static void Fill(Mobile from, LockableContainer cont, int level, bool isSos)
         {
-            Map map = from.Map;
-            int luck = from is PlayerMobile ? ((PlayerMobile)from).RealLuck : from.Luck;
+            var map = from.Map;
+            var luck = from is PlayerMobile ? ((PlayerMobile)from).RealLuck : from.Luck;
 
             cont.Movable = false;
             cont.Locked = true;
@@ -187,7 +193,7 @@ namespace Server.Items
                     case 6:
                         cont.RequiredSkill = 80;
                         break;
-                    case 7:
+					case 7:
                         cont.RequiredSkill = 80;
                         break;
                 }
@@ -202,7 +208,7 @@ namespace Server.Items
                 #region Scrolls
                 if (isSos)
                 {
-                    switch (level)
+                    switch(level)
                     {
                         default: count = 20; break;
                         case 0:
@@ -222,44 +228,52 @@ namespace Server.Items
                 #region Magical Items
                 double propsScale = 1.0;
 
-                switch (level)
+                if (Core.SE)
                 {
-                    case 1:
-                        count = isSos ? Utility.RandomMinMax(2, 6) : 32;
-                        propsScale = 0.5625;
-                        break;
-                    case 2:
-                        count = isSos ? Utility.RandomMinMax(10, 15) : 40;
-                        propsScale = 0.6875;
-                        break;
-                    case 3:
-                        count = isSos ? Utility.RandomMinMax(15, 20) : 48;
-                        propsScale = 0.875;
-                        break;
-                    case 4:
-                        count = isSos ? Utility.RandomMinMax(15, 20) : 56;
-                        break;
-                    case 5:
-                        count = isSos ? Utility.RandomMinMax(15, 20) : 64;
-                        break;
-                    case 6:
-                        count = isSos ? Utility.RandomMinMax(15, 20) : 72;
-                        break;
-                    case 7:
-                        count = isSos ? Utility.RandomMinMax(15, 20) : 80;
-                        break;
-                    default:
-                        count = 0;
-                        break;
+                    switch (level)
+                    {
+                        case 1:
+                            count = isSos ? Utility.RandomMinMax(2, 6) : 32;
+							propsScale = 0.5625;
+                            break;
+                        case 2:
+                            count = isSos ? Utility.RandomMinMax(10, 15) : 40;
+							propsScale = 0.6875;
+                            break;
+                        case 3:
+                            count = isSos ? Utility.RandomMinMax(15, 20) : 48;
+							propsScale = 0.875;
+                            break;
+                        case 4:
+                            count = isSos ? Utility.RandomMinMax(15, 20) : 56;
+                            break;
+                        case 5:
+                            count = isSos ? Utility.RandomMinMax(15, 20) : 64;
+                            break;
+                        case 6:
+                            count = isSos ? Utility.RandomMinMax(15, 20) : 72;
+                            break;
+                        case 7:
+                            count = isSos ? Utility.RandomMinMax(15, 20) : 80;
+                            break;
+                        default:
+                            count = 0;
+                            break;
+                    }
                 }
+                else
+                    count = level * 6;
 
                 for (int i = 0; i < count; ++i)
                 {
                     Item item;
 
-                    item = Loot.RandomArmorOrShieldOrWeaponOrJewelry();
+                    if (Core.AOS)
+                        item = Loot.RandomArmorOrShieldOrWeaponOrJewelry();
+                    else
+                        item = Loot.RandomArmorOrShieldOrWeapon();
 
-                    if (item != null && RandomItemGenerator.Enabled)
+                    if (item != null && Core.HS && RandomItemGenerator.Enabled)
                     {
                         int min, max;
                         GetRandomItemStat(out min, out max, propsScale);
@@ -272,12 +286,21 @@ namespace Server.Items
                     {
                         BaseWeapon weapon = (BaseWeapon)item;
 
-                        int attributeCount;
-                        int min, max;
+                        if (Core.AOS)
+                        {
+                            int attributeCount;
+                            int min, max;
 
-                        GetRandomAOSStats(out attributeCount, out min, out max);
+                            GetRandomAOSStats(out attributeCount, out min, out max);
 
-                        BaseRunicTool.ApplyAttributesTo(weapon, attributeCount, min, max);
+                            BaseRunicTool.ApplyAttributesTo(weapon, attributeCount, min, max);
+                        }
+                        else
+                        {
+                            weapon.DamageLevel = (WeaponDamageLevel)Utility.Random(6);
+                            weapon.AccuracyLevel = (WeaponAccuracyLevel)Utility.Random(6);
+                            weapon.DurabilityLevel = (WeaponDurabilityLevel)Utility.Random(6);
+                        }
 
                         cont.DropItem(item);
                     }
@@ -285,12 +308,20 @@ namespace Server.Items
                     {
                         BaseArmor armor = (BaseArmor)item;
 
-                        int attributeCount;
-                        int min, max;
+                        if (Core.AOS)
+                        {
+                            int attributeCount;
+                            int min, max;
 
-                        GetRandomAOSStats(out attributeCount, out min, out max);
+                            GetRandomAOSStats(out attributeCount, out min, out max);
 
-                        BaseRunicTool.ApplyAttributesTo(armor, attributeCount, min, max);
+                            BaseRunicTool.ApplyAttributesTo(armor, attributeCount, min, max);
+                        }
+                        else
+                        {
+                            armor.ProtectionLevel = (ArmorProtectionLevel)Utility.Random(6);
+                            armor.Durability = (ArmorDurabilityLevel)Utility.Random(6);
+                        }
 
                         cont.DropItem(item);
                     }
@@ -298,12 +329,15 @@ namespace Server.Items
                     {
                         BaseHat hat = (BaseHat)item;
 
-                        int attributeCount;
-                        int min, max;
+                        if (Core.AOS)
+                        {
+                            int attributeCount;
+                            int min, max;
 
-                        GetRandomAOSStats(out attributeCount, out min, out max);
+                            GetRandomAOSStats(out attributeCount, out min, out max);
 
-                        BaseRunicTool.ApplyAttributesTo(hat, attributeCount, min, max);
+                            BaseRunicTool.ApplyAttributesTo(hat, attributeCount, min, max);
+                        }
 
                         cont.DropItem(item);
                     }
@@ -368,7 +402,6 @@ namespace Server.Items
 
             Item arty = null;
             Item special = null;
-            Item newSpecial = null;
 
             if (isSos)
             {
@@ -379,16 +412,6 @@ namespace Server.Items
                 else if (0.009 * level > Utility.RandomDouble())
                     special = new TreasureMap(Utility.RandomMinMax(level, Math.Min(7, level + 1)), cont.Map);
 
-                if (level >= 4)
-                {
-                    switch (Utility.Random(4))
-                    {
-                        case 0: newSpecial = new AncientAquariumFishNet(); break;
-                        case 1: newSpecial = new LiveRock(); break;
-                        case 2: newSpecial = new SaltedSerpentSteaks(); break;
-                        case 3: newSpecial = new OceanSapphire(); break;
-                    }
-                }
             }
             else
             {
@@ -419,7 +442,7 @@ namespace Server.Items
                     else if (0.15 > Utility.RandomDouble())
                         special = GetRandomSpecial(level, cont.Map);
                 }
-                else if (0.10 > Utility.RandomDouble())
+                else if (.10 > Utility.RandomDouble())
                 {
                     special = GetRandomSpecial(level, cont.Map);
                 }
@@ -427,10 +450,8 @@ namespace Server.Items
 
             if (arty != null)
             {
-                Container pack = new Backpack
-                {
-                    Hue = 1278
-                };
+                Container pack = new Backpack();
+                pack.Hue = 1278;
 
                 pack.DropItem(arty);
                 cont.DropItem(pack);
@@ -439,15 +460,15 @@ namespace Server.Items
             if (special != null)
                 cont.DropItem(special);
 
-            if (newSpecial != null)
-                cont.DropItem(newSpecial);
+            if (Core.SA)
+            {
+                int rolls = 2;
 
-            int rolls = 2;
+                if (level >= 5)
+                    rolls += level - 2;
 
-            if (level >= 5)
-                rolls += level - 2;
-
-            RefinementComponent.Roll(cont, rolls, 0.10);
+                RefinementComponent.Roll(cont, rolls, 0.10);
+            }
         }
 
         private static Item GetRandomSpecial(int level, Map map)
@@ -495,13 +516,13 @@ namespace Server.Items
                 min = 100; max = 600;
             }
 
-            min = (int)(min * scale);
-            max = (int)(max * scale);
+			min = (int)(min * scale);
+			max = (int)(max * scale);
         }
 
         public static Item GetRandomRecipe()
         {
-            List<Engines.Craft.Recipe> recipes = new List<Engines.Craft.Recipe>(Engines.Craft.Recipe.Recipes.Values);
+            List<Server.Engines.Craft.Recipe> recipes = new List<Server.Engines.Craft.Recipe>(Server.Engines.Craft.Recipe.Recipes.Values);
 
             return new RecipeScroll(recipes[Utility.Random(recipes.Count)]);
         }
@@ -573,12 +594,9 @@ namespace Server.Items
 
                 if (0.1 >= Utility.RandomDouble()) // 10% chance to spawn a new monster
                 {
-                    BaseCreature spawn = TreasureMap.Spawn(Level, GetWorldLocation(), Map, from, false);
+                    var spawn = TreasureMap.Spawn(Level, GetWorldLocation(), Map, from, false);
 
-                    if (spawn != null)
-                    {
-                        spawn.Hue = 2725;
-                    }
+                    spawn.Hue = 2725;
                 }
             }
 
@@ -589,41 +607,37 @@ namespace Server.Items
         {
             ExecuteTrap(from);
 
-            if (!AncientGuardians.Any(g => g != null && g.Alive))
+            if (!AncientGuardians.Any(g => g.Alive))
             {
-                BaseCreature spawn = TreasureMap.Spawn(Level, GetWorldLocation(), Map, from, false);
+                var spawn = TreasureMap.Spawn(Level, GetWorldLocation(), Map, from, false);
+                spawn.NoLootOnDeath = true;
 
-                if (spawn != null)
+                spawn.Name = "Ancient Chest Guardian";
+                spawn.Title = "(Guardian)";
+                spawn.Tamable = false;
+
+                if (spawn.HitsMaxSeed >= 0)
+                    spawn.HitsMaxSeed = (int)(spawn.HitsMaxSeed * Paragon.HitsBuff);
+
+                spawn.RawStr = (int)(spawn.RawStr * Paragon.StrBuff);
+                spawn.RawInt = (int)(spawn.RawInt * Paragon.IntBuff);
+                spawn.RawDex = (int)(spawn.RawDex * Paragon.DexBuff);
+
+                spawn.Hits = spawn.HitsMax;
+                spawn.Mana = spawn.ManaMax;
+                spawn.Stam = spawn.StamMax;
+
+                spawn.Hue = 1960;
+
+                for (int i = 0; i < spawn.Skills.Length; i++)
                 {
-                    spawn.NoLootOnDeath = true;
+                    Skill skill = (Skill)spawn.Skills[i];
 
-                    spawn.Name = "Ancient Chest Guardian";
-                    spawn.Title = "(Guardian)";
-                    spawn.Tamable = false;
-
-                    if (spawn.HitsMaxSeed >= 0)
-                        spawn.HitsMaxSeed = (int)(spawn.HitsMaxSeed * Paragon.HitsBuff);
-
-                    spawn.RawStr = (int)(spawn.RawStr * Paragon.StrBuff);
-                    spawn.RawInt = (int)(spawn.RawInt * Paragon.IntBuff);
-                    spawn.RawDex = (int)(spawn.RawDex * Paragon.DexBuff);
-
-                    spawn.Hits = spawn.HitsMax;
-                    spawn.Mana = spawn.ManaMax;
-                    spawn.Stam = spawn.StamMax;
-
-                    spawn.Hue = 1960;
-
-                    for (int i = 0; i < spawn.Skills.Length; i++)
-                    {
-                        Skill skill = spawn.Skills[i];
-
-                        if (skill.Base > 0.0)
-                            skill.Base *= Paragon.SkillsBuff;
-                    }
-
-                    AncientGuardians.Add(spawn);
+                    if (skill.Base > 0.0)
+                        skill.Base *= Paragon.SkillsBuff;
                 }
+
+                AncientGuardians.Add(spawn);
             }
         }
 
@@ -642,7 +656,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(4); // version
+            writer.Write((int)4); // version
 
             writer.Write(FailedLockpick);
             writer.Write((int)_Quality);
@@ -653,11 +667,11 @@ namespace Server.Items
             writer.Write(TreasureMap);
 
             writer.Write(Guardians, true);
-            writer.Write(Temporary);
+            writer.Write((bool)Temporary);
 
             writer.Write(Owner);
 
-            writer.Write(Level);
+            writer.Write((int)Level);
             writer.WriteDeltaTime(DeleteTime);
             writer.Write(m_Lifted, true);
         }
@@ -706,9 +720,10 @@ namespace Server.Items
                     }
             }
 
-            if (!Temporary && DeleteTime > DateTime.UtcNow)
+            if (!Temporary)
             {
-                TimerRegistry.Register("TreasureMapChest", this, DeleteTime - DateTime.UtcNow, chest => chest.Delete());
+                Timer = new DeleteTimer(this, DeleteTime);
+                Timer.Start();
             }
             else
             {
@@ -738,9 +753,9 @@ namespace Server.Items
         {
             base.LockPick(from);
 
-            if (Map != null && ((TreasureMapInfo.NewSystem && FailedLockpick) || 0.05 >= Utility.RandomDouble()))
+            if (Map != null && ((TreasureMapInfo.NewSystem && FailedLockpick) || (Core.SA && 0.05 >= Utility.RandomDouble())))
             {
-                Grubber grubber = new Grubber();
+                var grubber = new Grubber();
                 grubber.MoveToWorld(Map.GetSpawnPosition(Location, 1), Map);
 
                 Item item = null;
@@ -792,7 +807,7 @@ namespace Server.Items
                 AOS.Damage(from, damage, 0, 100, 0, 0, 0);
 
                 // Your skin blisters from the heat!
-                from.LocalOverheadMessage(MessageType.Regular, 0x2A, 503000);
+                from.LocalOverheadMessage(Network.MessageType.Regular, 0x2A, 503000);
 
                 Effects.SendLocationEffect(from.Location, from.Map, 0x36BD, 15, 10);
                 Effects.PlaySound(from.Location, from.Map, 0x307);
@@ -827,35 +842,71 @@ namespace Server.Items
         {
             int rnd = Utility.Random(15);
 
-            if (rnd < 1)
+            if (Core.SE)
             {
-                attributeCount = Utility.RandomMinMax(3, 5);
-                min = 50;
-                max = 100;
-            }
-            else if (rnd < 3)
-            {
-                attributeCount = Utility.RandomMinMax(2, 5);
-                min = 40;
-                max = 80;
-            }
-            else if (rnd < 6)
-            {
-                attributeCount = Utility.RandomMinMax(2, 4);
-                min = 30;
-                max = 60;
-            }
-            else if (rnd < 10)
-            {
-                attributeCount = Utility.RandomMinMax(1, 3);
-                min = 20;
-                max = 40;
+                if (rnd < 1)
+                {
+                    attributeCount = Utility.RandomMinMax(3, 5);
+                    min = 50;
+                    max = 100;
+                }
+                else if (rnd < 3)
+                {
+                    attributeCount = Utility.RandomMinMax(2, 5);
+                    min = 40;
+                    max = 80;
+                }
+                else if (rnd < 6)
+                {
+                    attributeCount = Utility.RandomMinMax(2, 4);
+                    min = 30;
+                    max = 60;
+                }
+                else if (rnd < 10)
+                {
+                    attributeCount = Utility.RandomMinMax(1, 3);
+                    min = 20;
+                    max = 40;
+                }
+                else
+                {
+                    attributeCount = 1;
+                    min = 10;
+                    max = 20;
+                }
             }
             else
             {
-                attributeCount = 1;
-                min = 10;
-                max = 20;
+                if (rnd < 1)
+                {
+                    attributeCount = Utility.RandomMinMax(2, 5);
+                    min = 20;
+                    max = 70;
+                }
+                else if (rnd < 3)
+                {
+                    attributeCount = Utility.RandomMinMax(2, 4);
+                    min = 20;
+                    max = 50;
+                }
+                else if (rnd < 6)
+                {
+                    attributeCount = Utility.RandomMinMax(2, 3);
+                    min = 20;
+                    max = 40;
+                }
+                else if (rnd < 10)
+                {
+                    attributeCount = Utility.RandomMinMax(1, 2);
+                    min = 10;
+                    max = 30;
+                }
+                else
+                {
+                    attributeCount = 1;
+                    min = 10;
+                    max = 20;
+                }
             }
         }
 
@@ -941,6 +992,22 @@ namespace Server.Items
                     return;
 
                 m_Chest.BeginRemove(m_From);
+            }
+        }
+
+        private class DeleteTimer : Timer
+        {
+            private readonly Item m_Item;
+            public DeleteTimer(Item item, DateTime time)
+                : base(time - DateTime.UtcNow)
+            {
+                m_Item = item;
+                Priority = TimerPriority.OneMinute;
+            }
+
+            protected override void OnTick()
+            {
+                m_Item.Delete();
             }
         }
     }

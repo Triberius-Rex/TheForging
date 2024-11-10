@@ -1,13 +1,15 @@
-using Server.Mobiles;
+using System;
+using Server;
+using Server.Mobiles; 
 
 namespace Server.Items
 {
     [TypeAlias("drNO.ThieveItems.BalmOfSwiftness")]
     public class BalmOfSwiftness : BaseBalmOrLotion
     {
-        public override int LabelNumber => 1094942;  // Balm of Swiftness
+        public override int LabelNumber { get { return 1094942; } } // Balm of Swiftness
 
-        [Constructable]
+        [Constructable] 
         public BalmOfSwiftness()
             : base(0x1848)
         {
@@ -31,7 +33,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

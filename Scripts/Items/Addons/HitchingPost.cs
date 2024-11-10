@@ -1,17 +1,24 @@
+using System;
+using System.Collections.Generic;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
-    [Flipable(0x14E7, 0x14E8)]
+    [FlipableAttribute(0x14E7, 0x14E8)]
     public class HitchingPost : Item, ISecurable
     {
-        public override int LabelNumber => m_Replica ? 1071127 : 1025351;// hitching post (replica)
+        public override int LabelNumber
+        {
+            get
+            {
+                return m_Replica ? 1071127 : 1025351;
+            }
+        }// hitching post (replica)
 
         private int m_UsesRemaining;
         private int m_Charges;
@@ -104,7 +111,13 @@ namespace Server.Items
         {
         }
 
-        public override bool ForceShowProperties => true;
+        public override bool ForceShowProperties
+        {
+            get
+            {
+                return ObjectPropertyList.Enabled;
+            }
+        }
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -161,7 +174,7 @@ namespace Server.Items
                         continue;
 
                     AddButton(15, 39 + (i * 20), 10006, 10006, i + 1, GumpButtonType.Reply, 0);
-                    AddHtml(32, 35 + (i * 20), 275, 18, string.Format("<BASEFONT COLOR=#C0C0EE>{0}</BASEFONT>", pet.Name), false, false);
+                    AddHtml(32, 35 + (i * 20), 275, 18, String.Format("<BASEFONT COLOR=#C0C0EE>{0}</BASEFONT>", pet.Name), false, false);
                 }
             }
 
@@ -355,7 +368,8 @@ namespace Server.Items
 
                     pet.IsStabled = true;
 
-                    pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully happy
+                    if (Core.SE)
+                        pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully happy
 
                     from.Stabled.Add(pet);
 
@@ -423,7 +437,8 @@ namespace Server.Items
 
                         pet.IsStabled = false;
 
-                        pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully Happy
+                        if (Core.SE)
+                            pet.Loyalty = BaseCreature.MaxLoyalty; // Wonderfully Happy
 
                         from.Stabled.RemoveAt(i);
                         --i;
@@ -460,13 +475,19 @@ namespace Server.Items
 
             BaseHouse house = BaseHouse.FindHouseAt(this);
 
-            if (house != null && (house.Public ? house.IsBanned(m) : !house.HasAccess(m)))
+            if (house != null && house.IsAosRules && (house.Public ? house.IsBanned(m) : !house.HasAccess(m)))
                 return false;
 
             return (house != null && house.HasSecureAccess(m, m_Level));
         }
 
-        public override bool HandlesOnSpeech => true;
+        public override bool HandlesOnSpeech
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override void OnSpeech(SpeechEventArgs e)
         {
@@ -497,13 +518,13 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(4); // version
+            writer.Write((int)4); // version
 
             writer.Write(m_Replica);
 
             writer.Write((int)m_Level);
-            writer.Write(m_UsesRemaining);
-            writer.Write(m_Charges);
+            writer.Write((int)m_UsesRemaining);
+            writer.Write((int)m_Charges);
         }
 
         public override void Deserialize(GenericReader reader)

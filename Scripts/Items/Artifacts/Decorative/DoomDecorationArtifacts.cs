@@ -5,8 +5,14 @@ namespace Server.Items
     #region BackpackArtifact
     public class BackpackArtifact : BaseDecorationContainerArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public BackpackArtifact()
@@ -38,8 +44,14 @@ namespace Server.Items
     #region BloodyWaterArtifact
     public class BloodyWaterArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public BloodyWaterArtifact()
@@ -71,8 +83,14 @@ namespace Server.Items
     #region BooksWestArtifact
     public class BooksWestArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 3;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         [Constructable]
         public BooksWestArtifact()
@@ -104,8 +122,14 @@ namespace Server.Items
     #region BooksNorthArtifact
     public class BooksNorthArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 3;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         [Constructable]
         public BooksNorthArtifact()
@@ -137,8 +161,14 @@ namespace Server.Items
     #region BooksFaceDownArtifact
     public class BooksFaceDownArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 3;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         [Constructable]
         public BooksFaceDownArtifact()
@@ -170,8 +200,14 @@ namespace Server.Items
     #region BottleArtifact
     public class BottleArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 1;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         [Constructable]
         public BottleArtifact()
@@ -203,14 +239,20 @@ namespace Server.Items
     #region BrazierArtifact
     public class BrazierArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 2;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 2;
+            }
+        }
 
         [Constructable]
         public BrazierArtifact()
             : base(0xE31)
         {
-            Light = LightType.Circle150;
+            this.Light = LightType.Circle150;
         }
 
         public BrazierArtifact(Serial serial)
@@ -237,8 +279,14 @@ namespace Server.Items
     #region CocoonArtifact
     public class CocoonArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 7;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 7;
+            }
+        }
 
         [Constructable]
         public CocoonArtifact()
@@ -270,8 +318,14 @@ namespace Server.Items
     #region DamagedBooksArtifact
     public class DamagedBooksArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 1;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         [Constructable]
         public DamagedBooksArtifact()
@@ -303,8 +357,14 @@ namespace Server.Items
     #region EggCaseArtifact
     public class EggCaseArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public EggCaseArtifact()
@@ -336,8 +396,14 @@ namespace Server.Items
     #region GruesomeStandardArtifact
     public class GruesomeStandardArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public GruesomeStandardArtifact()
@@ -369,14 +435,20 @@ namespace Server.Items
     #region LampPostArtifact
     public class LampPostArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 3;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         [Constructable]
         public LampPostArtifact()
             : base(0xB24)
         {
-            Light = LightType.Circle300;
+            this.Light = LightType.Circle300;
         }
 
         public LampPostArtifact(Serial serial)
@@ -403,8 +475,14 @@ namespace Server.Items
     #region LeatherTunicArtifact
     public class LeatherTunicArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 9;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 9;
+            }
+        }
 
         [Constructable]
         public LeatherTunicArtifact()
@@ -436,8 +514,14 @@ namespace Server.Items
     #region RockArtifact
     public class RockArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 1;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         [Constructable]
         public RockArtifact()
@@ -469,8 +553,14 @@ namespace Server.Items
     #region RuinedPaintingArtifact
     public class RuinedPaintingArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 12;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 12;
+            }
+        }
 
         [Constructable]
         public RuinedPaintingArtifact()
@@ -502,8 +592,14 @@ namespace Server.Items
     #region SaddleArtifact
     public class SaddleArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 9;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 9;
+            }
+        }
 
         [Constructable]
         public SaddleArtifact()
@@ -535,8 +631,14 @@ namespace Server.Items
     #region SkinnedDeerArtifact
     public class SkinnedDeerArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 8;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 8;
+            }
+        }
 
         [Constructable]
         public SkinnedDeerArtifact()
@@ -568,8 +670,14 @@ namespace Server.Items
     #region SkinnedGoatArtifact
     public class SkinnedGoatArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public SkinnedGoatArtifact()
@@ -601,14 +709,20 @@ namespace Server.Items
     #region SkullCandleArtifact
     public class SkullCandleArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 1;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         [Constructable]
         public SkullCandleArtifact()
             : base(0x1858)
         {
-            Light = LightType.Circle150;
+            this.Light = LightType.Circle150;
         }
 
         public SkullCandleArtifact(Serial serial)
@@ -635,8 +749,14 @@ namespace Server.Items
     #region StretchedHideArtifact
     public class StretchedHideArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 2;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 2;
+            }
+        }
 
         [Constructable]
         public StretchedHideArtifact()
@@ -668,8 +788,14 @@ namespace Server.Items
     #region StuddedLeggingsArtifact
     public class StuddedLeggingsArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public StuddedLeggingsArtifact()
@@ -701,8 +827,14 @@ namespace Server.Items
     #region StuddedTunicArtifact
     public class StuddedTunicArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 7;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 7;
+            }
+        }
 
         [Constructable]
         public StuddedTunicArtifact()
@@ -734,8 +866,14 @@ namespace Server.Items
     #region TarotCardsArtifact
     public class TarotCardsArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 5;
+		public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 5;
+            }
+        }
 
         [Constructable]
         public TarotCardsArtifact()
@@ -765,12 +903,12 @@ namespace Server.Items
     #endregion
 
     #region Publish 97 Stealables
-    [Flipable(40681, 40682)]
+    [FlipableAttribute(40681, 40682)]
     public class HangingPlatemailArms : BaseDecorationArtifact
     {
-        public override int LabelNumber => 1124703;  // Hanging Platemail
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 8;
+        public override int LabelNumber { get { return 1124703; } } // Hanging Platemail
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 8; } }
 
         [Constructable]
         public HangingPlatemailArms()
@@ -796,12 +934,12 @@ namespace Server.Items
         }
     }
 
-    [Flipable(40683, 40684)]
+    [FlipableAttribute(40683, 40684)]
     public class HangingPlatemailLeggings : BaseDecorationArtifact
     {
-        public override int LabelNumber => 1124703;  // Hanging Platemail
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 8;
+        public override int LabelNumber { get { return 1124703; } } // Hanging Platemail
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 8; } }
 
         [Constructable]
         public HangingPlatemailLeggings()
@@ -827,12 +965,12 @@ namespace Server.Items
         }
     }
 
-    [Flipable(40679, 40680)]
+    [FlipableAttribute(40679, 40680)]
     public class HangingPlatemailTunic : BaseDecorationArtifact
     {
-        public override int LabelNumber => 1124703;  // Hanging Platemail
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 8;
+        public override int LabelNumber { get { return 1124703; } } // Hanging Platemail
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 8; } }
 
         [Constructable]
         public HangingPlatemailTunic()
@@ -858,12 +996,12 @@ namespace Server.Items
         }
     }
 
-    [Flipable(40677, 40678)]
+    [FlipableAttribute(40677, 40678)]
     public class ArcaneTable : BaseDecorationArtifact
     {
-        public override int LabelNumber => 1124701;  // Table
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 9;
+        public override int LabelNumber { get { return 1124701; } } // Table
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 9; } }
 
         [Constructable]
         public ArcaneTable()
@@ -889,12 +1027,12 @@ namespace Server.Items
         }
     }
 
-    [Flipable(40675, 40676)]
+    [FlipableAttribute(40675, 40676)]
     public class ArtifactBookshelf : BaseDecorationArtifact
     {
-        public override int LabelNumber => 1124699;  // Bookshelf
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 9;
+        public override int LabelNumber { get { return 1124699; } } // Bookshelf
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 9; } }
 
         [Constructable]
         public ArtifactBookshelf()
@@ -923,9 +1061,9 @@ namespace Server.Items
     [Flipable]
     public class IncenseBurner : BaseArtifactLight
     {
-        public override int LabelNumber => Burning ? 1124691 : 1124709;  // Incense / Incense Burner
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 12;
+        public override int LabelNumber { get { return Burning ? 1124691 : 1124709; } } // Incense / Incense Burner
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity { get { return 12; } }
 
         [Constructable]
         public IncenseBurner() : base(40685)
@@ -940,15 +1078,21 @@ namespace Server.Items
         {
         }
 
-        public override int LitItemID => ItemID == 40685 ? 40667 : 40671;
+        public override int LitItemID
+        {
+            get { return ItemID == 40685 ? 40667 : 40671; }
+        }
 
-        public override int UnlitItemID => ItemID == 40667 ? 40685 : 40686;
+        public override int UnlitItemID
+        {
+            get { return ItemID == 40667 ? 40685 : 40686; }
+        }
 
         public void Flip()
         {
             Light = LightType.Circle300;
 
-            switch (ItemID)
+            switch (this.ItemID)
             {
                 case 40685:
                     ItemID = 40686;
@@ -982,8 +1126,14 @@ namespace Server.Items
     #region BambooStoolArtifact
     public class BambooStoolArtifact : BaseDecorationArtifact
     {
-        public override bool IsArtifact => true;
-        public override int ArtifactRarity => 6;
+        public override bool IsArtifact { get { return true; } }
+        public override int ArtifactRarity
+        {
+            get
+            {
+                return 6;
+            }
+        }
 
         [Constructable]
         public BambooStoolArtifact()

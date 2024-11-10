@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class BraceletOfResilience : GoldBracelet
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public BraceletOfResilience()
         {
@@ -19,7 +21,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1077627;// Bracelet of Resilience
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1077627;
+            }
+        }// Bracelet of Resilience
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

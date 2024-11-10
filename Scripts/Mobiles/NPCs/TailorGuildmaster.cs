@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     public class TailorGuildmaster : BaseGuildmaster
@@ -6,7 +8,7 @@ namespace Server.Mobiles
         public TailorGuildmaster()
             : base("tailor")
         {
-            SetSkill(SkillName.Tailoring, 90.0, 100.0);
+            this.SetSkill(SkillName.Tailoring, 90.0, 100.0);
         }
 
         public TailorGuildmaster(Serial serial)
@@ -14,12 +16,18 @@ namespace Server.Mobiles
         {
         }
 
-        public override NpcGuild NpcGuild => NpcGuild.TailorsGuild;
+        public override NpcGuild NpcGuild
+        {
+            get
+            {
+                return NpcGuild.TailorsGuild;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

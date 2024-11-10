@@ -1,6 +1,6 @@
+using System;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Necromancy
 {
@@ -18,12 +18,30 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.25);
-        public override double RequiredSkill => 80.0;
-        public override int RequiredMana => 41;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 80.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 41;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public override bool CheckCast()
@@ -31,9 +49,9 @@ namespace Server.Spells.Necromancy
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 3) > Caster.FollowersMax)
+            if ((this.Caster.Followers + 3) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
+                this.Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;
             }
 
@@ -42,13 +60,13 @@ namespace Server.Spells.Necromancy
 
         public void Target(Mobile m)
         {
-            if (Caster == m)
+            if (this.Caster == m)
             {
-                Caster.SendLocalizedMessage(1061832); // You cannot exact vengeance on yourself.
+                this.Caster.SendLocalizedMessage(1061832); // You cannot exact vengeance on yourself.
             }
-            else if (CheckHSequence(m))
+            else if (this.CheckHSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
                 /* Summons a Revenant which haunts the target until either the target or the Revenant is dead.
                 * Revenants have the ability to track down their targets wherever they may travel.
@@ -56,35 +74,35 @@ namespace Server.Spells.Necromancy
                 * The effect lasts for ((Spirit Speak skill level * 80) / 120) + 10 seconds.
                 */
 
-                TimeSpan duration = TimeSpan.FromSeconds(((GetDamageSkill(Caster) * 80) / 120) + 10);
+                TimeSpan duration = TimeSpan.FromSeconds(((this.GetDamageSkill(this.Caster) * 80) / 120) + 10);
 
-                Revenant rev = new Revenant(Caster, m, duration);
+                Revenant rev = new Revenant(this.Caster, m, duration);
 
-                if (BaseCreature.Summon(rev, false, Caster, m.Location, 0x81, TimeSpan.FromSeconds(duration.TotalSeconds + 2.0)))
+                if (BaseCreature.Summon(rev, false, this.Caster, m.Location, 0x81, TimeSpan.FromSeconds(duration.TotalSeconds + 2.0)))
                     rev.FixedParticles(0x373A, 1, 15, 9909, EffectLayer.Waist);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTarget : Target
         {
             private readonly VengefulSpiritSpell m_Owner;
             public InternalTarget(VengefulSpiritSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is Mobile)
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

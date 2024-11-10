@@ -7,11 +7,12 @@ namespace Server.Items
     public class Blood : Item
     {
         public static int[] BloodIDs = { 0x1645, 0x122A, 0x122B, 0x122C, 0x122D, 0x122E, 0x122F };
-        public static int RandomID => Utility.RandomList(BloodIDs);
-        public static TimeSpan Decay = TimeSpan.FromSeconds(3.0);
-        private static readonly string _TimerID = "BloodTimer";
 
-        public override TimeSpan DecayTime => Decay;
+        public static int RandomID { get { return Utility.RandomList(BloodIDs); } }
+
+        public static TimeSpan Decay = TimeSpan.FromSeconds(3.0);
+
+        public override TimeSpan DecayTime { get { return Decay; } }
 
         [Constructable]
         public Blood()
@@ -24,13 +25,13 @@ namespace Server.Items
         {
             Movable = false;
 
-            TimerRegistry.Register(_TimerID, this, DecayTime, blood => blood.Delete());
+            new InternalTimer(this).Start();
         }
 
         public Blood(Serial serial)
             : base(serial)
         {
-            TimerRegistry.Register(_TimerID, this, DecayTime, blood => blood.Delete());
+            new InternalTimer(this).Start();
         }
 
         public override void Serialize(GenericWriter writer)
@@ -45,6 +46,24 @@ namespace Server.Items
             base.Deserialize(reader);
 
             reader.ReadInt();
+        }
+
+        private class InternalTimer : Timer
+        {
+            private readonly Blood m_Blood;
+
+            public InternalTimer(Blood blood)
+                : base(blood.DecayTime)
+            {
+                Priority = TimerPriority.OneSecond;
+
+                m_Blood = blood;
+            }
+
+            protected override void OnTick()
+            {
+                m_Blood.Delete();
+            }
         }
     }
 }

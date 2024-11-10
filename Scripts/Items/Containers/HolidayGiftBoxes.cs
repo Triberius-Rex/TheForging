@@ -1,4 +1,6 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class GiftBoxHues
     {
@@ -35,18 +37,30 @@
             0x42b,
             0x448
         };
-        public static int RandomGiftBoxHue => m_NormalHues[Utility.Random(m_NormalHues.Length)];
-        public static int RandomNeonBoxHue => m_NeonHues[Utility.Random(m_NeonHues.Length)];
+        public static int RandomGiftBoxHue
+        {
+            get
+            {
+                return m_NormalHues[Utility.Random(m_NormalHues.Length)];
+            }
+        }
+        public static int RandomNeonBoxHue
+        {
+            get
+            {
+                return m_NeonHues[Utility.Random(m_NeonHues.Length)];
+            }
+        }
     }
 
-    [Flipable(0x46A5, 0x46A6)]
+    [FlipableAttribute(0x46A5, 0x46A6)]
     public class GiftBoxRectangle : BaseContainer
     {
         [Constructable]
         public GiftBoxRectangle()
             : base(Utility.RandomBool() ? 0x46A5 : 0x46A6)
         {
-            Hue = GiftBoxHues.RandomGiftBoxHue;
+            this.Hue = GiftBoxHues.RandomGiftBoxHue;
         }
 
         public GiftBoxRectangle(Serial serial)
@@ -54,11 +68,17 @@
         {
         }
 
-        public override int DefaultGumpID => 0x11E;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x11E;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -74,7 +94,7 @@
         public GiftBoxCube()
             : base(0x46A2)
         {
-            Hue = GiftBoxHues.RandomGiftBoxHue;
+            this.Hue = GiftBoxHues.RandomGiftBoxHue;
         }
 
         public GiftBoxCube(Serial serial)
@@ -82,11 +102,17 @@
         {
         }
 
-        public override int DefaultGumpID => 0x11B;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x11B;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -102,7 +128,7 @@
         public GiftBoxCylinder()
             : base(0x46A3)
         {
-            Hue = GiftBoxHues.RandomGiftBoxHue;
+            this.Hue = GiftBoxHues.RandomGiftBoxHue;
         }
 
         public GiftBoxCylinder(Serial serial)
@@ -110,11 +136,17 @@
         {
         }
 
-        public override int DefaultGumpID => 0x11C;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x11C;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -130,7 +162,7 @@
         public GiftBoxOctogon()
             : base(0x46A4)
         {
-            Hue = GiftBoxHues.RandomGiftBoxHue;
+            this.Hue = GiftBoxHues.RandomGiftBoxHue;
         }
 
         public GiftBoxOctogon(Serial serial)
@@ -138,11 +170,17 @@
         {
         }
 
-        public override int DefaultGumpID => 0x11D;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x11D;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -158,7 +196,7 @@
         public GiftBoxAngel()
             : base(0x46A7)
         {
-            Hue = GiftBoxHues.RandomGiftBoxHue;
+            this.Hue = GiftBoxHues.RandomGiftBoxHue;
         }
 
         public GiftBoxAngel(Serial serial)
@@ -166,11 +204,17 @@
         {
         }
 
-        public override int DefaultGumpID => 0x11F;
+        public override int DefaultGumpID
+        {
+            get
+            {
+                return 0x11F;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -187,7 +231,7 @@
         public GiftBoxNeon()
             : base(Utility.RandomBool() ? 0x232A : 0x232B)
         {
-            Hue = GiftBoxHues.RandomNeonBoxHue;
+            this.Hue = GiftBoxHues.RandomNeonBoxHue;
         }
 
         public GiftBoxNeon(Serial serial)
@@ -199,7 +243,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,5 +1,8 @@
-using Server.Gumps;
+using System;
+using Server;
 using Server.Mobiles;
+using Server.Gumps;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -8,10 +11,10 @@ namespace Server.Items
     {
         private Mobile _Clicker;
 
-        public override BaseAddonDeed Deed => new SkeletalHangmanAddonDeed();
+        public override BaseAddonDeed Deed { get { return new SkeletalHangmanAddonDeed(); } }
 
         [Constructable]
-        public SkeletalHangmanAddon()
+        public SkeletalHangmanAddon() 
             : this(null)
         {
         }
@@ -41,7 +44,7 @@ namespace Server.Items
 
         public class InternalComponent : AddonComponent
         {
-            public override bool ForceShowProperties => true;
+            public override bool ForceShowProperties { get { return true; } }
 
             public InternalComponent(int id) : base(id)
             {
@@ -103,8 +106,8 @@ namespace Server.Items
 
     public class SkeletalHangmanAddonDeed : BaseAddonDeed
     {
-        public override int LabelNumber => 1156982;  // Skeletal Hangman
-        public override BaseAddon Addon => new SkeletalHangmanAddon(_Clicker);
+        public override int LabelNumber { get { return 1156982; } } // Skeletal Hangman
+        public override BaseAddon Addon { get { return new SkeletalHangmanAddon(_Clicker); } }
 
         private Mobile _Clicker;
 
@@ -141,7 +144,7 @@ namespace Server.Items
     [FlipableAddon(Direction.South, Direction.East)]
     public class KotlSacraficialAltarAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new KotlSacraficialAltarAddonDeed();
+        public override BaseAddonDeed Deed { get { return new KotlSacraficialAltarAddonDeed(); } }
 
         [Constructable]
         public KotlSacraficialAltarAddon()
@@ -191,8 +194,8 @@ namespace Server.Items
 
     public class KotlSacraficialAltarAddonDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new KotlSacraficialAltarAddon();
-        public override int LabelNumber => 1124311;  // Kotl Sacrificial Altar
+        public override BaseAddon Addon { get { return new KotlSacraficialAltarAddon(); } }
+        public override int LabelNumber { get { return 1124311; } } // Kotl Sacrificial Altar
 
         [Constructable]
         public KotlSacraficialAltarAddonDeed()
@@ -221,7 +224,7 @@ namespace Server.Items
     {
         private TextDefinition _Title;
 
-        public override TextDefinition Title => _Title;
+        public override TextDefinition Title { get { return _Title; } }
 
         public TreasuresOfKotlRewardDeed(int localization)
         {
@@ -252,8 +255,7 @@ namespace Server.Items
 
     public class KatalkotlsRing : SilverRing
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1156989;
+        public override int LabelNumber { get { return 1156989; } }
 
         [Constructable]
         public KatalkotlsRing()
@@ -267,7 +269,10 @@ namespace Server.Items
             Attributes.SpellDamage = 20;
         }
 
-        public bool HasSkillBonus => SkillBonuses.Skill_3_Value != 0;
+        public bool HasSkillBonus
+        {
+            get { return SkillBonuses.Skill_3_Value != 0; }
+        }
 
         public override void OnDoubleClick(Mobile m)
         {
@@ -315,16 +320,14 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
     public class BootsOfEscaping : ThighBoots
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1155607;  // Boots of Escaping
+        public override int LabelNumber { get { return 1155607; } } // Boots of Escaping
 
-        [Constructable]
         public BootsOfEscaping()
         {
             Attributes.BonusDex = 4;
@@ -345,14 +348,13 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
     public class TalonsOfEscaping : LeatherTalons
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1155682;  // Talons of Escaping
+        public override int LabelNumber { get { return 1155682; } } // Talons of Escaping
 
         public TalonsOfEscaping()
         {
@@ -374,17 +376,17 @@ namespace Server.Items
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
     public class TribalBanner : Item, IFlipable
     {
-        public override int LabelNumber => ItemID + 1084024;
-        public override bool ForceShowProperties => true;
+        public override int LabelNumber { get { return ItemID + 1084024; } }
+        public override bool ForceShowProperties { get { return true; } }
 
-        public int NorthID => GetTribeID(_Tribe);
-        public int WestID => GetTribeID(_Tribe) + 1;
+        public int NorthID { get { return GetTribeID(_Tribe); } }
+        public int WestID { get { return GetTribeID(_Tribe) + 1; } }
 
         private EodonTribe _Tribe;
 

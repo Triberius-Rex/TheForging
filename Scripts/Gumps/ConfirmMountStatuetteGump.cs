@@ -1,6 +1,6 @@
+using System;
 using Server.Mobiles;
 using Server.Network;
-using System;
 
 namespace Server.Gumps
 {
@@ -9,11 +9,12 @@ namespace Server.Gumps
         private readonly Item m_Item;
 
         public ConfirmMountStatuetteGump(Item item)
+            : base()
         {
             m_Item = item;
         }
 
-        public override int LabelNumber => 1075084;  // This statuette will be destroyed when its trapped creature is summoned. The creature will be bonded to you but will disappear if released. <br><br>Do you wish to proceed?
+        public override int LabelNumber { get { return 1075084; } } // This statuette will be destroyed when its trapped creature is summoned. The creature will be bonded to you but will disappear if released. <br><br>Do you wish to proceed?
 
         public override void Confirm(Mobile from)
         {
@@ -37,8 +38,8 @@ namespace Server.Gumps
                 else
                 {
                     m.SetControlMaster(from);
-
-                    m.IsBonded = true;
+                    
+                    m.IsBonded = true;                    
                     m.MoveToWorld(from.Location, from.Map);
                     m_Item.Delete();
 

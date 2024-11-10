@@ -1,7 +1,7 @@
-using Server.Spells.SkillMasteries;
-using Server.Targeting;
 using System;
 using System.Collections.Generic;
+using Server.Targeting;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells.Necromancy
 {
@@ -21,9 +21,27 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.75);
-        public override double RequiredSkill => 20.0;
-        public override int RequiredMana => 11;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.75);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 20.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 11;
+            }
+        }
         public static bool RemoveCurse(Mobile m)
         {
             if (m_Table.ContainsKey(m))
@@ -60,8 +78,6 @@ namespace Server.Spells.Necromancy
             if (CheckHSequence(m))
             {
                 SpellHelper.Turn(Caster, m);
-
-                SpellHelper.CheckReflect(this, Caster, ref m);
 
                 ApplyEffects(m);
                 ConduitSpell.CheckAffected(Caster, m, ApplyEffects);
@@ -106,12 +122,12 @@ namespace Server.Spells.Necromancy
             int malus = (int)Math.Min(15, (Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value) * 0.075);
 
             ResistanceMod[] mods = new ResistanceMod[4]
-                    {
-                        new ResistanceMod( ResistanceType.Fire, (int)(-malus * strength) ),
-                        new ResistanceMod( ResistanceType.Poison, (int)(-malus * strength) ),
-                        new ResistanceMod( ResistanceType.Cold, (int)(+10.0 * strength) ),
-                        new ResistanceMod( ResistanceType.Physical, (int)(+10.0 * strength) )
-                    };
+					{
+						new ResistanceMod( ResistanceType.Fire, (int)(-malus * strength) ),
+						new ResistanceMod( ResistanceType.Poison, (int)(-malus * strength) ),
+						new ResistanceMod( ResistanceType.Cold, (int)(+10.0 * strength) ),
+						new ResistanceMod( ResistanceType.Physical, (int)(+10.0 * strength) )
+					};
 
             ExpireTimer timer = new ExpireTimer(m, mods, malus, duration);
             timer.Start();
@@ -134,7 +150,7 @@ namespace Server.Spells.Necromancy
             private readonly ResistanceMod[] m_Mods;
             private readonly int m_Malus;
 
-            public int Malus => m_Malus;
+            public int Malus { get { return m_Malus; } }
 
             public ExpireTimer(Mobile m, ResistanceMod[] mods, int malus, TimeSpan delay)
                 : base(delay)
@@ -152,12 +168,12 @@ namespace Server.Spells.Necromancy
                 Stop();
                 BuffInfo.RemoveBuff(m_Mobile, BuffIcon.CorpseSkin);
 
-                if (m_Table.ContainsKey(m_Mobile))
+                if(m_Table.ContainsKey(m_Mobile))
                     m_Table.Remove(m_Mobile);
 
                 m_Mobile.UpdateResistances();
 
-                if (message)
+                if(message)
                     m_Mobile.SendLocalizedMessage(1061688); // Your skin returns to normal.
             }
 
@@ -171,7 +187,7 @@ namespace Server.Spells.Necromancy
         {
             private readonly CorpseSkinSpell m_Owner;
             public InternalTarget(CorpseSkinSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

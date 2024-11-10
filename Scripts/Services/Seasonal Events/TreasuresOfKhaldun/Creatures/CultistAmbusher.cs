@@ -1,5 +1,7 @@
 #region References
 using Server.Items;
+using Server.Misc;
+using Server.Targeting;
 using System;
 #endregion
 
@@ -7,15 +9,15 @@ namespace Server.Mobiles
 {
     [CorpseName("an inhuman corpse")]
     public class CultistAmbusher : BaseCreature
-    {
-        [Constructable]
-        public CultistAmbusher()
-            : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
-        {
-            Name = "Cultist Ambusher";
-            Body = 0x190;
+	{
+		[Constructable]
+		public CultistAmbusher()
+			: base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
+		{
+			Name = "Cultist Ambusher";
+			Body = 0x190;
             Hue = 2500;
-            BaseSoundID = 0x45A;
+			BaseSoundID = 0x45A;
 
             SetStr(150, 200);
             SetDex(150);
@@ -27,12 +29,12 @@ namespace Server.Mobiles
 
             SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 10, 20);
-            SetResistance(ResistanceType.Fire, 10, 20);
-            SetResistance(ResistanceType.Cold, 10, 20);
-            SetResistance(ResistanceType.Poison, 10, 20);
-            SetResistance(ResistanceType.Energy, 10, 20);
-
+			SetResistance(ResistanceType.Physical, 10, 20);
+			SetResistance(ResistanceType.Fire, 10, 20);
+			SetResistance(ResistanceType.Cold, 10, 20);
+			SetResistance(ResistanceType.Poison, 10, 20);
+			SetResistance(ResistanceType.Energy, 10, 20);
+            
             SetSkill(SkillName.Fencing, 100.0, 120.0);
             SetSkill(SkillName.Macing, 100.0, 120.0);
             SetSkill(SkillName.MagicResist, 100.0, 120.0);
@@ -43,7 +45,7 @@ namespace Server.Mobiles
             SetSkill(SkillName.Tactics, 100.0, 120.0);
 
             Fame = 8000;
-            Karma = -8000;
+			Karma = -8000;
 
             switch (Utility.Random(3))
             {
@@ -92,16 +94,16 @@ namespace Server.Mobiles
                 case 1:
                     {
                         SetWearable(Loot.Construct(new Type[] { typeof(Yumi), typeof(Crossbow), typeof(RepeatingCrossbow), typeof(HeavyCrossbow) }));
-
+                        
                         RangeFight = 7;
                         AI = AIType.AI_Archer;
 
                         break;
                     }
-            }
+            }            
         }
 
-        public override void OnBeforeDamage(Mobile from, ref int totalDamage, DamageType type)
+        public override void OnBeforeDamage(Mobile from, ref int totalDamage, Server.DamageType type)
         {
             if (Region.IsPartOf("Khaldun") && IsChampionSpawn && !Caddellite.CheckDamage(from, type))
             {
@@ -121,7 +123,7 @@ namespace Server.Mobiles
                 Effects.SendLocationParticles(EffectItem.Create(Location, Map, EffectItem.DefaultDuration), 0x3728, 10, 10, 2023);
                 Location = p;
                 Effects.SendLocationParticles(EffectItem.Create(p, Map, EffectItem.DefaultDuration), 0x3728, 10, 10, 5023);
-
+                                
                 PlaySound(0x1FE);
             }
         }
@@ -157,18 +159,18 @@ namespace Server.Mobiles
             return center;
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool ShowFameTitle => false;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override bool ShowFameTitle { get { return false; } }
 
         public CultistAmbusher(Serial serial)
-            : base(serial)
-        {
+			: base(serial)
+		{
         }
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.Rich);
-        }
+		public override void GenerateLoot()
+		{
+			AddLoot(LootPack.Rich);
+		}
 
         public override WeaponAbility GetWeaponAbility()
         {
@@ -186,15 +188,15 @@ namespace Server.Mobiles
         }
 
         public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
+		{
+			base.Serialize(writer);
+			writer.Write(0);
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }
-    }
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+			int version = reader.ReadInt();
+		}
+	}
 }

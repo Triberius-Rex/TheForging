@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -37,12 +38,11 @@ namespace Server.Mobiles
 
             Fame = 500;
 
-            AddItem(new LightSource());
-        }
+            VirtualArmor = 18;
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.Bones);
+            AddItem(new LightSource());
+
+            PackBones();
         }
 
         public ShadowWisp(Serial serial)
@@ -50,10 +50,17 @@ namespace Server.Mobiles
         {
         }
 
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

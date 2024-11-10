@@ -16,8 +16,17 @@ namespace Server.Items
         private static readonly Dictionary<Mobile, Timer> m_Table = new Dictionary<Mobile, Timer>();
         private static readonly List<Mobile> m_EffectReduction = new List<Mobile>();
 
-        public override int BaseMana => 30;
+        public MortalStrike()
+        {
+        }
 
+        public override int BaseMana
+        {
+            get
+            {
+                return 30;
+            }
+        }
         public static bool IsWounded(Mobile m)
         {
             return m_Table.ContainsKey(m);
@@ -32,7 +41,7 @@ namespace Server.Items
                 EndWound(m, true);
             }
 
-            if (m_EffectReduction.Contains(m))
+            if (Core.HS && m_EffectReduction.Contains(m))
             {
                 double d = duration.TotalSeconds;
                 duration = TimeSpan.FromSeconds(d / 2);
@@ -64,7 +73,7 @@ namespace Server.Items
             m.YellowHealthbar = false;
             m.SendLocalizedMessage(1060208); // You are no longer mortally wounded.
 
-            if (natural && !m_EffectReduction.Contains(m))
+            if (Core.HS && natural && !m_EffectReduction.Contains(m))
             {
                 m_EffectReduction.Add(m);
 
@@ -90,10 +99,13 @@ namespace Server.Items
             defender.FixedParticles(0x37B9, 244, 25, 9944, 31, 0, EffectLayer.Waist);
 
             // Do not reset timer if one is already in place.
-            if (Spells.SkillMasteries.ResilienceSpell.UnderEffects(defender)) //Halves time
-                BeginWound(defender, defender.Player ? TimeSpan.FromSeconds(3.0) : TimeSpan.FromSeconds(6));
-            else
-                BeginWound(defender, defender.Player ? PlayerDuration : NPCDuration);
+            if (Core.HS || !IsWounded(defender))
+            {
+                if (Spells.SkillMasteries.ResilienceSpell.UnderEffects(defender)) //Halves time
+                    BeginWound(defender, defender.Player ? TimeSpan.FromSeconds(3.0) : TimeSpan.FromSeconds(6));
+                else
+                    BeginWound(defender, defender.Player ? PlayerDuration : NPCDuration);
+            }
         }
 
         private class InternalTimer : Timer

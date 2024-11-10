@@ -1,3 +1,4 @@
+using System;
 using Server.Accounting;
 using Server.Commands;
 using Server.Commands.Generic;
@@ -22,115 +23,115 @@ namespace Server.Gumps
             if (state == null)
                 return;
 
-            m_State = state;
+            this.m_State = state;
 
-            AddPage(0);
+            this.AddPage(0);
 
-            AddBackground(0, 0, 400, 274, 5054);
+            this.AddBackground(0, 0, 400, 274, 5054);
 
-            AddImageTiled(10, 10, 380, 19, 0xA40);
-            AddAlphaRegion(10, 10, 380, 19);
+            this.AddImageTiled(10, 10, 380, 19, 0xA40);
+            this.AddAlphaRegion(10, 10, 380, 19);
 
-            AddImageTiled(10, 32, 380, 232, 0xA40);
-            AddAlphaRegion(10, 32, 380, 232);
+            this.AddImageTiled(10, 32, 380, 232, 0xA40);
+            this.AddAlphaRegion(10, 32, 380, 232);
 
-            AddHtml(10, 10, 380, 20, Color(Center("User Information"), LabelColor32), false, false);
+            this.AddHtml(10, 10, 380, 20, this.Color(this.Center("User Information"), LabelColor32), false, false);
 
             int line = 0;
 
-            AddHtml(14, 36 + (line * 20), 200, 20, Color("Address:", LabelColor32), false, false);
-            AddHtml(70, 36 + (line++ * 20), 200, 20, Color(state.ToString(), LabelColor32), false, false);
+            this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Address:", LabelColor32), false, false);
+            this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(state.ToString(), LabelColor32), false, false);
 
-            AddHtml(14, 36 + (line * 20), 200, 20, Color("Client:", LabelColor32), false, false);
-            AddHtml(70, 36 + (line++ * 20), 200, 20, Color(state.Version == null ? "(null)" : state.Version.ToString(), LabelColor32), false, false);
+            this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Client:", LabelColor32), false, false);
+            this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(state.Version == null ? "(null)" : state.Version.ToString(), LabelColor32), false, false);
 
-            AddHtml(14, 36 + (line * 20), 200, 20, Color("Version:", LabelColor32), false, false);
+            this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Version:", LabelColor32), false, false);
 
             ExpansionInfo info = state.ExpansionInfo;
             string expansionName = info.Name;
 
-            AddHtml(70, 36 + (line++ * 20), 200, 20, Color(expansionName, LabelColor32), false, false);
+            this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(expansionName, LabelColor32), false, false);
 
             Account a = state.Account as Account;
             Mobile m = state.Mobile;
 
             if (from.AccessLevel >= AccessLevel.GameMaster && a != null)
             {
-                AddHtml(14, 36 + (line * 20), 200, 20, Color("Account:", LabelColor32), false, false);
-                AddHtml(70, 36 + (line++ * 20), 200, 20, Color(a.Username, LabelColor32), false, false);
+                this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Account:", LabelColor32), false, false);
+                this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(a.Username, LabelColor32), false, false);
             }
 
             if (m != null)
             {
-                AddHtml(14, 36 + (line * 20), 200, 20, Color("Mobile:", LabelColor32), false, false);
-                AddHtml(70, 36 + (line++ * 20), 200, 20, Color(string.Format("{0} (0x{1:X})", m.Name, m.Serial.Value), LabelColor32), false, false);
+                this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Mobile:", LabelColor32), false, false);
+                this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(String.Format("{0} (0x{1:X})", m.Name, m.Serial.Value), LabelColor32), false, false);
 
-                AddHtml(14, 36 + (line * 20), 200, 20, Color("Location:", LabelColor32), false, false);
-                AddHtml(70, 36 + (line++ * 20), 200, 20, Color(string.Format("{0} [{1}]", m.Location, m.Map), LabelColor32), false, false);
+                this.AddHtml(14, 36 + (line * 20), 200, 20, this.Color("Location:", LabelColor32), false, false);
+                this.AddHtml(70, 36 + (line++ * 20), 200, 20, this.Color(String.Format("{0} [{1}]", m.Location, m.Map), LabelColor32), false, false);
 
-                AddButton(13, 157, 0xFAB, 0xFAD, 1, GumpButtonType.Reply, 0);
-                AddHtml(48, 158, 200, 20, Color("Send Message", LabelColor32), false, false);
+                this.AddButton(13, 157, 0xFAB, 0xFAD, 1, GumpButtonType.Reply, 0);
+                this.AddHtml(48, 158, 200, 20, this.Color("Send Message", LabelColor32), false, false);
 
-                AddImageTiled(12, 182, 376, 80, 0xA40);
-                AddImageTiled(13, 183, 374, 78, 0xBBC);
-                AddTextEntry(15, 183, 372, 78, 0x480, 0, "");
+                this.AddImageTiled(12, 182, 376, 80, 0xA40);
+                this.AddImageTiled(13, 183, 374, 78, 0xBBC);
+                this.AddTextEntry(15, 183, 372, 78, 0x480, 0, "");
 
-                AddImageTiled(245, 35, 142, 144, 5058);
+                this.AddImageTiled(245, 35, 142, 144, 5058);
 
-                AddImageTiled(246, 36, 140, 142, 0xA40);
-                AddAlphaRegion(246, 36, 140, 142);
+                this.AddImageTiled(246, 36, 140, 142, 0xA40);
+                this.AddAlphaRegion(246, 36, 140, 142);
 
                 line = 0;
 
                 if (BaseCommand.IsAccessible(from, m))
                 {
-                    AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 4, GumpButtonType.Reply, 0);
-                    AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Properties", LabelColor32), false, false);
+                    this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 4, GumpButtonType.Reply, 0);
+                    this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Properties", LabelColor32), false, false);
                 }
 
                 if (from != m)
                 {
-                    AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 5, GumpButtonType.Reply, 0);
-                    AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Go to them", LabelColor32), false, false);
+                    this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 5, GumpButtonType.Reply, 0);
+                    this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Go to them", LabelColor32), false, false);
 
-                    AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 6, GumpButtonType.Reply, 0);
-                    AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Bring them here", LabelColor32), false, false);
+                    this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 6, GumpButtonType.Reply, 0);
+                    this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Bring them here", LabelColor32), false, false);
                 }
 
-                AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 7, GumpButtonType.Reply, 0);
-                AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Move to target", LabelColor32), false, false);
+                this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 7, GumpButtonType.Reply, 0);
+                this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Move to target", LabelColor32), false, false);
 
                 if (from.AccessLevel >= AccessLevel.GameMaster && from.AccessLevel > m.AccessLevel)
                 {
-                    AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 8, GumpButtonType.Reply, 0);
-                    AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Disconnect", LabelColor32), false, false);
+                    this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 8, GumpButtonType.Reply, 0);
+                    this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Disconnect", LabelColor32), false, false);
 
                     if (m.Alive)
                     {
-                        AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 9, GumpButtonType.Reply, 0);
-                        AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Kill", LabelColor32), false, false);
+                        this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 9, GumpButtonType.Reply, 0);
+                        this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Kill", LabelColor32), false, false);
                     }
                     else
                     {
-                        AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 10, GumpButtonType.Reply, 0);
-                        AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Resurrect", LabelColor32), false, false);
+                        this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 10, GumpButtonType.Reply, 0);
+                        this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Resurrect", LabelColor32), false, false);
                     }
                 }
 
                 if (from.IsStaff() && from.AccessLevel > m.AccessLevel)
                 {
-                    AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 11, GumpButtonType.Reply, 0);
-                    AddHtml(280, 38 + (line++ * 20), 100, 20, Color("Skills browser", LabelColor32), false, false);
+                    this.AddButton(246, 36 + (line * 20), 0xFA5, 0xFA7, 11, GumpButtonType.Reply, 0);
+                    this.AddHtml(280, 38 + (line++ * 20), 100, 20, this.Color("Skills browser", LabelColor32), false, false);
                 }
             }
         }
 
         public override void OnResponse(NetState state, RelayInfo info)
         {
-            if (m_State == null)
+            if (this.m_State == null)
                 return;
 
-            Mobile focus = m_State.Mobile;
+            Mobile focus = this.m_State.Mobile;
             Mobile from = state.Mobile;
 
             if (focus == null)
@@ -149,7 +150,7 @@ namespace Server.Gumps
                 return;
             }
 
-            switch (info.ButtonID)
+            switch ( info.ButtonID )
             {
                 case 1: // Tell
                     {
@@ -163,13 +164,13 @@ namespace Server.Gumps
                             CommandLogging.WriteLine(from, "{0} {1} telling {2} \"{3}\" ", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus), text.Text);
                         }
 
-                        from.SendGump(new ClientGump(from, m_State));
+                        from.SendGump(new ClientGump(from, this.m_State));
 
                         break;
                     }
                 case 4: // Props
                     {
-                        Resend(from, info);
+                        this.Resend(from, info);
 
                         if (!BaseCommand.IsAccessible(from, focus))
                             from.SendMessage("That is not accessible.");
@@ -190,7 +191,7 @@ namespace Server.Gumps
                         else
                         {
                             from.MoveToWorld(focus.Location, focus.Map);
-                            Resend(from, info);
+                            this.Resend(from, info);
 
                             CommandLogging.WriteLine(from, "{0} {1} going to {2}, Location {3}, Map {4}", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus), focus.Location, focus.Map);
                         }
@@ -206,7 +207,7 @@ namespace Server.Gumps
                         else
                         {
                             focus.MoveToWorld(from.Location, from.Map);
-                            Resend(from, info);
+                            this.Resend(from, info);
 
                             CommandLogging.WriteLine(from, "{0} {1} bringing {2} to Location {3}, Map {4}", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus), from.Location, from.Map);
                         }
@@ -216,7 +217,7 @@ namespace Server.Gumps
                 case 7: // Move
                     {
                         from.Target = new MoveTarget(focus);
-                        Resend(from, info);
+                        this.Resend(from, info);
 
                         break;
                     }
@@ -226,7 +227,7 @@ namespace Server.Gumps
                         {
                             focus.Say("I've been kicked!");
 
-                            m_State.Dispose();
+                            this.m_State.Dispose();
 
                             CommandLogging.WriteLine(from, "{0} {1} kicking {2} ", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus));
                         }
@@ -241,7 +242,7 @@ namespace Server.Gumps
                             CommandLogging.WriteLine(from, "{0} {1} killing {2} ", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus));
                         }
 
-                        Resend(from, info);
+                        this.Resend(from, info);
 
                         break;
                     }
@@ -257,17 +258,17 @@ namespace Server.Gumps
                             CommandLogging.WriteLine(from, "{0} {1} resurrecting {2} ", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus));
                         }
 
-                        Resend(from, info);
+                        this.Resend(from, info);
 
                         break;
                     }
                 case 11: // Skills
                     {
-                        Resend(from, info);
+                        this.Resend(from, info);
 
                         if (from.AccessLevel > focus.AccessLevel)
                         {
-                            from.SendGump(new SkillsGump(from, focus));
+                            from.SendGump(new SkillsGump(from, (Mobile)focus));
                             CommandLogging.WriteLine(from, "{0} {1} Opening Skills gump of {2} ", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(focus));
                         }
 
@@ -278,19 +279,19 @@ namespace Server.Gumps
 
         public string Center(string text)
         {
-            return string.Format("<CENTER>{0}</CENTER>", text);
+            return String.Format("<CENTER>{0}</CENTER>", text);
         }
 
         public string Color(string text, int color)
         {
-            return string.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
+            return String.Format("<BASEFONT COLOR=#{0:X6}>{1}</BASEFONT>", color, text);
         }
 
         private void Resend(Mobile to, RelayInfo info)
         {
             TextRelay te = info.GetTextEntry(0);
 
-            to.SendGump(new ClientGump(to, m_State, te == null ? "" : te.Text));
+            to.SendGump(new ClientGump(to, this.m_State, te == null ? "" : te.Text));
         }
     }
 }

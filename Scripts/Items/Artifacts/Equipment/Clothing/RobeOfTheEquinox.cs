@@ -1,14 +1,18 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x1F03, 0x1F04)]
     public class RobeOfTheEquinox : BaseOuterTorso, ICanBeElfOrHuman
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
 
         private bool _ElfOnly;
+        public override Race RequiredRace { get { return _ElfOnly ? Race.Elf : null; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool ElfOnly { get { return _ElfOnly; } set { _ElfOnly = value; InvalidateProperties(); } }
+
 
         [Constructable]
         public RobeOfTheEquinox()
@@ -24,7 +28,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1075042;// Robe of the Equinox
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1075042;
+            }
+        }// Robe of the Equinox
 
         public override void Serialize(GenericWriter writer)
         {

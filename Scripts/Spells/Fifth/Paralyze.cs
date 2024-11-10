@@ -1,7 +1,7 @@
+using System;
 using Server.Mobiles;
 using Server.Spells.Chivalry;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Fifth
 {
@@ -19,43 +19,63 @@ namespace Server.Spells.Fifth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fifth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fifth;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(Mobile m)
         {
-            if (!Caster.CanSee(m))
+            if (!this.Caster.CanSee(m))
             {
-                Caster.SendLocalizedMessage(500237); // Target can not be seen.
+                this.Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (m.Frozen || m.Paralyzed || (m.Spell != null && m.Spell.IsCasting && !(m.Spell is PaladinSpell)))
+            else if (Core.AOS && (m.Frozen || m.Paralyzed || (m.Spell != null && m.Spell.IsCasting && !(m.Spell is PaladinSpell))))
             {
-                Caster.SendLocalizedMessage(1061923); // The target is already frozen.
+                this.Caster.SendLocalizedMessage(1061923); // The target is already frozen.
             }
-            else if (CheckHSequence(m))
+            else if (this.CheckHSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
-                SpellHelper.CheckReflect(this, Caster, ref m);
+                SpellHelper.CheckReflect((int)this.Circle, this.Caster, ref m);
 
                 double duration;
+				
+                if (Core.AOS)
+                {
+                    int secs = (int)((this.GetDamageSkill(this.Caster) / 10) - (this.GetResistSkill(m) / 10));
+					
+                    if (!Core.SE)
+                        secs += 2;
 
-                int secs = (int)((GetDamageSkill(Caster) / 10) - (GetResistSkill(m) / 10));
+                    if (!m.Player)
+                        secs *= 3;
 
-                if (!m.Player)
-                    secs *= 3;
+                    if (secs < 0)
+                        secs = 0;
 
-                if (secs < 0)
-                    secs = 0;
+                    duration = secs;
+                }
+                else
+                {
+                    // Algorithm: ((20% of magery) + 7) seconds [- 50% if resisted]
+                    duration = 7.0 + (this.Caster.Skills[SkillName.Magery].Value * 0.2);
 
-                duration = secs;
+                    if (this.CheckResisted(m))
+                        duration *= 0.75;
+                }
 
                 if (m is PlagueBeastLord)
                 {
-                    ((PlagueBeastLord)m).OnParalyzed(Caster);
+                    ((PlagueBeastLord)m).OnParalyzed(this.Caster);
                     duration = 120;
                 }
 
@@ -64,30 +84,30 @@ namespace Server.Spells.Fifth
                 m.PlaySound(0x204);
                 m.FixedEffect(0x376A, 6, 1);
 
-                HarmfulSpell(m);
+                this.HarmfulSpell(m);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
         {
             private readonly ParalyzeSpell m_Owner;
             public InternalTarget(ParalyzeSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is Mobile)
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

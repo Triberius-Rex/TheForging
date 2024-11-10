@@ -1,3 +1,6 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class GuaranteedSpellbookImprovementTalisman : BaseTalisman
@@ -15,8 +18,8 @@ namespace Server.Items
             Charges = charges;
 
             Skill = TalismanSkill.Inscription;
-            SuccessBonus = GetRandomSuccessful();
-            ExceptionalBonus = GetRandomExceptional();
+            SuccessBonus = BaseTalisman.GetRandomSuccessful();
+            ExceptionalBonus = BaseTalisman.GetRandomExceptional();
         }
 
         public override void GetProperties(ObjectPropertyList list)
@@ -38,7 +41,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

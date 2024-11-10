@@ -1,35 +1,40 @@
+using System;
+using Server;
 using Server.Items;
 
-namespace Server.Services.BasketWeaving.Baskets
+public class TallBasket : BaseContainer
 {
-    public class TallBasket : BaseContainer
+    [Constructable]
+    public TallBasket()
+        : base(0x24DB)
     {
-        [Constructable]
-        public TallBasket()
-            : base(0x24DB)
+        this.Weight = 1.0; 
+    }
+
+    public TallBasket(Serial serial)
+        : base(serial)
+    {
+    }
+
+    public override int LabelNumber
+    {
+        get
         {
-            Weight = 1.0;
+            return 1112299;
         }
+    }// tall basket
 
-        public TallBasket(Serial serial)
-            : base(serial)
-        {
-        }
+    public override void Serialize(GenericWriter writer)
+    {
+        base.Serialize(writer);
 
-        public override int LabelNumber => 1112299;// tall basket
+        writer.Write((int)0); // version
+    }
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
+    public override void Deserialize(GenericReader reader)
+    {
+        base.Deserialize(reader);
 
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-
-            int version = reader.ReadInt();
-        }
+        int version = reader.ReadInt();
     }
 }

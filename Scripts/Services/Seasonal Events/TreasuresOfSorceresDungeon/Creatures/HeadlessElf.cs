@@ -1,4 +1,7 @@
+using System;
+
 using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Engines.SorcerersDungeon
 {
@@ -46,8 +49,8 @@ namespace Server.Engines.SorcerersDungeon
             SetSkill(SkillName.Meditation, 110, 120);
             SetSkill(SkillName.Focus, 120, 130);
 
-            Fame = 16000;
-            Karma = -16000;
+            Fame = 12000;
+            Karma = -12000;
 
             SetMagicalAbility(MagicalAbility.WrestlingMastery);
         }
@@ -57,9 +60,8 @@ namespace Server.Engines.SorcerersDungeon
         {
         }
 
-        public override bool CanFlee => false;
-        public override bool AlwaysMurderer => true;
-        public override Poison PoisonImmune => Poison.Deadly;
+        public override bool AlwaysMurderer { get { return true; } }
+        public override Poison PoisonImmune { get { return Poison.Deadly; } }
 
         public override void GenerateLoot()
         {
@@ -69,7 +71,7 @@ namespace Server.Engines.SorcerersDungeon
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

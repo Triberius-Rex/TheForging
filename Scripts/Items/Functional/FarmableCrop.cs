@@ -1,5 +1,5 @@
-using Server.Network;
 using System;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -9,7 +9,7 @@ namespace Server.Items
         public FarmableCrop(int itemID)
             : base(itemID)
         {
-            Movable = false;
+            this.Movable = false;
         }
 
         public FarmableCrop(Serial serial)
@@ -23,42 +23,42 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            Map map = Map;
-            Point3D loc = Location;
+            Map map = this.Map;
+            Point3D loc = this.Location;
 
-            if (Parent != null || Movable || IsLockedDown || IsSecure || map == null || map == Map.Internal)
+            if (this.Parent != null || this.Movable || this.IsLockedDown || this.IsSecure || map == null || map == Map.Internal)
                 return;
 
             if (!from.InRange(loc, 2) || !from.InLOS(this))
                 from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
-            else if (!m_Picked)
-                OnPicked(from, loc, map);
+            else if (!this.m_Picked)
+                this.OnPicked(from, loc, map);
         }
 
         public virtual void OnPicked(Mobile from, Point3D loc, Map map)
         {
-            ItemID = GetPickedID();
+            this.ItemID = this.GetPickedID();
 
-            Item spawn = GetCropObject();
+            Item spawn = this.GetCropObject();
 
             if (spawn != null)
                 spawn.MoveToWorld(loc, map);
 
-            m_Picked = true;
+            this.m_Picked = true;
 
-            Unlink();
+            this.Unlink();
 
-            Timer.DelayCall(TimeSpan.FromMinutes(5.0), Delete);
+            Timer.DelayCall(TimeSpan.FromMinutes(5.0), new TimerCallback(Delete));
         }
 
         public void Unlink()
         {
-            ISpawner se = Spawner;
+            ISpawner se = this.Spawner;
 
             if (se != null)
             {
-                Spawner.Remove(this);
-                Spawner = null;
+                this.Spawner.Remove(this);
+                this.Spawner = null;
             }
         }
 
@@ -68,7 +68,7 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_Picked);
+            writer.Write(this.m_Picked);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -77,16 +77,16 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
-                    m_Picked = reader.ReadBool();
+                    this.m_Picked = reader.ReadBool();
                     break;
             }
-            if (m_Picked)
+            if (this.m_Picked)
             {
-                Unlink();
-                Delete();
+                this.Unlink();
+                this.Delete();
             }
         }
     }

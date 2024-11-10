@@ -1,10 +1,10 @@
+using System;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
-using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System;
+using Server.Multis;
 
 namespace Server.Spells.Seventh
 {
@@ -31,7 +31,13 @@ namespace Server.Spells.Seventh
             m_Entry = entry;
         }
 
-        public override SpellCircle Circle => SpellCircle.Seventh;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Seventh;
+            }
+        }
         public override void OnCast()
         {
             if (m_Entry == null)
@@ -53,14 +59,9 @@ namespace Server.Spells.Seventh
 
         public override bool CheckCast()
         {
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-            else if (Engines.CityLoyalty.CityTradeSystem.HasTrade(Caster))
-            {
-                Caster.SendLocalizedMessage(1151733); // You cannot do that while carrying a Trade Order.
                 return false;
             }
             else if (Caster.Criminal)
@@ -99,11 +100,11 @@ namespace Server.Spells.Seventh
 
         public void Effect(Point3D loc, Map map, bool checkMulti, bool isboatkey = false)
         {
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
             }
-            else if (map == null)
+            else if (map == null || (!Core.AOS && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005570); // You can not gate to another facet.
             }
@@ -137,7 +138,7 @@ namespace Server.Spells.Seventh
             {
                 Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
-            else if (GateExistsAt(map, loc) || GateExistsAt(Caster.Map, Caster.Location)) // SE restricted stacking gates
+            else if (Core.SE && (GateExistsAt(map, loc) || GateExistsAt(Caster.Map, Caster.Location))) // SE restricted stacking gates
             {
                 Caster.SendLocalizedMessage(1071242); // There is already a gate there.
             }
@@ -257,7 +258,13 @@ namespace Server.Spells.Seventh
             {
             }
 
-            public override bool ShowFeluccaWarning => true;
+            public override bool ShowFeluccaWarning
+            {
+                get
+                {
+                    return Core.AOS;
+                }
+            }
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);

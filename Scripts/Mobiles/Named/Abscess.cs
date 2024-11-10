@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -39,6 +40,11 @@ namespace Server.Mobiles
             SetSkill(SkillName.MagicResist, 102.9, 119.0);
             SetSkill(SkillName.Anatomy, 91.8, 94.3);
 
+            for (int i = 0; i < Utility.RandomMinMax(1, 2); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
+
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
 
@@ -46,36 +52,53 @@ namespace Server.Mobiles
             : base(serial)
         {
         }
-        public override int Hides => 40;
-
-        public override int Meat => 19;
-
-        public override bool GivesMLMinorArtifact => true;
-
+        public override int Hides
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 19;
+            }
+        }
+        public override bool GivesMLMinorArtifact
+        {
+            get
+            {
+                return true;
+            }
+        }       
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.UltraRich, 4);
-            AddLoot(LootPack.ArcanistScrolls, Utility.RandomMinMax(1, 2));
-            AddLoot(LootPack.LootItem<AbscessTail>());
+            AddLoot(LootPack.AosUltraRich, 4);
         }
 
         public override void OnDeath(Container c)
         {
-            base.OnDeath(c);
-
-            if (Paragon.ChestChance > Utility.RandomDouble())
-                c.DropItem(new ParagonChest(Name, 5));
+            base.OnDeath(c);		
+			
+            c.DropItem(new AbscessTail());			
+			
+            if ( Paragon.ChestChance > Utility.RandomDouble() )
+            c.DropItem( new ParagonChest( Name, 5 ) );
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+			
             int version = reader.ReadInt();
         }
     }

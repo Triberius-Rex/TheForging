@@ -62,7 +62,13 @@ namespace Server.Items
                 m_TrapLevel = value;
             }
         }
-        public virtual bool TrapOnOpen => true;
+        public virtual bool TrapOnOpen
+        {
+            get
+            {
+                return true;
+            }
+        }
         public virtual bool ExecuteTrap(Mobile from)
         {
             if (m_TrapType != TrapType.None)
@@ -76,7 +82,7 @@ namespace Server.Items
                     return false;
                 }
 
-                switch (m_TrapType)
+                switch ( m_TrapType )
                 {
                     case TrapType.ExplosionTrap:
                         {
@@ -204,11 +210,11 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
-            writer.Write(m_TrapLevel);
+            writer.Write((int)m_TrapLevel);
 
-            writer.Write(m_TrapPower);
+            writer.Write((int)m_TrapPower);
             writer.Write((int)m_TrapType);
         }
 
@@ -218,7 +224,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 2:
                     {

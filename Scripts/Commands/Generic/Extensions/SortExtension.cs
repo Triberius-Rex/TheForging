@@ -6,15 +6,21 @@ namespace Server.Commands.Generic
 {
     public sealed class SortExtension : BaseExtension
     {
-        public static ExtensionInfo ExtInfo = new ExtensionInfo(40, "Order", -1, delegate () { return new SortExtension(); });
+        public static ExtensionInfo ExtInfo = new ExtensionInfo(40, "Order", -1, delegate() { return new SortExtension(); });
         private readonly List<OrderInfo> m_Orders;
         private IComparer m_Comparer;
         public SortExtension()
         {
-            m_Orders = new List<OrderInfo>();
+            this.m_Orders = new List<OrderInfo>();
         }
 
-        public override ExtensionInfo Info => ExtInfo;
+        public override ExtensionInfo Info
+        {
+            get
+            {
+                return ExtInfo;
+            }
+        }
         public static void Initialize()
         {
             ExtensionInfo.Register(ExtInfo);
@@ -25,7 +31,7 @@ namespace Server.Commands.Generic
             if (baseType == null)
                 throw new Exception("The ordering extension may only be used in combination with an object conditional.");
 
-            foreach (OrderInfo order in m_Orders)
+            foreach (OrderInfo order in this.m_Orders)
             {
                 order.Property.BindTo(baseType, PropertyAccess.Read);
                 order.Property.CheckAccess(from);
@@ -34,7 +40,7 @@ namespace Server.Commands.Generic
             if (assembly == null)
                 assembly = new AssemblyEmitter("__dynamic", false);
 
-            m_Comparer = SortCompiler.Compile(assembly, baseType, m_Orders.ToArray());
+            this.m_Comparer = SortCompiler.Compile(assembly, baseType, this.m_Orders.ToArray());
         }
 
         public override void Parse(Mobile from, string[] arguments, int offset, int size)
@@ -63,7 +69,7 @@ namespace Server.Commands.Generic
                 {
                     string next = arguments[offset];
 
-                    switch (next.ToLower())
+                    switch ( next.ToLower() )
                     {
                         case "+":
                         case "up":
@@ -84,16 +90,16 @@ namespace Server.Commands.Generic
 
                 Property property = new Property(binding);
 
-                m_Orders.Add(new OrderInfo(property, isAscending));
+                this.m_Orders.Add(new OrderInfo(property, isAscending));
             }
         }
 
         public override void Filter(ArrayList list)
         {
-            if (m_Comparer == null)
+            if (this.m_Comparer == null)
                 throw new InvalidOperationException("The extension must first be optimized.");
 
-            list.Sort(m_Comparer);
+            list.Sort(this.m_Comparer);
         }
     }
 }

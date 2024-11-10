@@ -1,3 +1,4 @@
+﻿using System;
 using Server.Commands;
 using Server.Gumps;
 using Server.Network;
@@ -6,7 +7,7 @@ namespace Server.Items
 {
     public class LedgerScroll : Item
     {
-        public override int LabelNumber => 1023637;  // scroll
+        public override int LabelNumber { get { return 1023637; } } // scroll
 
         [Constructable]
         public LedgerScroll() : base(0x46AF)
@@ -29,7 +30,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
         }
 
@@ -44,7 +45,7 @@ namespace Server.Items
     {
         public static void Initialize()
         {
-            CommandSystem.Register("LedgerLetter", AccessLevel.GameMaster, LedgerGump_OnCommand);
+            CommandSystem.Register("LedgerLetter", AccessLevel.GameMaster, new CommandEventHandler(LedgerGump_OnCommand));
         }
 
         private static void LedgerGump_OnCommand(CommandEventArgs e)
@@ -54,9 +55,9 @@ namespace Server.Items
 
         public LedgerGump(Mobile owner) : base(50, 50)
         {
-            Closable = true;
-            Disposable = true;
-            Dragable = true;
+            this.Closable = true;
+            this.Disposable = true;
+            this.Dragable = true;
 
             AddPage(0);
             AddBackground(6, 11, 390, 324, 9380);

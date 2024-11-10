@@ -1,23 +1,29 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
+using System.Collections.Generic;
+using Server.Gumps;
 namespace Server.Engines.Quests
 {
     public class HumilityShrinePersistence : Item
     {
         public static void Initialize()
         {
-            if (m_TramInstance == null)
+            if (Core.ML)
             {
-                m_TramInstance = new HumilityShrinePersistence();
-                m_TramInstance.MoveToWorld(new Point3D(4270, 3698, 0), Map.Trammel);
+                if (m_TramInstance == null)
+                {
+                    m_TramInstance = new HumilityShrinePersistence();
+                    m_TramInstance.MoveToWorld(new Point3D(4270, 3698, 0), Map.Trammel);
 
-                SetupMobiles();
-            }
+                    SetupMobiles();
+                }
 
-            if (m_FelInstance == null)
-            {
-                m_FelInstance = new HumilityShrinePersistence();
-                m_FelInstance.MoveToWorld(new Point3D(4270, 3698, 0), Map.Felucca);
+                if (m_FelInstance == null)
+                {
+                    m_FelInstance = new HumilityShrinePersistence();
+                    m_FelInstance.MoveToWorld(new Point3D(4270, 3698, 0), Map.Felucca);
+                }
             }
         }
 
@@ -32,7 +38,7 @@ namespace Server.Engines.Quests
 
         private Rectangle2D m_Rec = new Rectangle2D(4273, 3696, 2, 2);
 
-        public override bool HandlesOnMovement => true;
+        public override bool HandlesOnMovement { get { return true; } }
 
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
@@ -57,12 +63,12 @@ namespace Server.Engines.Quests
             : base(serial)
         {
         }
-
+ 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

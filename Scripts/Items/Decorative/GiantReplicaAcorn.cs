@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Furniture]
@@ -7,7 +9,7 @@ namespace Server.Items
         public GiantReplicaAcorn()
             : base(0x2D4A)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public GiantReplicaAcorn(Serial serial)
@@ -15,12 +17,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072889;// giant replica acorn
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072889;
+            }
+        }// giant replica acorn
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,10 @@
-﻿namespace Server.Items
+﻿using System;
+
+namespace Server.Items
 {
     public class HumanSignOfOrder : OrderShield
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public HumanSignOfOrder()
             : base()
@@ -18,16 +20,58 @@
             : base(serial)
         {
         }
+        
+        public override int LabelNumber { get{return 1113534;} }// Sign of Order
 
-        public override int LabelNumber => 1113534; // Sign of Order
-
-        public override int BasePhysicalResistance => 1;
-        public override int BaseFireResistance => 0;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 5;
-        public override int BaseEnergyResistance => 0;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -37,7 +81,7 @@
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); //version
+            writer.Write((int)0); //version
         }
     }
 }

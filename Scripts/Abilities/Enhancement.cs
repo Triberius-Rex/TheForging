@@ -16,12 +16,12 @@ namespace Server
 
         public EnhancementAttributes(string title)
         {
-            Title = title;
-            Attributes = new AosAttributes(null);
-            WeaponAttributes = new AosWeaponAttributes(null);
-            ArmorAttributes = new AosArmorAttributes(null);
-            AbsorptionAttributes = new SAAbsorptionAttributes(null);
-            ExtendedWeaponAttributes = new ExtendedWeaponAttributes(null);
+            this.Title = title;
+            this.Attributes = new AosAttributes(null);
+            this.WeaponAttributes = new AosWeaponAttributes(null);
+            this.ArmorAttributes = new AosArmorAttributes(null);
+            this.AbsorptionAttributes = new SAAbsorptionAttributes(null);
+            this.ExtendedWeaponAttributes = new ExtendedWeaponAttributes(null);
         }
     }
 
@@ -56,7 +56,7 @@ namespace Server
 
                     if (match != null && EnhancementList[m].Contains(match))
                     {
-                        if (match.Attributes.BonusStr > 0)
+                        if(match.Attributes.BonusStr > 0)
                             m.RemoveStatMod("MagicalEnhancementStr");
 
                         if (match.Attributes.BonusDex > 0)
@@ -69,7 +69,7 @@ namespace Server
                     }
                 }
 
-                if (EnhancementList[m].Count == 0 || title == null)
+                if(EnhancementList[m].Count == 0 || title == null)
                     EnhancementList.Remove(m);
 
                 m.CheckStatTimers();
@@ -296,3 +296,24 @@ namespace Server
         }
     }
 }
+/*
+AOS.cs
+MagicalEnhancements.GetValue( m, attribute );
+Usage of setting total (intended use)
+MagicalEnhancements.SetValue( m, AosAttribute.Luck, 50 );
+Example of a timed stackable Enhancement (supports to an extent)
+private Mobile m_Mobile;
+
+public void Luckboon()
+{
+MagicalEnhancements.AddMobile( m );
+MagicalEnhancements.EnhancementList[m].Attributes.Luck += 200;
+Timer.DelayCall( TimeSpan.FromSeconds( 30 ), new TimerCallback( Expire ) );
+}
+
+private void Expire()
+{
+if ( m_Mobile != null && MagicalEnhancements.EnhancementList.ContainsKey( m ) )
+MagicalEnhancements.EnhancementList[m].Attributes.Luck -= 200;
+}
+*/

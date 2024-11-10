@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class EssenceBox : WoodenBox
@@ -6,10 +8,10 @@ namespace Server.Items
         public EssenceBox()
             : base()
         {
-            Movable = true;
-            Hue = 2306;
+            this.Movable = true;
+            this.Hue = 2306;
 
-            DropItem(Loot.RandomEssence());
+           this.DropItem(Loot.RandomEssence());                   
         }
 
         public EssenceBox(Serial serial)
@@ -17,12 +19,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113770;//Essence Box
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113770;
+            }
+        }//Essence Box
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

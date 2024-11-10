@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace Server.Items
@@ -62,7 +63,7 @@ namespace Server.Items
             {
                 m_Type = value;
 
-                HoachisPigmentInfo info = m_Table.FirstOrDefault(x => x.Type == m_Type);
+                var info = m_Table.FirstOrDefault(x => x.Type == m_Type);
 
                 if (info != null)
                 {
@@ -77,13 +78,13 @@ namespace Server.Items
             }
         }
 
-        public override int LabelNumber => 1071249;  // Haochi's Pigments
+        public override int LabelNumber { get { return 1071249; } } // Haochi's Pigments
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
             writer.Write((int)m_Type);
         }
 
@@ -95,8 +96,8 @@ namespace Server.Items
             Type = (HaochisPigmentType)reader.ReadInt();
         }
 
-        public static HoachisPigmentInfo[] Table => m_Table;
-        private static readonly HoachisPigmentInfo[] m_Table =
+        public static HoachisPigmentInfo[] Table { get { return m_Table; } }
+        private static HoachisPigmentInfo[] m_Table =
         {
             new HoachisPigmentInfo( HaochisPigmentType.None, 0, -1 ),
             new HoachisPigmentInfo( HaochisPigmentType.HeartwoodSienna, 2739, 1157275 ), // Verified

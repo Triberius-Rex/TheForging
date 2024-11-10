@@ -1,3 +1,4 @@
+using System;
 using Server.Multis;
 
 namespace Server.Items
@@ -21,11 +22,11 @@ namespace Server.Items
         public SerpentPillar(string word, Rectangle2D destination, bool active)
             : base(0x233F)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Active = active;
-            m_Word = word;
-            m_Destination = destination;
+            this.m_Active = active;
+            this.m_Word = word;
+            this.m_Destination = destination;
         }
 
         public SerpentPillar(Serial serial)
@@ -38,11 +39,11 @@ namespace Server.Items
         {
             get
             {
-                return m_Active;
+                return this.m_Active;
             }
             set
             {
-                m_Active = value;
+                this.m_Active = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -50,11 +51,11 @@ namespace Server.Items
         {
             get
             {
-                return m_Word;
+                return this.m_Word;
             }
             set
             {
-                m_Word = value;
+                this.m_Word = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -62,26 +63,32 @@ namespace Server.Items
         {
             get
             {
-                return m_Destination;
+                return this.m_Destination;
             }
             set
             {
-                m_Destination = value;
+                this.m_Destination = value;
             }
         }
-        public override bool HandlesOnSpeech => true;
+        public override bool HandlesOnSpeech
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnSpeech(SpeechEventArgs e)
         {
             Mobile from = e.Mobile;
 
-            if (!e.Handled && from.InRange(this, 10) && e.Speech.ToLower() == Word)
+            if (!e.Handled && from.InRange(this, 10) && e.Speech.ToLower() == this.Word)
             {
                 BaseBoat boat = BaseBoat.FindBoatAt(from, from.Map);
 
                 if (boat == null)
                     return;
 
-                if (!Active)
+                if (!this.Active)
                 {
                     if (boat.TillerMan != null)
                         boat.TillerManSay(502507); // Ar, Legend has it that these pillars are inactive! No man knows how it might be undone!
@@ -93,8 +100,8 @@ namespace Server.Items
 
                 for (int i = 0; i < 5; i++) // Try 5 times
                 {
-                    int x = Utility.Random(Destination.X, Destination.Width);
-                    int y = Utility.Random(Destination.Y, Destination.Height);
+                    int x = Utility.Random(this.Destination.X, this.Destination.Width);
+                    int y = Utility.Random(this.Destination.Y, this.Destination.Height);
                     int z = map.GetAverageZ(x, y);
 
                     Point3D dest = new Point3D(x, y, z);
@@ -122,9 +129,9 @@ namespace Server.Items
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_Active);
-            writer.Write(m_Word);
-            writer.Write(m_Destination);
+            writer.Write((bool)this.m_Active);
+            writer.Write((string)this.m_Word);
+            writer.Write((Rectangle2D)this.m_Destination);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -133,9 +140,9 @@ namespace Server.Items
 
             int version = reader.ReadEncodedInt();
 
-            m_Active = reader.ReadBool();
-            m_Word = reader.ReadString();
-            m_Destination = reader.ReadRect2D();
+            this.m_Active = reader.ReadBool();
+            this.m_Word = reader.ReadString();
+            this.m_Destination = reader.ReadRect2D();
         }
     }
 }

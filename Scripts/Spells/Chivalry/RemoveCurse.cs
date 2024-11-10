@@ -1,10 +1,10 @@
+using System;
 using Server.Items;
 using Server.Spells.First;
 using Server.Spells.Fourth;
-using Server.Spells.Mysticism;
 using Server.Spells.Necromancy;
 using Server.Targeting;
-using System;
+using Server.Spells.Mysticism;
 
 namespace Server.Spells.Chivalry
 {
@@ -19,16 +19,42 @@ namespace Server.Spells.Chivalry
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.0);
-
-        public override double RequiredSkill => 5.0;
-
-        public override int RequiredMana => 20;
-
-        public override int RequiredTithing => 10;
-
-        public override int MantraNumber => 1060726; // Extermo Vomica
-
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 5.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 20;
+            }
+        }
+        public override int RequiredTithing
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int MantraNumber
+        {
+            get
+            {
+                return 1060726;
+            }
+        }// Extermo Vomica
+        
         public override bool CheckDisturb(DisturbType type, bool firstCircle, bool resistable)
         {
             return true;
@@ -36,14 +62,14 @@ namespace Server.Spells.Chivalry
 
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(Mobile m)
         {
-            if (CheckBSequence(m))
+            if (this.CheckBSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
                 /* Attempts to remove all Curse effects from Target.
                 * Curses include Mage spells such as Clumsy, Weaken, Feeblemind and Paralyze
@@ -53,12 +79,12 @@ namespace Server.Spells.Chivalry
 
                 int chance = 0;
 
-                if (Caster.Karma < -5000)
+                if (this.Caster.Karma < -5000)
                     chance = 0;
-                else if (Caster.Karma < 0)
-                    chance = (int)Math.Sqrt(20000 + Caster.Karma) - 122;
-                else if (Caster.Karma < 5625)
-                    chance = (int)Math.Sqrt(Caster.Karma) + 25;
+                else if (this.Caster.Karma < 0)
+                    chance = (int)Math.Sqrt(20000 + this.Caster.Karma) - 122;
+                else if (this.Caster.Karma < 5625)
+                    chance = (int)Math.Sqrt(this.Caster.Karma) + 25;
                 else
                     chance = 100;
 
@@ -68,8 +94,8 @@ namespace Server.Spells.Chivalry
                     m.PlaySound(0x1F7);
                     m.FixedParticles(0x3709, 1, 30, 9963, 13, 3, EffectLayer.Head);
 
-                    IEntity from = new Entity(Serial.Zero, new Point3D(m.X, m.Y, m.Z - 10), Caster.Map);
-                    IEntity to = new Entity(Serial.Zero, new Point3D(m.X, m.Y, m.Z + 50), Caster.Map);
+                    IEntity from = new Entity(Serial.Zero, new Point3D(m.X, m.Y, m.Z - 10), this.Caster.Map);
+                    IEntity to = new Entity(Serial.Zero, new Point3D(m.X, m.Y, m.Z + 50), this.Caster.Map);
                     Effects.SendMovingParticles(from, to, 0x2255, 1, 0, false, false, 13, 3, 9501, 1, 0, EffectLayer.Head, 0x100);
 
                     m.Paralyzed = false;
@@ -83,7 +109,10 @@ namespace Server.Spells.Chivalry
                     FeeblemindSpell.RemoveEffects(m);
                     ClumsySpell.RemoveEffects(m);
 
-                    BloodOathSpell.RemoveCurse(m);
+                    if (Core.ML)
+                    {
+                        BloodOathSpell.RemoveCurse(m);
+                    }
 
                     MindRotSpell.ClearMindRotScalar(m);
                     SpellPlagueSpell.RemoveFromList(m);
@@ -96,27 +125,27 @@ namespace Server.Spells.Chivalry
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTarget : Target
         {
             private readonly RemoveCurseSpell m_Owner;
             public InternalTarget(RemoveCurseSpell owner)
-                : base(10, false, TargetFlags.Beneficial)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Beneficial)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is Mobile)
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

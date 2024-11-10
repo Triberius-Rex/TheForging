@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     public class JackOLanternHelm : BaseArmor
     {
-        public override int LabelNumber => 1125986;  // jack o' lantern helm
-        public override bool IsArtifact => true;
+        public override int LabelNumber { get { return 1125986; } } // jack o' lantern helm
+        public override bool IsArtifact { get { return true; } }
 
         [Constructable]
         public JackOLanternHelm()
@@ -14,17 +16,23 @@ namespace Server.Items
             Light = LightType.Circle300;
         }
 
-        public override int BasePhysicalResistance => 12;
-        public override int BaseFireResistance => 14;
-        public override int BaseColdResistance => 4;
-        public override int BasePoisonResistance => 8;
-        public override int BaseEnergyResistance => 10;
+        public override int BasePhysicalResistance { get { return 12; } }
+        public override int BaseFireResistance { get { return 14; } }
+        public override int BaseColdResistance { get { return 4; } }
+        public override int BasePoisonResistance { get { return 8; } }
+        public override int BaseEnergyResistance { get { return 10; } }
 
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
-        public override int StrReq => 10;
+        public override int InitMinHits { get { return 255; } }
+        public override int InitMaxHits { get { return 255; } }
+        public override int AosStrReq { get { return 10; } }
 
-        public override ArmorMaterialType MaterialType => ArmorMaterialType.Plate;
+        public override ArmorMaterialType MaterialType
+        {
+            get
+            {
+                return ArmorMaterialType.Plate;
+            }
+        }
 
         public JackOLanternHelm(Serial serial)
             : base(serial)
@@ -34,7 +42,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

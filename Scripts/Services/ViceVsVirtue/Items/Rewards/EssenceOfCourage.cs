@@ -1,8 +1,14 @@
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Mobiles;
+using Server.Items;
+
 namespace Server.Engines.VvV
 {
     public class EssenceOfCourage : Item
     {
-        public override int LabelNumber => 1155554;  // Essence of Courage
+        public override int LabelNumber { get { return 1155554; } } // Essence of Courage
 
         [Constructable]
         public EssenceOfCourage()

@@ -6,7 +6,7 @@ namespace Server.Commands
     {
         public static void Initialize()
         {
-            CommandSystem.Register("TimeStamp", AccessLevel.Player, CheckTime_OnCommand);
+            CommandSystem.Register("TimeStamp", AccessLevel.Player, new CommandEventHandler(CheckTime_OnCommand));
         }
 
         [Usage("TimeStamp")]
@@ -15,7 +15,7 @@ namespace Server.Commands
         {
             Mobile m = e.Mobile;
             DateTime now = DateTime.UtcNow;
-            m.SendMessage("The Current Date And Time Is " + now + "(EST)");
+            m.SendMessage("The Current Date And Time Is " + now + "(EST)");         
         }
     }
 }

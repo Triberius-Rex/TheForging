@@ -1,8 +1,12 @@
+using System;
+using Server.Items;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     public class GoldFoil : Item
     {
-        public override int LabelNumber => 1124032;  // foil sheet
+        public override int LabelNumber { get { return 1124032; } } // foil sheet
 
         [Constructable]
         public GoldFoil() : this(1)
@@ -28,7 +32,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

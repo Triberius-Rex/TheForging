@@ -1,14 +1,15 @@
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Server.Items
 {
     public class FellowshipDonationBox : BaseContainer
     {
-        public override int LabelNumber => 1159042;  // Fellowship Donation Box
+        public override int LabelNumber { get { return 1159042; } } // Fellowship Donation Box
 
-        public override int DefaultGumpID => 0x10C;
+        public override int DefaultGumpID { get { return 0x10C; } }
 
         public static string FilePath = Path.Combine("Saves/Misc", "FellowshipDonationBox.bin");
         private static readonly Dictionary<Mobile, int> Donations = new Dictionary<Mobile, int>();
@@ -23,7 +24,7 @@ namespace Server.Items
         public static FellowshipDonationBox InstanceFel { get; set; }
 
         [Constructable]
-        public FellowshipDonationBox()
+        public FellowshipDonationBox() 
             : base(0x2DE9)
         {
             Hue = 1191;
@@ -67,14 +68,15 @@ namespace Server.Items
             else
             {
                 Donations.Add(from, amount);
-            }
+            }            
 
-            from.SendLocalizedMessage(1159032, string.Format("{0}", Donations[from].ToString())); // The Fellowship thanks you for your donation. You have donated ~1_val~ worth of goods!
+            from.SendMessage(1159032, string.Format("{0}", Donations[from].ToString())); // The Fellowship thanks you for your donation. You have donated ~1_val~ worth of goods!
 
             if (Donations[from] >= 450000000)
             {
                 from.SendLocalizedMessage(1152339, string.Format("{0}", Donations[from].ToString())); // A reward of ~1_ITEM~ has been placed in your backpack.
                 from.AddToBackpack(new FellowshipCoin());
+                Donations[from] -= 450000000;
             }
 
             item.Delete();
@@ -85,7 +87,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -110,7 +112,7 @@ namespace Server.Items
                 FilePath,
                 writer =>
                 {
-                    writer.Write(0);
+                    writer.Write((int)0);
 
                     writer.Write(Donations.Count);
 

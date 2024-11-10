@@ -1,8 +1,8 @@
-using Server.Accounting;
-using Server.Network;
 using System;
 using System.Collections;
 using System.Text;
+using Server.Accounting;
+using Server.Network;
 
 namespace Server.RemoteAdmin
 {
@@ -18,10 +18,10 @@ namespace Server.RemoteAdmin
 
         public static void Configure()
         {
-            PacketHandlers.Register(0xF1, 0, false, OnReceive);
+            PacketHandlers.Register(0xF1, 0, false, new OnPacketReceive(OnReceive));
 
-            Core.MultiConsoleOut.Add(new EventTextWriter(OnConsoleChar, OnConsoleLine, OnConsoleString));
-            Timer.DelayCall(TimeSpan.FromMinutes(2.5), TimeSpan.FromMinutes(2.5), CleanUp);
+			Core.MultiConsoleOut.Add(new EventTextWriter(new EventTextWriter.OnConsoleChar(OnConsoleChar), new EventTextWriter.OnConsoleLine(OnConsoleLine), new EventTextWriter.OnConsoleStr(OnConsoleString)));
+			Timer.DelayCall(TimeSpan.FromMinutes(2.5), TimeSpan.FromMinutes(2.5), new TimerCallback(CleanUp));
         }
 
         public static void OnConsoleString(string str)
@@ -29,7 +29,7 @@ namespace Server.RemoteAdmin
             string outStr;
             if (m_NewLine)
             {
-                outStr = string.Format("[{0}]: {1}", DateTime.UtcNow.ToString(DateFormat), str);
+                outStr = String.Format("[{0}]: {1}", DateTime.UtcNow.ToString(DateFormat), str);
                 m_NewLine = false;
             }
             else
@@ -48,7 +48,7 @@ namespace Server.RemoteAdmin
             if (m_NewLine)
             {
                 string outStr;
-                outStr = string.Format("[{0}]: {1}", DateTime.UtcNow.ToString(DateFormat), ch);
+                outStr = String.Format("[{0}]: {1}", DateTime.UtcNow.ToString(DateFormat), ch);
 
                 m_ConsoleData.Append(outStr);
                 SendToAll(outStr);
@@ -68,9 +68,9 @@ namespace Server.RemoteAdmin
         {
             string outStr;
             if (m_NewLine)
-                outStr = string.Format("[{0}]: {1}{2}", DateTime.UtcNow.ToString(DateFormat), line, Console.Out.NewLine);
+                outStr = String.Format("[{0}]: {1}{2}", DateTime.UtcNow.ToString(DateFormat), line, Console.Out.NewLine);
             else
-                outStr = string.Format("{0}{1}", line, Console.Out.NewLine);
+                outStr = String.Format("{0}{1}", line, Console.Out.NewLine);
 
             m_ConsoleData.Append(outStr);
             RoughTrimConsoleData();
@@ -124,7 +124,7 @@ namespace Server.RemoteAdmin
             }
             else if (cmd == 0xFF)
             {
-                string statStr = string.Format(", Name={0}, Age={1}, Clients={2}, Items={3}, Chars={4}, Mem={5}K, Ver={6}", Misc.ServerList.ServerName, (int)(DateTime.UtcNow - Items.Clock.ServerStart).TotalHours, NetState.Instances.Count, World.Items.Count, World.Mobiles.Count, (int)(GC.GetTotalMemory(false) / 1024), ProtocolVersion);
+                string statStr = String.Format(", Name={0}, Age={1}, Clients={2}, Items={3}, Chars={4}, Mem={5}K, Ver={6}", Server.Misc.ServerList.ServerName, (int)(DateTime.UtcNow - Server.Items.Clock.ServerStart).TotalHours, NetState.Instances.Count, World.Items.Count, World.Mobiles.Count, (int)(System.GC.GetTotalMemory(false) / 1024), ProtocolVersion);
                 state.Send(new UOGInfo(statStr));
                 state.Dispose();
             }
@@ -144,13 +144,13 @@ namespace Server.RemoteAdmin
         {
             Timer.DelayCall(TimeSpan.FromSeconds(15.0), new TimerStateCallback(Disconnect), state);
         }
-
+		
         private static void Disconnect(object state)
         {
             m_Auth.Remove(state);
             ((NetState)state).Dispose();
         }
-
+		
         public static void Authenticate(NetState state, PacketReader pvSrc)
         {
             string user = pvSrc.ReadString(30);
@@ -178,7 +178,7 @@ namespace Server.RemoteAdmin
             else if (a.AccessLevel < AccessLevel.Administrator || a.Banned)
             {
                 Console.WriteLine("ADMIN: Account '{0}' does not have admin access. Connection Denied.", user);
-                state.Send(new Login(LoginResponse.NoAccess));
+                state.Send(new Login(LoginResponse.NoAccess)); 
                 DelayedDisconnect(state);
             }
             else
@@ -241,7 +241,7 @@ namespace Server.RemoteAdmin
             }
         }
     }
-
+	
     public class EventTextWriter : System.IO.TextWriter
     {
         public delegate void OnConsoleChar(char ch);
@@ -254,29 +254,35 @@ namespace Server.RemoteAdmin
 
         public EventTextWriter(OnConsoleChar onChar, OnConsoleLine onLine, OnConsoleStr onStr)
         {
-            m_OnChar = onChar;
-            m_OnLine = onLine;
-            m_OnStr = onStr;
+            this.m_OnChar = onChar;
+            this.m_OnLine = onLine;
+            this.m_OnStr = onStr;
         }
 
         public override void Write(char ch)
         {
-            if (m_OnChar != null)
-                m_OnChar(ch);
+            if (this.m_OnChar != null)
+                this.m_OnChar(ch);
         }
 
         public override void Write(string str)
         {
-            if (m_OnStr != null)
-                m_OnStr(str);
+            if (this.m_OnStr != null)
+                this.m_OnStr(str);
         }
 
         public override void WriteLine(string line)
         {
-            if (m_OnLine != null)
-                m_OnLine(line);
+            if (this.m_OnLine != null)
+                this.m_OnLine(line);
         }
 
-        public override Encoding Encoding => Encoding.ASCII;
+        public override System.Text.Encoding Encoding
+        {
+            get
+            {
+                return System.Text.Encoding.ASCII;
+            }
+        }
     }
 }

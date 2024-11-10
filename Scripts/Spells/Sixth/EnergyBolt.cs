@@ -1,5 +1,5 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
 
 namespace Server.Spells.Sixth
 {
@@ -16,8 +16,20 @@ namespace Server.Spells.Sixth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Sixth;
-        public override bool DelayedDamage => true;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Sixth;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -36,7 +48,7 @@ namespace Server.Spells.Sixth
 
                 SpellHelper.Turn(Caster, m);
 
-                if (SpellHelper.CheckReflect(this, ref source, ref target))
+                if (SpellHelper.CheckReflect((int)Circle, ref source, ref target))
                 {
                     Timer.DelayCall(TimeSpan.FromSeconds(.5), () =>
                     {
@@ -45,7 +57,27 @@ namespace Server.Spells.Sixth
                     });
                 }
 
-                double damage = GetNewAosDamage(40, 1, 5, m);
+                double damage = 0;
+
+                if (Core.AOS)
+                {
+                    damage = GetNewAosDamage(40, 1, 5, m);
+                }
+                else if (m is Mobile)
+                {
+                    Mobile mob = m as Mobile;
+                    damage = Utility.Random(24, 18);
+
+                    if (CheckResisted(mob))
+                    {
+                        damage *= 0.75;
+
+                        mob.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                    }
+
+                    // Scale damage based on evalint and resist
+                    damage *= GetDamageScalar(mob);
+                }
 
                 // Do the effects
                 Caster.MovingParticles(m, 0x379F, 7, 0, false, true, 3043, 4043, 0x211);
@@ -65,7 +97,7 @@ namespace Server.Spells.Sixth
         {
             private readonly EnergyBoltSpell m_Owner;
             public InternalTarget(EnergyBoltSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

@@ -1,5 +1,9 @@
-using Server.ContextMenus;
+using System;
+using Server;
+using Server.Items;
 using Server.Gumps;
+using Server.ContextMenus;
+using Server.Network;
 using System.Collections.Generic;
 
 namespace Server.Mobiles
@@ -29,8 +33,8 @@ namespace Server.Mobiles
 
         private class ResurrectEntry : ContextMenuEntry
         {
-            private readonly Mobile m_Mobile;
-            private readonly ShrineHealer m_Vendor;
+            private Mobile m_Mobile;
+            private ShrineHealer m_Vendor;
 
             public ResurrectEntry(Mobile mobile, ShrineHealer vendor)
                 : base(6195, 2)
@@ -49,7 +53,7 @@ namespace Server.Mobiles
 
         private class LockKarmaEntry : ContextMenuEntry
         {
-            private readonly PlayerMobile m_Mobile;
+            private PlayerMobile m_Mobile;
 
             public LockKarmaEntry(PlayerMobile mobile)
                 : base(mobile.KarmaLocked ? 6197 : 6196, 2)
@@ -70,7 +74,7 @@ namespace Server.Mobiles
 
         private class TitheEntry : ContextMenuEntry
         {
-            private readonly Mobile m_Mobile;
+            private Mobile m_Mobile;
 
             public TitheEntry(Mobile mobile)
                 : base(6198, 2)
@@ -82,8 +86,8 @@ namespace Server.Mobiles
 
             public override void OnClick()
             {
-                if (m_Mobile.CheckAlive())
-                    m_Mobile.SendGump(new TithingGump(m_Mobile, 0));
+                if (this.m_Mobile.CheckAlive())
+                    this.m_Mobile.SendGump(new TithingGump(this.m_Mobile, 0));
             }
         }
 

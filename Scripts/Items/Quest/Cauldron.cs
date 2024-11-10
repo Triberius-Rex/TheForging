@@ -1,9 +1,11 @@
+using System;
+
 namespace Server.Items
 {
     public class Cauldron : Item
     {
-        public override int LabelNumber => 1153777;  // a cauldron
-
+		public override int LabelNumber {get {return 1153777;} } // a cauldron
+		
         [Constructable]
         public Cauldron()
             : base(0x9ED)
@@ -19,7 +21,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

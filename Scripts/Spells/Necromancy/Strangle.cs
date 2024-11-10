@@ -1,7 +1,7 @@
-using Server.Spells.SkillMasteries;
-using Server.Targeting;
 using System;
 using System.Collections;
+using Server.Targeting;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells.Necromancy
 {
@@ -19,9 +19,27 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.25);
-        public override double RequiredSkill => 65.0;
-        public override int RequiredMana => 29;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.25);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 65.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 29;
+            }
+        }
 
         public static bool UnderEffects(Mobile m)
         {
@@ -46,14 +64,14 @@ namespace Server.Spells.Necromancy
 
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(Mobile m)
         {
-            if (CheckHSequence(m))
+            if (this.CheckHSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
                 ApplyEffects(m);
                 ConduitSpell.CheckAffected(Caster, m, ApplyEffects);
@@ -64,7 +82,7 @@ namespace Server.Spells.Necromancy
 
         public void ApplyEffects(Mobile m, double strength = 1.0)
         {
-            SpellHelper.CheckReflect(this, Caster, ref m);
+            //SpellHelper.CheckReflect( (int)this.Circle, Caster, ref m );	//Irrelevent after AoS
 
             /* Temporarily chokes off the air suply of the target with poisonous fumes.
              * The target is inflicted with poison damage over time.
@@ -87,7 +105,7 @@ namespace Server.Spells.Necromancy
             m.FixedParticles(0x36CB, 1, 9, 9911, 67, 5, EffectLayer.Head);
             m.FixedParticles(0x374A, 1, 17, 9502, 1108, 4, (EffectLayer)255);
 
-            if (Mysticism.StoneFormSpell.CheckImmunity(m))
+            if (Server.Spells.Mysticism.StoneFormSpell.CheckImmunity(m))
             {
                 Caster.SendLocalizedMessage(1095250); // Your target resists strangle.
             }
@@ -104,7 +122,7 @@ namespace Server.Spells.Necromancy
                     spiritlevel = 4;
                 int d_MinDamage = (int)(4.0 * strength);
                 int d_MaxDamage = (int)(((spiritlevel + 1) * 3) * strength);
-                string args = string.Format("{0}\t{1}", d_MinDamage, d_MaxDamage);
+                string args = String.Format("{0}\t{1}", d_MinDamage, d_MaxDamage);
 
                 int i_Count = (int)spiritlevel;
                 int i_MaxCount = i_Count;
@@ -142,13 +160,13 @@ namespace Server.Spells.Necromancy
 
         private class InternalTimer : Timer
         {
-            private readonly Mobile m_Target, m_From;
-            private readonly double m_MinBaseDamage, m_MaxBaseDamage;
+            private Mobile m_Target, m_From;
+            private double m_MinBaseDamage, m_MaxBaseDamage;
 
             private DateTime m_NextHit;
             private int m_HitDelay;
-            private int m_Count;
-            private readonly int m_MaxCount;
+
+            private int m_Count, m_MaxCount;
 
             public InternalTimer(Mobile target, Mobile from, double strength)
                 : base(TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1))
@@ -236,20 +254,20 @@ namespace Server.Spells.Necromancy
         {
             private readonly StrangleSpell m_Owner;
             public InternalTarget(StrangleSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is Mobile)
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -10,9 +10,9 @@ namespace Server.Mobiles
         public Farmer()
             : base("the farmer")
         {
-            SetSkill(SkillName.Lumberjacking, 36.0, 68.0);
-            SetSkill(SkillName.TasteID, 36.0, 68.0);
-            SetSkill(SkillName.Cooking, 36.0, 68.0);
+            this.SetSkill(SkillName.Lumberjacking, 36.0, 68.0);
+            this.SetSkill(SkillName.TasteID, 36.0, 68.0);
+            this.SetSkill(SkillName.Cooking, 36.0, 68.0);
         }
 
         public Farmer(Serial serial)
@@ -20,11 +20,23 @@ namespace Server.Mobiles
         {
         }
 
-        public override VendorShoeType ShoeType => VendorShoeType.ThighBoots;
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        public override VendorShoeType ShoeType
+        {
+            get
+            {
+                return VendorShoeType.ThighBoots;
+            }
+        }
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return this.m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
-            m_SBInfos.Add(new SBFarmer());
+            this.m_SBInfos.Add(new SBFarmer());
         }
 
         public override int GetShoeHue()
@@ -36,14 +48,14 @@ namespace Server.Mobiles
         {
             base.InitOutfit();
 
-            SetWearable(new WideBrimHat(), Utility.RandomNeutralHue(), 1);
+            this.AddItem(new Server.Items.WideBrimHat(Utility.RandomNeutralHue()));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,16 +1,27 @@
-﻿namespace Server.Items
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Server.Items
 {
-    [Flipable(0x2D71, 0x2D72)]
+    [FlipableAttribute(0x2D71, 0x2D72)]
     public class OrnateElvenTapestry : Item
     {
         [Constructable]
         public OrnateElvenTapestry()
             : base(0x2D72)
         {
-            Weight = 1;
+            this.Weight = 1;
         }
 
-        public override int LabelNumber => 1031633;// ornate elven tapestry
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1031633;
+            }
+        }// ornate elven tapestry
 
         public OrnateElvenTapestry(Serial serial)
             : base(serial)
@@ -21,7 +32,7 @@
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

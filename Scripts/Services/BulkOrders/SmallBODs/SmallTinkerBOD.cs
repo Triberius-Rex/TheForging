@@ -1,14 +1,14 @@
-using Server.Engines.Craft;
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Engines.Craft;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Engines.BulkOrders
 {
     public class SmallTinkerBOD : SmallBOD
     {
-        public override BODType BODType => BODType.Tinkering;
+        public override BODType BODType { get { return BODType.Tinkering; } }
 
         private GemType _GemType;
 
@@ -18,10 +18,10 @@ namespace Server.Engines.BulkOrders
             get { return _GemType; }
             set
             {
-                if (Type != null && Type.IsSubclassOf(typeof(BaseJewel)))
+                if (this.Type != null && this.Type.IsSubclassOf(typeof(BaseJewel)))
                 {
                     _GemType = value;
-                    AssignGemNumber(Type);
+                    AssignGemNumber(this.Type);
 
                     InvalidateProperties();
                 }
@@ -197,7 +197,7 @@ namespace Server.Engines.BulkOrders
                         material = BulkMaterialType.None;
                     }
 
-                    SmallTinkerBOD bod = new SmallTinkerBOD(entry, material, amountMax, reqExceptional);
+                    var bod = new SmallTinkerBOD(entry, material, amountMax, reqExceptional);
 
                     if (entry.Type.IsSubclassOf(typeof(BaseJewel)))
                     {
@@ -216,7 +216,7 @@ namespace Server.Engines.BulkOrders
             return _NonMaterials.Any(x => x == t || t.IsSubclassOf(x));
         }
 
-        private static readonly Type[] _NonMaterials =
+        private static Type[] _NonMaterials =
         {
             typeof(BaseTool), typeof(SmithyHammer), typeof(BaseJewel)
         };
@@ -253,7 +253,7 @@ namespace Server.Engines.BulkOrders
         /* Tinkering needs conditional check for combining:
         * SpoonLeft/SpoonRight, ForkLeft/ForkRight, KnifeLeft/KnifeRight, ClockRight/ClockLeft
         */
-        private static readonly Type[][] _TinkerTypeTable =
+        private static Type[][] _TinkerTypeTable =
         {
             new Type[] { typeof(Spoon), typeof(SpoonRight), typeof(SpoonLeft) },
             new Type[] { typeof(Fork), typeof(ForkRight), typeof(ForkLeft) },
@@ -366,14 +366,14 @@ namespace Server.Engines.BulkOrders
                 loc = 1044203;
             }
 
-            Number = loc + offset;
+            this.Number = loc + offset;
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(2); // version
+            writer.Write((int)2); // version
 
             writer.Write((int)GemType);
         }
@@ -389,7 +389,7 @@ namespace Server.Engines.BulkOrders
                 case 2:
                     GemType = (GemType)reader.ReadInt();
                     break;
-                case 1:
+                case 1: 
                     break;
             }
 
@@ -400,9 +400,9 @@ namespace Server.Engines.BulkOrders
                     Material = BulkMaterialType.None;
                 }
 
-                if (Type.IsSubclassOf(typeof(BaseJewel)))
+                if (this.Type.IsSubclassOf(typeof(BaseJewel)))
                 {
-                    AssignGemType(Type);
+                    AssignGemType(this.Type);
                 }
             }
         }

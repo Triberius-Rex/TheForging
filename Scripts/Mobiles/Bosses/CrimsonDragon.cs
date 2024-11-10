@@ -1,12 +1,12 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("a crimson dragon corpse")]
     public class CrimsonDragon : BasePeerless
     {
-        public override bool GiveMLSpecial => false;
+        public override bool GiveMLSpecial { get { return false; } }
 
         private DateTime m_NextTerror;
         [Constructable]
@@ -43,8 +43,13 @@ namespace Server.Mobiles
             SetSkill(SkillName.Anatomy, 118.7, 125.0);
             SetSkill(SkillName.DetectHidden, 120.0);
 
+            // ingredients
+            PackResources(8);
+
             Fame = 20000;
             Karma = -20000;
+
+            VirtualArmor = 70;
 
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
@@ -54,30 +59,116 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool Unprovokable => true;
-        public override bool BardImmune => true;
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool Unprovokable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BardImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-        public override bool ReacquireOnMovement => true;
-        public override bool AutoDispel => true;
-        public override bool Uncalmable => true;
-        public override int Meat => 19;
-        public override int Hides => 40;
-        public override HideType HideType => HideType.Barbed;
-        public override int Scales => 12;
-        public override ScaleType ScaleType => (ScaleType)Utility.Random(4);
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override Poison PoisonImmune => Poison.Lethal;
-        public override Poison HitPoison => Utility.RandomBool() ? Poison.Deadly : Poison.Lethal;
-        public override int TreasureMapLevel => 5;
-
+        public override bool ReacquireOnMovement
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool Uncalmable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 19;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 40;
+            }
+        }
+        public override HideType HideType
+        {
+            get
+            {
+                return HideType.Barbed;
+            }
+        }
+        public override int Scales
+        {
+            get
+            {
+                return 12;
+            }
+        }
+        public override ScaleType ScaleType
+        {
+            get
+            {
+                return (ScaleType)Utility.Random(4);
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
+        public override Poison HitPoison
+        {
+            get
+            {
+                return Utility.RandomBool() ? Poison.Deadly : Poison.Lethal;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.SuperBoss, 8);
+            AddLoot(LootPack.AosSuperBoss, 8);
             AddLoot(LootPack.Gems, 12);
-            AddLoot(LootPack.PeerlessResource, 8);
-            AddLoot(LootPack.LootItem<ParrotItem>(60.0));
-            AddLoot(LootPack.LootItem<CrimsonCincture>(2.5));
         }
 
         public override int GetIdleSound()
@@ -130,7 +221,7 @@ namespace Server.Mobiles
                         Combatant = null;
                         pet.ControlMaster = null;
                         pet.Controlled = false;
-                        attacker.Emote(string.Format("* {0} decided to go wild *", attacker.Name));
+                        attacker.Emote(String.Format("* {0} decided to go wild *", attacker.Name));
                     }
 
                     if (pet.ControlMaster != null && 0.1 > Utility.RandomDouble())
@@ -138,7 +229,7 @@ namespace Server.Mobiles
                         Combatant = null;
                         pet.Combatant = pet.ControlMaster;
                         Combatant = null;
-                        attacker.Emote(string.Format("* {0} is being angered *", attacker.Name));
+                        attacker.Emote(String.Format("* {0} is being angered *", attacker.Name));
                     }
                 }
             }
@@ -149,7 +240,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -182,6 +273,17 @@ namespace Server.Mobiles
             }
 
             return base.OnBeforeDeath();
+        }
+
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+
+            if (Utility.RandomDouble() < 0.6)
+                c.DropItem(new ParrotItem());
+
+            if (Utility.RandomDouble() < 0.025)
+                c.DropItem(new CrimsonCincture());
         }
 
         private void Terrorize(object o)

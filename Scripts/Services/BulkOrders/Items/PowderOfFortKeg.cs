@@ -1,3 +1,8 @@
+using System;
+using Server.Mobiles;
+using Server.Items;
+using Server.Engines.Harvest;
+
 namespace Server.Items
 {
     public class PowderOfFortKeg : Item
@@ -7,7 +12,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public int Charges { get { return _Charges; } set { _Charges = value; InvalidateProperties(); } }
 
-        public override int LabelNumber => 1157221;  // A specially lined keg for powder of fortification.
+        public override int LabelNumber { get { return 1157221; } } // A specially lined keg for powder of fortification.
 
         [Constructable]
         public PowderOfFortKeg()
@@ -22,14 +27,14 @@ namespace Server.Items
             _Charges = uses;
 
             Hue = 2419;
-            Weight = 15.0;
+            this.Weight = 15.0;
         }
 
         public override bool OnDragDrop(Mobile m, Item dropped)
         {
             if (dropped is PowderOfTemperament)
             {
-                PowderOfTemperament powder = dropped as PowderOfTemperament;
+                var powder = dropped as PowderOfTemperament;
 
                 if (_Charges < 250)
                 {
@@ -130,7 +135,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
             writer.Write(_Charges);
         }

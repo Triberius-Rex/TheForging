@@ -1,10 +1,11 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
 {
     public class HildebrandtDragonRugAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new HildebrandtDragonRugDeed();
+        public override BaseAddonDeed Deed { get { return new HildebrandtDragonRugDeed(); } }
 
         [Constructable]
         public HildebrandtDragonRugAddon()
@@ -27,9 +28,9 @@ namespace Server.Items
             }
         }
 
-        private static readonly int[,] m_SouthInfo = new int[,]
+        private static int[,] m_SouthInfo = new int[,] 
         {
-              {40909, -2, -2, 0}, {40908, -2, -1, 0}, {40898, -1, -1, 0}// 1	2	3	
+			  {40909, -2, -2, 0}, {40908, -2, -1, 0}, {40898, -1, -1, 0}// 1	2	3	
 			, {40897, -1, 0, 0}, {40896, -1, 1, 0}, {40895, -1, 2, 0}// 4	5	6	
 			, {40887, 1, 0, 0}, {40886, 0, 1, 0}, {40885, 1, 1, 0}// 7	8	9	
 			, {40904, 2, -2, 0}, {40894, 1, 2, 0}, {40888, 0, 0, 0}// 10	11	12	
@@ -40,9 +41,9 @@ namespace Server.Items
 			, {40907, -2, 0, 0}// 25	
 		};
 
-        private static readonly int[,] m_EastInfo = new int[,]
+        private static int[,] m_EastInfo = new int[,] 
         {
-              {40926, 2, 1, 0}, {40918, 0, 2, 0}, {40919, 1, 2, 0}// 1	2	3	
+			  {40926, 2, 1, 0}, {40918, 0, 2, 0}, {40919, 1, 2, 0}// 1	2	3	
 			, {40920, -1, 2, 0}, {40910, 1, 1, 0}, {40911, 0, 1, 0}// 4	5	6	
 			, {40930, -2, 2, 0}, {40921, -1, 1, 0}, {40931, -2, 1, 0}// 7	8	9	
 			, {40925, 2, 2, 0}, {40914, 1, -1, 0}, {40915, 0, -1, 0}// 10	11	12	
@@ -62,7 +63,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -75,13 +76,16 @@ namespace Server.Items
 
     public class HildebrandtDragonRugDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new HildebrandtDragonRugAddon(m_South);
-        public override int LabelNumber => 1157889;  // Hildebrandt Dragon Rug
+        public override BaseAddon Addon { get { return new HildebrandtDragonRugAddon(m_South); } }
+        public override int LabelNumber { get { return 1157889; } } // Hildebrandt Dragon Rug
 
         private bool m_South;
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool South => m_South;
+        public bool South
+        {
+            get { return m_South; }
+        }
 
         public void GetOptions(RewardOptionList list)
         {
@@ -122,7 +126,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

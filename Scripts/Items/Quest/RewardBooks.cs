@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Items
@@ -62,9 +64,9 @@ namespace Server.Items
             get { return _BookType; }
             set
             {
-                RewardBookType old = _BookType;
+                var old = _BookType;
 
-                if (old != value && value >= 0 && (int)value < 36)
+                if (old != value && (int)value >= 0 && (int)value < 36)
                 {
                     _BookType = value;
 
@@ -103,9 +105,9 @@ namespace Server.Items
 
         public static RewardBookType RandomType()
         {
-            System.Collections.Generic.List<string[]> list = BookContents.Where(strList => !string.IsNullOrEmpty(strList[2])).ToList();
+            var list = BookContents.Where(strList => !String.IsNullOrEmpty(strList[2])).ToList();
 
-            int ran = Utility.Random(list.Count);
+            var ran = Utility.Random(list.Count);
             ColUtility.Free(list);
 
             return (RewardBookType)ran;
@@ -113,7 +115,7 @@ namespace Server.Items
 
         public RewardBookEdition RandomEdition()
         {
-            double ran = Utility.RandomDouble();
+            var ran = Utility.RandomDouble();
 
             if (ran <= 0.01)
             {

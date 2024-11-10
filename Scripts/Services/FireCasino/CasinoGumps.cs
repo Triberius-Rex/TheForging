@@ -1,9 +1,13 @@
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Items;
+using Server.Mobiles;
+using Server.Gumps;
+using System.Globalization;
 using Server.Accounting;
 using Server.Engines.Points;
-using Server.Gumps;
-using Server.Mobiles;
 using Server.Network;
-using System.Globalization;
 
 namespace Server.Engines.ResortAndCasino
 {
@@ -17,7 +21,7 @@ namespace Server.Engines.ResortAndCasino
 
     public class PurchaseCasinoChipGump : Gump
     {
-        public int Yellow => C32216(0xFFFF00);
+        public int Yellow { get { return C32216(0xFFFF00); } }
         public Section Section { get; set; }
         public int Message { get; set; }
         public int Bought { get; set; }
@@ -42,7 +46,7 @@ namespace Server.Engines.ResortAndCasino
             long total = a == null ? 0 : (long)(a.TotalCurrency * Account.CurrencyThreshold);
             int chips = (int)PointsSystem.CasinoData.GetPoints(User);
 
-            switch (Section)
+            switch (this.Section)
             {
                 case Section.None:
                     int y = 50;
@@ -97,7 +101,7 @@ namespace Server.Engines.ResortAndCasino
 
             }
 
-            if (Section == Section.None)
+            if (this.Section == Section.None)
             {
                 AddButton(15, 195, 4005, 4007, 0, GumpButtonType.Reply, 0);
                 AddHtml(55, 193, 150, 16, Color("#FFFF00", "CLOSE"), false, false);
@@ -114,11 +118,11 @@ namespace Server.Engines.ResortAndCasino
             switch (info.ButtonID)
             {
                 case 1:
-                    Section = Section.Buying;
+                    this.Section = Section.Buying;
                     Refresh();
                     break;
                 case 2:
-                    Section = Section.Selling;
+                    this.Section = Section.Selling;
                     Refresh();
                     break;
                 case 3:
@@ -142,21 +146,21 @@ namespace Server.Engines.ResortAndCasino
                             }
                             else
                             {
-                                Section = Section.Error;
+                                this.Section = Section.Error;
                                 Message = 1153178; // Your bank does not have sufficient gold
                                 Refresh();
                             }
                         }
                         else
                         {
-                            Section = Section.Error;
+                            this.Section = Section.Error;
                             Message = 1153187; // You entered an invalid value
                             Refresh();
                         }
                     }
                     else
                     {
-                        Section = Section.Error;
+                        this.Section = Section.Error;
                         Message = 1153187; // You entered an invalid value
                         Refresh();
                     }
@@ -183,26 +187,26 @@ namespace Server.Engines.ResortAndCasino
                             }
                             else
                             {
-                                Section = Section.Error;
+                                this.Section = Section.Error;
                                 Message = 1153180; // You do not have enough casino chips
                                 Refresh();
                             }
                         }
                         else
                         {
-                            Section = Section.None;
+                            this.Section = Section.None;
                             Refresh();
                         }
                     }
                     else
                     {
-                        Section = Section.Error;
+                        this.Section = Section.Error;
                         Message = 1153187; // You entered an invalid value
                         Refresh();
                     }
                     break;
                 case 5:
-                    Section = Section.None;
+                    this.Section = Section.None;
                     Refresh();
                     break;
 
@@ -214,7 +218,7 @@ namespace Server.Engines.ResortAndCasino
             Entries.Clear();
             Entries.TrimExcess();
             AddGumpLayout();
-            User.CloseGump(GetType());
+            User.CloseGump(this.GetType());
             User.SendGump(this, false);
         }
 
@@ -247,21 +251,21 @@ namespace Server.Engines.ResortAndCasino
 
         protected string Color(string color, string str)
         {
-            return string.Format("<basefont color={0}>{1}", color, str);
+            return String.Format("<basefont color={0}>{1}", color, str);
         }
 
         protected string ColorAndCenter(string color, string str)
         {
-            return string.Format("<basefont color={0}><center>{1}</center>", color, str);
+            return String.Format("<basefont color={0}><center>{1}</center>", color, str);
         }
     }
 
     public class BaseCasinoGump : Gump
     {
-        public virtual int Title => 0;
+        public virtual int Title { get { return 0; } }
 
-        public int Yellow => C32216(Yellow32);
-        public int Yellow32 => 0xFFFF00;
+        public int Yellow { get { return C32216(Yellow32); } }
+        public int Yellow32 { get { return 0xFFFF00; } }
 
         public int Width { get; set; }
         public int Height { get; set; }
@@ -344,7 +348,7 @@ namespace Server.Engines.ResortAndCasino
             Entries.Clear();
             Entries.TrimExcess();
             AddGumpLayout();
-            User.CloseGump(GetType());
+            User.CloseGump(this.GetType());
             User.SendGump(this, false);
         }
 
@@ -377,22 +381,22 @@ namespace Server.Engines.ResortAndCasino
 
         protected string Color(string color, string str)
         {
-            return string.Format("<basefont color={0}>{1}", color, str);
+            return String.Format("<basefont color={0}>{1}", color, str);
         }
 
         protected string ColorAndCenter(string color, string str)
         {
-            return string.Format("<basefont color={0}><center>{1}</center>", color, str);
+            return String.Format("<basefont color={0}><center>{1}</center>", color, str);
         }
     }
 
     public class ChucklesLuckGump : BaseCasinoGump
     {
-        public override int Title => 1153368;  // CHUCKLES' LUCK
+        public override int Title { get { return 1153368; } } // CHUCKLES' LUCK
 
-        public ChucklesLuck Game => DiceGame as ChucklesLuck;
+        public ChucklesLuck Game { get { return DiceGame as ChucklesLuck; } }
 
-        private readonly int _DiceHue = 1931;
+        private int _DiceHue = 1931;
 
         public ChucklesLuckGump(PlayerMobile pm, ChucklesLuck game)
             : base(pm, 280, 330, game)
@@ -461,7 +465,7 @@ namespace Server.Engines.ResortAndCasino
                 int matches = Game.GetMatches();
                 int win = Game.CurrentBet * matches;
 
-                AddHtmlLocalized(20, 250, 240, 32, 1153384, string.Format("{0}\t{1}", matches.ToString(), win.ToString(CultureInfo.GetCultureInfo("en-US"))), Yellow, false, false); // The dice matched your number ~1_COUNT~ times. You win ~2_AMT~ chips!
+                AddHtmlLocalized(20, 250, 240, 32, 1153384, String.Format("{0}\t{1}", matches.ToString(), win.ToString(CultureInfo.GetCultureInfo("en-US"))), Yellow, false, false); // The dice matched your number ~1_COUNT~ times. You win ~2_AMT~ chips!
             }
 
             AddHtml(55, 293, 150, 16, Color("#FFFF00", Game.Winner ? "COLLECT" : "CONTINUE"), false, false);
@@ -504,7 +508,7 @@ namespace Server.Engines.ResortAndCasino
                             Refresh();
                         }
                     }
-
+                    
                     break;
                 case 7:
                     Game.Reset();
@@ -516,10 +520,10 @@ namespace Server.Engines.ResortAndCasino
 
     public class HiMiddleLowGump : BaseCasinoGump
     {
-        public override int Title => 1153392;  // HI-MIDDLE-LO
+        public override int Title { get { return 1153392; } } // HI-MIDDLE-LO
 
-        public HiMiddleLow Game => DiceGame as HiMiddleLow;
-        private readonly int _DiceHue = 1928;
+        public HiMiddleLow Game { get { return DiceGame as HiMiddleLow; } }
+        private int _DiceHue = 1928;
 
         public HiMiddleLowGump(PlayerMobile pm, HiMiddleLow game)
             : base(pm, 380, 380, game)
@@ -665,12 +669,12 @@ namespace Server.Engines.ResortAndCasino
 
     public class DiceRiderGump : BaseCasinoGump
     {
-        public override int Title => 1153613;  // DICE RIDER
+        public override int Title { get { return 1153613; } } // DICE RIDER
 
-        public DiceRider Game => DiceGame as DiceRider;
+        public DiceRider Game { get { return DiceGame as DiceRider; } }
 
         private int[] _DiceID = new int[5];
-        private readonly int _DiceHue = 1930;
+        private int _DiceHue = 1930;
 
         public DiceRiderGump(PlayerMobile pm, DiceRider game)
             : base(pm, 530, 430, game)
@@ -751,7 +755,7 @@ namespace Server.Engines.ResortAndCasino
         public override void BuildRolling()
         {
             AddHtmlLocalized(120, 325, 150, 16, 1153383, Yellow, false, false); // Amount of Bet:
-
+            
             AddHtml(275, 325, 100, 16, Color("#FFFF00", Game.Bet1.ToString(CultureInfo.GetCultureInfo("en-US"))), false, false);
             AddHtml(325, 325, 100, 16, Color("#FFFF00", Game.Bet2.ToString(CultureInfo.GetCultureInfo("en-US"))), false, false);
             AddHtml(375, 325, 100, 16, Color("#FFFF00", Game.Bet3.ToString(CultureInfo.GetCultureInfo("en-US"))), false, false);
@@ -815,7 +819,7 @@ namespace Server.Engines.ResortAndCasino
                 }
                 else
                 {
-                    AddHtmlLocalized(15, 375, Width - 30, 16, 1153640, string.Format("{0}\t#{1}", Game.WinningTotal, WinningHand()), Yellow, false, false); // You won ~1_AMT~ for making a ~2_HAND_NAME~!
+                    AddHtmlLocalized(15, 375, Width - 30, 16, 1153640, String.Format("{0}\t#{1}", Game.WinningTotal, WinningHand()), Yellow, false, false); // You won ~1_AMT~ for making a ~2_HAND_NAME~!
                 }
 
                 AddHtml(55, Height - 35, 150, 16, Color("#FFFF00", Game.Winner ? "COLLECT" : "CONTINUE"), false, false);

@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -8,43 +9,56 @@ namespace Server.Mobiles
         public TavaraSewel()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Title = "the Cursed";
+            this.Title = "the Cursed";
 
-            Hue = 0x8838;
-            Female = true;
-            Body = 0x191;
-            Name = "Tavara Sewel";
+            this.Hue = 0x8838;
+            this.Female = true;
+            this.Body = 0x191;
+            this.Name = "Tavara Sewel";
 
-			SetWearable(new Kilt(), 0x59C, 1);
-			SetWearable(new Sandals(), 0x599, 1);
-			SetWearable(new Kryss(), 0x96F);
-			SetWearable(new Buckler(), 0x96F);
-			SetWearable(new RingmailGloves(), 0x599, 1);
-			SetWearable(new FemalePlateChest(), 0x96F, 1);
+            this.AddItem(new Kilt(0x59C));
+            this.AddItem(new Sandals(0x599));
 
-            SetStr(111, 120);
-            SetDex(111, 120);
-            SetInt(111, 120);
+            Kryss kryss = new Kryss();
+            Buckler buckler = new Buckler();
+            RingmailGloves gloves = new RingmailGloves();
+            FemalePlateChest chest = new FemalePlateChest();
 
-            SetHits(180, 207);
-            SetStam(126, 150);
-            SetMana(0);
+            kryss.Hue = 0x96F;
+            kryss.Movable = false;
+            buckler.Hue = 0x96F;
+            buckler.Movable = false;
+            gloves.Hue = 0x599;
+            chest.Hue = 0x96F;
 
-            SetDamage(13, 16);
+            this.AddItem(kryss);
+            this.AddItem(buckler);
+            this.AddItem(gloves);
+            this.AddItem(chest);
 
-            SetResistance(ResistanceType.Physical, 25, 30);
-            SetResistance(ResistanceType.Fire, 25, 30);
-            SetResistance(ResistanceType.Cold, 50, 60);
-            SetResistance(ResistanceType.Poison, 25, 35);
-            SetResistance(ResistanceType.Energy, 25, 35);
+            this.SetStr(111, 120);
+            this.SetDex(111, 120);
+            this.SetInt(111, 120);
 
-            SetSkill(SkillName.Fencing, 90.1, 100.0);
-            SetSkill(SkillName.Tactics, 90.1, 100.0);
-            SetSkill(SkillName.MagicResist, 80.1, 90.0);
-            SetSkill(SkillName.Anatomy, 90.1, 100.0);
+            this.SetHits(180, 207);
+            this.SetStam(126, 150);
+            this.SetMana(0);
 
-            Fame = 5000;
-            Karma = -1000;
+            this.SetDamage(13, 16);
+
+            this.SetResistance(ResistanceType.Physical, 25, 30);
+            this.SetResistance(ResistanceType.Fire, 25, 30);
+            this.SetResistance(ResistanceType.Cold, 50, 60);
+            this.SetResistance(ResistanceType.Poison, 25, 35);
+            this.SetResistance(ResistanceType.Energy, 25, 35);
+
+            this.SetSkill(SkillName.Fencing, 90.1, 100.0);
+            this.SetSkill(SkillName.Tactics, 90.1, 100.0);
+            this.SetSkill(SkillName.MagicResist, 80.1, 90.0);
+            this.SetSkill(SkillName.Anatomy, 90.1, 100.0);
+
+            this.Fame = 5000;
+            this.Karma = -1000;
         }
 
         public TavaraSewel(Serial serial)
@@ -52,10 +66,34 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool ClickTitle => false;
-        public override bool ShowFameTitle => false;
-        public override bool DeleteCorpseOnDeath => true;
-        public override bool AlwaysMurderer => true;
+        public override bool ClickTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool DeleteCorpseOnDeath
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override int GetIdleSound()
         {
             return 0x27F;
@@ -79,15 +117,15 @@ namespace Server.Mobiles
         public override bool OnBeforeDeath()
         {
             Gold gold = new Gold(Utility.RandomMinMax(190, 230));
-            gold.MoveToWorld(Location, Map);
+            gold.MoveToWorld(this.Location, this.Map);
 
             if (Utility.Random(3) == 0)
             {
                 BaseBook journal = Loot.RandomTavarasJournal();
-                journal.MoveToWorld(Location, Map);
+                journal.MoveToWorld(this.Location, this.Map);
             }
 
-            Effects.SendLocationEffect(Location, Map, 0x376A, 10, 1);
+            Effects.SendLocationEffect(this.Location, this.Map, 0x376A, 10, 1);
             return true;
         }
 
@@ -95,7 +133,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

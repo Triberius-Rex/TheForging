@@ -1,86 +1,134 @@
-using Server.Engines.Craft;
 using System;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
-    [Flipable(0x2B67, 0x315E)]
+    [FlipableAttribute(0x2B67, 0x315E)]
     public class DarkwoodChest : WoodlandChest
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public DarkwoodChest()
             : base()
         {
-            Hue = 0x455;
-            SetHue = 0x494;
-
-            Attributes.BonusHits = 2;
-            Attributes.DefendChance = 5;
-
-            SetAttributes.ReflectPhysical = 25;
-            SetAttributes.BonusStr = 10;
-            SetAttributes.NightSight = 1;
-
-            SetSelfRepair = 3;
-            SetPhysicalBonus = 2;
-            SetFireBonus = 5;
-            SetColdBonus = 5;
-            SetPoisonBonus = 3;
-            SetEnergyBonus = 5;
+            this.Hue = 0x455;							
+            this.SetHue = 0x494;
+						
+            this.Attributes.BonusHits = 2;		
+            this.Attributes.DefendChance = 5;
+			
+            this.SetAttributes.ReflectPhysical = 25;
+            this.SetAttributes.BonusStr = 10;		
+            this.SetAttributes.NightSight = 1;		
+			
+            this.SetSelfRepair = 3;			
+            this.SetPhysicalBonus = 2;
+            this.SetFireBonus = 5;
+            this.SetColdBonus = 5;
+            this.SetPoisonBonus = 3;
+            this.SetEnergyBonus = 5;
         }
 
         public DarkwoodChest(Serial serial)
             : base(serial)
-        {
+        { 
         }
 
-        public override int LabelNumber => 1073482;// Darkwood Chest
-        public override SetItem SetID => SetItem.Darkwood;
-        public override int Pieces => 6;
-        public override int BasePhysicalResistance => 8;
-        public override int BaseFireResistance => 5;
-        public override int BaseColdResistance => 5;
-        public override int BasePoisonResistance => 7;
-        public override int BaseEnergyResistance => 5;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073482;
+            }
+        }// Darkwood Chest
+        public override SetItem SetID
+        {
+            get
+            {
+                return SetItem.Darkwood;
+            }
+        }
+        public override int Pieces
+        {
+            get
+            {
+                return 6;
+            }
+        }
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 8;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 7;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 5;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-
-            writer.Write(0); // version
+			
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-
+			
             int version = reader.ReadInt();
         }
 
         public override int OnCraft(int quality, bool makersMark, Mobile from, CraftSystem craftSystem, Type typeRes, ITool tool, CraftItem craftItem, int resHue)
         {
             if (resHue > 0)
-                Hue = resHue;
-
+                this.Hue = resHue;
+				
             Type resourceType = typeRes;
 
             if (resourceType == null)
                 resourceType = craftItem.Resources.GetAt(0).ItemType;
 
-            Resource = CraftResources.GetFromType(resourceType);
-
-            switch (Resource)
+            this.Resource = CraftResources.GetFromType(resourceType);
+			
+            switch ( this.Resource )
             {
                 case CraftResource.Bloodwood:
-                    Attributes.RegenHits = 2;
+                    this.Attributes.RegenHits = 2;
                     break;
                 case CraftResource.Heartwood:
-                    Attributes.Luck = 40;
+                    this.Attributes.Luck = 40;
                     break;
                 case CraftResource.YewWood:
-                    Attributes.RegenHits = 1;
+                    this.Attributes.RegenHits = 1;
                     break;
             }
-
+			
             return 0;
         }
     }

@@ -1,7 +1,8 @@
-using Server.Engines.Quests;
-using Server.Mobiles;
+using System;
 using System.Collections;
 using System.Xml;
+using Server.Engines.Quests;
+using Server.Mobiles;
 
 namespace Server.Regions
 {
@@ -10,40 +11,46 @@ namespace Server.Regions
         private readonly Hashtable m_Table = new Hashtable();
         public ApprenticeRegion(XmlElement xml, Map map, Region parent)
             : base(xml, map, parent)
-        {
+        { 
         }
 
-        public Hashtable Table => m_Table;
+        public Hashtable Table
+        {
+            get
+            {
+                return this.m_Table;
+            }
+        }
         public override void OnEnter(Mobile m)
         {
             base.OnEnter(m);
-
+			
             if (m is PlayerMobile)
             {
                 PlayerMobile player = (PlayerMobile)m;
-
-                for (int i = 0; i < player.Quests.Count; i++)
+				
+                for (int i = 0; i < player.Quests.Count; i ++)
                 {
                     BaseQuest quest = player.Quests[i];
-
-                    for (int j = 0; j < quest.Objectives.Count; j++)
+					
+                    for (int j = 0; j < quest.Objectives.Count; j ++)
                     {
                         BaseObjective objective = quest.Objectives[j];
-
+						
                         if (objective is ApprenticeObjective && !objective.Completed)
                         {
-                            ApprenticeObjective apprentice = (ApprenticeObjective)objective;
-
-                            if (IsPartOf(apprentice.Region))
+                            ApprenticeObjective apprentice = (ApprenticeObjective)objective;		
+							
+                            if (this.IsPartOf(apprentice.Region))
                             {
                                 if (apprentice.Enter is int)
                                     player.SendLocalizedMessage((int)apprentice.Enter);
                                 else if (apprentice.Enter is string)
                                     player.SendMessage((string)apprentice.Enter);
-
+									
                                 BuffInfo info = new BuffInfo(BuffIcon.ArcaneEmpowerment, 1078511, 1078512, apprentice.Skill.ToString()); // Accelerated Skillgain Skill: ~1_val~
                                 BuffInfo.AddBuff(m, info);
-                                m_Table[m] = info;
+                                this.m_Table[m] = info;
                             }
                         }
                     }
@@ -54,32 +61,32 @@ namespace Server.Regions
         public override void OnExit(Mobile m)
         {
             base.OnExit(m);
-
+			
             if (m is PlayerMobile)
             {
                 PlayerMobile player = (PlayerMobile)m;
-
-                for (int i = 0; i < player.Quests.Count; i++)
+				
+                for (int i = 0; i < player.Quests.Count; i ++)
                 {
                     BaseQuest quest = player.Quests[i];
-
-                    for (int j = 0; j < quest.Objectives.Count; j++)
+					
+                    for (int j = 0; j < quest.Objectives.Count; j ++)
                     {
                         BaseObjective objective = quest.Objectives[j];
-
+						
                         if (objective is ApprenticeObjective && !objective.Completed)
                         {
                             ApprenticeObjective apprentice = (ApprenticeObjective)objective;
-
-                            if (IsPartOf(apprentice.Region))
+							
+                            if (this.IsPartOf(apprentice.Region))
                             {
                                 if (apprentice.Leave is int)
                                     player.SendLocalizedMessage((int)apprentice.Leave);
                                 else if (apprentice.Leave is string)
-                                    player.SendMessage((string)apprentice.Leave);
-
-                                if (m_Table[m] is BuffInfo)
-                                    BuffInfo.RemoveBuff(m, (BuffInfo)m_Table[m]);
+                                    player.SendMessage((string)apprentice.Leave);	
+									
+                                if (this.m_Table[m] is BuffInfo)
+                                    BuffInfo.RemoveBuff(m, (BuffInfo)this.m_Table[m]);			
                             }
                         }
                     }

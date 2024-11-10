@@ -1,12 +1,12 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
     public class Paragon
     {
-        public static double ChestChance = 0.10;// Chance that a paragon will carry a paragon chest
-        public static double ChocolateIngredientChance = 0.20;// Chance that a paragon will drop a chocolatiering ingredient
+        public static double ChestChance = .10;// Chance that a paragon will carry a paragon chest
+        public static double ChocolateIngredientChance = .20;// Chance that a paragon will drop a chocolatiering ingredient
         public static Map[] Maps = new Map[]                   // Maps that paragons will spawn on
         {
             Map.Ilshenar
@@ -38,11 +38,10 @@ namespace Server.Mobiles
         public static double FameBuff = 1.40;
         public static double KarmaBuff = 1.40;
         public static int DamageBuff = 5;
-
         public static void Convert(BaseCreature bc)
         {
             if (bc.IsParagon ||
-                !bc.CanBeParagon)
+				!bc.CanBeParagon)
                 return;
 
             bc.Hue = Hue;
@@ -60,7 +59,7 @@ namespace Server.Mobiles
 
             for (int i = 0; i < bc.Skills.Length; i++)
             {
-                Skill skill = bc.Skills[i];
+                Skill skill = (Skill)bc.Skills[i];
 
                 if (skill.Base > 0.0)
                     skill.Base *= SkillsBuff;
@@ -110,7 +109,7 @@ namespace Server.Mobiles
 
             for (int i = 0; i < bc.Skills.Length; i++)
             {
-                Skill skill = bc.Skills[i];
+                Skill skill = (Skill)bc.Skills[i];
 
                 if (skill.Base > 0.0)
                     skill.Base /= SkillsBuff;
@@ -136,10 +135,13 @@ namespace Server.Mobiles
 
         public static bool CheckConvert(BaseCreature bc, Point3D location, Map m)
         {
+            if (!Core.AOS)
+                return false;
+
             if (Array.IndexOf(Maps, m) == -1)
                 return false;
 
-            if (bc is BaseChampion || bc is Harrower || bc is BaseVendor || bc is Clone || bc.IsParagon)
+            if (bc is BaseChampion || bc is Harrower || bc is BaseVendor || bc is BaseEscortable || bc is Clone || bc.IsParagon)
                 return false;
 
             int fame = bc.Fame;
@@ -154,7 +156,10 @@ namespace Server.Mobiles
 
         public static bool CheckArtifactChance(Mobile m, BaseCreature bc)
         {
-            double fame = bc.Fame;
+            if (!Core.AOS)
+                return false;
+
+            double fame = (double)bc.Fame;
 
             if (fame > 32000)
                 fame = 32000;

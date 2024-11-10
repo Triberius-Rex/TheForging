@@ -1,13 +1,13 @@
+using System;
 using Server.Multis;
 using Server.Network;
 using Server.Targeting;
-using System;
 
 namespace Server.Items
 {
     public class StaghornFernAddon : Item
     {
-        public override int LabelNumber => 1154460;  // Staghorn Fern
+        public override int LabelNumber { get { return 1154460; } } // Staghorn Fern
 
         [Constructable]
         public StaghornFernAddon()
@@ -22,12 +22,12 @@ namespace Server.Items
         {
         }
 
-        public Item Deed => new StaghornFernDeed();
-
+        public Item Deed { get { return new StaghornFernDeed(); } }
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -35,7 +35,7 @@ namespace Server.Items
             base.Deserialize(reader);
             int version = reader.ReadInt();
 
-            Timer.DelayCall(TimeSpan.Zero, FixMovingCrate);
+            Timer.DelayCall(TimeSpan.Zero, new TimerCallback(FixMovingCrate));
         }
 
         public override void OnDoubleClick(Mobile from)
@@ -77,14 +77,14 @@ namespace Server.Items
 
                 Delete();
             }
-        }
+        }        
     }
 
     [Flipable(0x14F0, 0x14EF)]
     public class StaghornFernDeed : Item
     {
-        public override int LabelNumber => 1154460;  // Staghorn Fern
-
+        public override int LabelNumber { get { return 1154460; } } // Staghorn Fern
+        
         [Constructable]
         public StaghornFernDeed()
             : base(0x14F0)
@@ -100,7 +100,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -115,7 +115,7 @@ namespace Server.Items
 
             if (house != null && house.IsCoOwner(from))
             {
-                from.BeginTarget(-1, true, TargetFlags.None, Placement_OnTarget, null);
+                from.BeginTarget(-1, true, TargetFlags.None, new TargetStateCallback(Placement_OnTarget), null);
             }
             else
             {
@@ -132,7 +132,7 @@ namespace Server.Items
 
             Point3D loc = new Point3D(p);
 
-            BaseHouse house = BaseHouse.FindHouseAt(loc, from.Map, 16);
+            BaseHouse house = BaseHouse.FindHouseAt(loc, from.Map, 16);            
 
             if (house != null && house.IsCoOwner(from))
             {
@@ -164,10 +164,9 @@ namespace Server.Items
 
                 if (itemID > 0)
                 {
-                    Item addon = new StaghornFernAddon
-                    {
-                        ItemID = itemID
-                    };
+                    Item addon = new StaghornFernAddon();
+
+                    addon.ItemID = itemID;
                     addon.MoveToWorld(loc, from.Map);
 
                     house.Addons[addon] = from;

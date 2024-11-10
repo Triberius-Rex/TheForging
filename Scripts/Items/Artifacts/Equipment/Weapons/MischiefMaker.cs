@@ -1,17 +1,25 @@
+using System;
+
 namespace Server.Items
 {
     public class MischiefMaker : MagicalShortbow
-    {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1072910;// Mischief Maker
+	{
+		public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072910;
+            }
+        }// Mischief Maker
 
         [Constructable]
         public MischiefMaker()
             : base()
         {
             Hue = 0x8AB;
-            Balanced = true;
-            Slayer = SlayerName.Silver;
+            Balanced = true;			
+            Slayer = SlayerName.Silver;			
             Attributes.WeaponSpeed = 35;
             Attributes.WeaponDamage = 45;
         }

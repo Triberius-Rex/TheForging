@@ -1,7 +1,7 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 
 namespace Server.SkillHandlers
 {
@@ -9,7 +9,7 @@ namespace Server.SkillHandlers
     {
         public static void Initialize()
         {
-            SkillInfo.Table[(int)SkillName.TasteID].Callback = OnUse;
+            SkillInfo.Table[(int)SkillName.TasteID].Callback = new SkillUseCallback(OnUse);
         }
 
         public static TimeSpan OnUse(Mobile m)
@@ -27,7 +27,7 @@ namespace Server.SkillHandlers
             public InternalTarget()
                 : base(2, false, TargetFlags.None)
             {
-                AllowNonlocal = true;
+                this.AllowNonlocal = true;
             }
 
             protected override void OnTarget(Mobile from, object targeted)

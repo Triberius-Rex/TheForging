@@ -1,18 +1,18 @@
+using System;
 using Server.Gumps;
 using Server.Multis;
-using System;
 
 namespace Server.Items
 {
     public class EnchantedWheelbarrow : Item, IFlipable, ISecurable
     {
-        public override int LabelNumber => 1125214;  // enchanted wheelbarrow
+        public override int LabelNumber { get { return 1125214; } } // enchanted wheelbarrow
 
         private bool m_Harvest;
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Harvest
         {
-            get => m_Harvest;
+            get { return m_Harvest; }
             set
             {
 
@@ -32,7 +32,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime NextHarvest { get; set; }
 
-        private static readonly Type[] DecorativePlants =
+        private static Type[] DecorativePlants = new Type[]
         {
             typeof(DecorativePlant),    typeof(DecorativePlantWhiteFlowers),     typeof(DecorativePlantVines),
             typeof(DecorativePlantFlax),     typeof(DecorativePlantPoppies),          typeof(DecorativePlantLilypad)
@@ -59,7 +59,7 @@ namespace Server.Items
             if (m_Timer != null)
                 return;
 
-            m_Timer = Timer.DelayCall(TimeSpan.FromHours(1.0), TimeSpan.FromHours(1.0), OnTick);
+            m_Timer = Timer.DelayCall(TimeSpan.FromHours(1.0), TimeSpan.FromHours(1.0), new TimerCallback(OnTick));
         }
 
         public void OnTick()
@@ -132,7 +132,7 @@ namespace Server.Items
                             Harvest = false;
                             NextHarvest = DateTime.UtcNow + TimeSpan.FromDays(7);
                             StartTimer();
-                        }
+                        }                            
                     }
                     else
                     {
@@ -146,21 +146,21 @@ namespace Server.Items
             : base(serial)
         {
         }
-
+        
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_Harvest);
+            writer.Write((bool)m_Harvest);
             writer.Write((int)Level);
-            writer.Write(NextHarvest);
+            writer.Write((DateTime)NextHarvest);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
 
             m_Harvest = reader.ReadBool();
             Level = (SecureLevel)reader.ReadInt();
@@ -173,9 +173,9 @@ namespace Server.Items
 
     public class DecorativePlant : Item
     {
-        public override int LabelNumber => 1125205;  // decorative plant
+        public override int LabelNumber { get { return 1125205; } } // decorative plant
 
-        private static readonly int[] DecorativePlants =
+        private static readonly int[] DecorativePlants = new[]
         {
             0xA0E1, 0xA0E2, 0xA0E3, 0xA0E4, 0xA0E5, 0xA0ED, 0xA11B, 0xA11C, 0xA11F, 0xA120, 0xA121, 0xA122, 0xA123, 0xA124, 0xA125, 0xA128, 0xA12B
         };
@@ -200,13 +200,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
@@ -227,13 +227,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
@@ -254,13 +254,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
@@ -281,13 +281,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
@@ -308,13 +308,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 
@@ -335,13 +335,13 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+            int version = reader.ReadInt();
         }
     }
 }

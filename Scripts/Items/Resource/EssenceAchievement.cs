@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class EssenceAchievement : Item, ICommodity
@@ -14,7 +16,7 @@ namespace Server.Items
         {
             Stackable = true;
             Amount = amount;
-            Hue = 1724;
+			Hue = 1724;
         }
 
         public EssenceAchievement(Serial serial)
@@ -22,14 +24,32 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113325;// essence of achievement
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113325;
+            }
+        }// essence of achievement
+		TextDefinition ICommodity.Description
+        {
+            get
+            {
+                return this.LabelNumber;
+            }
+        }
+        bool ICommodity.IsDeedable
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

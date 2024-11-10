@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class SilvanisFeywoodBow : ElvenCompositeLongbow
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public SilvanisFeywoodBow()
         {
@@ -18,7 +20,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1072955;// Silvani's Feywood Bow
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1072955;
+            }
+        }// Silvani's Feywood Bow
         public override void GetDamageTypes(Mobile wielder, out int phys, out int fire, out int cold, out int pois, out int nrgy, out int chaos, out int direct)
         {
             phys = fire = cold = pois = chaos = direct = 0;

@@ -1,6 +1,9 @@
+using System;
+using Server.Network;
+
 namespace Server.Items
 {
-    [Flipable(0x1765, 0x1767)]
+    [FlipableAttribute(0x1765, 0x1767)]
     public class UncutCloth : Item, IScissorable, IDyable, ICommodity
     {
         [Constructable]
@@ -13,8 +16,8 @@ namespace Server.Items
         public UncutCloth(int amount)
             : base(0x1767)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public UncutCloth(Serial serial)
@@ -22,15 +25,33 @@ namespace Server.Items
         {
         }
 
-        public override double DefaultWeight => 0.1;
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        public override double DefaultWeight
+        {
+            get
+            {
+                return 0.1;
+            }
+        }
+        TextDefinition ICommodity.Description
+        {
+            get
+            {
+                return this.LabelNumber;
+            }
+        }
+        bool ICommodity.IsDeedable
+        {
+            get
+            {
+                return true;
+            }
+        }
         public bool Dye(Mobile from, DyeTub sender)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return false;
 
-            Hue = sender.DyedHue;
+            this.Hue = sender.DyedHue;
 
             return true;
         }
@@ -39,7 +60,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,9 +70,16 @@ namespace Server.Items
             int version = reader.ReadInt();
         }
 
+        public override void OnSingleClick(Mobile from)
+        {
+            int number = (this.Amount == 1) ? 1049124 : 1049123;
+
+            from.Send(new MessageLocalized(this.Serial, this.ItemID, MessageType.Regular, 0x3B2, 3, number, "", this.Amount.ToString()));
+        }
+
         public bool Scissor(Mobile from, Scissors scissors)
         {
-            if (Deleted || !from.CanSee(this))
+            if (this.Deleted || !from.CanSee(this))
                 return false;
 
             base.ScissorHelper(from, new Bandage(), 1);

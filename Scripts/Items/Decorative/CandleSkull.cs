@@ -9,13 +9,13 @@ namespace Server.Items
             : base(0x1853)
         {
             if (Burnout)
-                Duration = TimeSpan.FromMinutes(25);
+                this.Duration = TimeSpan.FromMinutes(25);
             else
-                Duration = TimeSpan.Zero;
+                this.Duration = TimeSpan.Zero;
 
-            Burning = false;
-            Light = LightType.Circle150;
-            Weight = 5.0;
+            this.Burning = false;
+            this.Light = LightType.Circle150;
+            this.Weight = 5.0;
         }
 
         public CandleSkull(Serial serial)
@@ -27,7 +27,7 @@ namespace Server.Items
         {
             get
             {
-                if (ItemID == 0x1583 || ItemID == 0x1854)
+                if (this.ItemID == 0x1583 || this.ItemID == 0x1854)
                     return 0x1854;
 
                 return 0x1858;
@@ -37,7 +37,7 @@ namespace Server.Items
         {
             get
             {
-                if (ItemID == 0x1853 || ItemID == 0x1584)
+                if (this.ItemID == 0x1853 || this.ItemID == 0x1584)
                     return 0x1853;
 
                 return 0x1857;
@@ -46,7 +46,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -1,8 +1,10 @@
+using System;
+
 namespace Server.Items
 {
     public class SwordBelt : BaseWaist, IDyable
     {
-        public override int LabelNumber => 1126021;  // sword belt
+        public override int LabelNumber { get { return 1126021; } } // sword belt
 
         [Constructable]
         public SwordBelt()

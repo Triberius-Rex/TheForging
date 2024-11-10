@@ -1,17 +1,33 @@
-using Server.Spells;
+using System;
 using System.Collections.Generic;
+using Server.Spells;
 
 namespace Server.Items
 {
     public class LightningArrow : WeaponAbility
     {
-        public override int BaseMana => 20;
+        public LightningArrow()
+        {
+        }
 
-        public override bool ConsumeAmmo => false;
+        public override int BaseMana
+        {
+            get
+            {
+                return 20;
+            }
+        }
 
+		public override bool ConsumeAmmo
+		{
+			get
+			{
+				return false;
+			}
+		}
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker))
+            if (!this.Validate(attacker))
                 return;
 
             ClearCurrentAbility(attacker);
@@ -26,13 +42,13 @@ namespace Server.Items
             if (weapon == null)
                 return;
 
-            if (!CheckMana(attacker, true))
+            if (!this.CheckMana(attacker, true))
                 return;
 
             List<Mobile> targets = new List<Mobile>();
             IPooledEnumerable eable = defender.GetMobilesInRange(5);
 
-            foreach (Mobile m in eable)
+            foreach(Mobile m in eable)
             {
                 if (m != defender && m != attacker && SpellHelper.ValidIndirectTarget(attacker, m))
                 {

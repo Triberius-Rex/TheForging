@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ElvenStoveEastAddon : BaseAddon
@@ -5,7 +7,7 @@ namespace Server.Items
         [Constructable]
         public ElvenStoveEastAddon()
         {
-            AddComponent(new AddonComponent(0x2DDB), 0, 0, 0);
+            this.AddComponent(new AddonComponent(0x2DDB), 0, 0, 0);
         }
 
         public ElvenStoveEastAddon(Serial serial)
@@ -13,7 +15,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new ElvenStoveEastDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new ElvenStoveEastDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -41,8 +49,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new ElvenStoveEastAddon();
-        public override int LabelNumber => 1073395;// elven oven (east)
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new ElvenStoveEastAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1073395;
+            }
+        }// elven oven (east)
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

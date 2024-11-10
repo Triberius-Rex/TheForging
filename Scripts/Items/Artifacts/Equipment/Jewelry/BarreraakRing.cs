@@ -1,17 +1,20 @@
+using System;
+using Server.Mobiles;
+
 namespace Server.Items
 {
     [TypeAlias("Server.Items.BarreraakRing")]
     public class BarreraaksRing : GoldRing
     {
-        public override bool IsArtifact => true;
-        public override int LabelNumber => 1095049;  // Barreraak’s Old Beat Up Ring
-
+        public override bool IsArtifact { get { return true; } }
+        public override int LabelNumber { get { return 1095049; } } // Barreraak’s Old Beat Up Ring
+		
         [Constructable]
-        public BarreraaksRing()
-        {
-            //TODO: Get Hue
-            LootType = LootType.Blessed;
-        }
+		public BarreraaksRing() 
+		{
+			//TODO: Get Hue
+			LootType = LootType.Blessed;
+		}
 
         public override bool CanEquip(Mobile from)
         {
@@ -38,21 +41,21 @@ namespace Server.Items
             return true;
         }
 
-        public override void OnAdded(object parent)
-        {
-            base.OnAdded(parent);
-
-            if (parent is Mobile)
-                ((Mobile)parent).BodyMod = 334;
-        }
-
-        public override void OnRemoved(object parent)
-        {
-            base.OnRemoved(parent);
-
-            if (parent is Mobile)
-                ((Mobile)parent).BodyMod = 0;
-        }
+		public override void OnAdded( object parent )
+		{
+			base.OnAdded(parent);
+			
+			if(parent is Mobile)
+				((Mobile)parent).BodyMod = 334;
+		}
+		
+		public override void OnRemoved( object parent )
+		{
+			base.OnRemoved(parent);
+			
+			if(parent is Mobile)
+				((Mobile)parent).BodyMod = 0;
+		}
 
         public BarreraaksRing(Serial serial)
             : base(serial)
@@ -63,7 +66,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1);
+            writer.Write((int)1);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -73,7 +76,7 @@ namespace Server.Items
 
             if (Parent is Mobile)
             {
-                Mobile m = (Mobile)Parent;
+                var m = (Mobile)Parent;
 
                 Timer.DelayCall(() =>
                     {

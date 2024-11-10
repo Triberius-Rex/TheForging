@@ -1,9 +1,9 @@
+using System;
+using System.Collections;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
-using System.Collections;
 
 namespace Server.Spells.Fourth
 {
@@ -22,7 +22,13 @@ namespace Server.Spells.Fourth
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Fourth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fourth;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -67,7 +73,12 @@ namespace Server.Spells.Fourth
                 Effects.PlaySound(p, Caster.Map, 0x20C);
 
                 int itemID = eastToWest ? 0x398C : 0x3996;
-                TimeSpan duration = TimeSpan.FromSeconds((15 + (Caster.Skills.Magery.Fixed / 5)) / 4);
+                TimeSpan duration;
+
+                if (Core.AOS)
+                    duration = TimeSpan.FromSeconds((15 + (Caster.Skills.Magery.Fixed / 5)) / 4);
+                else
+                    duration = TimeSpan.FromSeconds(4.0 + (Caster.Skills[SkillName.Magery].Value * 0.5));
 
                 Point3D pnt = new Point3D(p);
 
@@ -76,7 +87,7 @@ namespace Server.Spells.Fourth
 
                 for (int i = 1; i <= 2; ++i)
                 {
-                    Timer.DelayCall(TimeSpan.FromMilliseconds(i * 300), index =>
+                    Timer.DelayCall<int>(TimeSpan.FromMilliseconds(i * 300), index =>
                     {
                         Point3D point = new Point3D(eastToWest ? pnt.X + index : pnt.X, eastToWest ? pnt.Y : pnt.Y + index, pnt.Z);
                         SpellHelper.AdjustField(ref point, Caster.Map, 16, false);
@@ -104,7 +115,7 @@ namespace Server.Spells.Fourth
             private Mobile m_Caster;
             private int m_Damage;
 
-            public Mobile Caster => m_Caster;
+            public Mobile Caster { get { return m_Caster; } }
 
             public FireFieldItem(int itemID, Point3D loc, Mobile caster, Map map, TimeSpan duration)
                 : this(itemID, loc, caster, map, duration, 2)
@@ -137,7 +148,13 @@ namespace Server.Spells.Fourth
             {
             }
 
-            public override bool BlocksFit => true;
+            public override bool BlocksFit
+            {
+                get
+                {
+                    return true;
+                }
+            }
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
@@ -150,7 +167,7 @@ namespace Server.Spells.Fourth
             {
                 base.Serialize(writer);
 
-                writer.Write(2); // version
+                writer.Write((int)2); // version
 
                 writer.Write(m_Damage);
                 writer.Write(m_Caster);
@@ -163,7 +180,7 @@ namespace Server.Spells.Fourth
 
                 int version = reader.ReadInt();
 
-                switch (version)
+                switch ( version )
                 {
                     case 2:
                         {
@@ -193,14 +210,21 @@ namespace Server.Spells.Fourth
 
             public override bool OnMoveOver(Mobile m)
             {
-                if (Visible && m_Caster != null && m != m_Caster && SpellHelper.ValidIndirectTarget(m_Caster, m) && m_Caster.CanBeHarmful(m, false))
+                if (Visible && m_Caster != null && (!Core.AOS || m != m_Caster) && SpellHelper.ValidIndirectTarget(m_Caster, m) && m_Caster.CanBeHarmful(m, false))
                 {
                     if (SpellHelper.CanRevealCaster(m))
                         m_Caster.RevealingAction();
-
+					
                     m_Caster.DoHarmful(m);
 
                     int damage = m_Damage;
+
+                    if (!Core.AOS && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
+                    {
+                        damage = 1;
+
+                        m.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                    }
 
                     AOS.Damage(m, m_Caster, damage, 0, 100, 0, 0, 0);
                     m.PlaySound(0x208);
@@ -250,7 +274,7 @@ namespace Server.Spells.Fourth
 
                             foreach (Mobile m in eable)
                             {
-                                if ((m.Z + 16) > m_Item.Z && (m_Item.Z + 12) > m.Z && m != caster && SpellHelper.ValidIndirectTarget(caster, m) && caster.CanBeHarmful(m, false))
+                                if ((m.Z + 16) > m_Item.Z && (m_Item.Z + 12) > m.Z && (!Core.AOS || m != caster) && SpellHelper.ValidIndirectTarget(caster, m) && caster.CanBeHarmful(m, false))
                                     m_Queue.Enqueue(m);
                             }
 
@@ -259,13 +283,20 @@ namespace Server.Spells.Fourth
                             while (m_Queue.Count > 0)
                             {
                                 Mobile m = (Mobile)m_Queue.Dequeue();
-
+								
                                 if (SpellHelper.CanRevealCaster(m))
                                     caster.RevealingAction();
 
                                 caster.DoHarmful(m);
 
                                 int damage = m_Item.m_Damage;
+
+                                if (!Core.AOS && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
+                                {
+                                    damage = 1;
+
+                                    m.SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                                }
 
                                 AOS.Damage(m, caster, damage, 0, 100, 0, 0, 0);
                                 m.PlaySound(0x208);
@@ -283,7 +314,7 @@ namespace Server.Spells.Fourth
         {
             private readonly FireFieldSpell m_Owner;
             public InternalTarget(FireFieldSpell owner)
-                : base(15, true, TargetFlags.None)
+                : base(Core.TOL ? 15 : Core.ML ? 10 : 12, true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

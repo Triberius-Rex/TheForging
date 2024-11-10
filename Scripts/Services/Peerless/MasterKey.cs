@@ -1,12 +1,14 @@
+using System;
+using System.Linq;
+using Server;
 using Server.Engines.PartySystem;
 using Server.Gumps;
-using System.Linq;
 
 namespace Server.Items
 {
     public class MasterKey : PeerlessKey
     {
-        public override int LabelNumber => 1074348;  // master key
+        public override int LabelNumber { get { return 1074348; } } // master key
 
         [CommandProperty(AccessLevel.GameMaster)]
         public PeerlessAltar Altar { get; set; }
@@ -33,6 +35,7 @@ namespace Server.Items
                 if (!CanOfferConfirmation(from) && Altar == null)
                     return;
 
+                //Altar.OnMasterKeyUse(from);
                 if (Altar.Peerless == null)
                 {
                     from.CloseGump(typeof(ConfirmPartyGump));
@@ -40,11 +43,11 @@ namespace Server.Items
                 }
                 else
                 {
-                    Party p = Party.Get(from);
+                    var p = Party.Get(from);
 
                     if (p != null)
                     {
-                        foreach (Mobile m in p.Members.Select(x => x.Mobile).Where(m => m.InRange(from.Location, 25)))
+                        foreach (var m in p.Members.Select(x => x.Mobile).Where(m => m.InRange(from.Location, 25)))
                         {
                             m.CloseGump(typeof(ConfirmEntranceGump));
                             m.SendGump(new ConfirmEntranceGump(Altar, m));
@@ -73,9 +76,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(Altar);
+            writer.Write((Item)Altar);
         }
 
         public override void Deserialize(GenericReader reader)

@@ -7,10 +7,16 @@ namespace Server
         private readonly string m_Usage;
         public UsageAttribute(string usage)
         {
-            m_Usage = usage;
+            this.m_Usage = usage;
         }
 
-        public string Usage => m_Usage;
+        public string Usage
+        {
+            get
+            {
+                return this.m_Usage;
+            }
+        }
     }
 
     public class DescriptionAttribute : Attribute
@@ -18,10 +24,16 @@ namespace Server
         private readonly string m_Description;
         public DescriptionAttribute(string description)
         {
-            m_Description = description;
+            this.m_Description = description;
         }
 
-        public string Description => m_Description;
+        public string Description
+        {
+            get
+            {
+                return this.m_Description;
+            }
+        }
     }
 
     public class AliasesAttribute : Attribute
@@ -29,9 +41,15 @@ namespace Server
         private readonly string[] m_Aliases;
         public AliasesAttribute(params string[] aliases)
         {
-            m_Aliases = aliases;
+            this.m_Aliases = aliases;
         }
 
-        public string[] Aliases => m_Aliases;
+        public string[] Aliases
+        {
+            get
+            {
+                return this.m_Aliases;
+            }
+        }
     }
 }

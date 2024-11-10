@@ -1,6 +1,8 @@
+using System;
+
 namespace Server.Items
 {
-    [Engines.Craft.Forge]
+    [Server.Engines.Craft.Forge]
     public class LargeForgeWest : Item
     {
         private InternalItem m_Item;
@@ -9,10 +11,10 @@ namespace Server.Items
         public LargeForgeWest()
             : base(0x199A)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
-            m_Item2 = new InternalItem2(this);
+            this.m_Item = new InternalItem(this);
+            this.m_Item2 = new InternalItem2(this);
         }
 
         public LargeForgeWest(Serial serial)
@@ -22,38 +24,38 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X, Y + 1, Z);
-            if (m_Item2 != null)
-                m_Item2.Location = new Point3D(X, Y + 2, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X, this.Y + 1, this.Z);
+            if (this.m_Item2 != null)
+                this.m_Item2.Location = new Point3D(this.X, this.Y + 2, this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
-            if (m_Item2 != null)
-                m_Item2.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
+            if (this.m_Item2 != null)
+                this.m_Item2.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
-            if (m_Item2 != null)
-                m_Item2.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
+            if (this.m_Item2 != null)
+                this.m_Item2.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
-            writer.Write(m_Item2);
+            writer.Write(this.m_Item);
+            writer.Write(this.m_Item2);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -62,20 +64,20 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
-            m_Item2 = reader.ReadItem() as InternalItem2;
+            this.m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item2 = reader.ReadItem() as InternalItem2;
         }
 
-        [Engines.Craft.Forge]
+        [Server.Engines.Craft.Forge]
         private class InternalItem : Item
         {
             private LargeForgeWest m_Item;
             public InternalItem(LargeForgeWest item)
                 : base(0x1996)
             {
-                Movable = false;
+                this.Movable = false;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -85,31 +87,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y - 1, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X, this.Y - 1, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -118,20 +120,20 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as LargeForgeWest;
+                this.m_Item = reader.ReadItem() as LargeForgeWest;
             }
         }
 
-        [Engines.Craft.Forge]
+        [Server.Engines.Craft.Forge]
         private class InternalItem2 : Item
         {
             private LargeForgeWest m_Item;
             public InternalItem2(LargeForgeWest item)
                 : base(0x1992)
             {
-                Movable = false;
+                this.Movable = false;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem2(Serial serial)
@@ -141,31 +143,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X, Y - 2, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X, this.Y - 2, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -174,12 +176,12 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as LargeForgeWest;
+                this.m_Item = reader.ReadItem() as LargeForgeWest;
             }
         }
     }
 
-    [Engines.Craft.Forge]
+    [Server.Engines.Craft.Forge]
     public class LargeForgeEast : Item
     {
         private InternalItem m_Item;
@@ -188,10 +190,10 @@ namespace Server.Items
         public LargeForgeEast()
             : base(0x197A)
         {
-            Movable = false;
+            this.Movable = false;
 
-            m_Item = new InternalItem(this);
-            m_Item2 = new InternalItem2(this);
+            this.m_Item = new InternalItem(this);
+            this.m_Item2 = new InternalItem2(this);
         }
 
         public LargeForgeEast(Serial serial)
@@ -201,38 +203,38 @@ namespace Server.Items
 
         public override void OnLocationChange(Point3D oldLocation)
         {
-            if (m_Item != null)
-                m_Item.Location = new Point3D(X + 1, Y, Z);
-            if (m_Item2 != null)
-                m_Item2.Location = new Point3D(X + 2, Y, Z);
+            if (this.m_Item != null)
+                this.m_Item.Location = new Point3D(this.X + 1, this.Y, this.Z);
+            if (this.m_Item2 != null)
+                this.m_Item2.Location = new Point3D(this.X + 2, this.Y, this.Z);
         }
 
         public override void OnMapChange()
         {
-            if (m_Item != null)
-                m_Item.Map = Map;
-            if (m_Item2 != null)
-                m_Item2.Map = Map;
+            if (this.m_Item != null)
+                this.m_Item.Map = this.Map;
+            if (this.m_Item2 != null)
+                this.m_Item2.Map = this.Map;
         }
 
         public override void OnAfterDelete()
         {
             base.OnAfterDelete();
 
-            if (m_Item != null)
-                m_Item.Delete();
-            if (m_Item2 != null)
-                m_Item2.Delete();
+            if (this.m_Item != null)
+                this.m_Item.Delete();
+            if (this.m_Item2 != null)
+                this.m_Item2.Delete();
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_Item);
-            writer.Write(m_Item2);
+            writer.Write(this.m_Item);
+            writer.Write(this.m_Item2);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -241,20 +243,20 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            m_Item = reader.ReadItem() as InternalItem;
-            m_Item2 = reader.ReadItem() as InternalItem2;
+            this.m_Item = reader.ReadItem() as InternalItem;
+            this.m_Item2 = reader.ReadItem() as InternalItem2;
         }
 
-        [Engines.Craft.Forge]
+        [Server.Engines.Craft.Forge]
         private class InternalItem : Item
         {
             private LargeForgeEast m_Item;
             public InternalItem(LargeForgeEast item)
                 : base(0x197E)
             {
-                Movable = false;
+                this.Movable = false;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem(Serial serial)
@@ -264,31 +266,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X - 1, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X - 1, this.Y, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -297,20 +299,20 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as LargeForgeEast;
+                this.m_Item = reader.ReadItem() as LargeForgeEast;
             }
         }
 
-        [Engines.Craft.Forge]
+        [Server.Engines.Craft.Forge]
         private class InternalItem2 : Item
         {
             private LargeForgeEast m_Item;
             public InternalItem2(LargeForgeEast item)
                 : base(0x1982)
             {
-                Movable = false;
+                this.Movable = false;
 
-                m_Item = item;
+                this.m_Item = item;
             }
 
             public InternalItem2(Serial serial)
@@ -320,31 +322,31 @@ namespace Server.Items
 
             public override void OnLocationChange(Point3D oldLocation)
             {
-                if (m_Item != null)
-                    m_Item.Location = new Point3D(X - 2, Y, Z);
+                if (this.m_Item != null)
+                    this.m_Item.Location = new Point3D(this.X - 2, this.Y, this.Z);
             }
 
             public override void OnMapChange()
             {
-                if (m_Item != null)
-                    m_Item.Map = Map;
+                if (this.m_Item != null)
+                    this.m_Item.Map = this.Map;
             }
 
             public override void OnAfterDelete()
             {
                 base.OnAfterDelete();
 
-                if (m_Item != null)
-                    m_Item.Delete();
+                if (this.m_Item != null)
+                    this.m_Item.Delete();
             }
 
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
-                writer.Write(m_Item);
+                writer.Write(this.m_Item);
             }
 
             public override void Deserialize(GenericReader reader)
@@ -353,7 +355,7 @@ namespace Server.Items
 
                 int version = reader.ReadInt();
 
-                m_Item = reader.ReadItem() as LargeForgeEast;
+                this.m_Item = reader.ReadItem() as LargeForgeEast;
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -27,9 +28,9 @@ namespace Server.Engines.Chat
             AddChannel(name).AlwaysAvailable = true;
         }
 
-        private readonly string m_Name;
+        private string m_Name;
         private bool m_AlwaysAvailable;
-        private readonly List<ChatUser> m_Users;
+        private List<ChatUser> m_Users;
 
         public Channel(string name)
         {
@@ -38,9 +39,9 @@ namespace Server.Engines.Chat
             m_Users = new List<ChatUser>();
         }
 
-        public string Name => m_Name;
+        public string Name { get { return m_Name; } }
 
-        public IEnumerable<ChatUser> Users => new ReadOnlyCollection<ChatUser>(m_Users);
+        public IEnumerable<ChatUser> Users { get { return new ReadOnlyCollection<ChatUser>(m_Users); } }
 
         public bool Contains(ChatUser user)
         {
@@ -93,7 +94,7 @@ namespace Server.Engines.Chat
 
         public void SendMessage(int number, ChatUser from, string param1, string param2)
         {
-            foreach (ChatUser user in m_Users)
+            foreach (var user in m_Users)
             {
                 if (user.CheckOnline())
                     user.SendMessage(number, from.Mobile, param1, param2);
@@ -107,7 +108,7 @@ namespace Server.Engines.Chat
 
         public void SendCommand(ChatCommand command, ChatUser initiator, string param1 = null, string param2 = null)
         {
-            foreach (ChatUser user in m_Users.ToArray())
+            foreach (var user in m_Users.ToArray())
             {
                 if (user == initiator)
                     continue;
@@ -119,19 +120,19 @@ namespace Server.Engines.Chat
 
         public void SendUsersTo(ChatUser to)
         {
-            foreach (ChatUser user in m_Users)
+            foreach (var user in m_Users)
             {
-                ChatSystem.SendCommandTo(to.Mobile, ChatCommand.AddUserToChannel, user.GetColorCharacter() + user.Username, string.Format("{{{0}}}", m_Name));
+                ChatSystem.SendCommandTo(to.Mobile, ChatCommand.AddUserToChannel, user.GetColorCharacter() + user.Username, String.Format("{{{0}}}", m_Name));
             }
         }
 
-        private static readonly List<Channel> m_Channels = new List<Channel>();
+        private static List<Channel> m_Channels = new List<Channel>();
 
-        public static List<Channel> Channels => m_Channels;
+        public static List<Channel> Channels { get { return m_Channels; } }
 
         public static void SendChannelsTo(ChatUser user)
         {
-            foreach (Channel channel in m_Channels)
+            foreach (var channel in m_Channels)
             {
                 ChatSystem.SendCommandTo(user.Mobile, ChatCommand.AddChannel, channel.Name, "0");
             }
@@ -139,7 +140,7 @@ namespace Server.Engines.Chat
 
         public static Channel AddChannel(string name)
         {
-            Channel channel = FindChannelByName(name);
+            var channel = FindChannelByName(name);
 
             if (channel == null)
             {
@@ -179,6 +180,6 @@ namespace Server.Engines.Chat
             return m_Channels.FirstOrDefault(channel => channel.Name == name);
         }
 
-        public static Channel Default => FindChannelByName(ChatSystem.DefaultChannel);
+        public static Channel Default { get { return FindChannelByName(ChatSystem.DefaultChannel); } }
     }
 }

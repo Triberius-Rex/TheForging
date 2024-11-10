@@ -1,15 +1,16 @@
-using Server.Engines.ArenaSystem;
-using Server.Engines.CityLoyalty;
-using Server.Engines.SorcerersDungeon;
-using Server.Engines.Fellowship;
-using Server.Engines.JollyRoger;
-using Server.Engines.VvV;
-using Server.Misc;
-using Server.Mobiles;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+
+using Server;
+using Server.Items;
+using Server.Mobiles;
+using Server.Engines.CityLoyalty;
+using Server.Engines.VvV;
+using Server.Engines.ArenaSystem;
+using Server.Engines.SorcerersDungeon;
+using Server.Misc;
 
 namespace Server.Engines.Points
 {
@@ -30,13 +31,12 @@ namespace Server.Engines.Points
         Moonglow,
         Britain,
         Jhelom,
-        Yew,
+        Yew, 
         Minoc,
         Trinsic,
         SkaraBrae,
         NewMagincia,
         Vesper,
-        // End City Loyalty System
 
         Blackthorn,
         CleanUpBritannia,
@@ -54,7 +54,6 @@ namespace Server.Engines.Points
         TOT,
         VAS,
         FellowshipData,
-        JollyRogerData,
     }
 
     public abstract class PointsSystem
@@ -68,7 +67,7 @@ namespace Server.Engines.Points
         public abstract bool AutoAdd { get; }
         public abstract double MaxPoints { get; }
 
-        public virtual bool ShowOnLoyaltyGump => true;
+        public virtual bool ShowOnLoyaltyGump { get { return true; } }
 
         public PointsSystem()
         {
@@ -79,7 +78,7 @@ namespace Server.Engines.Points
 
         private static void AddSystem(PointsSystem system)
         {
-            if (Systems.FirstOrDefault(s => s.Loyalty == system.Loyalty) != null)
+            if(Systems.FirstOrDefault(s => s.Loyalty == system.Loyalty) != null)
                 return;
 
             Systems.Add(system);
@@ -106,7 +105,7 @@ namespace Server.Engines.Points
                 GetEntry(from).Points = points;
 
                 Utility.PushColor(ConsoleColor.Green);
-                Console.WriteLine("Converted {0} points for {1} to {2}!", (int)points, from.Name, GetType().Name);
+                Console.WriteLine("Converted {0} points for {1} to {2}!", (int)points, from.Name, this.GetType().Name);
                 Utility.PopColor();
             }
         }
@@ -131,7 +130,7 @@ namespace Server.Engines.Points
         {
             PointsEntry entry = GetEntry(pm);
 
-            if (entry != null)
+            if(entry != null)
                 entry.Points = points;
         }
 
@@ -140,7 +139,7 @@ namespace Server.Engines.Points
             if (quest)
                 from.SendLocalizedMessage(1113719, ((int)points).ToString(), 0x26); //You have received ~1_val~ loyalty points as a reward for completing the quest. 
             else
-                from.SendLocalizedMessage(1115920, string.Format("{0}\t{1}", Name.ToString(), ((int)points).ToString()));  // Your loyalty to ~1_GROUP~ has increased by ~2_AMOUNT~;Original
+                from.SendLocalizedMessage(1115920, String.Format("{0}\t{1}", Name.ToString(), ((int)points).ToString()));  // Your loyalty to ~1_GROUP~ has increased by ~2_AMOUNT~;Original
         }
 
         public virtual bool DeductPoints(Mobile from, double points, bool message = false)
@@ -156,7 +155,7 @@ namespace Server.Engines.Points
                 entry.Points -= points;
 
                 if (message)
-                    from.SendLocalizedMessage(1115921, string.Format("{0}\t{1}", Name.ToString(), ((int)points).ToString()));  // Your loyalty to ~1_GROUP~ has decreased by ~2_AMOUNT~;Original
+                    from.SendLocalizedMessage(1115921, String.Format("{0}\t{1}", Name.ToString(), ((int)points).ToString()));  // Your loyalty to ~1_GROUP~ has decreased by ~2_AMOUNT~;Original
             }
 
             return true;
@@ -174,7 +173,7 @@ namespace Server.Engines.Points
             {
                 PlayerTable.Add(entry);
 
-                if (!existed)
+                if(!existed)
                     OnPlayerAdded(pm);
             }
 
@@ -197,7 +196,7 @@ namespace Server.Engines.Points
         }
 
         public PointsEntry GetEntry(Mobile from, bool create = false)
-        {
+		{
             PlayerMobile pm = from as PlayerMobile;
 
             if (pm == null)
@@ -207,9 +206,9 @@ namespace Server.Engines.Points
 
             if (entry == null && (create || AutoAdd))
                 entry = AddEntry(pm);
-
-            return entry;
-        }
+				
+			return entry;
+		}
 
         public TEntry GetPlayerEntry<TEntry>(Mobile mobile, bool create = false) where TEntry : PointsEntry
         {
@@ -235,12 +234,12 @@ namespace Server.Engines.Points
         {
             return new PointsEntry(pm);
         }
-
+        
         public int Version { get; set; }
 
         public virtual void Serialize(GenericWriter writer)
         {
-            writer.Write(2);
+            writer.Write((int)2);
 
             writer.Write(PlayerTable.Count);
 
@@ -260,28 +259,28 @@ namespace Server.Engines.Points
                 case 2: // added serialize/deserialize in all base classes. Poor implementation on my part, should have had from the get-go
                 case 1:
                 case 0:
-                    {
-                        int count = reader.ReadInt();
+					{
+	                    int count = reader.ReadInt();
 
-                        for (int i = 0; i < count; i++)
-                        {
-                            PlayerMobile player = reader.ReadMobile() as PlayerMobile;
-                            PointsEntry entry = GetSystemEntry(player);
-
-                            if (Version > 0)
-                                entry.Deserialize(reader);
-                            else
-                                entry.Points = reader.ReadDouble();
-
-                            if (player != null)
-                            {
-                                if (!PlayerTable.Contains(entry))
-                                {
-                                    PlayerTable.Add(entry);
-                                }
-                            }
-                        }
-                    }
+	                    for (int i = 0; i < count; i++)
+	                    {
+	                        PlayerMobile player = reader.ReadMobile() as PlayerMobile;
+	                        PointsEntry entry = GetSystemEntry(player);
+	
+	                        if (Version > 0)
+	                            entry.Deserialize(reader);
+	                        else
+	                            entry.Points = reader.ReadDouble();
+	
+	                        if (player != null)
+	                        {
+	                            if (!PlayerTable.Contains(entry))
+	                            {
+	                                PlayerTable.Add(entry);
+	                            }
+	                        }
+	                    }
+					}
                     break;
             }
         }
@@ -298,7 +297,7 @@ namespace Server.Engines.Points
                 FilePath,
                 writer =>
                 {
-                    writer.Write(2);
+                    writer.Write((int)2);
 
                     writer.Write(Systems.Count);
                     Systems.ForEach(s =>
@@ -335,7 +334,7 @@ namespace Server.Engines.Points
                         }
                         catch
                         {
-                            throw new Exception(string.Format("Points System Failed Load: {0} Last Loaded...", loaded.ToString()));
+                            throw new Exception(String.Format("Points System Failed Load: {0} Last Loaded...", loaded.ToString()));
                         }
                     }
                 });
@@ -361,7 +360,6 @@ namespace Server.Engines.Points
         public static TreasuresOfTokuno TreasuresOfTokuno { get; set; }
         public static VirtueArtifactsSystem VirtueArtifacts { get; set; }
         public static FellowshipData FellowshipData { get; set; }
-        public static JollyRogerData JollyRogerData { get; set; }
 
         public static void Configure()
         {
@@ -392,7 +390,6 @@ namespace Server.Engines.Points
             TreasuresOfTokuno = new TreasuresOfTokuno();
             VirtueArtifacts = new VirtueArtifactsSystem();
             FellowshipData = new FellowshipData();
-            JollyRogerData = new JollyRogerData();
         }
 
         public static void OnKilledBy(OnKilledByEventArgs e)
@@ -413,9 +410,9 @@ namespace Server.Engines.Points
     }
 
     public class PointsEntry
-    {
+	{
         [CommandProperty(AccessLevel.GameMaster)]
-        public PlayerMobile Player { get; private set; }
+		public PlayerMobile Player { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public double Points { get; set; }
@@ -425,11 +422,11 @@ namespace Server.Engines.Points
             Player = pm;
         }
 
-        public PointsEntry(PlayerMobile pm, double points)
-        {
-            Player = pm;
-            Points = points;
-        }
+		public PointsEntry(PlayerMobile pm, double points)
+		{
+			Player = pm;
+			Points = points;
+		}
 
         public override bool Equals(object o)
         {
@@ -448,19 +445,19 @@ namespace Server.Engines.Points
 
             return base.GetHashCode();
         }
-
-        public virtual void Serialize(GenericWriter writer)
-        {
-            writer.Write(0);
-            writer.Write(Player);
-            writer.Write(Points);
-        }
-
-        public virtual void Deserialize(GenericReader reader)
-        {
-            int version = reader.ReadInt();
-            Player = reader.ReadMobile() as PlayerMobile;
-            Points = reader.ReadDouble();
-        }
-    }
+		
+		public virtual void Serialize(GenericWriter writer)
+		{
+			writer.Write(0);
+			writer.Write(Player);
+			writer.Write(Points);
+		}
+		
+		public virtual void Deserialize(GenericReader reader)
+		{
+			int version = reader.ReadInt();
+			Player = reader.ReadMobile() as PlayerMobile;
+			Points = reader.ReadDouble();
+		}
+	}
 }

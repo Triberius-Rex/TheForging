@@ -19,7 +19,7 @@ namespace Server.Items
 
         [Constructable]
         public MessageInABottle(Map map, int level)
-            : base(0xA30C)
+            : base(0x099F)
         {
             Weight = 1.0;
             m_TargetMap = map;
@@ -31,7 +31,13 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1041080;// a message in a bottle
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1041080;
+            }
+        }// a message in a bottle
         [CommandProperty(AccessLevel.GameMaster)]
         public Map TargetMap
         {
@@ -58,7 +64,7 @@ namespace Server.Items
         }
         public static int GetRandomLevel()
         {
-            if (1 > Utility.Random(25))
+            if (Core.AOS && 10 == Utility.RandomMinMax(1,25))
                 return 4; // ancient
 
             return Utility.RandomMinMax(1, 3);
@@ -67,18 +73,21 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(3); // version
 
-            writer.Write(m_Level);
+            writer.Write((int)3); // version
+
+            writer.Write((int)m_Level);
+
             writer.Write(m_TargetMap);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 3:
                 case 2:
@@ -98,7 +107,11 @@ namespace Server.Items
                     }
             }
 
-            ItemID = 0xA30C;
+            if (version < 2)
+                m_Level = GetRandomLevel();
+
+            if (version < 3 && m_TargetMap == Map.Tokuno)
+                m_TargetMap = Map.Trammel;
         }
 
         public override void OnDoubleClick(Mobile from)

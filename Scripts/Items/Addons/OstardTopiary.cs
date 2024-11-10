@@ -1,15 +1,17 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x497D, 0x497E)]
+    [FlipableAttribute(0x497D, 0x497E)]     
     public class OstardTopiary : Item
     {
-        public override int LabelNumber => 1070878;  // a decorative topiary
-
+        public override int LabelNumber{ get{ return 1070878; } } // a decorative topiary
+        
         [Constructable]
         public OstardTopiary() : base(0x497D)
         {
-            Weight = 1.0;
-            Name = ("an ostard topiary");
+            this.Weight = 1.0;
+            this.Name = ("an ostard topiary");
         }
 
         public OstardTopiary(Serial serial) : base(serial)
@@ -20,7 +22,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

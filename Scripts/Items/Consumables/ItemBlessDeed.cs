@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Items
@@ -8,12 +9,12 @@ namespace Server.Items
         public ItemBlessTarget(ItemBlessDeed deed)
             : base(1, false, TargetFlags.None)
         {
-            m_Deed = deed;
+            this.m_Deed = deed;
         }
 
         protected override void OnTarget(Mobile from, object target) // Override the protected OnTarget() for our feature
         {
-            if (m_Deed.Deleted || m_Deed.RootParent != from)
+            if (this.m_Deed.Deleted || this.m_Deed.RootParent != from)
                 return;
 
             if (target is Item)
@@ -43,7 +44,7 @@ namespace Server.Items
                     item.LootType = LootType.Blessed;
                     from.SendLocalizedMessage(1075281); // Your item has been blessed
 
-                    m_Deed.Delete(); // Delete the bless deed
+                    this.m_Deed.Delete(); // Delete the bless deed
                 }
             }
             else
@@ -59,18 +60,48 @@ namespace Server.Items
         public ItemBlessDeed()
             : base(0x14F0)
         {
-            Weight = 1.0;
-            LootType = LootType.Blessed;
+            this.Weight = 1.0;
+            this.LootType = LootType.Blessed;
         }
 
         public ItemBlessDeed(Serial serial)
             : base(serial)
         {
         }
-		
-		public override void OnDoubleClick(Mobile from) // Override double click of the deed to call our target
+
+        public override string DefaultName
         {
-            if (!IsChildOf(from.Backpack)) // Make sure its in their pack
+            get
+            {
+                return "a item bless deed";
+            }
+        }
+        public override bool DisplayLootType
+        {
+            get
+            {
+				return Core.ML;
+            }
+        }
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.Write((int)0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadInt();
+
+            this.LootType = LootType.Blessed;
+        }
+
+        public override void OnDoubleClick(Mobile from) // Override double click of the deed to call our target
+        {
+            if (!this.IsChildOf(from.Backpack)) // Make sure its in their pack
             {
                 from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
             }
@@ -80,19 +111,5 @@ namespace Server.Items
                 from.Target = new ItemBlessTarget(this); // Call our target
             }
         }
-
-        public override string DefaultName => "a item bless deed";
-        public override bool DisplayLootType => true;
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0); // version
-        }
-
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
-        }        
     }
 }

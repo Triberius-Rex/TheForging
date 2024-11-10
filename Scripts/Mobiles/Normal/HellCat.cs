@@ -1,6 +1,10 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("a hell cat corpse")]
+    [TypeAlias("Server.Mobiles.Hellcat")]
     public class HellCat : BaseCreature
     {
         [Constructable]
@@ -36,6 +40,8 @@ namespace Server.Mobiles
             Fame = 1000;
             Karma = -1000;
 
+            VirtualArmor = 30;
+
             Tamable = true;
             ControlSlots = 1;
             MinTameSkill = 71.1;
@@ -48,10 +54,34 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Hides => 10;
-        public override HideType HideType => HideType.Spined;
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Feline;
+        public override int Hides
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override HideType HideType
+        {
+            get
+            {
+                return HideType.Spined;
+            }
+        }
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Feline;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
@@ -60,12 +90,14 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
         }
     }

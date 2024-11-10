@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class MedusaStatue : Item
     {
-        public override bool IsArtifact => true;
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
         public MedusaStatue()
             : base(0x40BC)
         {
-            Name = "Medusa";
-            Weight = 10;
+            this.Name = "Medusa";
+            this.Weight = 10;
         }
 
         public MedusaStatue(Serial serial)
@@ -16,12 +18,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113626;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113626;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

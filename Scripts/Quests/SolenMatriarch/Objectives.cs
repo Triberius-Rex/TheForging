@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 
@@ -5,19 +6,34 @@ namespace Server.Engines.Quests.Matriarch
 {
     public class KillInfiltratorsObjective : QuestObjective
     {
-        public override object Message =>
+        public KillInfiltratorsObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 // Kill 7 black/red solen infiltrators.
-                ((SolenMatriarchQuest)System).RedSolen ? 1054086 : 1054085;
-        public override int MaxProgress => 7;
+                return ((SolenMatriarchQuest)this.System).RedSolen ? 1054086 : 1054085;
+            }
+        }
+        public override int MaxProgress
+        {
+            get
+            {
+                return 7;
+            }
+        }
         public override void RenderProgress(BaseQuestGump gump)
         {
-            if (!Completed)
+            if (!this.Completed)
             {
                 // Black/Red Solen Infiltrators killed:
-                gump.AddHtmlLocalized(70, 260, 270, 100, ((SolenMatriarchQuest)System).RedSolen ? 1054088 : 1054087, BaseQuestGump.Blue, false, false);
-                gump.AddLabel(70, 280, 0x64, CurProgress.ToString());
+                gump.AddHtmlLocalized(70, 260, 270, 100, ((SolenMatriarchQuest)this.System).RedSolen ? 1054088 : 1054087, BaseQuestGump.Blue, false, false);
+                gump.AddLabel(70, 280, 0x64, this.CurProgress.ToString());
                 gump.AddLabel(100, 280, 0x64, "/");
-                gump.AddLabel(130, 280, 0x64, MaxProgress.ToString());
+                gump.AddLabel(130, 280, 0x64, this.MaxProgress.ToString());
             }
             else
             {
@@ -27,10 +43,10 @@ namespace Server.Engines.Quests.Matriarch
 
         public override bool IgnoreYoungProtection(Mobile from)
         {
-            if (Completed)
+            if (this.Completed)
                 return false;
 
-            bool redSolen = ((SolenMatriarchQuest)System).RedSolen;
+            bool redSolen = ((SolenMatriarchQuest)this.System).RedSolen;
 
             if (redSolen)
                 return from is BlackSolenInfiltratorWarrior || from is BlackSolenInfiltratorQueen;
@@ -40,53 +56,77 @@ namespace Server.Engines.Quests.Matriarch
 
         public override void OnKill(BaseCreature creature, Container corpse)
         {
-            bool redSolen = ((SolenMatriarchQuest)System).RedSolen;
+            bool redSolen = ((SolenMatriarchQuest)this.System).RedSolen;
 
             if (redSolen)
             {
                 if (creature is BlackSolenInfiltratorWarrior || creature is BlackSolenInfiltratorQueen)
-                    CurProgress++;
+                    this.CurProgress++;
             }
             else
             {
                 if (creature is RedSolenInfiltratorWarrior || creature is RedSolenInfiltratorQueen)
-                    CurProgress++;
+                    this.CurProgress++;
             }
         }
 
         public override void OnComplete()
         {
-            System.AddObjective(new ReturnAfterKillsObjective());
+            this.System.AddObjective(new ReturnAfterKillsObjective());
         }
     }
 
     public class ReturnAfterKillsObjective : QuestObjective
     {
-        public override object Message =>
+        public ReturnAfterKillsObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 /* You've completed your task of slaying solen infiltrators. Return to the
-* Matriarch who gave you this task.
-*/
-                1054090;
+                * Matriarch who gave you this task.
+                */
+                return 1054090;
+            }
+        }
         public override void OnComplete()
         {
-            System.AddConversation(new GatherWaterConversation());
+            this.System.AddConversation(new GatherWaterConversation());
         }
     }
 
     public class GatherWaterObjective : QuestObjective
     {
-        public override object Message =>
+        public GatherWaterObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 // Gather 8 gallons of water for the water vats of the solen ant lair.
-                1054092;
-        public override int MaxProgress => 40;
+                return 1054092;
+            }
+        }
+        public override int MaxProgress
+        {
+            get
+            {
+                return 40;
+            }
+        }
         public override void RenderProgress(BaseQuestGump gump)
         {
-            if (!Completed)
+            if (!this.Completed)
             {
                 gump.AddHtmlLocalized(70, 260, 270, 100, 1054093, BaseQuestGump.Blue, false, false); // Gallons of Water gathered:
-                gump.AddLabel(70, 280, 0x64, (CurProgress / 5).ToString());
+                gump.AddLabel(70, 280, 0x64, (this.CurProgress / 5).ToString());
                 gump.AddLabel(100, 280, 0x64, "/");
-                gump.AddLabel(130, 280, 0x64, (MaxProgress / 5).ToString());
+                gump.AddLabel(130, 280, 0x64, (this.MaxProgress / 5).ToString());
             }
             else
             {
@@ -96,23 +136,32 @@ namespace Server.Engines.Quests.Matriarch
 
         public override void OnComplete()
         {
-            System.AddObjective(new ReturnAfterWaterObjective());
+            this.System.AddObjective(new ReturnAfterWaterObjective());
         }
     }
 
     public class ReturnAfterWaterObjective : QuestObjective
     {
-        public override object Message =>
+        public ReturnAfterWaterObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 // You've completed your task of gathering water. Return to the Matriarch who gave you this task.
-                1054095;
+                return 1054095;
+            }
+        }
         public override void OnComplete()
         {
-            PlayerMobile player = System.From;
-            bool redSolen = ((SolenMatriarchQuest)System).RedSolen;
+            PlayerMobile player = this.System.From;
+            bool redSolen = ((SolenMatriarchQuest)this.System).RedSolen;
 
             bool friend = SolenMatriarchQuest.IsFriend(player, redSolen);
 
-            System.AddConversation(new ProcessFungiConversation(friend));
+            this.System.AddConversation(new ProcessFungiConversation(friend));
 
             if (redSolen)
                 player.SolenFriendship = SolenFriendship.Red;
@@ -123,30 +172,48 @@ namespace Server.Engines.Quests.Matriarch
 
     public class ProcessFungiObjective : QuestObjective
     {
-        public override object Message =>
+        public ProcessFungiObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 // Give the Solen Matriarch a stack of zoogi fungus to process into powder of translocation.
-                1054098;
+                return 1054098;
+            }
+        }
         public override void OnComplete()
         {
-            if (SolenMatriarchQuest.GiveRewardTo(System.From))
+            if (SolenMatriarchQuest.GiveRewardTo(this.System.From))
             {
-                System.Complete();
+                this.System.Complete();
             }
             else
             {
-                System.AddConversation(new FullBackpackConversation(true));
+                this.System.AddConversation(new FullBackpackConversation(true));
             }
         }
     }
 
     public class GetRewardObjective : QuestObjective
     {
-        public override object Message =>
+        public GetRewardObjective()
+        {
+        }
+
+        public override object Message
+        {
+            get
+            {
                 // Return to the solen matriarch for your reward.
-                1054149;
+                return 1054149;
+            }
+        }
         public override void OnComplete()
         {
-            System.AddConversation(new EndConversation());
+            this.System.AddConversation(new EndConversation());
         }
     }
 }

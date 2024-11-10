@@ -1,5 +1,5 @@
-using Server.Engines.Craft;
 using System;
+using Server.Engines.Craft;
 
 namespace Server.Items
 {
@@ -18,9 +18,9 @@ namespace Server.Items
         public FukiyaDarts(int amount)
             : base(0x2806)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
 
-            m_UsesRemaining = amount;
+            this.m_UsesRemaining = amount;
         }
 
         public FukiyaDarts(Serial serial)
@@ -33,12 +33,12 @@ namespace Server.Items
         {
             get
             {
-                return m_UsesRemaining;
+                return this.m_UsesRemaining;
             }
             set
             {
-                m_UsesRemaining = value;
-                InvalidateProperties();
+                this.m_UsesRemaining = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -46,12 +46,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Poison;
+                return this.m_Poison;
             }
             set
             {
-                m_Poison = value;
-                InvalidateProperties();
+                this.m_Poison = value;
+                this.InvalidateProperties();
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -59,12 +59,12 @@ namespace Server.Items
         {
             get
             {
-                return m_PoisonCharges;
+                return this.m_PoisonCharges;
             }
             set
             {
-                m_PoisonCharges = value;
-                InvalidateProperties();
+                this.m_PoisonCharges = value;
+                this.InvalidateProperties();
             }
         }
         public bool ShowUsesRemaining
@@ -81,22 +81,22 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(1060584, m_UsesRemaining.ToString()); // uses remaining: ~1_val~
+            list.Add(1060584, this.m_UsesRemaining.ToString()); // uses remaining: ~1_val~
 
-            if (m_Poison != null && m_PoisonCharges > 0)
-                list.Add(1062412 + m_Poison.Level, m_PoisonCharges.ToString());
+            if (this.m_Poison != null && this.m_PoisonCharges > 0)
+                list.Add(1062412 + this.m_Poison.Level, this.m_PoisonCharges.ToString());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(m_UsesRemaining);
+            writer.Write((int)this.m_UsesRemaining);
 
-            Poison.Serialize(m_Poison, writer);
-            writer.Write(m_PoisonCharges);
+            Poison.Serialize(this.m_Poison, writer);
+            writer.Write((int)this.m_PoisonCharges);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -105,14 +105,14 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 0:
                     {
-                        m_UsesRemaining = reader.ReadInt();
+                        this.m_UsesRemaining = reader.ReadInt();
 
-                        m_Poison = Poison.Deserialize(reader);
-                        m_PoisonCharges = reader.ReadInt();
+                        this.m_Poison = Poison.Deserialize(reader);
+                        this.m_PoisonCharges = reader.ReadInt();
 
                         break;
                     }
@@ -122,7 +122,7 @@ namespace Server.Items
         public int OnCraft(int quality, bool makersMark, Mobile from, CraftSystem craftSystem, Type typeRes, ITool tool, CraftItem craftItem, int resHue)
         {
             if (quality == 2)
-                UsesRemaining *= 2;
+                this.UsesRemaining *= 2;
 
             return quality;
         }

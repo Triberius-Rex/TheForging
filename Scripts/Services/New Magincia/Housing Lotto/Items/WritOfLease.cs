@@ -1,11 +1,13 @@
-using Server.Gumps;
 using System;
+using Server;
+using Server.Items;
+using Server.Gumps;
 
 namespace Server.Engines.NewMagincia
 {
     public class WritOfLease : Item
     {
-        public override int LabelNumber => 1150489;  // a writ of lease
+        public override int LabelNumber { get { return 1150489; } } // a writ of lease
 
         private MaginciaHousingPlot m_Plot;
         private DateTime m_Expires;
@@ -18,19 +20,19 @@ namespace Server.Engines.NewMagincia
         public MaginciaHousingPlot Plot { get { return m_Plot; } set { m_Plot = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime Expires => m_Expires;
+        public DateTime Expires { get { return m_Expires; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool Expired => m_Expired;
+        public bool Expired { get { return m_Expired; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Map Facet => m_Facet;
+        public Map Facet { get { return m_Facet; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public string Identifier => m_Identifier;
+        public string Identifier { get { return m_Identifier; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public Point3D RecallLoc => m_RecallLoc;
+        public Point3D RecallLoc { get { return m_RecallLoc; } }
 
         public WritOfLease(MaginciaHousingPlot plot)
             : base(5358)
@@ -56,7 +58,7 @@ namespace Server.Engines.NewMagincia
 
             list.Add(m_Facet == Map.Trammel ? 1150549 : 1150548); // Facet: Felucca
 
-            list.Add(1150546, Misc.ServerList.ServerName); // Shard: ~1_SHARDNAME~
+            list.Add(1150546, Server.Misc.ServerList.ServerName); // Shard: ~1_SHARDNAME~
 
             if (m_Expired)
                 list.Add(1150487); // [Expired]
@@ -64,7 +66,7 @@ namespace Server.Engines.NewMagincia
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (from.InRange(GetWorldLocation(), 2))
+            if (from.InRange(this.GetWorldLocation(), 2))
             {
                 from.CloseGump(typeof(WritNoteGump));
                 from.SendGump(new WritNoteGump(this));
@@ -102,7 +104,7 @@ namespace Server.Engines.NewMagincia
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.Write(m_Expired);
             writer.Write(m_Expires);
@@ -124,7 +126,7 @@ namespace Server.Engines.NewMagincia
 
         private class WritNoteGump : Gump
         {
-            private readonly WritOfLease m_Lease;
+            private WritOfLease m_Lease;
 
             public WritNoteGump(WritOfLease lease)
                 : base(100, 100)
@@ -144,13 +146,13 @@ namespace Server.Engines.NewMagincia
 
                 if (lease.Expired)
                 {
-                    args = string.Format("{0}\t{1}\t{2}\t{3}\t{4}", lease.Identifier, lease.Facet.ToString(), Misc.ServerList.ServerName, "", string.Format("{0} {1}", lease.RecallLoc.X, lease.RecallLoc.Y));
+                    args = String.Format("{0}\t{1}\t{2}\t{3}\t{4}", lease.Identifier, lease.Facet.ToString(), Server.Misc.ServerList.ServerName, "", String.Format("{0} {1}", lease.RecallLoc.X, lease.RecallLoc.Y));
                     AddHtmlLocalized(38, 55, 215, 178, 1150488, args, 1, false, true);
                     //This deed once entitled the bearer to build a house on the plot of land designated "~1_PLOT~" (located at ~5_SEXTANT~) in the City of New Magincia on the ~2_FACET~ facet of the ~3_SHARD~ shard.<br><br>The deed has expired, and now the indicated plot of land is subject to normal house construction rules.<br><br>This deed was won by lottery, and while it is no longer valid for land ownership it does serve to commemorate the winning of land during the Rebuilding of Magincia.<br><br>This deed functions as a recall rune marked for the location of the plot it represents.
                 }
                 else
                 {
-                    args = string.Format("{0}\t{1}\t{2}\t{3}\t{4}", lease.Identifier, lease.Facet.ToString(), Misc.ServerList.ServerName, MaginciaLottoSystem.WritExpirePeriod.ToString(), string.Format("{0} {1}", lease.RecallLoc.X, lease.RecallLoc.Y));
+                    args = String.Format("{0}\t{1}\t{2}\t{3}\t{4}", lease.Identifier, lease.Facet.ToString(), Server.Misc.ServerList.ServerName, MaginciaLottoSystem.WritExpirePeriod.ToString(), String.Format("{0} {1}", lease.RecallLoc.X, lease.RecallLoc.Y));
                     AddHtmlLocalized(38, 55, 215, 178, 1150483, args, 1, false, true);
                     //This deed entitles the bearer to build a house on the plot of land designated "~1_PLOT~" (located at ~5_SEXTANT~) in the City of New Magincia on the ~2_FACET~ facet of the ~3_SHARD~ shard.<br><br>The deed will expire once it is used to construct a house, and thereafter the indicated plot of land will be subject to normal house construction rules. The deed will expire after ~4_DAYS~ more days have passed, and at that time the right to place a house reverts to normal house construction rules.<br><br>This deed functions as a recall rune marked for the location of the plot it represents.<br><br>To place a house on the deeded plot, you must simply have this deed in your backpack or bank box when using a House Placement Tool there.
                 }

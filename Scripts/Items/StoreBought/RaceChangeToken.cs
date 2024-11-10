@@ -1,17 +1,19 @@
-﻿using Server.Engines.Quests;
-using Server.Gumps;
-using Server.Mobiles;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Server;
+using Server.Mobiles;
+using Server.Gumps;
+using Server.Network;
+using Server.Engines.Quests;
 
 namespace Server.Items
 {
     public class RaceChangeToken : Item, IPromotionalToken
     {
-        public override int LabelNumber => 1070997;  // a promotional token
-        public TextDefinition ItemName => 1113656;  // race change
+        public override int LabelNumber { get { return 1070997; } } // a promotional token
+        public TextDefinition ItemName { get { return 1113656; } } // race change
 
-        public Type GumpType => typeof(RaceChangeConfirmGump);
+        public Type GumpType { get { return typeof(RaceChangeConfirmGump); } }
         [Constructable]
         public RaceChangeToken()
             : base(0x2AAA)
@@ -97,7 +99,7 @@ namespace Server.Items
         {
             if (Pending != null && Pending.ContainsKey(m))
             {
-                Tuple<RaceChangeToken, Race> tuple = Pending[m];
+                var tuple = Pending[m];
 
                 if (!tuple.Item1.IsChildOf(m.Backpack))
                 {
@@ -116,7 +118,7 @@ namespace Server.Items
         {
             if (Pending != null && Pending.ContainsKey(m))
             {
-                Tuple<RaceChangeToken, Race> tuple = Pending[m];
+                var tuple = Pending[m];
 
                 if (tuple.Item1 != null && !tuple.Item1.Deleted)
                 {
@@ -196,7 +198,7 @@ namespace Server.Items
 
             switch (id)
             {
-                case 0:
+                case 0: 
                     break;
                 case 1:
                     Mode = GumpMode.Select;

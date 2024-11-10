@@ -1,9 +1,12 @@
+using System;
+using Server.Engines.Craft;
+
 namespace Server.Items
 {
-    public class BarbedWhip : BaseBashing, Engines.Craft.IRepairable
+    public class BarbedWhip : BaseBashing, Server.Engines.Craft.IRepairable
     {
-        public Engines.Craft.CraftSystem RepairSystem => Engines.Craft.DefTinkering.CraftSystem;
-        public override int LabelNumber => 1125641;  // Barbed Whip		
+		public Server.Engines.Craft.CraftSystem RepairSystem { get { return Server.Engines.Craft.DefTinkering.CraftSystem; } }
+        public override int LabelNumber { get { return 1125641; } } // Barbed Whip		
 
         [Constructable]
         public BarbedWhip()
@@ -16,22 +19,23 @@ namespace Server.Items
             : base(serial)
         {
         }
-
-        public override WeaponAbility PrimaryAbility => WeaponAbility.ConcussionBlow;
-        public override WeaponAbility SecondaryAbility => WeaponAbility.WhirlwindAttack;
-        public override int StrengthReq => 20;
-        public override int MinDamage => 13;
-        public override int MaxDamage => 17;
-        public override float Speed => 3.25f;
-        public override int DefHitSound => 0x23B;
-        public override int DefMissSound => 0x23A;
-        public override int InitMinHits => 30;
-        public override int InitMaxHits => 60;
-
+		
+		public override bool CanBeWornByGargoyles { get { return true; } }
+        public override WeaponAbility PrimaryAbility { get { return WeaponAbility.ConcussionBlow; } }
+        public override WeaponAbility SecondaryAbility { get { return WeaponAbility.WhirlwindAttack; } }
+        public override int AosStrengthReq { get { return 20; } }
+        public override int AosMinDamage { get { return 13; } }
+        public override int AosMaxDamage { get { return 17; } }
+        public override float MlSpeed { get { return 3.25f; } }
+        public override int DefHitSound { get { return 0x23B; } }
+        public override int DefMissSound { get { return 0x23A; } }
+        public override int InitMinHits { get { return 30; } }
+        public override int InitMaxHits { get { return 60; } }
+		
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

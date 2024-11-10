@@ -1,16 +1,39 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Spells.Bushido
 {
     public class MomentumStrike : SamuraiMove
     {
-        public override int BaseMana => 10;
-        public override double RequiredSkill => 70.0;
-        public override TextDefinition AbilityMessage => new TextDefinition(1070757);// You prepare to strike two enemies with one blow.
+        public MomentumStrike()
+        {
+        }
+
+        public override int BaseMana
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 70.0;
+            }
+        }
+        public override TextDefinition AbilityMessage
+        {
+            get
+            {
+                return new TextDefinition(1070757);
+            }
+        }// You prepare to strike two enemies with one blow.
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, false))
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, false))
                 return;
 
             ClearCurrentMove(attacker);
@@ -22,8 +45,8 @@ namespace Server.Spells.Bushido
 
             foreach (Mobile m in eable)
             {
-                if (m != defender && m != attacker && m.CanBeHarmful(attacker, false) && attacker.InLOS(m) &&
-                    SpellHelper.ValidIndirectTarget(attacker, m))
+                if (m != defender && m != attacker && m.CanBeHarmful(attacker, false) && attacker.InLOS(m) && 
+                    Server.Spells.SpellHelper.ValidIndirectTarget(attacker, m))
                 {
                     targets.Add(m);
                 }
@@ -32,7 +55,7 @@ namespace Server.Spells.Bushido
 
             if (targets.Count > 0)
             {
-                if (!CheckMana(attacker, true))
+                if (!this.CheckMana(attacker, true))
                     return;
 
                 Mobile target = targets[Utility.Random(targets.Count)];
@@ -54,7 +77,7 @@ namespace Server.Spells.Bushido
                 if (defender.Alive)
                     attacker.Combatant = defender;
 
-                CheckGain(attacker);
+                this.CheckGain(attacker);
             }
             else
             {
@@ -80,7 +103,7 @@ namespace Server.Spells.Bushido
 
         public override void CheckGain(Mobile m)
         {
-            m.CheckSkill(MoveSkill, RequiredSkill, 120.0);
+            m.CheckSkill(this.MoveSkill, this.RequiredSkill, 120.0);
         }
     }
 }

@@ -1,7 +1,8 @@
+using System;
+using Server;
+using Server.Spells.Mysticism;
 using Server.Items;
 using Server.Spells;
-using Server.Spells.Mysticism;
-using System;
 
 namespace Server.Mobiles
 {
@@ -40,7 +41,7 @@ namespace Server.Mobiles
             if (!Female)
                 Utility.AssignRandomFacialHair(this, true);
 
-            Hue = Race.RandomSkinHue();
+            this.Hue = Race.RandomSkinHue();
 
             BaseWeapon wep;
 
@@ -62,36 +63,36 @@ namespace Server.Mobiles
             if (Utility.RandomBool())
                 AddImmovableItem(new GargishRobe());
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 10, 25);
-            SetResistance(ResistanceType.Fire, 40, 65);
-            SetResistance(ResistanceType.Cold, 40, 65);
-            SetResistance(ResistanceType.Poison, 40, 65);
-            SetResistance(ResistanceType.Energy, 40, 65);
+            this.SetResistance(ResistanceType.Physical, 10, 25);
+            this.SetResistance(ResistanceType.Fire, 40, 65);
+            this.SetResistance(ResistanceType.Cold, 40, 65);
+            this.SetResistance(ResistanceType.Poison, 40, 65);
+            this.SetResistance(ResistanceType.Energy, 40, 65);
 
-            SetSkill(SkillName.MagicResist, 120.0);
-            SetSkill(SkillName.Tactics, 50.1, 60.0);
-            SetSkill(SkillName.Throwing, 120.0);
-            SetSkill(SkillName.Anatomy, 0.0, 10.0);
-            SetSkill(SkillName.Magery, 50.0, 80.0);
-            SetSkill(SkillName.EvalInt, 50.0, 80.0);
-            SetSkill(SkillName.Meditation, 120);
+            this.SetSkill(SkillName.MagicResist, 120.0);
+            this.SetSkill(SkillName.Tactics, 50.1, 60.0);
+            this.SetSkill(SkillName.Throwing, 120.0);
+            this.SetSkill(SkillName.Anatomy, 0.0, 10.0);
+            this.SetSkill(SkillName.Magery, 50.0, 80.0);
+            this.SetSkill(SkillName.EvalInt, 50.0, 80.0);
+            this.SetSkill(SkillName.Meditation, 120);
 
-            Fame = 12000;
-            Karma = -12000;
+            this.Fame = 12000;
+            this.Karma = -12000;
 
             if (.5 > Utility.RandomDouble())
             {
                 ChangeAIType(AIType.AI_Mage);
 
-                SetSkill(SkillName.Necromancy, 90, 105);
-                SetSkill(SkillName.SpiritSpeak, 90, 105);
+                this.SetSkill(SkillName.Necromancy, 90, 105);
+                this.SetSkill(SkillName.SpiritSpeak, 90, 105);
             }
             else
             {
-                SetSkill(SkillName.Mysticism, 90, 105);
-                SetSkill(SkillName.Focus, 90, 105);
+                this.SetSkill(SkillName.Mysticism, 90, 105);
+                this.SetSkill(SkillName.Focus, 90, 105);
             }
 
             m_NextSummon = DateTime.UtcNow;
@@ -100,14 +101,14 @@ namespace Server.Mobiles
         private void AddImmovableItem(Item item)
         {
             item.LootType = LootType.Blessed;
-            SetWearable(item);
+            AddItem(item);
         }
 
-        public override Poison PoisonImmune => Poison.Deadly;
-        public override bool AlwaysMurderer => true;
-        public override bool ReacquireOnMovement => true;
-        public override bool AcquireOnApproach => true;
-        public override int AcquireOnApproachRange => 8;
+        public override Poison PoisonImmune { get { return Poison.Deadly; } }
+        public override bool AlwaysMurderer { get { return true; } }
+        public override bool ReacquireOnMovement { get { return true; } }
+        public override bool AcquireOnApproach { get { return true; } }
+        public override int AcquireOnApproachRange { get { return 8; } }
 
         public override WeaponAbility GetWeaponAbility()
         {
@@ -123,9 +124,9 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.UltraRich);
-            AddLoot(LootPack.MedScrolls, 2);
-            AddLoot(LootPack.HighScrolls, 2);
+            this.AddLoot(LootPack.UltraRich);
+            this.AddLoot(LootPack.MedScrolls, 2);
+            this.AddLoot(LootPack.HighScrolls, 2);
         }
 
         private DateTime m_NextSummon;
@@ -137,7 +138,7 @@ namespace Server.Mobiles
             if (Combatant == null || m_NextSummon > DateTime.UtcNow)
                 return;
 
-            if (Mana > 40 && Followers + 4 <= FollowersMax)
+            if (this.Mana > 40 && this.Followers + 4 <= this.FollowersMax)
             {
                 Spell spell = new AnimatedWeaponSpell(this, null);
                 spell.Cast();
@@ -153,7 +154,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

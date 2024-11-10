@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Server.Items
 {
@@ -16,14 +16,14 @@ namespace Server.Items
         public DateTime Expire { get; set; }
     }
 
-    [Flipable(0x9707, 0x9706)]
+    [FlipableAttribute(0x9707, 0x9706)]
     public class SecretChest : LockableContainer
     {
         public List<SecretChestArray> list = new List<SecretChestArray>();
 
-        public override int LabelNumber => 1151583;  // Secret Chest
+        public override int LabelNumber { get { return 1151583; } } // Secret Chest
 
-        public override int DefaultGumpID => 0x58E;
+        public override int DefaultGumpID { get { return 0x58E; } }
 
         public int[] SecretKey { get; set; } = { 0, 0, 0, 0, 0 };
 
@@ -39,28 +39,28 @@ namespace Server.Items
         [Constructable]
         public SecretChest(int id)
             : base(id)
-        {
+        {            
             Weight = 5;
         }
 
         public bool CheckPermission(Mobile from)
         {
-            SecretChestArray p = list.FirstOrDefault(x => x.Mobile == from);
+            var p = list.FirstOrDefault(x => x.Mobile == from);
 
-            return LockingPerson.Account == from.Account || p != null && p.Permission;
+            return Locked && LockingPerson.Account != from.Account && p != null && !p.Permission;
         }
-
+        
         public override void Open(Mobile from)
         {
             if (Locked && from.AccessLevel < AccessLevel.GameMaster && LockingPerson.Account != from.Account)
             {
-                SecretChestArray l = list.FirstOrDefault(x => x.Mobile == from);
+                var l = list.FirstOrDefault(x => x.Mobile == from);
 
                 if (l == null)
                 {
                     l = new SecretChestArray { Mobile = from, TrialsNumber = 3 };
                     list.Add(l);
-                }
+                }                
 
                 if (l.Permission)
                 {
@@ -106,7 +106,7 @@ namespace Server.Items
         private class SetEditKeyNumber : ContextMenuEntry
         {
             private readonly SecretChest Chest;
-            private readonly Mobile Mobile;
+            private Mobile Mobile;
 
             public SetEditKeyNumber(Mobile m, SecretChest c)
                 : base(1151608, -1) // Set/Edit Key Number
@@ -135,7 +135,7 @@ namespace Server.Items
         private class ResetKeyNumber : ContextMenuEntry
         {
             private readonly SecretChest Chest;
-            private readonly Mobile Mobile;
+            private Mobile Mobile;
 
             public ResetKeyNumber(Mobile m, SecretChest c)
                 : base(1151609, -1) // Reset Key Number
@@ -159,7 +159,7 @@ namespace Server.Items
             }
         }
 
-        public override bool DisplaysContent => false;
+        public override bool DisplaysContent { get { return false; } }
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -174,7 +174,7 @@ namespace Server.Items
 
         public override bool TryDropItem(Mobile from, Item dropped, bool sendFullMessage)
         {
-            if (Locked && !CheckPermission(from))
+            if (CheckPermission(from))
             {
                 from.SendLocalizedMessage(1151591); // You cannot place items into a locked chest!
                 return false;
@@ -215,7 +215,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write(LockingPerson);
 
@@ -252,7 +252,7 @@ namespace Server.Items
 
                 if (m != null)
                 {
-                    list.Add(new SecretChestArray { Mobile = m, Permission = reader.ReadBool(), TrialsNumber = reader.ReadInt(), Expire = reader.ReadDateTime() });
+                    list.Add(new SecretChestArray { Mobile = m, Permission= reader.ReadBool(), TrialsNumber = reader.ReadInt(), Expire = reader.ReadDateTime() });
                 }
             }
 
@@ -297,7 +297,7 @@ namespace Server.Items
                 {
                     TempSecretKey = sk;
                 }
-            }
+            }            
 
             AddPage(0);
 
@@ -330,7 +330,7 @@ namespace Server.Items
                     }
                 case 1:
                     {
-                        SecretChestArray l = Chest.list.FirstOrDefault(x => x.Mobile == from);
+                        var l = Chest.list.FirstOrDefault(x => x.Mobile == from);
 
                         if (l == null)
                             return;
@@ -349,7 +349,7 @@ namespace Server.Items
                             {
                                 from.SendLocalizedMessage(1151590); // The number which you have entered is wrong. You still can't open this chest...                                
                                 from.SendLocalizedMessage(1152346, string.Format("{0}", l.TrialsNumber)); // Number of tries left: ~1_times~
-                                Timer.DelayCall(TimeSpan.FromSeconds(0.2), () => from.SendGump(new SecretChestGump(Chest, TempSecretKey, SetEdit)));
+                                Timer.DelayCall(TimeSpan.FromSeconds(0.2), () => from.SendGump(new SecretChestGump(Chest, TempSecretKey, SetEdit))); 
                             }
                             else
                             {

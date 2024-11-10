@@ -1,16 +1,19 @@
-using Server.Gumps;
-using Server.Items;
-using Server.Mobiles;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using Server;
+using Server.Mobiles;
+using Server.Items;
+using Server.Gumps;
 
 namespace Server.Engines.Quests
 {
-    public class JourneyToTheAthenaeumIsleQuest : BaseQuest
-    {
-        public override object Title => 1150929;         // Journey to the Athenaeum Isle
+	public class JourneyToTheAthenaeumIsleQuest : BaseQuest
+	{
+        public override object Title { get { return 1150929; } }        // Journey to the Athenaeum Isle
 
-        public override object Description => 1150902;   /*Greetings, adventurer. <br><br>	As you know, my people have suffered the 
+        public override object Description { get { return 1150902; } }  /*Greetings, adventurer. <br><br>	As you know, my people have suffered the 
                                                                          * incessant onslaught of the Void and its minions for as long as Gargish 
                                                                          * history exists. Protecting Ter Mur from the darkness, and its desire to
                                                                          * consume the land completely, is a burden passed down from one ruler to another
@@ -25,7 +28,7 @@ namespace Server.Engines.Quests
                                                                          * <br><br>	I have received word that the isle which houses the daemon, Athenaeum
                                                                          * Isle, is once again swarming with daemons. Based on the description provided to 
                                                                          * me, I believe these are the minions of the Defiler himself. They have no doubt 
-                                                                         * crawled out of the dark in anticipation of their masterâ€™s return. In truth, the
+                                                                         * crawled out of the dark in anticipation of their master’s return. In truth, the
                                                                          * prison I placed him within will not last forever.<br><br>	I ask that you journey
                                                                          * to the southwestern flight tower, adventurer, and head further southwest towards
                                                                          * the shore. Near the water's edge, you will find an ancient teleport site which 
@@ -36,11 +39,11 @@ namespace Server.Engines.Quests
                                                                          * in the Royal City.<br><br>	Slay the beasts and return to me any documents that 
                                                                          * you acquire.<br><br>	Be careful, and go with honor.*/
 
-        public override object Refuse => 1150930;        // Understood. Perhaps you are not as brave as I initially thought. Be on your way, then.
+        public override object Refuse { get { return 1150930; } }       // Understood. Perhaps you are not as brave as I initially thought. Be on your way, then.
 
-        public override object Uncomplete => 1150931;    // You have returned. Did you manage to slay the beasts and obtain any documents that may be of interest?
+        public override object Uncomplete { get { return 1150931; } }   // You have returned. Did you manage to slay the beasts and obtain any documents that may be of interest?
 
-        public override object Complete => 1150903;      /*You have returned! I cannot thank you enough for the service you have done me, 
+        public override object Complete { get { return 1150903; } }     /*You have returned! I cannot thank you enough for the service you have done me, 
                                                                          * adventurer. <br><br>	The documents that you have retrieved may seem unimportant 
                                                                          * to you, as they are naught but random letters and doctrines. But they each 
                                                                          * represent an echo of the past, musings of our ancestors. I had always meant to 
@@ -53,27 +56,27 @@ namespace Server.Engines.Quests
                                                                          * goodwill.<br><br>	Thank you again, on behalf of the Gargoyle people. I may have
                                                                          * need of your assistance at another time, should you be willing to come to my aid 
                                                                          * again.<br><br>	Until then, farewell.*/
+		
+		public JourneyToTheAthenaeumIsleQuest()
+		{
+			AddObjective( new SlayObjective ( typeof( MinionOfScelestus), "Minion of Scelestus", 10 ) );
 
-        public JourneyToTheAthenaeumIsleQuest()
-        {
-            AddObjective(new SlayObjective(typeof(MinionOfScelestus), "Minion of Scelestus", 10));
-
-            for (int i = 0; i < m_Types.Length; i++)
+            for(int i = 0; i < m_Types.Length; i++)
             {
                 ObtainObjective obtain = new ObtainObjective(m_Types[i], m_Names[i], 1);
 
                 AddObjective(obtain);
             }
 
-            //AddObjective( new InternalObjective() );
+			//AddObjective( new InternalObjective() );
             AddReward(new BaseReward(typeof(ChronicleOfTheGargoyleQueen1), 1, "Chronicle of the Gargoyle Queen Vol. I"));
-        }
+		}
 
         public override bool RenderObjective(MondainQuestGump gump, bool offer)
         {
             int offset = 163;
             int page = 1;
-            SlayObjective slay = Objectives.FirstOrDefault(o => o is SlayObjective) as SlayObjective;
+            var slay = Objectives.FirstOrDefault(o => o is SlayObjective) as SlayObjective;
 
             if (offer)
                 gump.AddHtmlLocalized(130, 45, 270, 16, 1049010, 0xFFFFFF, false, false); // Quest Offer
@@ -154,20 +157,20 @@ namespace Server.Engines.Quests
             gump.AddHtmlObject(133, offset, 280, 100, reward.Name, BaseQuestGump.LightGreen, false, false);
         }
 
-        private readonly Type[] m_Types =
-        {
-                typeof(ChallengeRite),          typeof(AnthenaeumDecree),       typeof(LetterFromTheKing),
-                typeof(OnTheVoid),              typeof(ShilaxrinarsMemorial),   typeof(ToTheHighScholar),
-                typeof(ToTheHighBroodmother),   typeof(ReplyToTheHighScholar),  typeof(AccessToTheIsle),
-                typeof(InMemory)
-        };
+        private Type[] m_Types = new Type[]
+			{
+				typeof(ChallengeRite), 			typeof(AnthenaeumDecree), 		typeof(LetterFromTheKing),
+				typeof(OnTheVoid),				typeof(ShilaxrinarsMemorial),	typeof(ToTheHighScholar),
+				typeof(ToTheHighBroodmother),	typeof(ReplyToTheHighScholar),	typeof(AccessToTheIsle),
+				typeof(InMemory)
+			};
 
-        private readonly string[] m_Names =
-        {
+        private string[] m_Names = new string[]
+            {
                 "Obtain Gargish Document - Challenge Rite",             "Obtain Gargish Document - Athenaeum Decree",           "Obtain Gargish Document - Letter from the King",
                 "Obtain Gargish Document - On the Void",                "Obtain Gargish Document - Shilaxrinar's Memorial",     "Obtain Gargish Document - To the High Scholar",
                 "Obtain Gargish Document - To the High Broodmother",    "Obtain Gargish Document - Reply to the High Scholar",  "Obtain Gargish Document - Access to the Isle",
                 "Obtain Gargish Document - In Memory"
-        };
-    }
+            };
+	}
 }

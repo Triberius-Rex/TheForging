@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a vampire bat corpse")]
@@ -5,32 +7,32 @@ namespace Server.Mobiles
     {
         public VampireBatFamiliar()
         {
-            Name = "a vampire bat";
-            Body = 317;
-            BaseSoundID = 0x270;
+            this.Name = "a vampire bat";
+            this.Body = 317;
+            this.BaseSoundID = 0x270;
 
-            SetStr(120);
-            SetDex(120);
-            SetInt(100);
+            this.SetStr(120);
+            this.SetDex(120);
+            this.SetInt(100);
 
-            SetHits(90);
-            SetStam(120);
-            SetMana(0);
+            this.SetHits(90);
+            this.SetStam(120);
+            this.SetMana(0);
 
-            SetDamage(5, 10);
+            this.SetDamage(5, 10);
 
-            SetDamageType(ResistanceType.Physical, 100);
+            this.SetDamageType(ResistanceType.Physical, 100);
 
-            SetResistance(ResistanceType.Physical, 10, 15);
-            SetResistance(ResistanceType.Fire, 10, 15);
-            SetResistance(ResistanceType.Cold, 10, 15);
-            SetResistance(ResistanceType.Poison, 10, 15);
-            SetResistance(ResistanceType.Energy, 10, 15);
+            this.SetResistance(ResistanceType.Physical, 10, 15);
+            this.SetResistance(ResistanceType.Fire, 10, 15);
+            this.SetResistance(ResistanceType.Cold, 10, 15);
+            this.SetResistance(ResistanceType.Poison, 10, 15);
+            this.SetResistance(ResistanceType.Energy, 10, 15);
 
-            SetSkill(SkillName.Wrestling, 95.1, 100.0);
-            SetSkill(SkillName.Tactics, 50.0);
+            this.SetSkill(SkillName.Wrestling, 95.1, 100.0);
+            this.SetSkill(SkillName.Tactics, 50.0);
 
-            ControlSlots = 1;
+            this.ControlSlots = 1;
         }
 
         public VampireBatFamiliar(Serial serial)
@@ -41,13 +43,15 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 }

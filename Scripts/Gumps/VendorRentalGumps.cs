@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 using Server.Multis;
@@ -149,7 +150,7 @@ namespace Server.Gumps
             }
             else
             {
-                switch (info.ButtonID)
+                switch ( info.ButtonID )
                 {
                     case 1: // Price Per Rental
                         SetPricePerRental(from);
@@ -258,7 +259,7 @@ namespace Server.Gumps
 
         private class PricePerRentalPrompt : Prompt
         {
-            public override int MessageCliloc => 1062365;
+            public override int MessageCliloc { get { return 1062365; } }
             private readonly VendorRentalContract m_Contract;
             public PricePerRentalPrompt(VendorRentalContract contract)
             {
@@ -482,7 +483,7 @@ namespace Server.Gumps
 
         private class ContractRenewalPricePrompt : Prompt
         {
-            public override int MessageCliloc => 1062500;
+            public override int MessageCliloc { get { return 1062500; } }
             private readonly RentedVendor m_Vendor;
             public ContractRenewalPricePrompt(RentedVendor vendor)
             {

@@ -1,15 +1,15 @@
+using System;
+
 namespace Server.Items
 {
-    [Flipable(0x2FB7, 0x3171)]
+    [FlipableAttribute(0x2FB7, 0x3171)]
     public class ElvenQuiver : BaseQuiver
     {
-        public override int LabelNumber => 1032657; // elven quiver
-
         [Constructable]
         public ElvenQuiver()
             : base()
         {
-            WeightReduction = 30;
+            this.WeightReduction = 30;
         }
 
         public ElvenQuiver(Serial serial)
@@ -17,15 +17,24 @@ namespace Server.Items
         {
         }
 
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1032657;
+            }
+        }// elven quiver
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
+
             writer.WriteEncodedInt(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadEncodedInt();
         }
     }

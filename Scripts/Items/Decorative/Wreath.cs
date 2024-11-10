@@ -1,14 +1,15 @@
+using System;
 using Server.Multis;
 
 namespace Server.Items
 {
-    [Flipable(0xA12E, 0xA12F)]
+    [FlipableAttribute(0xA12E, 0xA12F)]
     public class HolidayWreath : Item, IDyable
     {
-        public override int LabelNumber => 1029004;  // wreath
-        public override bool IsArtifact => true;
+        public override int LabelNumber { get { return 1029004; } } // wreath
+        public override bool IsArtifact { get { return true; } }
 
-        public int MadeID { get; set; }
+        public int MadeID{ get; set; }
 
         [Constructable]
         public HolidayWreath()
@@ -21,8 +22,8 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            list.Add(1158828, string.Format("#{0}", MadeID)); // Made From Handpicked Trees Near ~1_WHERE~
-        }
+            list.Add(1158828, String.Format("#{0}", MadeID)); // Made From Handpicked Trees Near ~1_WHERE~
+        }        
 
         public HolidayWreath(Serial serial)
             : base(serial)
@@ -32,9 +33,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(MadeID);
+            writer.Write((int)MadeID);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -65,7 +66,7 @@ namespace Server.Items
                     return false;
                 }
             }
-            else
+            else 
             {
                 return false;
             }

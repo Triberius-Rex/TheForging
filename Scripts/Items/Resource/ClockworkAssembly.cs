@@ -1,11 +1,11 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Items
 {
     public class ClockworkAssembly : Item, ICommodity
     {
-        public override int LabelNumber => 1073426;  // Clockwork Assembly
+        public override int LabelNumber { get { return 1073426; } } // Clockwork Assembly
 
         [Constructable]
         public ClockworkAssembly()
@@ -20,8 +20,8 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
         public override void OnDoubleClick(Mobile from)
         {
@@ -40,7 +40,7 @@ namespace Server.Items
             {
                 from.SendLocalizedMessage(1049607); // You have too many followers to control that creature.
                 return;
-            }
+            }            
 
             Container pack = from.Backpack;
 
@@ -49,7 +49,7 @@ namespace Server.Items
 
             int res = pack.ConsumeTotal(new Type[] { typeof(PowerCrystal), typeof(IronIngot), typeof(BronzeIngot), typeof(Gears) }, new int[] { 1, 50, 50, 5 });
 
-            switch (res)
+            switch ( res )
             {
                 case 0:
                     {
@@ -77,7 +77,7 @@ namespace Server.Items
 
                         if (g.SetControlMaster(from))
                         {
-                            Delete();
+                            this.Delete();
 
                             g.MoveToWorld(from.Location, from.Map);
                             from.PlaySound(0x241);
@@ -111,7 +111,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

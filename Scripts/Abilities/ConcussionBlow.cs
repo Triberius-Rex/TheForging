@@ -7,11 +7,20 @@ namespace Server.Items
     /// </summary>
     public class ConcussionBlow : WeaponAbility
     {
-        public override int BaseMana => 20;
+        public ConcussionBlow()
+        {
+        }
 
+        public override int BaseMana
+        {
+            get
+            {
+                return 20;
+            }
+        }
         public override bool OnBeforeDamage(Mobile attacker, Mobile defender)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, true))
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, true))
                 return false;
 
             ClearCurrentAbility(attacker);
@@ -26,14 +35,14 @@ namespace Server.Items
 
             int damage = 10; // Base damage is 10.
 
-            if (defender.HitsMax > 0)
+            if (defender.HitsMax > 0) 
             {
-                double hitsPercent = (defender.Hits / (double)defender.HitsMax) * 100.0;
+                double hitsPercent = ((double)defender.Hits / (double)defender.HitsMax) * 100.0;
 
                 double manaPercent = 0;
 
                 if (defender.ManaMax > 0)
-                    manaPercent = (defender.Mana / (double)defender.ManaMax) * 100.0;
+                    manaPercent = ((double)defender.Mana / (double)defender.ManaMax) * 100.0;
 
                 damage += Math.Min((int)(Math.Abs(hitsPercent - manaPercent) / 4), 20);
             }

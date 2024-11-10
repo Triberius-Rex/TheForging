@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     [Flipable(0x2328, 0x2329)]
@@ -26,11 +28,11 @@ namespace Server.Items
         public Snowman(int hue, string title)
             : base(Utility.Random(0x2328, 2))
         {
-            Weight = 10.0;
-            Hue = hue;
-            LootType = LootType.Blessed;
+            this.Weight = 10.0;
+            this.Hue = hue;
+            this.LootType = LootType.Blessed;
 
-            m_Title = title;
+            this.m_Title = title;
         }
 
         public Snowman(Serial serial)
@@ -43,12 +45,12 @@ namespace Server.Items
         {
             get
             {
-                return m_Title;
+                return this.m_Title;
             }
             set
             {
-                m_Title = value;
-                InvalidateProperties();
+                this.m_Title = value;
+                this.InvalidateProperties();
             }
         }
         public static string GetRandomTitle()
@@ -121,16 +123,16 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
-            if (m_Title != null)
-                list.Add(1062841, m_Title); // ~1_NAME~ the Snowman
+            if (this.m_Title != null)
+                list.Add(1062841, this.m_Title); // ~1_NAME~ the Snowman
         }
 
         public bool Dye(Mobile from, DyeTub sender)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return false;
 
-            Hue = sender.DyedHue;
+            this.Hue = sender.DyedHue;
 
             return true;
         }
@@ -139,9 +141,9 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(1); // version
+            writer.Write((int)1); // version
 
-            writer.Write(m_Title);
+            writer.Write((string)this.m_Title);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -150,16 +152,16 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            switch (version)
+            switch ( version )
             {
                 case 1:
                     {
-                        m_Title = reader.ReadString();
+                        this.m_Title = reader.ReadString();
                         break;
                     }
             }
 
-            Utility.Intern(ref m_Title);
+            Utility.Intern(ref this.m_Title);
         }
     }
 }

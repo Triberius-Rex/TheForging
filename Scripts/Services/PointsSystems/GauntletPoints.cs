@@ -1,32 +1,43 @@
+using System;
+using System.Collections.Generic;
+
+using Server;
 using Server.Items;
 using Server.Mobiles;
-using System;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Points
 {
-    public class DoomGauntlet : PointsSystem
-    {
-        public override PointsType Loyalty => PointsType.GauntletPoints;
-        public override TextDefinition Name => m_Name;
-        public override bool AutoAdd => true;
-        public override double MaxPoints => double.MaxValue;
-        public override bool ShowOnLoyaltyGump => false;
+	public class DoomGauntlet : PointsSystem
+	{
+        public override PointsType Loyalty { get { return PointsType.GauntletPoints; } }
+		public override TextDefinition Name { get { return m_Name; } }
+		public override bool AutoAdd { get { return true; } }
+        public override double MaxPoints { get { return double.MaxValue; } }
+        public override bool ShowOnLoyaltyGump { get { return false; } }
 
-        private readonly TextDefinition m_Name = new TextDefinition("Gauntlet Points");
-
-        public override void SendMessage(PlayerMobile from, double old, double points, bool quest)
-        {
-        }
-
-        public override TextDefinition GetTitle(PlayerMobile from)
-        {
-            return new TextDefinition("Gauntlet Points");
+        private TextDefinition m_Name = new TextDefinition("Gauntlet Points");
+		
+		public DoomGauntlet()
+		{
+		}
+		
+		public override void SendMessage(PlayerMobile from, double old, double points, bool quest)
+		{
+		}
+		
+		public override TextDefinition GetTitle(PlayerMobile from)
+		{
+			return new TextDefinition("Gauntlet Points");
         }
 
         public override void ProcessKill(Mobile victim, Mobile killer)
         {
             PlayerMobile pm = killer as PlayerMobile;
             BaseCreature bc = victim as BaseCreature;
+
+            if (!Core.AOS)
+                return;
 
             if (pm == null || bc == null || bc.NoKillAwards || !pm.Alive)
                 return;
@@ -51,25 +62,32 @@ namespace Server.Engines.Points
             {
                 Item i = null;
 
-                int ran = Utility.Random(m_RewardTable.Length + 1);
-
-                if (ran >= m_RewardTable.Length)
+                if (Core.TOL)
                 {
-                    i = Loot.RandomArmorOrShieldOrWeaponOrJewelry(LootPackEntry.IsInTokuno(killer), LootPackEntry.IsMondain(killer), LootPackEntry.IsStygian(killer));
-                    RunicReforging.GenerateRandomArtifactItem(i, luck, Utility.RandomMinMax(800, 1200));
-                    NegativeAttributes attrs = RunicReforging.GetNegativeAttributes(i);
+                    int ran = Utility.Random(m_RewardTable.Length + 1);
 
-                    if (attrs != null)
+                    if (ran >= m_RewardTable.Length)
                     {
-                        attrs.Prized = 1;
+                        i = Loot.RandomArmorOrShieldOrWeaponOrJewelry(LootPackEntry.IsInTokuno(killer), LootPackEntry.IsMondain(killer), LootPackEntry.IsStygian(killer));
+                        RunicReforging.GenerateRandomArtifactItem(i, luck, Utility.RandomMinMax(800, 1200));
+                        NegativeAttributes attrs = RunicReforging.GetNegativeAttributes(i);
+
+                        if (attrs != null)
+                        {
+                            attrs.Prized = 1;
+                        }
+                    }
+                    else
+                    {
+                        Type[] list = m_RewardTable[ran];
+                        Type t = list.Length == 1 ? list[0] : list[Utility.Random(list.Length)];
+
+                        i = Activator.CreateInstance(t) as Item;
                     }
                 }
                 else
                 {
-                    Type[] list = m_RewardTable[ran];
-                    Type t = list.Length == 1 ? list[0] : list[Utility.Random(list.Length)];
-
-                    i = Activator.CreateInstance(t) as Item;
+                    i = Activator.CreateInstance(m_DoomArtifact[Utility.Random(m_DoomArtifact.Length)]) as Item;
                 }
 
                 if (i != null)
@@ -94,8 +112,8 @@ namespace Server.Engines.Points
             }
         }
 
-        public static Type[] DoomArtifacts => m_DoomArtifact;
-        private static readonly Type[] m_DoomArtifact = new Type[]
+        public static Type[] DoomArtifact { get { return m_DoomArtifact; } }
+        private static Type[] m_DoomArtifact = new Type[]
         {
             typeof(LegacyOfTheDreadLord),       typeof(TheTaskmaster),              typeof(TheDragonSlayer),
             typeof(ArmorOfFortune),             typeof(GauntletsOfNobility),        typeof(HelmOfInsight),
@@ -110,8 +128,8 @@ namespace Server.Engines.Points
             typeof(HatOfTheMagi),               typeof(HuntersHeaddress),           typeof(SpiritOfTheTotem)
         };
 
-        public static Type[][] RewardTable => m_RewardTable;
-        private static readonly Type[][] m_RewardTable = new Type[][]
+        public static Type[][] RewardTable { get { return m_RewardTable; } }
+        private static Type[][] m_RewardTable = new Type[][]
         {
             new Type[] { typeof(HatOfTheMagi) },            new Type[] { typeof(StaffOfTheMagi) },      new Type[] { typeof(OrnamentOfTheMagician) },
             new Type[] { typeof(ShadowDancerLeggings) },    new Type[] {typeof(RingOfTheElements) },    new Type[] { typeof(GauntletsOfNobility) },
@@ -149,5 +167,5 @@ namespace Server.Engines.Points
 
             reader.ReadInt();
         }
-    }
+	}
 }

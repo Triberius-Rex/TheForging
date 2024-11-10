@@ -1,15 +1,19 @@
-using Server.Gumps;
+using System;
+using Server;
+using System.Collections.Generic;
+using Server.Mobiles;
 using Server.Items;
+using Server.Gumps;
 
 namespace Server.Engines.VvV
 {
     public class CovetousTileAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new CovetousTileDeed();
+        public override BaseAddonDeed Deed { get { return new CovetousTileDeed(); } }
 
         public TileType TileType { get; set; }
 
-        private readonly int offset;
+        private int offset;
 
         [Constructable]
         public CovetousTileAddon(TileType type)
@@ -38,7 +42,7 @@ namespace Server.Engines.VvV
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -51,8 +55,8 @@ namespace Server.Engines.VvV
 
     public class CovetousTileDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new CovetousTileAddon(TileType);
-        public override int LabelNumber => 1155516;  // Covetous Tile
+        public override BaseAddon Addon { get { return new CovetousTileAddon(TileType); } }
+        public override int LabelNumber { get { return 1155516; } } // Covetous Tile
 
         public TileType TileType { get; set; }
 
@@ -82,7 +86,7 @@ namespace Server.Engines.VvV
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

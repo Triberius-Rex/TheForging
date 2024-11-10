@@ -1,5 +1,8 @@
-using Server.Engines.HuntsmasterChallenge;
+using System;
+using Server;
+using Server.Mobiles;
 using System.Collections.Generic;
+using Server.Engines.HuntsmasterChallenge;
 
 namespace Server.Items
 {
@@ -98,13 +101,13 @@ namespace Server.Items
                 list.Add("Season Ends: {0}", HuntingSystem.Instance.SeasonEnds.ToShortDateString());
         }
 
-        private static readonly List<HuntingDisplayTrophy> m_DisplayTrophies = new List<HuntingDisplayTrophy>();
+        private static List<HuntingDisplayTrophy> m_DisplayTrophies = new List<HuntingDisplayTrophy>();
 
         public static void InvalidateDisplayTrophies()
         {
             foreach (HuntingDisplayTrophy trophy in m_DisplayTrophies)
             {
-                if (trophy != null && !trophy.Deleted)
+                if(trophy != null && !trophy.Deleted)
                     trophy.InvalidateProperties();
             }
         }
@@ -125,7 +128,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
             writer.Write((int)m_HuntType);
         }

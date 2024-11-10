@@ -6,15 +6,21 @@ namespace Server.Commands.Generic
 {
     public sealed class DistinctExtension : BaseExtension
     {
-        public static ExtensionInfo ExtInfo = new ExtensionInfo(30, "Distinct", -1, delegate () { return new DistinctExtension(); });
+        public static ExtensionInfo ExtInfo = new ExtensionInfo(30, "Distinct", -1, delegate() { return new DistinctExtension(); });
         private readonly List<Property> m_Properties;
         private IComparer m_Comparer;
         public DistinctExtension()
         {
-            m_Properties = new List<Property>();
+            this.m_Properties = new List<Property>();
         }
 
-        public override ExtensionInfo Info => ExtInfo;
+        public override ExtensionInfo Info
+        {
+            get
+            {
+                return ExtInfo;
+            }
+        }
         public static void Initialize()
         {
             ExtensionInfo.Register(ExtInfo);
@@ -25,7 +31,7 @@ namespace Server.Commands.Generic
             if (baseType == null)
                 throw new Exception("Distinct extension may only be used in combination with an object conditional.");
 
-            foreach (Property prop in m_Properties)
+            foreach (Property prop in this.m_Properties)
             {
                 prop.BindTo(baseType, PropertyAccess.Read);
                 prop.CheckAccess(from);
@@ -34,7 +40,7 @@ namespace Server.Commands.Generic
             if (assembly == null)
                 assembly = new AssemblyEmitter("__dynamic", false);
 
-            m_Comparer = DistinctCompiler.Compile(assembly, baseType, m_Properties.ToArray());
+            this.m_Comparer = DistinctCompiler.Compile(assembly, baseType, this.m_Properties.ToArray());
         }
 
         public override void Parse(Mobile from, string[] arguments, int offset, int size)
@@ -48,18 +54,18 @@ namespace Server.Commands.Generic
             {
                 string binding = arguments[offset++];
 
-                m_Properties.Add(new Property(binding));
+                this.m_Properties.Add(new Property(binding));
             }
         }
 
         public override void Filter(ArrayList list)
         {
-            if (m_Comparer == null)
+            if (this.m_Comparer == null)
                 throw new InvalidOperationException("The extension must first be optimized.");
 
             ArrayList copy = new ArrayList(list);
 
-            copy.Sort(m_Comparer);
+            copy.Sort(this.m_Comparer);
 
             list.Clear();
 
@@ -69,7 +75,7 @@ namespace Server.Commands.Generic
             {
                 object obj = copy[i];
 
-                if (last == null || m_Comparer.Compare(obj, last) != 0)
+                if (last == null || this.m_Comparer.Compare(obj, last) != 0)
                 {
                     list.Add(obj);
                     last = obj;

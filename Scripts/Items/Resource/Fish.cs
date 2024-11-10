@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class Fish : Item, ICarvable
@@ -12,9 +14,9 @@ namespace Server.Items
         public Fish(int amount)
             : base(Utility.Random(0x09CC, 4))
         {
-            Stackable = true;
-            Weight = 1.0;
-            Amount = amount;
+            this.Stackable = true;
+            this.Weight = 1.0;
+            this.Amount = amount;
         }
 
         public Fish(Serial serial)
@@ -24,7 +26,7 @@ namespace Server.Items
 
         public bool Carve(Mobile from, Item item)
         {
-            RawFishSteak fish = new RawFishSteak();
+            var fish = new RawFishSteak();
 
             if (HasSocket<Caddellite>())
             {
@@ -40,7 +42,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

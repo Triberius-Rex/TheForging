@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Mobiles;
-using Server.Spells.SkillMasteries;
 using Server.Targeting;
-using System;
+using Server.Spells.SkillMasteries;
 
 namespace Server.Spells.Necromancy
 {
@@ -19,12 +20,36 @@ namespace Server.Spells.Necromancy
         {
         }
 
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.0);
-        public override double RequiredSkill => 50.0;
-        public override int RequiredMana => 17;
-        public override bool DelayedDamage => false;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds((Core.ML ? 2.0 : 1.5));
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 50.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 17;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -36,8 +61,6 @@ namespace Server.Spells.Necromancy
             {
                 Mobile mob = m as Mobile;
                 SpellHelper.Turn(Caster, m);
-
-                SpellHelper.CheckReflect(this, Caster, ref m);
 
                 ApplyEffects(m);
                 ConduitSpell.CheckAffected(Caster, m, ApplyEffects);
@@ -56,10 +79,30 @@ namespace Server.Spells.Necromancy
             Effects.SendLocationParticles(EffectItem.Create(m.Location, m.Map, EffectItem.DefaultDuration), 0x36B0, 1, 14, 63, 7, 9915, 0);
             Effects.PlaySound(m.Location, m.Map, 0x229);
 
-            double damage = Utility.RandomMinMax(32, 40) * ((300 + (GetDamageSkill(Caster) * 9)) / 1000);
+            double damage = Utility.RandomMinMax((Core.ML ? 32 : 36), 40) * ((300 + (GetDamageSkill(Caster) * 9)) / 1000);
             damage *= strength;
 
-            double sdiBonus = (double)SpellHelper.GetSpellDamageBonus(Caster, m, CastSkill, m is PlayerMobile) / 100;
+            double sdiBonus;
+
+            if (Core.SE)
+            {
+                if (Core.SA)
+                {
+                    sdiBonus = (double)SpellHelper.GetSpellDamageBonus(Caster, m, CastSkill, m is PlayerMobile) / 100;
+                }
+                else
+                {
+                    sdiBonus = (double)AosAttributes.GetValue(Caster, AosAttribute.SpellDamage) / 100;
+
+                    // PvP spell damage increase cap of 15% from an item’s magic property in Publish 33(SE)
+                    if (m is PlayerMobile && Caster.Player && sdiBonus > 15)
+                        sdiBonus = 15;
+                }
+            }
+            else
+            {
+                sdiBonus = (double)AosAttributes.GetValue(Caster, AosAttribute.SpellDamage) / 100;
+            }
 
             double pvmDamage = (damage * (1 + sdiBonus)) * strength;
             double pvpDamage = damage * (1 + sdiBonus);
@@ -68,7 +111,7 @@ namespace Server.Spells.Necromancy
 
             if (map != null)
             {
-                foreach (IDamageable id in AcquireIndirectTargets(m.Location, 2))
+                foreach (var id in AcquireIndirectTargets(m.Location, 2))
                 {
                     int num;
 
@@ -89,7 +132,7 @@ namespace Server.Spells.Necromancy
         {
             private readonly PoisonStrikeSpell m_Owner;
             public InternalTarget(PoisonStrikeSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
                 m_Owner = owner;
             }

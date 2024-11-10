@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Mobiles;
 using Server.Multis;
@@ -22,7 +23,7 @@ namespace Server.Spells.Fourth
         private readonly VendorSearchMap m_SearchMap;
         private readonly AuctionMap m_AuctionMap;
 
-        public bool NoSkillRequirement => (m_Book != null || m_AuctionMap != null || m_SearchMap != null) || TransformationSpellHelper.UnderTransformation(Caster, typeof(WraithFormSpell));
+        public bool NoSkillRequirement { get { return (Core.SE && (m_Book != null || m_AuctionMap != null || m_SearchMap != null)) || TransformationSpellHelper.UnderTransformation(Caster, typeof(WraithFormSpell)); } }
 
         public RecallSpell(Mobile caster, Item scroll)
             : this(caster, scroll, null, null)
@@ -48,7 +49,13 @@ namespace Server.Spells.Fourth
             m_AuctionMap = map;
         }
 
-        public override SpellCircle Circle => SpellCircle.Fourth;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Fourth;
+            }
+        }
         public override void GetCastSkills(out double min, out double max)
         {
             if (NoSkillRequirement)	//recall using Runebook charge, wraith form or using vendor search map
@@ -98,14 +105,9 @@ namespace Server.Spells.Fourth
 
         public override bool CheckCast()
         {
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-            else if (Engines.CityLoyalty.CityTradeSystem.HasTrade(Caster))
-            {
-                Caster.SendLocalizedMessage(1151733); // You cannot do that while carrying a Trade Order.
                 return false;
             }
             else if (Caster.Criminal)
@@ -149,11 +151,11 @@ namespace Server.Spells.Fourth
 
         public void Effect(Point3D loc, Map map, bool checkMulti, bool isboatkey = false)
         {
-            if (Engines.VvV.VvVSigil.ExistsOn(Caster))
+            if (Factions.Sigil.ExistsOn(Caster))
             {
                 Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
             }
-            else if (map == null)
+            else if (map == null || (!Core.AOS && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005569); // You can not recall to another facet.
             }
@@ -229,7 +231,7 @@ namespace Server.Spells.Fourth
             private readonly RecallSpell m_Owner;
 
             public InternalTarget(RecallSpell owner)
-                : base(10, false, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.None)
             {
                 m_Owner = owner;
 

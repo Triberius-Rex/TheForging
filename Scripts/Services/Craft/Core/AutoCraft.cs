@@ -1,16 +1,17 @@
-using Server.Items;
-using Server.Prompts;
 using System;
+using Server;
+using Server.Prompts;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Engines.Craft
 {
     public class MakeNumberCraftPrompt : Prompt
     {
-        private readonly Mobile m_From;
-        private readonly CraftSystem m_CraftSystem;
-        private readonly CraftItem m_CraftItem;
-        private readonly ITool m_Tool;
+        private Mobile m_From;
+        private CraftSystem m_CraftSystem;
+        private CraftItem m_CraftItem;
+        private ITool m_Tool;
 
         public MakeNumberCraftPrompt(Mobile from, CraftSystem system, CraftItem item, ITool tool)
         {
@@ -55,20 +56,20 @@ namespace Server.Engines.Craft
 
     public class AutoCraftTimer : Timer
     {
-        private static readonly Dictionary<Mobile, AutoCraftTimer> m_AutoCraftTable = new Dictionary<Mobile, AutoCraftTimer>();
-        public static Dictionary<Mobile, AutoCraftTimer> AutoCraftTable => m_AutoCraftTable;
+        private static Dictionary<Mobile, AutoCraftTimer> m_AutoCraftTable = new Dictionary<Mobile, AutoCraftTimer>();
+        public static Dictionary<Mobile, AutoCraftTimer> AutoCraftTable { get { return m_AutoCraftTable; } }
 
-        private readonly Mobile m_From;
-        private readonly CraftSystem m_CraftSystem;
-        private readonly CraftItem m_CraftItem;
-        private readonly ITool m_Tool;
-        private readonly int m_Amount;
+        private Mobile m_From;
+        private CraftSystem m_CraftSystem;
+        private CraftItem m_CraftItem;
+        private ITool m_Tool;
+        private int m_Amount;
         private int m_Attempts;
         private int m_Ticks;
-        private readonly Type m_TypeRes;
+        private Type m_TypeRes;
 
-        public int Amount => m_Amount;
-        public int Attempts => m_Attempts;
+        public int Amount { get { return m_Amount; } }
+        public int Attempts { get { return m_Attempts; } }
 
         public AutoCraftTimer(Mobile from, CraftSystem system, CraftItem item, ITool tool, int amount, TimeSpan delay, TimeSpan interval)
             : base(delay, interval)
@@ -94,7 +95,7 @@ namespace Server.Engines.Craft
 
             m_AutoCraftTable[from] = this;
 
-            Start();
+            this.Start();
         }
 
         public AutoCraftTimer(Mobile from, CraftSystem system, CraftItem item, ITool tool, int amount)

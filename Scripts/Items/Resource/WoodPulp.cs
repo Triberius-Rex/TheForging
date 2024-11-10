@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class WoodPulp : Item
@@ -12,8 +14,8 @@ namespace Server.Items
         public WoodPulp(int amount)
             : base(0x103D)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public WoodPulp(Serial serial)
@@ -21,12 +23,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1113136;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113136;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

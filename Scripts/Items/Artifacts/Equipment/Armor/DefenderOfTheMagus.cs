@@ -1,14 +1,16 @@
+using System;
+
 namespace Server.Items
 {
     public class DefenderOfTheMagus : MetalShield
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         [Constructable]
-        public DefenderOfTheMagus()
+        public DefenderOfTheMagus() 
         {
-            Hue = 590;
+            Hue = 590;		
             Attributes.SpellChanneling = 1;
-            Attributes.DefendChance = 10;
+            Attributes.DefendChance = 10;				
             Attributes.CastRecovery = 1;
             //Random Resonance:
             switch (Utility.Random(5))
@@ -55,16 +57,58 @@ namespace Server.Items
             : base(serial)
         {
         }
+        
+        public override int LabelNumber { get{return 1113851;} }// Defender of the Magus
 
-        public override int LabelNumber => 1113851; // Defender of the Magus
-
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 1;
-        public override int BaseColdResistance => 0;
-        public override int BasePoisonResistance => 0;
-        public override int BaseEnergyResistance => 0;
-        public override int InitMinHits => 255;
-        public override int InitMaxHits => 255;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 255;
+            }
+        }
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
@@ -76,7 +120,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);//version
+            writer.Write((int)0);//version
         }
     }
 }

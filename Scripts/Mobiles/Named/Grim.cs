@@ -1,9 +1,10 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
 {
     [CorpseName("the remains of Grim")]
-    public class Grim : Drake
+    public class Grim : Drake 
     {
         [Constructable]
         public Grim()
@@ -37,35 +38,62 @@ namespace Server.Mobiles
             Fame = 17500;
             Karma = -5500;
 
+            VirtualArmor = 54;
+
             Tamable = false;
+
+            for (int i = 0; i < Utility.RandomMinMax(0, 1); i++)
+            {
+                PackItem(Loot.RandomScroll(0, Loot.ArcanistScrollTypes.Length, SpellbookType.Arcanist));
+            }
 
             SetWeaponAbility(WeaponAbility.CrushingBlow);
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
 
-        public override bool GivesMLMinorArtifact => true;
+        public override bool GivesMLMinorArtifact
+        {
+            get { return true; }
+        }
 
         public Grim(Serial serial)
             : base(serial)
         {
         }
 
-        public override bool ReacquireOnMovement => true;
-        public override int Meat => 10;
-        public override int Hides => 20;
+        public override bool ReacquireOnMovement
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int Meat
+        {
+            get
+            {
+                return 10;
+            }
+        }
+        public override int Hides
+        {
+            get
+            {
+                return 20;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 3);
             AddLoot(LootPack.MedScrolls);
             AddLoot(LootPack.HighScrolls, 2);
-            AddLoot(LootPack.ArcanistScrolls);
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

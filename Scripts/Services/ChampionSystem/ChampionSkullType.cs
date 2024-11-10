@@ -12,6 +12,6 @@ namespace Server.Engines.CannedEvil
         Greed,
         Death,
         //Dupre Skull
-        Lust
+        Despair
     }
 }

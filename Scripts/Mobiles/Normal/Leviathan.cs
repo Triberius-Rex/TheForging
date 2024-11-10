@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -85,8 +85,20 @@ namespace Server.Mobiles
             Fame = 22500;
             Karma = -22500;
 
+            VirtualArmor = 50;
+
             CanSwim = true;
             CantWalk = true;
+
+            PackItem(new MessageInABottle());
+
+            Rope rope = new Rope();
+            rope.ItemID = 0x14F8;
+            PackItem(rope);
+
+            rope = new Rope();
+            rope.ItemID = 0x14FA;
+            PackItem(rope);
 
             SetSpecialAbility(SpecialAbility.DragonBreath);
         }
@@ -96,7 +108,7 @@ namespace Server.Mobiles
         {
         }
 
-        public static Type[] Artifacts => m_Artifacts;
+        public static Type[] Artifacts { get { return m_Artifacts; } }
 
         public Mobile Fisher
         {
@@ -134,9 +146,8 @@ namespace Server.Mobiles
             }
         }
 
-        public override double TreasureMapChance => 0.25;
-
-        public override int TreasureMapLevel => 5;
+        public override double TreasureMapChance { get { return 0.25; } }
+        public override int TreasureMapLevel { get { return 5; } }
 
         public override void OnActionCombat()
         {
@@ -184,14 +195,12 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 5);
-            AddLoot(LootPack.LootItem<Rope>(2));
-            AddLoot(LootPack.LootItem<MessageInABottle>());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

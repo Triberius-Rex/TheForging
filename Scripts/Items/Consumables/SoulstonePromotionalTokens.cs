@@ -1,3 +1,7 @@
+using System;
+using Server.Gumps;
+using Server.Network;
+
 namespace Server.Items
 {
     public enum SoulstoneType
@@ -5,53 +9,69 @@ namespace Server.Items
         Green,
         Blue,
         Red,
-        Violet,
-        Orange,
-        Yellow,
-        White,
-        Black
+        Violet
     }
 
-    public class SoulstoneFragmentToken : PromotionalToken
-    {
-        [Constructable]
-        public SoulstoneFragmentToken()
-            : base()
-        {
-        }
+	public class SoulstoneFragmentToken : PromotionalToken
+	{
+		[Constructable]
+		public SoulstoneFragmentToken()
+			: base()
+		{
+		}
 
-        public SoulstoneFragmentToken(Serial serial)
-            : base(serial)
-        {
-        }
+		public SoulstoneFragmentToken(Serial serial)
+			: base(serial)
+		{
+		}
 
-        public override TextDefinition ItemGumpName => 1070999;// <center>Soulstone Fragment</center>
-        public override TextDefinition ItemName => 1071000;//soulstone fragment
-        public override TextDefinition ItemReceiveMessage => 1070976;// A soulstone fragment has been created in your bank box.
-        public override Item CreateItemFor(Mobile from)
-        {
-            if (from != null && from.Account != null)
+		public override TextDefinition ItemGumpName
+		{
+			get
+			{
+				return 1070999;
+			}
+		}// <center>Soulstone Fragment</center>
+		public override TextDefinition ItemName
+		{
+			get
+			{
+				return 1071000;
+			}
+		}//soulstone fragment
+		public override TextDefinition ItemReceiveMessage
+		{
+			get
+			{
+				return 1070976;
+			}
+		}// A soulstone fragment has been created in your bank box.
+		public override Item CreateItemFor(Mobile from)
+		{
+			if (from != null && from.Account != null)
 
-                return new SoulstoneFragment(from.Account.ToString());
-            else
-                return null;
-        }
+				return new SoulstoneFragment(from.Account.ToString());
+			else
+				return null;
+		}
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(0);
-        }
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            reader.ReadInt();
-        }
-    }
+			writer.Write((int)0);
+		}
 
-    public class SoulstoneToken : PromotionalToken
-    {
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+
+			int version = reader.ReadInt();
+		}
+	}
+
+	public class SoulstoneToken : PromotionalToken
+	{
         [CommandProperty(AccessLevel.GameMaster)]
         public SoulstoneType Type { get; set; }
 
@@ -61,17 +81,17 @@ namespace Server.Items
         {
         }
 
-        [Constructable]
-        public SoulstoneToken(SoulstoneType type)
-            : base()
-        {
+		[Constructable]
+		public SoulstoneToken(SoulstoneType type)
+			: base()
+		{
             Type = type;
-        }
+		}
 
-        public SoulstoneToken(Serial serial)
-            : base(serial)
-        {
-        }
+		public SoulstoneToken(Serial serial)
+			: base(serial)
+		{
+		}
 
         public override int LabelNumber
         {
@@ -84,66 +104,68 @@ namespace Server.Items
                     case SoulstoneType.Blue: return 1078832;
                     case SoulstoneType.Red: return 1078833;
                     case SoulstoneType.Violet: return 1158404;
-                    case SoulstoneType.Orange: return 1158869;
-                    case SoulstoneType.Yellow: return 1158870;
-                    case SoulstoneType.White: return 1158868;
-                    case SoulstoneType.Black: return 1158867;
                 }
             }
         }
 
-        public override TextDefinition ItemGumpName => 1030903;// <center>Soulstone</center>
-        public override TextDefinition ItemName
-        {
-            get
-            {
-                switch (Type)
+		public override TextDefinition ItemGumpName
+		{
+			get
+			{
+				return 1030903;
+			}
+		}// <center>Soulstone</center>
+		public override TextDefinition ItemName
+		{
+			get
+			{
+				switch(Type)
                 {
                     default: return 1030899;
                     case SoulstoneType.Green: return 1078834;
                     case SoulstoneType.Blue: return 1078835;
                     case SoulstoneType.Red: return 1078836;
                     case SoulstoneType.Violet: return 1158404;
-                    case SoulstoneType.Orange: return 1158869;
-                    case SoulstoneType.Yellow: return 1158870;
-                    case SoulstoneType.White: return 1158868;
-                    case SoulstoneType.Black: return 1158867;
                 }
-            }
-        }//soulstone
-        public override TextDefinition ItemReceiveMessage => 1070743;// A soulstone has been created in your bank box.
-        public override Item CreateItemFor(Mobile from)
-        {
+			}
+		}//soulstone
+		public override TextDefinition ItemReceiveMessage
+		{
+			get
+			{
+				return 1070743;
+			}
+		}// A soulstone has been created in your bank box.
+		public override Item CreateItemFor(Mobile from)
+		{
             if (from != null && from.Account != null)
             {
                 switch (Type)
                 {
-                    case SoulstoneType.Green: return new SoulStone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Blue: return new BlueSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Red: return new RedSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Violet: return new VioletSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Orange: return new OrangeSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Yellow: return new YellowSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.White: return new WhiteSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
-                    case SoulstoneType.Black: return new BlackSoulstone(from.Account.ToString()) { LastUserName = from.RawName };
+                    case SoulstoneType.Green: return new SoulStone(from.Account.ToString()) { LastUserName = @from.RawName };
+                    case SoulstoneType.Blue: return new BlueSoulstone(from.Account.ToString()) { LastUserName = @from.RawName };
+                    case SoulstoneType.Red: return new RedSoulstone(from.Account.ToString()) { LastUserName = @from.RawName };
+                    case SoulstoneType.Violet: return new VioletSoulstone(from.Account.ToString()) { LastUserName = @from.RawName };
                 }
             }
 
             return null;
-        }
+		}
 
-        public override void Serialize(GenericWriter writer)
-        {
-            base.Serialize(writer);
-            writer.Write(1);
+		public override void Serialize(GenericWriter writer)
+		{
+			base.Serialize(writer);
+
+			writer.Write((int)1);
 
             writer.Write((int)Type);
-        }
+		}
 
-        public override void Deserialize(GenericReader reader)
-        {
-            base.Deserialize(reader);
-            int version = reader.ReadInt();
+		public override void Deserialize(GenericReader reader)
+		{
+			base.Deserialize(reader);
+
+			int version = reader.ReadInt();
 
             switch (version)
             {
@@ -151,6 +173,6 @@ namespace Server.Items
                     Type = (SoulstoneType)reader.ReadInt();
                     break;
             }
-        }
-    }
+		}
+	}
 }

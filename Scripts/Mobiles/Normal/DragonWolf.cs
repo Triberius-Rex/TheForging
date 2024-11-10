@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a dragon wolf corpse")]
@@ -35,7 +37,7 @@ namespace Server.Mobiles
 
             Fame = 8500;
             Karma = -8500;
-
+            
             Tamable = true;
             ControlSlots = 4;
             MinTameSkill = 102.0;
@@ -48,11 +50,11 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool CanAngerOnTame => true;
+        public override bool CanAngerOnTame { get { return true; } }
 
-        public override int Meat => 4;
-        public override int Hides => 25;
-        public override FoodType FavoriteFood => FoodType.Meat;
+        public override int Meat { get { return 4; } }
+        public override int Hides { get { return 25; } }
+        public override FoodType FavoriteFood { get { return FoodType.Meat; } }
 
         public override void GenerateLoot()
         {
@@ -63,7 +65,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

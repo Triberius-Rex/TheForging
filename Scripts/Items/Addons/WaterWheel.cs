@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.VeteranRewards;
 using Server.Gumps;
 
@@ -22,14 +23,14 @@ namespace Server.Items
         public int Quantity
         {
             get { return 500; }
-            set { }
+            set {}
         }
 
         public WaterWheelAddon(Serial serial)
             : base(serial)
         {
         }
-
+        
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsRewardItem { get; set; }
 
@@ -37,10 +38,8 @@ namespace Server.Items
         {
             get
             {
-                WaterWheelDeed deed = new WaterWheelDeed
-                {
-                    IsRewardItem = IsRewardItem
-                };
+                WaterWheelDeed deed = new WaterWheelDeed();
+                deed.IsRewardItem = IsRewardItem;
 
                 return deed;
             }
@@ -49,9 +48,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(IsRewardItem);
+            writer.Write((bool)IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -65,16 +64,14 @@ namespace Server.Items
 
     public class WaterWheelDeed : BaseAddonDeed, IRewardItem, IRewardOption
     {
-        public override int LabelNumber => 1158881;  // Water Wheel
-
+        public override int LabelNumber { get { return 1158881; } } // Water Wheel
+        
         public override BaseAddon Addon
         {
             get
             {
-                WaterWheelAddon addon = new WaterWheelAddon(_Direction)
-                {
-                    IsRewardItem = m_IsRewardItem
-                };
+                WaterWheelAddon addon = new WaterWheelAddon(_Direction);
+                addon.IsRewardItem = m_IsRewardItem;
 
                 return addon;
             }
@@ -148,9 +145,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
 
-            writer.Write(m_IsRewardItem);
+            writer.Write((bool)m_IsRewardItem);
         }
 
         public override void Deserialize(GenericReader reader)

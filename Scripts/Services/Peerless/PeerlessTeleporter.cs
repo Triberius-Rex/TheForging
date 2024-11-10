@@ -1,3 +1,4 @@
+using System;
 using Server.Gumps;
 
 namespace Server.Items
@@ -43,9 +44,9 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
-            writer.Write(Altar);
+            writer.Write((Item)Altar);
 
             if (Altar != null && Altar.Map != Map)
                 Map = Altar.Map;

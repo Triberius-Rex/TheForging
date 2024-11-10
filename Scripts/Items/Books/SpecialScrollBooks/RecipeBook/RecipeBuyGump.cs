@@ -1,3 +1,5 @@
+using System;
+using Server;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -6,10 +8,10 @@ namespace Server.Items
 {
     public class RecipeScrollBuyGump : Gump
     {
-        private readonly Mobile m_From;
-        private readonly RecipeBook m_Book;
-        private readonly RecipeScrollDefinition m_Recipe;
-        private readonly int m_Price;
+        private Mobile m_From;
+        private RecipeBook m_Book;
+        private RecipeScrollDefinition m_Recipe;
+        private int m_Price;
 
         public RecipeScrollBuyGump(Mobile from, RecipeBook book, RecipeScrollDefinition recipe, int price)
             : base(100, 200)
@@ -40,7 +42,9 @@ namespace Server.Items
         {
             if (info.ButtonID == 2)
             {
-                if (m_Book.RootParent is PlayerVendor pv)
+                PlayerVendor pv = m_Book.RootParent as PlayerVendor;
+
+                if (pv != null)
                 {
                     int price = 0;
 
@@ -69,12 +73,12 @@ namespace Server.Items
 
                         Container pack = m_From.Backpack;
 
-                        if (pack != null && pack.ConsumeTotal(typeof(Gold), price) || Banker.Withdraw(m_From, price))
+                        if ((pack != null && pack.ConsumeTotal(typeof(Gold), price)) || Banker.Withdraw(m_From, price))
                         {
                             m_Book.Recipes.ForEach(x =>
                             {
                                 if (x.RecipeID == m_Recipe.RecipeID)
-                                    x.Amount -= 1;
+                                    x.Amount = x.Amount - 1;
                             });
 
                             m_Book.InvalidateProperties();
@@ -100,7 +104,10 @@ namespace Server.Items
                 {
                     m_Book.Using = false;
 
-                    m_From.SendLocalizedMessage(1158821); // The recipe selected is not available.
+                    if (pv == null)
+                        m_From.SendLocalizedMessage(1158821); // The recipe selected is not available.
+                    else
+                        pv.SayTo(m_From, 1158821); // The recipe selected is not available.
                 }
             }
             else

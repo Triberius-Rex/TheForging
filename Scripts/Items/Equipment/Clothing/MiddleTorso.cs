@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
@@ -23,7 +24,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -48,7 +49,7 @@ namespace Server.Items
         public BodySash(int hue)
             : base(0x1541, hue)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public BodySash(Serial serial)
@@ -60,7 +61,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -85,7 +86,7 @@ namespace Server.Items
         public FullApron(int hue)
             : base(0x153d, hue)
         {
-            Weight = 4.0;
+            this.Weight = 4.0;
         }
 
         public FullApron(Serial serial)
@@ -97,7 +98,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -121,7 +122,7 @@ namespace Server.Items
         public Doublet(int hue)
             : base(0x1F7B, hue)
         {
-            Weight = 2.0;
+            this.Weight = 2.0;
         }
 
         public Doublet(Serial serial)
@@ -133,7 +134,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -157,7 +158,7 @@ namespace Server.Items
         public Surcoat(int hue)
             : base(0x1FFD, hue)
         {
-            Weight = 6.0;
+            this.Weight = 6.0;
         }
 
         public Surcoat(Serial serial)
@@ -169,7 +170,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -177,6 +178,9 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
+
+            if (this.Weight == 3.0)
+                this.Weight = 6.0;
         }
     }
 
@@ -193,7 +197,7 @@ namespace Server.Items
         public Tunic(int hue)
             : base(0x1FA1, hue)
         {
-            Weight = 5.0;
+            this.Weight = 5.0;
         }
 
         public Tunic(Serial serial)
@@ -205,7 +209,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -229,7 +233,7 @@ namespace Server.Items
         public FormalShirt(int hue)
             : base(0x2310, hue)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public FormalShirt(Serial serial)
@@ -241,7 +245,10 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
+
+            if (this.Weight == 2.0)
+                this.Weight = 1.0;
         }
 
         public override void Deserialize(GenericReader reader)
@@ -265,7 +272,7 @@ namespace Server.Items
         public JesterSuit(int hue)
             : base(0x1F9F, hue)
         {
-            Weight = 4.0;
+            this.Weight = 4.0;
         }
 
         public JesterSuit(Serial serial)
@@ -277,7 +284,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -301,7 +308,7 @@ namespace Server.Items
         public JinBaori(int hue)
             : base(0x27A1, hue)
         {
-            Weight = 3.0;
+            this.Weight = 3.0;
         }
 
         public JinBaori(Serial serial)
@@ -313,7 +320,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -337,7 +344,7 @@ namespace Server.Items
         public GargishSash(int hue)
             : base(0x46B4, Layer.MiddleTorso, hue)
         {
-            Weight = 1.0;
+            this.Weight = 1.0;
         }
 
         public GargishSash(Serial serial)
@@ -345,11 +352,25 @@ namespace Server.Items
         {
         }
 
+        public override Race RequiredRace
+        {
+            get
+            {
+                return Race.Gargoyle;
+            }
+        }
+        public override bool CanBeWornByGargoyles
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

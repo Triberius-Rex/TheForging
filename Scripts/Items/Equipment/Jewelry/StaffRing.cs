@@ -1,5 +1,7 @@
 // By Nerun
 
+using System;
+
 namespace Server.Items
 {
     public class StaffRing : BaseRing
@@ -31,8 +33,8 @@ namespace Server.Items
         {
             if (from.IsPlayer())
             {
-                from.SendMessage("This item is to only be used by staff members.");
-                Delete();
+                from.SendMessage("This item is to only be used by staff members."); 
+                this.Delete();
             }
         }
 
@@ -40,8 +42,8 @@ namespace Server.Items
         {
             if (from.IsPlayer())
             {
-                from.SendMessage("This item is to only be used by staff members.");
-                Delete();
+                from.SendMessage("This item is to only be used by staff members."); 
+                this.Delete();
             }
             return true;
         }
@@ -49,7 +51,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

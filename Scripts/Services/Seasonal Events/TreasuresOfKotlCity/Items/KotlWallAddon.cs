@@ -1,10 +1,12 @@
+using System;
+using Server;
 using Server.Items;
 
 namespace Server.Engines.TreasuresOfKotlCity
 {
     public class KotlWallAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => null;
+        public override BaseAddonDeed Deed { get { return null; } }
 
         [Constructable]
         public KotlWallAddon()
@@ -65,7 +67,7 @@ namespace Server.Engines.TreasuresOfKotlCity
         {
             AddonComponent ac;
             ac = new AddonComponent(item);
-            if (!string.IsNullOrEmpty(name))
+            if (name != null && name.Length > 0)
                 ac.Name = name;
             if (hue != 0)
                 ac.Hue = hue;

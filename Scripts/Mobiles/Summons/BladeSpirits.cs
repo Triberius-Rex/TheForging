@@ -16,39 +16,40 @@ namespace Server.Mobiles
         public BladeSpirits(bool summoned)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.3, 0.6)
         {
-            Name = "a blade spirit";
-            Body = 574;
+            this.Name = "a blade spirit";
+            this.Body = 574;
 
             bool weak = summoned && Siege.SiegeShard;
 
-            SetStr(weak ? 100 : 150);
-            SetDex(weak ? 100 : 150);
-            SetInt(100);
+            this.SetStr(weak ? 100 : 150);
+            this.SetDex(weak ? 100 : 150);
+            this.SetInt(100);
 
-            SetHits(!weak ? 160 : 80);
-            SetStam(250);
-            SetMana(0);
+            this.SetHits((Core.SE && !weak) ? 160 : 80);
+            this.SetStam(250);
+            this.SetMana(0);
 
-            SetDamage(10, 14);
+            this.SetDamage(10, 14);
 
-            SetDamageType(ResistanceType.Physical, 60);
-            SetDamageType(ResistanceType.Poison, 20);
-            SetDamageType(ResistanceType.Energy, 20);
+            this.SetDamageType(ResistanceType.Physical, 60);
+            this.SetDamageType(ResistanceType.Poison, 20);
+            this.SetDamageType(ResistanceType.Energy, 20);
 
-            SetResistance(ResistanceType.Physical, 30, 40);
-            SetResistance(ResistanceType.Fire, 40, 50);
-            SetResistance(ResistanceType.Cold, 30, 40);
-            SetResistance(ResistanceType.Poison, 100);
-            SetResistance(ResistanceType.Energy, 20, 30);
+            this.SetResistance(ResistanceType.Physical, 30, 40);
+            this.SetResistance(ResistanceType.Fire, 40, 50);
+            this.SetResistance(ResistanceType.Cold, 30, 40);
+            this.SetResistance(ResistanceType.Poison, 100);
+            this.SetResistance(ResistanceType.Energy, 20, 30);
 
-            SetSkill(SkillName.MagicResist, 70.0);
-            SetSkill(SkillName.Tactics, 90.0);
-            SetSkill(SkillName.Wrestling, 90.0);
+            this.SetSkill(SkillName.MagicResist, 70.0);
+            this.SetSkill(SkillName.Tactics, 90.0);
+            this.SetSkill(SkillName.Wrestling, 90.0);
 
-            Fame = 0;
-            Karma = 0;
+            this.Fame = 0;
+            this.Karma = 0;
 
-            ControlSlots = 2;
+            this.VirtualArmor = 40;
+            this.ControlSlots = (Core.SE) ? 2 : 1;
         }
 
         public BladeSpirits(Serial serial)
@@ -56,21 +57,51 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool DeleteCorpseOnDeath => true;
-
-        public override bool IsHouseSummonable => true;
-
-        public override double DispelDifficulty => 0.0;
-
-        public override double DispelFocus => 20.0;
-
-        public override bool BleedImmune => true;
-
-        public override Poison PoisonImmune => Poison.Lethal;
-
+        public override bool DeleteCorpseOnDeath
+        {
+            get
+            {
+                return Core.AOS;
+            }
+        }
+        public override bool IsHouseSummonable
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override double DispelDifficulty
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
+        public override double DispelFocus
+        {
+            get
+            {
+                return 20.0;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         public override double GetFightModeRanking(Mobile m, FightMode acqType, bool bPlayerOnly)
         {
-            return (m.Str + m.Skills[SkillName.Tactics].Value) / Math.Max(GetDistanceToSqrt(m), 1.0);
+            return (m.Str + m.Skills[SkillName.Tactics].Value) / Math.Max(this.GetDistanceToSqrt(m), 1.0);
         }
 
         public override int GetAngerSound()
@@ -90,7 +121,7 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (Summoned)
+            if (Core.SE && this.Summoned)
             {
                 ArrayList spirtsOrVortexes = new ArrayList();
                 IPooledEnumerable eable = GetMobilesInRange(5);
@@ -109,7 +140,7 @@ namespace Server.Mobiles
                 while (spirtsOrVortexes.Count > 6)
                 {
                     int index = Utility.Random(spirtsOrVortexes.Count);
-                    Dispel(((Mobile)spirtsOrVortexes[index]));
+                    this.Dispel(((Mobile)spirtsOrVortexes[index]));
                     spirtsOrVortexes.RemoveAt(index);
                 }
             }
@@ -120,13 +151,15 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
-            reader.ReadInt();
+
+            int version = reader.ReadInt();
         }
     }
 }

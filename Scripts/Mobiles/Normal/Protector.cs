@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -42,13 +43,17 @@ namespace Server.Mobiles
             Fame = 10000;
             Karma = -10000;
 
-            Item shroud = new Item(0x204E)
-            {
-                Layer = Layer.OuterTorso
-            };
+            Item boots = new ThighBoots();
+            boots.Movable = false;
+            boots.Hue = Utility.Random(2);
 
-            SetWearable(new ThighBoots(), Utility.Random(2));
-            SetWearable(shroud, Utility.Random(2));
+            Item shroud = new Item(0x204E);
+            shroud.Layer = Layer.OuterTorso;
+            shroud.Movable = false;
+            shroud.Hue = Utility.Random(2);
+
+            AddItem(boots);
+            AddItem(shroud);
         }
 
         public Protector(Serial serial)
@@ -56,9 +61,27 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AlwaysMurderer => true;
-        public override bool PropertyTitle => false;
-        public override bool ShowFameTitle => false;
+        public override bool AlwaysMurderer
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool PropertyTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool ShowFameTitle
+        {
+            get
+            {
+                return false;
+            }
+        }
         public override void GenerateLoot(bool spawning)
         {
             if (spawning)
@@ -70,22 +93,22 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.FilthyRich);
+            this.AddLoot(LootPack.FilthyRich);
         }
-
-        public override void OnDeath(Container c)
+      
+        public override void OnDeath( Container c )
         {
-            base.OnDeath(c);
+			base.OnDeath( c );
 
-            if (Utility.RandomDouble() < 0.4)
-                c.DropItem(new ProtectorsEssence());
+			if ( Utility.RandomDouble() < 0.4 )
+			c.DropItem( new ProtectorsEssence() );
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

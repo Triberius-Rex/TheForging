@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a ghostly corpse")]
@@ -8,7 +10,7 @@ namespace Server.Mobiles
             : base(AIType.AI_Spellbinder, FightMode.Aggressor, 10, 1, 0.2, 0.4)
         {
             Name = "a spectral spellbinder";
-            Body = 26;
+            Body = Utility.RandomList(26, 50, 56);
             BaseSoundID = 0x482;
 
             SetStr(46, 70);
@@ -31,6 +33,8 @@ namespace Server.Mobiles
 
             Fame = 2500;
             Karma = -2500;
+
+            VirtualArmor = 28;
         }
 
         public Spellbinder(Serial serial)
@@ -38,19 +42,37 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool BleedImmune => true;
-        public override Poison PoisonImmune => Poison.Regular;
-
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Regular;
+            }
+        }
+        public override OppositionGroup OppositionGroup
+        {
+            get
+            {
+                return OppositionGroup.FeyAndUndead;
+            }
+        }
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Meager);
-            AddLoot(LootPack.LootItemCallback(e => Loot.RandomWeapon()));
+            PackItem(Loot.RandomWeapon());
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

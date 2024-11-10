@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Mobiles
 {
     [CorpseName("a chicken lizard corpse")]
@@ -5,7 +7,7 @@ namespace Server.Mobiles
     {
         [Constructable]
         public BattleChickenLizard()
-            : base(AIType.AI_Melee, FightMode.Aggressor, 10, 1, 0.05, 0.1)
+            : base(AIType.AI_Animal, FightMode.Aggressor, 10, 1, 0.05, 0.1)
         {
             Name = "a battle chicken lizard";
             Body = 716;
@@ -32,33 +34,45 @@ namespace Server.Mobiles
             MinTameSkill = 0.0;
         }
 
-        public override int Meat => 3;
-        public override MeatType MeatType => MeatType.Bird;
-        public override FoodType FavoriteFood => FoodType.GrainsAndHay;
+        public override int Meat { get { return 3; } }
+        public override MeatType MeatType { get { return MeatType.Bird; } }
+        public override FoodType FavoriteFood { get { return FoodType.GrainsAndHay; } }
 
         public override int GetIdleSound() { return 1511; }
         public override int GetAngerSound() { return 1508; }
         public override int GetHurtSound() { return 1510; }
         public override int GetDeathSound() { return 1509; }
 
-        public override double FleeChance => 1.0;
-        public override double BreakFleeChance => 0.05;
+        public override IDamageable Combatant
+        {
+            get { return base.Combatant; }
+            set
+            {
+                base.Combatant = value;
+
+                if (!Controlled)
+                {
+                    if (0.05 > Utility.RandomDouble())
+                    {
+                        StopFlee();
+                    }
+                    else if (!CheckFlee())
+                    {
+                        BeginFlee(TimeSpan.FromSeconds(30));
+                    }
+                }
+            }
+        }
+
 
         public override bool CheckFlee()
         {
-            return true;
-        }
+            if (Controlled)
+            {
+                return base.CheckFlee();
+            }
 
-        public override bool CheckBreakFlee()
-        {
-            return Controlled;
-        }
-
-        public override bool BreakFlee()
-        {
-            NextFleeCheck = Core.TickCount + 1500;
-
-            return true;
+            return DateTime.UtcNow < EndFleeTime;
         }
 
         public override void OnAfterTame(Mobile tamer)
@@ -68,6 +82,8 @@ namespace Server.Mobiles
 
             if (Frozen)
                 Frozen = false;
+
+            StopFlee();
         }
 
         public BattleChickenLizard(Serial serial)
@@ -78,7 +94,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

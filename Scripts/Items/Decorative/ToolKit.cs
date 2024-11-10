@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ToolKit : Item
@@ -6,8 +8,8 @@ namespace Server.Items
         public ToolKit()
             : base(Utility.Random(2) + 0x1EBA)
         {
-            Movable = true;
-            Stackable = false;
+            this.Movable = true;
+            this.Stackable = false;
         }
 
         public ToolKit(Serial serial)
@@ -19,7 +21,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

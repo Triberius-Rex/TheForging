@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class CherryBlossomTrunkAddon : BaseAddon
@@ -6,7 +8,7 @@ namespace Server.Items
         public CherryBlossomTrunkAddon()
             : base()
         {
-            AddComponent(new LocalizedAddonComponent(0x26EE, 1076784), 0, 0, 0);
+            this.AddComponent(new LocalizedAddonComponent(0x26EE, 1076784), 0, 0, 0);
         }
 
         public CherryBlossomTrunkAddon(Serial serial)
@@ -14,7 +16,13 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddonDeed Deed => new CherryBlossomTrunkDeed();
+        public override BaseAddonDeed Deed
+        {
+            get
+            {
+                return new CherryBlossomTrunkDeed();
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
@@ -36,7 +44,7 @@ namespace Server.Items
         public CherryBlossomTrunkDeed()
             : base()
         {
-            LootType = LootType.Blessed;
+            this.LootType = LootType.Blessed;
         }
 
         public CherryBlossomTrunkDeed(Serial serial)
@@ -44,8 +52,20 @@ namespace Server.Items
         {
         }
 
-        public override BaseAddon Addon => new CherryBlossomTrunkAddon();
-        public override int LabelNumber => 1076784;// Cherry Blossom Trunk
+        public override BaseAddon Addon
+        {
+            get
+            {
+                return new CherryBlossomTrunkAddon();
+            }
+        }
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1076784;
+            }
+        }// Cherry Blossom Trunk
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

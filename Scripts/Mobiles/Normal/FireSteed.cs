@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -46,13 +47,10 @@ namespace Server.Mobiles
             ControlSlots = 2;
             MinTameSkill = 106.0;
 
-            SetSpecialAbility(SpecialAbility.DragonBreath);
-        }
+            PackItem(new SulfurousAsh(Utility.RandomMinMax(151, 300)));
+            PackItem(new Ruby(Utility.RandomMinMax(16, 30)));
 
-        public override void GenerateLoot()
-        {
-            AddLoot(LootPack.LootItem<SulfurousAsh>(151, 300, true));
-            AddLoot(LootPack.LootItem<Ruby>(16, 30, true));
+            SetSpecialAbility(SpecialAbility.DragonBreath);
         }
 
         public FireSteed(Serial serial)
@@ -60,19 +58,46 @@ namespace Server.Mobiles
         {
         }
 
-        public override FoodType FavoriteFood => FoodType.Meat;
-        public override PackInstinct PackInstinct => PackInstinct.Daemon | PackInstinct.Equine;
+        public override FoodType FavoriteFood
+        {
+            get
+            {
+                return FoodType.Meat;
+            }
+        }
+        public override PackInstinct PackInstinct
+        {
+            get
+            {
+                return PackInstinct.Daemon | PackInstinct.Equine;
+            }
+        }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(1); // version
+
+            writer.Write((int)1); // version
         }
 
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
+
             int version = reader.ReadInt();
+
+            if (version < 1)
+            {
+                for (int i = 0; i < Skills.Length; ++i)
+                {
+                    Skills[i].Cap = Math.Max(100.0, Skills[i].Cap * 0.9);
+
+                    if (Skills[i].Base > Skills[i].Cap)
+                    {
+                        Skills[i].Base = Skills[i].Cap;
+                    }
+                }
+            }
         }
     }
 }

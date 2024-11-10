@@ -1,6 +1,6 @@
-using Server.Network;
 using System;
 using System.Collections;
+using Server.Network;
 
 namespace Server.Items
 {
@@ -27,11 +27,23 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
-        public override int LabelNumber => 1053122;// orange petals
-        public override double DefaultWeight => 1.0;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1053122;
+            }
+        }// orange petals
+        public override double DefaultWeight
+        {
+            get
+            {
+                return Core.HS ? 1.0 : 0.1;
+            }
+        }
         public static void RemoveContext(Mobile m)
         {
             OrangePetalsContext context = GetContext(m);
@@ -45,8 +57,8 @@ namespace Server.Items
             return (GetContext(m) != null);
         }
 
-        public override bool CheckItemUse(Mobile from, Item item)
-        {
+        public override bool CheckItemUse(Mobile from, Item item) 
+        { 
             if (item != this)
                 return base.CheckItemUse(from, item);
 
@@ -74,7 +86,7 @@ namespace Server.Items
 
             Timer timer = new OrangePetalsTimer(from);
             timer.Start();
-
+            
             BuffInfo.AddBuff(from, new BuffInfo(BuffIcon.OrangePetals, 1153785, 1153814, TimeSpan.FromMinutes(5.0), from));
 
             AddContext(from, new OrangePetalsContext(timer));
@@ -86,7 +98,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -141,7 +153,13 @@ namespace Server.Items
                 m_Timer = timer;
             }
 
-            public Timer Timer => m_Timer;
+            public Timer Timer
+            {
+                get
+                {
+                    return m_Timer;
+                }
+            }
         }
     }
 }

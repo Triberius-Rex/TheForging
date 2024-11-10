@@ -1,6 +1,6 @@
+using System;
 using Server.Items;
 using Server.Network;
-using System;
 
 namespace Server.Mobiles
 {
@@ -13,34 +13,36 @@ namespace Server.Mobiles
         public PlagueBeastLord()
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "a plague beast lord";
-            Body = 775;
-            BaseSoundID = 679;
-            SpeechHue = 0x3B2;
+            this.Name = "a plague beast lord";
+            this.Body = 775;
+            this.BaseSoundID = 679;
+            this.SpeechHue = 0x3B2;
 
-            SetStr(500);
-            SetDex(100);
-            SetInt(30);
+            this.SetStr(500);
+            this.SetDex(100);
+            this.SetInt(30);
 
-            SetHits(1800);
+            this.SetHits(1800);
 
-            SetDamage(20, 25);
+            this.SetDamage(20, 25);
 
-            SetDamageType(ResistanceType.Physical, 50);
-            SetDamageType(ResistanceType.Fire, 25);
-            SetDamageType(ResistanceType.Poison, 25);
+            this.SetDamageType(ResistanceType.Physical, 50);
+            this.SetDamageType(ResistanceType.Fire, 25);
+            this.SetDamageType(ResistanceType.Poison, 25);
 
-            SetResistance(ResistanceType.Physical, 45, 55);
-            SetResistance(ResistanceType.Fire, 40, 50);
-            SetResistance(ResistanceType.Cold, 25, 35);
-            SetResistance(ResistanceType.Poison, 75, 85);
-            SetResistance(ResistanceType.Energy, 25, 35);
+            this.SetResistance(ResistanceType.Physical, 45, 55);
+            this.SetResistance(ResistanceType.Fire, 40, 50);
+            this.SetResistance(ResistanceType.Cold, 25, 35);
+            this.SetResistance(ResistanceType.Poison, 75, 85);
+            this.SetResistance(ResistanceType.Energy, 25, 35);
 
-            SetSkill(SkillName.Tactics, 100);
-            SetSkill(SkillName.Wrestling, 100);
+            this.SetSkill(SkillName.Tactics, 100);
+            this.SetSkill(SkillName.Wrestling, 100);
 
-            Fame = 2000;
-            Karma = -2000;
+            this.Fame = 2000;
+            this.Karma = -2000;
+
+            this.VirtualArmor = 50;
         }
 
         public PlagueBeastLord(Serial serial)
@@ -48,17 +50,23 @@ namespace Server.Mobiles
         {
         }
 
-        public override Poison PoisonImmune => Poison.Lethal;
+        public override Poison PoisonImmune
+        {
+            get
+            {
+                return Poison.Lethal;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public Mobile OpenedBy
         {
             get
             {
-                return m_OpenedBy;
+                return this.m_OpenedBy;
             }
             set
             {
-                m_OpenedBy = value;
+                this.m_OpenedBy = value;
             }
         }
         [CommandProperty(AccessLevel.GameMaster)]
@@ -66,7 +74,7 @@ namespace Server.Mobiles
         {
             get
             {
-                Container pack = Backpack;
+                Container pack = this.Backpack;
 
                 if (pack != null)
                 {
@@ -84,18 +92,18 @@ namespace Server.Mobiles
         }
         public override void OnDoubleClick(Mobile from)
         {
-            if (IsAccessibleTo(from))
+            if (this.IsAccessibleTo(from))
             {
-                if (m_OpenedBy != null && Backpack != null)
-                    Backpack.DisplayTo(from);
+                if (this.m_OpenedBy != null && this.Backpack != null)
+                    this.Backpack.DisplayTo(from);
                 else
-                    PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1071917, from.NetState); // * You attempt to tear open the amorphous flesh, but it resists *
+                    this.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1071917, from.NetState); // * You attempt to tear open the amorphous flesh, but it resists *
             }
         }
 
         public override bool OnDragDrop(Mobile from, Item dropped)
         {
-            if (IsAccessibleTo(from) && (dropped is PlagueBeastInnard || dropped is PlagueBeastGland))
+            if (this.IsAccessibleTo(from) && (dropped is PlagueBeastInnard || dropped is PlagueBeastGland))
                 return base.OnDragDrop(from, dropped);
 
             return false;
@@ -104,22 +112,22 @@ namespace Server.Mobiles
         public override void OnDeath(Container c)
         {
             base.OnDeath(c);
-
+			
             for (int i = c.Items.Count - 1; i >= 0; i--)
                 c.Items[i].Delete();
         }
 
         public override void OnDelete()
         {
-            if (m_OpenedBy != null && m_OpenedBy.Holding is PlagueBeastInnard)
-                m_OpenedBy.Holding.Delete();
+            if (this.m_OpenedBy != null && this.m_OpenedBy.Holding is PlagueBeastInnard)
+                this.m_OpenedBy.Holding.Delete();
 
-            if (Backpack != null)
+            if (this.Backpack != null)
             {
-                for (int i = Backpack.Items.Count - 1; i >= 0; i--)
-                    Backpack.Items[i].Delete();
+                for (int i = this.Backpack.Items.Count - 1; i >= 0; i--)
+                    this.Backpack.Items[i].Delete();
 
-                Backpack.Delete();
+                this.Backpack.Delete();
             }
 
             base.OnDelete();
@@ -129,8 +137,8 @@ namespace Server.Mobiles
         {
             base.OnMovement(m, oldLocation);
 
-            if (Backpack != null && IsAccessibleTo(m) && m.InRange(oldLocation, 3) && !m.InRange(this, 3))
-                Backpack.SendRemovePacket();
+            if (this.Backpack != null && this.IsAccessibleTo(m) && m.InRange(oldLocation, 3) && !m.InRange(this, 3))
+                this.Backpack.SendRemovePacket();
         }
 
         public override bool CheckNonlocalLift(Mobile from, Item item)
@@ -170,18 +178,18 @@ namespace Server.Mobiles
 
         public virtual void OnParalyzed(Mobile from)
         {
-            FightMode = FightMode.None;
-            Frozen = true;
-            Blessed = true;
-            Combatant = null;
-            Hue = 0x480;
+            this.FightMode = FightMode.None;
+            this.Frozen = true;
+            this.Blessed = true;
+            this.Combatant = null;
+            this.Hue = 0x480;
             from.Combatant = null;
             from.Warmode = false;
 
-            m_Timer = new DecayTimer(this);
-            m_Timer.Start();
+            this.m_Timer = new DecayTimer(this);
+            this.m_Timer.Start();
 
-            Timer.DelayCall(TimeSpan.Zero, BroadcastMessage);
+            Timer.DelayCall(TimeSpan.Zero, new TimerCallback(BroadcastMessage));
         }
 
         public virtual bool IsAccessibleTo(Mobile check)
@@ -189,11 +197,11 @@ namespace Server.Mobiles
             if (check.AccessLevel >= AccessLevel.GameMaster)
                 return true;
 
-            if (!InRange(check, 2))
-                PrivateOverheadMessage(MessageType.Label, 0x3B2, 500446, check.NetState); // That is too far away.
-            else if (m_OpenedBy != null && m_OpenedBy != check)
-                PrivateOverheadMessage(MessageType.Label, 0x3B2, 500365, check.NetState); // That is being used by someone else
-            else if (Frozen)
+            if (!this.InRange(check, 2))
+                this.PrivateOverheadMessage(MessageType.Label, 0x3B2, 500446, check.NetState); // That is too far away.
+            else if (this.m_OpenedBy != null && this.m_OpenedBy != check)
+                this.PrivateOverheadMessage(MessageType.Label, 0x3B2, 500365, check.NetState); // That is being used by someone else
+            else if (this.Frozen)
                 return true;
 
             return false;
@@ -201,32 +209,32 @@ namespace Server.Mobiles
 
         public virtual bool Carve(Mobile from, Item item)
         {
-            if (m_OpenedBy == null && IsAccessibleTo(from))
+            if (this.m_OpenedBy == null && this.IsAccessibleTo(from))
             {
-                m_OpenedBy = from;
+                this.m_OpenedBy = from;
+				
+                if (this.m_Timer == null)
+                    this.m_Timer = new DecayTimer(this);
+				
+                if (!this.m_Timer.Running)
+                    this.m_Timer.Start();
 
-                if (m_Timer == null)
-                    m_Timer = new DecayTimer(this);
-
-                if (!m_Timer.Running)
-                    m_Timer.Start();
-
-                m_Timer.StartDissolving();
+                this.m_Timer.StartDissolving();
 
                 PlagueBeastBackpack pack = new PlagueBeastBackpack();
-				SetWearable(pack);
-				pack.Initialize();
+                this.AddItem(pack);
+                pack.Initialize();
 
-                foreach (NetState state in GetClientsInRange(12))
+                foreach (NetState state in this.GetClientsInRange(12))
                 {
                     Mobile m = state.Mobile;
 
                     if (m != null && m.Player && m != from)
-                        PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1071919, from.Name, m.NetState); // * ~1_VAL~ slices through the plague beast's amorphous tissue *
+                        this.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1071919, from.Name, m.NetState); // * ~1_VAL~ slices through the plague beast's amorphous tissue *
                 }
 
                 from.LocalOverheadMessage(MessageType.Regular, 0x21, 1071904); // * You slice through the plague beast's amorphous tissue *
-                Timer.DelayCall(TimeSpan.Zero, pack.Open, from);
+                Timer.DelayCall<Mobile>(TimeSpan.Zero, new TimerStateCallback<Mobile>(pack.Open), from);
 
                 return true;
             }
@@ -236,7 +244,7 @@ namespace Server.Mobiles
 
         public virtual bool Scissor(Mobile from, Scissors scissors)
         {
-            if (IsAccessibleTo(from))
+            if (this.IsAccessibleTo(from))
                 scissors.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071918);  // You can't cut through the plague beast's amorphous skin with scissors!
 
             return false;
@@ -244,12 +252,12 @@ namespace Server.Mobiles
 
         public void Unfreeze()
         {
-            FightMode = FightMode.Closest;
-            Frozen = false;
-            Blessed = false;
+            this.FightMode = FightMode.Closest;
+            this.Frozen = false;
+            this.Blessed = false;
 
-            if (m_OpenedBy == null)
-                Hue = 0;
+            if (this.m_OpenedBy == null)
+                this.Hue = 0;
         }
 
         public override void Serialize(GenericWriter writer)
@@ -258,16 +266,16 @@ namespace Server.Mobiles
 
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_OpenedBy);
+            writer.Write(this.m_OpenedBy);
 
-            if (m_Timer != null)
+            if (this.m_Timer != null)
             {
-                writer.Write(true);
-                writer.Write(m_Timer.Count);
-                writer.Write(m_Timer.Deadline);
+                writer.Write((bool)true);
+                writer.Write((int)this.m_Timer.Count);
+                writer.Write((int)this.m_Timer.Deadline);
             }
             else
-                writer.Write(false);
+                writer.Write((bool)false);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -276,24 +284,24 @@ namespace Server.Mobiles
 
             int version = reader.ReadEncodedInt();
 
-            m_OpenedBy = reader.ReadMobile();
+            this.m_OpenedBy = reader.ReadMobile();
 
             if (reader.ReadBool())
             {
                 int count = reader.ReadInt();
                 int deadline = reader.ReadInt();
 
-                m_Timer = new DecayTimer(this, count, deadline);
-                m_Timer.Start();
+                this.m_Timer = new DecayTimer(this, count, deadline);
+                this.m_Timer.Start();
             }
 
-            if (FightMode == FightMode.None)
-                Frozen = true;
+            if (this.FightMode == FightMode.None)
+                this.Frozen = true;
         }
 
         private void BroadcastMessage()
         {
-            PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071920); // * The plague beast's amorphous flesh hardens and becomes immobilized *
+            this.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071920); // * The plague beast's amorphous flesh hardens and becomes immobilized *
         }
 
         private class DecayTimer : Timer
@@ -309,54 +317,66 @@ namespace Server.Mobiles
             public DecayTimer(PlagueBeastLord lord, int count, int deadline)
                 : base(TimeSpan.Zero, TimeSpan.FromSeconds(1))
             {
-                m_Lord = lord;
-                m_Count = count;
-                m_Deadline = deadline;
+                this.m_Lord = lord;
+                this.m_Count = count;
+                this.m_Deadline = deadline;
             }
 
-            public int Count => m_Count;
-            public int Deadline => m_Deadline;
+            public int Count
+            {
+                get
+                {
+                    return this.m_Count;
+                }
+            }
+            public int Deadline
+            {
+                get
+                {
+                    return this.m_Deadline;
+                }
+            }
             public void StartDissolving()
             {
-                m_Deadline = Math.Min(m_Count + 60, m_Deadline);
+                this.m_Deadline = Math.Min(this.m_Count + 60, this.m_Deadline);
             }
 
             protected override void OnTick()
             {
-                if (m_Lord == null || m_Lord.Deleted)
+                if (this.m_Lord == null || this.m_Lord.Deleted)
                 {
-                    Stop();
+                    this.Stop();
                     return;
                 }
 
-                if (m_Count + 15 == m_Deadline)
+                if (this.m_Count + 15 == this.m_Deadline)
                 {
-                    if (m_Lord.OpenedBy != null)
-                        m_Lord.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071921); // * The plague beast begins to bubble and dissolve! *
+                    if (this.m_Lord.OpenedBy != null)
+                        this.m_Lord.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1071921); // * The plague beast begins to bubble and dissolve! *
 
-                    m_Lord.PlaySound(0x103);
+                    this.m_Lord.PlaySound(0x103);
                 }
-                else if (m_Count + 10 == m_Deadline)
+                else if (this.m_Count + 10 == this.m_Deadline)
                 {
-                    m_Lord.PlaySound(0x21);
+                    this.m_Lord.PlaySound(0x21);
                 }
-                else if (m_Count + 5 == m_Deadline)
+                else if (this.m_Count + 5 == this.m_Deadline)
                 {
-                    m_Lord.PlaySound(0x1C2);
+                    this.m_Lord.PlaySound(0x1C2);
                 }
-                else if (m_Count == m_Deadline)
+                else if (this.m_Count == this.m_Deadline)
                 {
-                    m_Lord.Unfreeze();
+                    this.m_Lord.Unfreeze();
 
-                    if (m_Lord.OpenedBy != null)
-                        m_Lord.Kill();
+                    if (this.m_Lord.OpenedBy != null)
+                        this.m_Lord.Kill();
 
-                    Stop();
+                    this.Stop();
                 }
-                else if (m_Count % 15 == 0)
-                    m_Lord.PlaySound(0x1BF);
+                else if (this.m_Count % 15 == 0)
+                    this.m_Lord.PlaySound(0x1BF);
 
-                m_Count++;
+                this.m_Count++;
             }
         }
     }

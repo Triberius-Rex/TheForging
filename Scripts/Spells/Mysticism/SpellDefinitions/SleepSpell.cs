@@ -1,15 +1,16 @@
-using Server.Network;
-using Server.Targeting;
 using System;
+using Server;
+using Server.Targeting;
 using System.Collections.Generic;
+using Server.Network;
 
 namespace Server.Spells.Mysticism
 {
     public class SleepSpell : MysticSpell
     {
-        public override SpellCircle Circle => SpellCircle.Third;
+        public override SpellCircle Circle { get { return SpellCircle.Third; } }
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Sleep", "In Zu",
                 230,
                 9022,
@@ -45,7 +46,7 @@ namespace Server.Spells.Mysticism
             }
             else if (CheckHSequence(target))
             {
-                SpellHelper.CheckReflect(this, Caster, ref target);
+                SpellHelper.CheckReflect((int)Circle, Caster, ref target);
 
                 double duration = ((Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value) / 20) + 2;
                 duration -= GetResistSkill(target) / 10;
@@ -62,8 +63,8 @@ namespace Server.Spells.Mysticism
             FinishSequence();
         }
 
-        private static readonly Dictionary<Mobile, SleepTimer> m_Table = new Dictionary<Mobile, SleepTimer>();
-        private static readonly List<Mobile> m_ImmunityList = new List<Mobile>();
+        private static Dictionary<Mobile, SleepTimer> m_Table = new Dictionary<Mobile, SleepTimer>();
+        private static List<Mobile> m_ImmunityList = new List<Mobile>();
 
         public static void DoSleep(Mobile caster, Mobile target, TimeSpan duration)
         {
@@ -98,8 +99,8 @@ namespace Server.Spells.Mysticism
 
         public class SleepTimer : Timer
         {
-            private readonly Mobile m_Target;
-            private readonly DateTime m_EndTime;
+            private Mobile m_Target;
+            private DateTime m_EndTime;
 
             public SleepTimer(Mobile target, TimeSpan duration)
                 : base(TimeSpan.Zero, TimeSpan.FromSeconds(0.5))

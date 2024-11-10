@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Mobiles
 {
     [CorpseName("an effete putrid gargoyle corpse")]
@@ -7,33 +10,35 @@ namespace Server.Mobiles
         public EffetePutridGargoyle()
             : base(AIType.AI_Mage, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
-            Name = "an effete putrid gargoyle";
-            Body = 4;
-            BaseSoundID = 372;
+            this.Name = "an Effete putrid gargoyle";
+            this.Body = 4;
+            this.BaseSoundID = 372;
 
-            SetStr(215, 220);
-            SetDex(90, 95);
-            SetInt(40, 45);
+            this.SetStr(215, 220);
+            this.SetDex(90, 95);
+            this.SetInt(40, 45);
 
-            SetHits(110, 111);
+            this.SetHits(110, 111);
 
-            SetDamage(8, 18);
+            this.SetDamage(8, 18);
 
-            SetDamageType(ResistanceType.Physical, 60);
-            SetDamageType(ResistanceType.Cold, 40);
+            this.SetDamageType(ResistanceType.Physical, 60);
+            this.SetDamageType(ResistanceType.Cold, 40);
 
-            SetResistance(ResistanceType.Physical, 30, 35);
-            SetResistance(ResistanceType.Fire, 25, 35);
-            SetResistance(ResistanceType.Cold, 5, 10);
-            SetResistance(ResistanceType.Poison, 15, 25);
+            this.SetResistance(ResistanceType.Physical, 30, 35);
+            this.SetResistance(ResistanceType.Fire, 25, 35);
+            this.SetResistance(ResistanceType.Cold, 5, 10);
+            this.SetResistance(ResistanceType.Poison, 15, 25);
 
-            SetSkill(SkillName.Anatomy, 6.0, 8.0);
-            SetSkill(SkillName.MagicResist, 60.5, 65);
-            SetSkill(SkillName.Tactics, 65.7, 66);
-            SetSkill(SkillName.Wrestling, 69.6, 70.0);
+            this.SetSkill(SkillName.Anatomy, 6.0, 8.0);
+            this.SetSkill(SkillName.MagicResist, 60.5, 65);
+            this.SetSkill(SkillName.Tactics, 65.7, 66);
+            this.SetSkill(SkillName.Wrestling, 69.6, 70.0);
 
-            Fame = 3500;
-            Karma = -3500;
+            this.Fame = 3500;
+            this.Karma = -3500;
+
+            this.VirtualArmor = 32;
         }
 
         public EffetePutridGargoyle(Serial serial)
@@ -41,18 +46,24 @@ namespace Server.Mobiles
         {
         }
 
-        public override int Meat => 1;
+        public override int Meat
+        {
+            get
+            {
+                return 1;
+            }
+        }
         public override void GenerateLoot()
         {
-            AddLoot(LootPack.Average, 2);
-            AddLoot(LootPack.MedScrolls);
-            AddLoot(LootPack.Gems, Utility.RandomMinMax(1, 4));
+            this.AddLoot(LootPack.Average, 2);
+            this.AddLoot(LootPack.MedScrolls);
+            this.AddLoot(LootPack.Gems, Utility.RandomMinMax(1, 4));
         }
 
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

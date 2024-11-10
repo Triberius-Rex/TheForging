@@ -1,12 +1,15 @@
-using Server.Gumps;
 using System;
+using Server.Multis;
+using Server.Gumps;
+using Server.ContextMenus;
+using System.Collections.Generic;
 
 namespace Server.Items
 {
     public abstract class BaseLocalizedBook : Item
     {
-        public virtual object Title => "a book";
-        public virtual object Author => "unknown";
+        public virtual object Title { get { return "a book"; } }
+        public virtual object Author { get { return "unknown"; } }
 
         public abstract int[] Contents { get; }
 
@@ -34,7 +37,7 @@ namespace Server.Items
             public readonly int Width = 140;
             public readonly int Height = 175;
 
-            private readonly BaseLocalizedBook m_Book;
+            private BaseLocalizedBook m_Book;
 
             public InternalGump(BaseLocalizedBook book)
                 : base(50, 50)
@@ -48,7 +51,7 @@ namespace Server.Items
 
                 page++;
                 AddPage(page);
-
+                
                 if (book.Title is int)
                     AddHtmlLocalized(Page1X, 60, Width, 48, (int)book.Title, false, false);
                 else if (book.Title is string)
@@ -115,7 +118,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

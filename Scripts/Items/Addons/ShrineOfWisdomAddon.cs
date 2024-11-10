@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class ShrineOfWisdomAddon : BaseAddon
@@ -5,11 +7,11 @@ namespace Server.Items
         [Constructable]
         public ShrineOfWisdomAddon()
         {
-            AddComponent(new ShrineOfWisdomComponent(0x14C3), 0, 0, 0);
-            AddComponent(new ShrineOfWisdomComponent(0x14C6), 1, 0, 0);
-            AddComponent(new ShrineOfWisdomComponent(0x14D4), 0, 1, 0);
-            AddComponent(new ShrineOfWisdomComponent(0x14D5), 1, 1, 0);
-            Hue = 0x47E;
+            this.AddComponent(new ShrineOfWisdomComponent(0x14C3), 0, 0, 0);
+            this.AddComponent(new ShrineOfWisdomComponent(0x14C6), 1, 0, 0);
+            this.AddComponent(new ShrineOfWisdomComponent(0x14D4), 0, 1, 0);
+            this.AddComponent(new ShrineOfWisdomComponent(0x14D5), 1, 1, 0);
+            this.Hue = 0x47E;
         }
 
         public ShrineOfWisdomAddon(Serial serial)
@@ -21,7 +23,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -32,7 +34,7 @@ namespace Server.Items
         }
     }
 
-    [Engines.Craft.Forge]
+    [Server.Engines.Craft.Forge]
     public class ShrineOfWisdomComponent : AddonComponent
     {
         [Constructable]
@@ -46,12 +48,18 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1062046;// Shrine of Wisdom
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1062046;
+            }
+        }// Shrine of Wisdom
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

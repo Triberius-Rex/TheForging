@@ -1,13 +1,20 @@
-using Server.Engines.Quests;
+using System;
+using System.Collections.Generic;
+
+using Server;
+using Server.Prompts;
 using Server.Mobiles;
-using Server.Network;
+using Server.Items;
 using Server.SkillHandlers;
+using Server.Network;
+using Server.Gumps;
+using Server.Engines.Quests;
 
 namespace Server.Engines.Khaldun
 {
     public class MysteriousBook : Item, IForensicTarget
     {
-        public override int LabelNumber => 1158583;  // mysterious book
+        public override int LabelNumber { get { return 1158583; } } // mysterious book
         public static readonly Point3D SpawnLocation = new Point3D(6240, 2885, 7);
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -26,7 +33,7 @@ namespace Server.Engines.Khaldun
             if (!m.Player)
                 return;
 
-            GoingGumshoeQuest2 quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
+            var quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
 
             if (quest != null)
             {
@@ -52,7 +59,7 @@ namespace Server.Engines.Khaldun
 
         public void OnInscribeTarget(Mobile m)
         {
-            GoingGumshoeQuest2 quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
+            var quest = QuestHelper.GetQuest<GoingGumshoeQuest2>((PlayerMobile)m);
 
             if (quest != null)
             {
@@ -169,7 +176,7 @@ namespace Server.Engines.Khaldun
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
             writer.Write(Door);
         }
 

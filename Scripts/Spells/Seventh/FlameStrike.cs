@@ -1,3 +1,4 @@
+using System;
 using Server.Targeting;
 
 namespace Server.Spells.Seventh
@@ -15,28 +16,58 @@ namespace Server.Spells.Seventh
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Seventh;
-        public override bool DelayedDamage => true;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Seventh;
+            }
+        }
+        public override bool DelayedDamage
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(IDamageable m)
         {
-            if (!Caster.CanSee(m))
+            if (!this.Caster.CanSee(m))
             {
-                Caster.SendLocalizedMessage(500237); // Target can not be seen.
+                this.Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (CheckHSequence(m))
+            else if (this.CheckHSequence(m))
             {
-                SpellHelper.Turn(Caster, m);
+                SpellHelper.Turn(this.Caster, m);
 
-                Mobile source = Caster;
+                Mobile source = this.Caster;
 
-                SpellHelper.CheckReflect(this, ref source, ref m);
+                SpellHelper.CheckReflect((int)this.Circle, ref source, ref m);
 
-                double damage = GetNewAosDamage(48, 1, 5, m);
+                double damage = 0;
+
+                if (Core.AOS)
+                {
+                    damage = GetNewAosDamage(48, 1, 5, m);
+                }
+                else if (m is Mobile)
+                {
+                    damage = Utility.Random(27, 22);
+
+                    if (this.CheckResisted((Mobile)m))
+                    {
+                        damage *= 0.6;
+
+                        ((Mobile)m).SendLocalizedMessage(501783); // You feel yourself resisting magical energy.
+                    }
+
+                    damage *= this.GetDamageScalar((Mobile)m);
+                }
 
                 if (m != null)
                 {
@@ -50,29 +81,29 @@ namespace Server.Spells.Seventh
                 }
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         private class InternalTarget : Target
         {
             private readonly FlameStrikeSpell m_Owner;
             public InternalTarget(FlameStrikeSpell owner)
-                : base(10, false, TargetFlags.Harmful)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.Harmful)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is IDamageable)
                 {
-                    m_Owner.Target((IDamageable)o);
+                    this.m_Owner.Target((IDamageable)o);
                 }
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

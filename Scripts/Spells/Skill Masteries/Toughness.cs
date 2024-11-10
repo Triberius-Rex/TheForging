@@ -1,21 +1,24 @@
+using System;
+using Server;
+using Server.Spells;
+using Server.Network;
 using Server.Mobiles;
 
 namespace Server.Spells.SkillMasteries
 {
     public class ToughnessSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Toughness", "",
                 -1,
                 9002
             );
 
-        public override double UpKeep => 20;
-        public override int RequiredMana => 20;
+        public override double UpKeep { get { return 20; } }
+        public override int RequiredMana { get { return 20; } }
 
-        public override SkillName CastSkill => SkillName.Macing;
-        public override SkillName DamageSkill => SkillName.Tactics;
-        public override bool CheckManaBeforeCast => !HasSpell(Caster, GetType());
+        public override SkillName CastSkill { get { return SkillName.Macing; } }
+        public override SkillName DamageSkill { get { return SkillName.Tactics; } }
 
         private int _HPBonus;
 
@@ -32,7 +35,7 @@ namespace Server.Spells.SkillMasteries
                 return false;
             }
 
-            ToughnessSpell spell = GetSpell(Caster, GetType()) as ToughnessSpell;
+            ToughnessSpell spell = GetSpell(Caster, this.GetType()) as ToughnessSpell;
 
             if (spell != null)
             {
@@ -66,7 +69,7 @@ namespace Server.Spells.SkillMasteries
 
                 BeginTimer();
 
-                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.Toughness, 1155985, 1155986, string.Format("{0}\t{1}", _HPBonus.ToString(), ScaleMana((int)UpKeep)))); // Hit Point Increase: ~1_VAL~.<br>Mana Upkeep Cost: ~2_VAL~.
+                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.Toughness, 1155985, 1155986, String.Format("{0}\t{1}", _HPBonus.ToString(), ScaleMana((int)UpKeep)))); // Hit Point Increase: ~1_VAL~.<br>Mana Upkeep Cost: ~2_VAL~.
             }
 
             FinishSequence();

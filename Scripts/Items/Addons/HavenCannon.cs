@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 
 namespace Server.Engines.Quests.Haven
@@ -20,7 +21,7 @@ namespace Server.Engines.Quests.Haven
         {
             m_CannonDirection = direction;
 
-            switch (direction)
+            switch ( direction )
             {
                 case CannonDirection.North:
                     {
@@ -63,7 +64,13 @@ namespace Server.Engines.Quests.Haven
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public CannonDirection CannonDirection => m_CannonDirection;
+        public CannonDirection CannonDirection
+        {
+            get
+            {
+                return m_CannonDirection;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public MilitiaCanoneer Canoneer
         {
@@ -76,11 +83,17 @@ namespace Server.Engines.Quests.Haven
                 m_Canoneer = value;
             }
         }
-        public override bool HandlesOnMovement => m_Canoneer != null && !m_Canoneer.Deleted && m_Canoneer.Active;
+        public override bool HandlesOnMovement
+        {
+            get
+            {
+                return m_Canoneer != null && !m_Canoneer.Deleted && m_Canoneer.Active;
+            }
+        }
         public void DoFireEffect(IPoint3D target)
         {
             Point3D from;
-            switch (m_CannonDirection)
+            switch ( m_CannonDirection )
             {
                 case CannonDirection.North:
                     from = new Point3D(X, Y - 1, Z);
@@ -119,7 +132,7 @@ namespace Server.Engines.Quests.Haven
                 return;
 
             bool canFire;
-            switch (m_CannonDirection)
+            switch ( m_CannonDirection )
             {
                 case CannonDirection.North:
                     canFire = m.X >= X - 7 && m.X <= X + 7 && m.Y == Y - 7 && oldLocation.Y < Y - 7;
@@ -146,10 +159,10 @@ namespace Server.Engines.Quests.Haven
 
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
 
             writer.WriteEncodedInt((int)m_CannonDirection);
-            writer.Write(m_Canoneer);
+            writer.Write((Mobile)m_Canoneer);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -192,7 +205,7 @@ namespace Server.Engines.Quests.Haven
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

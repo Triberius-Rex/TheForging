@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<!-- Config v1.0.0, defines items for the UltimaStore
+clearOsiUltimaStoreItems			bool	Wipe items in UltimaStore before importing by this config (not permanent,
+							if changed from 'false' to 'true' -> OSI items will be present again;
+							default is 'false')
+
+	ultimaStoreItems			list	contains ultimaStoreItem definitions
+		ultimaStoreItem			complex	defines the attributes of one UltimaStore item
+
+ultimaStoreItem
+	category				enum	the category for the item to be sorted in
+							see Server.Engines.UOStore.StoreCategory.* for possible values
+
+	iconItemId				hex	[mandatory] (if iconGumpId not present)
+							the id of the item image to display in store (can be different from actual item)
+
+	iconGumpId				hex	[mandatory] (if iconItemId not present)
+							the id of the item image to display in store (can be different from actual item)
+
+	itemClassName				string	[mandatory] full quallified item class name, the item that will be purchased								
+
+	tooltipText				string	free text for tooltip (will be overruled by tooltipLocalized ID if given)
+
+	tooltipLocalized			int	cliloc id of localized text (overrides tooltipText if present)
+
+	iconHue					hex	color of the item image
+
+	cost					int	price of the item (in UltimaStore defined currency, see official doc for
+							customization in e.g. 'Scripts/Services/UltimaStore/ReadMe.txt')
+
+	itemConstructorArgs			list	contains <arg> as item constructor arguments
+		arg				data	contains 'type'd values [enum, int, double, hex, string], default type is string
+							is used in that order to create an item (if given / necessary)
+
+	multiLineTextName			list	contains text names for the shop item
+		textName				string	one line item name, add more textName to display names in several rows
+
+	multiLineLocalizedName			list	contains cliloc ids for the shop item name
+		localizedName			int	cliloc id, overrides multiLineTextName/s if given
+-->
+
+ 
+<ultimaStoreItems>
+	<clearOsiUltimaStoreItems>false</clearOsiUltimaStoreItems>
+	<!--<ultimaStoreItem>
+		<category>Server.Engines.UOStore.StoreCategory.Featured</category>
+		<iconItemId>0xF3F</iconItemId>
+		<iconHue>0x9C2</iconHue>
+		<multiLineTextName>
+			<textName>A Random Joint</textName>
+		</multiLineTextName>
+		<tooltipText>A Random Joint</tooltipText>
+		<cost>420</cost>
+		<itemClassName>Server.Items.RandomJoint</itemClassName>
+		<itemConstructorArgs>
+			<arg type="string">Puff puff pass!</arg>
+		</itemConstructorArgs>
+	</ultimaStoreItem>	-->	
+</ultimaStoreItems>

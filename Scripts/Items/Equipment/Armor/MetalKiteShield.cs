@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Craft;
 
 namespace Server.Items
@@ -17,20 +18,75 @@ namespace Server.Items
         {
         }
 
-        public override int BasePhysicalResistance => 0;
-        public override int BaseFireResistance => 0;
-        public override int BaseColdResistance => 0;
-        public override int BasePoisonResistance => 0;
-        public override int BaseEnergyResistance => 1;
-        public override int InitMinHits => 45;
-        public override int InitMaxHits => 60;
-        public override int StrReq => 45;
+        public override int BasePhysicalResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseFireResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseColdResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BasePoisonResistance
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public override int BaseEnergyResistance
+        {
+            get
+            {
+                return 1;
+            }
+        }
+        public override int InitMinHits
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 60;
+            }
+        }
+        public override int AosStrReq
+        {
+            get
+            {
+                return 45;
+            }
+        }
+        public override int ArmorBase
+        {
+            get
+            {
+                return 16;
+            }
+        }
         public bool Dye(Mobile from, DyeTub sender)
         {
-            if (Deleted)
+            if (this.Deleted)
                 return false;
 
-            Hue = sender.DyedHue;
+            this.Hue = sender.DyedHue;
 
             return true;
         }
@@ -44,7 +100,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);//version
+            writer.Write((int)0);//version
         }
     }
 }

@@ -1,6 +1,6 @@
-using Server.Mobiles;
 using System;
 using System.Collections.Generic;
+using Server.Mobiles;
 
 namespace Server.Items
 {
@@ -18,9 +18,13 @@ namespace Server.Items
     {
         private static Dictionary<Mobile, BlockInfo> _Table;
 
-        public override int BaseMana => 20;
+        public Block()
+        {
+        }
 
-        public override int AccuracyBonus => -15;
+        public override int BaseMana { get { return 20; } }
+
+        public override int AccuracyBonus { get { return -15; } }
 
         public override SkillName GetSecondarySkill(Mobile from)
         {
@@ -79,14 +83,14 @@ namespace Server.Items
             BlockInfo info = new BlockInfo(dciBonus, spellblock, meleeblock);
             _Table[m] = info;
 
-            string args = string.Format("{0}\t{1}\t{2}\t{3}\t{4}", dciBonus, spellblock, meleeblock, "15", "30");
+            string args = String.Format("{0}\t{1}\t{2}\t{3}\t{4}", dciBonus, spellblock, meleeblock, "15", "30");
 
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Block, 1151291, 1151292, TimeSpan.FromSeconds(6), m, args));
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Block, 1151291, 1151292, TimeSpan.FromSeconds(Core.TOL ? 6 : 3), m, args));
             // Next incoming damage reduced.<br>Defense Chance Increase: +~1_val~%<br>Incoming Spell Damage: -~2_val~%<br>Incoming Attack Damage: -~3_val~%<br>Hit Chance Penalty: ~4_val~%<br>Damage Penalty: ~5_val~%
 
-            Timer.DelayCall(TimeSpan.FromSeconds(6), () =>
+            Timer.DelayCall(TimeSpan.FromSeconds(Core.TOL ? 6 : 3), () =>
             {
-                if (IsBlocking(m))
+                if(IsBlocking(m))
                     EndBlock(m);
             });
         }
@@ -108,7 +112,7 @@ namespace Server.Items
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
-            if (!Validate(attacker) || !CheckMana(attacker, true))
+            if (!this.Validate(attacker) || !this.CheckMana(attacker, true))
                 return;
 
             ClearCurrentAbility(attacker);
@@ -130,7 +134,7 @@ namespace Server.Items
 
             BeginBlock(attacker, dcibonus, spellblock, meleeblock);
 
-            if (creature)
+            if(creature)
                 PetTrainingHelper.OnWeaponAbilityUsed((BaseCreature)attacker, SkillName.Bushido);
         }
 

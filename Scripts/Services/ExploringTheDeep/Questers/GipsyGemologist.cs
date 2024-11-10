@@ -1,31 +1,32 @@
-using Server.Commands;
-using Server.Engines.Quests;
-using Server.Gumps;
+using System;
 using Server.Items;
 using Server.Network;
+using Server.Commands;
+using Server.Gumps;
+using Server.Engines.Quests;
 
 namespace Server.Mobiles
 {
     public class GipsyGemologist : Mobile
     {
-        public virtual bool IsInvulnerable => true;
+        public virtual bool IsInvulnerable { get { return true; } }
 
         [Constructable]
         public GipsyGemologist() : base()
         {
-            Name = "Zalia";
-            Title = "The Gypsy Gemologist";
-            Female = true;
-            Race = Race.Human;
-            Blessed = true;
+            this.Name = "Zalia";
+            this.Title = "The Gypsy Gemologist";
+            this.Female = true;
+            this.Race = Race.Human;
+            this.Blessed = true;
 
-            Hue = Utility.RandomSkinHue();
+            this.Hue = Utility.RandomSkinHue();
 
-            AddItem(new LongHair(2213));
-            AddItem(new Backpack());
-            AddItem(new Shoes(0x737));
-            AddItem(new Skirt(0x1BB));
-            AddItem(new FancyShirt(0x535));
+            this.AddItem(new LongHair(2213));
+            this.AddItem(new Backpack());
+            this.AddItem(new Shoes(0x737));
+            this.AddItem(new Skirt(0x1BB));
+            this.AddItem(new FancyShirt(0x535));
             Utility.AssignRandomHair(this);
         }
 
@@ -69,7 +70,7 @@ namespace Server.Mobiles
                     }
                     else
                     {
-                        PublicOverheadMessage(MessageType.Regular, 0x3B2, 501550); // I am not interested in this.
+                        this.PublicOverheadMessage(MessageType.Regular, 0x3B2, 501550); // I am not interested in this.
                     }
                 }
                 else
@@ -87,7 +88,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -104,7 +105,7 @@ namespace Server.Gumps
     {
         public static void Initialize()
         {
-            CommandSystem.Register("ZaliaQuest", AccessLevel.GameMaster, ZaliaQuestGump_OnCommand);
+            CommandSystem.Register("ZaliaQuest", AccessLevel.GameMaster, new CommandEventHandler(ZaliaQuestGump_OnCommand));
         }
 
         private static void ZaliaQuestGump_OnCommand(CommandEventArgs e)
@@ -114,31 +115,31 @@ namespace Server.Gumps
 
         public ZaliaQuestGump(Mobile owner) : base(50, 50)
         {
-            Closable = false;
-            Disposable = true;
-            Dragable = true;
-            Resizable = false;
+            this.Closable = false;
+            this.Disposable = true;
+            this.Dragable = true;
+            this.Resizable = false;
 
             AddPage(0);
-            AddImageTiled(50, 20, 400, 460, 0x1404);
-            AddImageTiled(50, 29, 30, 450, 0x28DC);
-            AddImageTiled(34, 140, 17, 339, 0x242F);
-            AddImage(48, 135, 0x28AB);
-            AddImage(-16, 285, 0x28A2);
-            AddImage(0, 10, 0x28B5);
-            AddImage(25, 0, 0x28B4);
-            AddImageTiled(83, 15, 350, 15, 0x280A);
-            AddImage(34, 479, 0x2842);
-            AddImage(442, 479, 0x2840);
-            AddImageTiled(51, 479, 392, 17, 0x2775);
-            AddImageTiled(415, 29, 44, 450, 0xA2D);
-            AddImageTiled(415, 29, 30, 450, 0x28DC);
-            AddImage(370, 50, 0x589);
+            this.AddImageTiled(50, 20, 400, 460, 0x1404);
+            this.AddImageTiled(50, 29, 30, 450, 0x28DC);
+            this.AddImageTiled(34, 140, 17, 339, 0x242F);
+            this.AddImage(48, 135, 0x28AB);
+            this.AddImage(-16, 285, 0x28A2);
+            this.AddImage(0, 10, 0x28B5);
+            this.AddImage(25, 0, 0x28B4);
+            this.AddImageTiled(83, 15, 350, 15, 0x280A);
+            this.AddImage(34, 479, 0x2842);
+            this.AddImage(442, 479, 0x2840);
+            this.AddImageTiled(51, 479, 392, 17, 0x2775);
+            this.AddImageTiled(415, 29, 44, 450, 0xA2D);
+            this.AddImageTiled(415, 29, 30, 450, 0x28DC);
+            this.AddImage(370, 50, 0x589);
 
-            AddImage(379, 60, 0x15A9);
-            AddImage(425, 0, 0x28C9);
-            AddImage(90, 33, 0x232D);
-            AddImageTiled(130, 65, 175, 1, 0x238D);
+            this.AddImage(379, 60, 0x15A9);
+            this.AddImage(425, 0, 0x28C9);
+            this.AddImage(90, 33, 0x232D);
+            this.AddImageTiled(130, 65, 175, 1, 0x238D);
 
             AddHtmlLocalized(140, 45, 250, 24, 1154327, 0x7FFF, false, false); // Exploring the Deep
 
@@ -172,7 +173,7 @@ namespace Server.Gumps
             AddButton(345, 440, 0xF7, 0xF8, 0, GumpButtonType.Reply, 0);//OK
         }
 
-        public override void OnResponse(NetState state, RelayInfo info)
+        public override void OnResponse(NetState state, RelayInfo info) 
         {
             Mobile from = state.Mobile;
 
@@ -191,7 +192,7 @@ namespace Server.Gumps
     {
         public static void Initialize()
         {
-            CommandSystem.Register("ZaliaQuestComplete", AccessLevel.GameMaster, ZaliaQuestCompleteGump_OnCommand);
+            CommandSystem.Register("ZaliaQuestComplete", AccessLevel.GameMaster, new CommandEventHandler(ZaliaQuestCompleteGump_OnCommand));
         }
 
         private static void ZaliaQuestCompleteGump_OnCommand(CommandEventArgs e)
@@ -201,31 +202,31 @@ namespace Server.Gumps
 
         public ZaliaQuestCompleteGump(Mobile owner) : base(50, 50)
         {
-            Closable = false;
-            Disposable = true;
-            Dragable = true;
-            Resizable = false;
+            this.Closable = false;
+            this.Disposable = true;
+            this.Dragable = true;
+            this.Resizable = false;
 
             AddPage(0);
-            AddImageTiled(50, 20, 400, 460, 0x1404);
-            AddImageTiled(50, 29, 30, 450, 0x28DC);
-            AddImageTiled(34, 140, 17, 339, 0x242F);
-            AddImage(48, 135, 0x28AB);
-            AddImage(-16, 285, 0x28A2);
-            AddImage(0, 10, 0x28B5);
-            AddImage(25, 0, 0x28B4);
-            AddImageTiled(83, 15, 350, 15, 0x280A);
-            AddImage(34, 479, 0x2842);
-            AddImage(442, 479, 0x2840);
-            AddImageTiled(51, 479, 392, 17, 0x2775);
-            AddImageTiled(415, 29, 44, 450, 0xA2D);
-            AddImageTiled(415, 29, 30, 450, 0x28DC);
-            AddImage(370, 50, 0x589);
+            this.AddImageTiled(50, 20, 400, 460, 0x1404);
+            this.AddImageTiled(50, 29, 30, 450, 0x28DC);
+            this.AddImageTiled(34, 140, 17, 339, 0x242F);
+            this.AddImage(48, 135, 0x28AB);
+            this.AddImage(-16, 285, 0x28A2);
+            this.AddImage(0, 10, 0x28B5);
+            this.AddImage(25, 0, 0x28B4);
+            this.AddImageTiled(83, 15, 350, 15, 0x280A);
+            this.AddImage(34, 479, 0x2842);
+            this.AddImage(442, 479, 0x2840);
+            this.AddImageTiled(51, 479, 392, 17, 0x2775);
+            this.AddImageTiled(415, 29, 44, 450, 0xA2D);
+            this.AddImageTiled(415, 29, 30, 450, 0x28DC);
+            this.AddImage(370, 50, 0x589);
 
-            AddImage(379, 60, 0x15A9);
-            AddImage(425, 0, 0x28C9);
-            AddImage(90, 33, 0x232D);
-            AddImageTiled(130, 65, 175, 1, 0x238D);
+            this.AddImage(379, 60, 0x15A9);
+            this.AddImage(425, 0, 0x28C9);
+            this.AddImage(90, 33, 0x232D);
+            this.AddImageTiled(130, 65, 175, 1, 0x238D);
 
             AddHtmlLocalized(140, 45, 250, 24, 1154327, 0x7FFF, false, false); // Exploring the Deep
 

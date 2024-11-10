@@ -1,9 +1,12 @@
+using System;
+using Server;
+
 namespace Server.Items
 {
     public class RusticBenchEastAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new RusticBenchEastDeed();
-        public override bool RetainDeedHue => true;
+        public override BaseAddonDeed Deed { get { return new RusticBenchEastDeed(); } }
+        public override bool RetainDeedHue { get { return true; } }
 
         [Constructable]
         public RusticBenchEastAddon()
@@ -20,7 +23,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -32,8 +35,8 @@ namespace Server.Items
 
     public class RusticBenchEastDeed : BaseAddonDeed
     {
-        public override BaseAddon Addon => new RusticBenchEastAddon();
-        public override int LabelNumber => 1150594;  // rustic bench (east)
+        public override BaseAddon Addon { get { return new RusticBenchEastAddon(); } }
+        public override int LabelNumber { get { return 1150594; } } // rustic bench (east)
 
         [Constructable]
         public RusticBenchEastDeed()
@@ -48,7 +51,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

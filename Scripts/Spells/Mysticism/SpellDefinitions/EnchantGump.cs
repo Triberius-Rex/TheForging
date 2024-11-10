@@ -1,15 +1,18 @@
+using System;
+using System.Collections;
 using Server.Items;
 using Server.Network;
-using Server.Spells;
+using System.Collections.Generic;
 using Server.Spells.Mysticism;
+using Server.Spells;
 
 namespace Server.Gumps
 {
     public class EnchantSpellGump : Gump
     {
-        private readonly Mobile m_Caster;
-        private readonly Item m_Scroll;
-        private readonly BaseWeapon m_Weapon;
+        private Mobile m_Caster;
+        private Item m_Scroll;
+        private BaseWeapon m_Weapon;
 
         public EnchantSpellGump(Mobile caster, Item scroll, BaseWeapon weapon)
             : base(20, 20)

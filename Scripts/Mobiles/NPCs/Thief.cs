@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -24,7 +24,13 @@ namespace Server.Mobiles
         {
         }
 
-        protected override List<SBInfo> SBInfos => m_SBInfos;
+        protected override List<SBInfo> SBInfos
+        {
+            get
+            {
+                return m_SBInfos;
+            }
+        }
         public override void InitSBInfo()
         {
             m_SBInfos.Add(new SBThief());
@@ -32,10 +38,10 @@ namespace Server.Mobiles
 
         public override void InitOutfit()
         {
-            SetWearable(new Shirt(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new LongPants(), Utility.RandomNeutralHue(), 1);
-            SetWearable(new Dagger(), dropChance: 1);
-			SetWearable(new ThighBoots(), Utility.RandomNeutralHue(), 1);
+            AddItem(new Server.Items.Shirt(Utility.RandomNeutralHue()));
+            AddItem(new Server.Items.LongPants(Utility.RandomNeutralHue()));
+            AddItem(new Server.Items.Dagger());
+            AddItem(new Server.Items.ThighBoots(Utility.RandomNeutralHue()));
 
             base.InitOutfit();
         }
@@ -44,7 +50,7 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

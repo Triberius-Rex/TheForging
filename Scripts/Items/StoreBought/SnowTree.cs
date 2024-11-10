@@ -1,23 +1,24 @@
+using System;
+using Server;
 using Server.Gumps;
+using Server.Network;
 
 namespace Server.Items
 {
     public class SnowTreeAddon : BaseAddon
     {
-        public override BaseAddonDeed Deed => new SnowTreeDeed();
+        public override BaseAddonDeed Deed { get { return new SnowTreeDeed(); } }
 
         [Constructable]
         public SnowTreeAddon(bool trunk)
         {
-            AddComponent(new LocalizedAddonComponent(0xCE0, 1071103), 0, 0, 0);
+            AddComponent(new LocalizedAddonComponent(0xDA0, 1071103), 0, 0, 0);
 
             if (!trunk)
             {
-                var comp = new LocalizedAddonComponent(0xD9D, 1071103)
-                {
-                    Hue = 1153
-                };
-                AddComponent(comp, 0, 0, 4);
+                var comp = new LocalizedAddonComponent(0xD9D, 1071103);
+                comp.Hue = 1153;
+                AddComponent(comp, 0, 0, 0);
             }
         }
 
@@ -30,7 +31,7 @@ namespace Server.Items
         {
             base.Serialize(writer);
 
-            writer.WriteEncodedInt(1); // version
+            writer.WriteEncodedInt(0); // version
         }
 
         public override void Deserialize(GenericReader reader)
@@ -38,49 +39,13 @@ namespace Server.Items
             base.Deserialize(reader);
 
             int version = reader.ReadEncodedInt();
-
-            if (version == 0)
-            {
-                Timer.DelayCall(FixTree);
-            }
-        }
-
-        private void FixTree()
-        {
-            AddonComponent toDelete = null;
-
-            foreach (var comp in Components)
-            {
-                if (comp.ItemID == 0xDA0)
-                {
-                    comp.ItemID = 0xCE0;
-                }
-
-                if (comp.ItemID == 0xD9D)
-                {
-                    toDelete = comp;
-                }
-            }
-
-            if (toDelete != null)
-            {
-                Components.Remove(toDelete);
-                toDelete.Addon = null;
-                toDelete.Delete();
-
-                var comp = new LocalizedAddonComponent(0xD9D, 1071103)
-                {
-                    Hue = 1153
-                };
-                AddComponent(comp, 0, 0, 4);
-            }
         }
     }
 
     public class SnowTreeDeed : BaseAddonDeed, IRewardOption
     {
-        public override BaseAddon Addon => new SnowTreeAddon(m_Trunk);
-        public override int LabelNumber => 1071103;  // Snow Tree
+        public override BaseAddon Addon { get { return new SnowTreeAddon(m_Trunk); } }
+        public override int LabelNumber { get { return 1071103; } } // Snow Tree
 
         private bool m_Trunk;
 

@@ -3,8 +3,8 @@ using System;
 namespace Server.Items
 {
     public class DetectiveBoots : Boots
-    {
-        public override bool IsArtifact => true;
+	{
+		public override bool IsArtifact { get { return true; } }
         private int m_Level;
         [Constructable]
         public DetectiveBoots()
@@ -18,29 +18,53 @@ namespace Server.Items
         {
         }
 
-        public override int LabelNumber => 1094894 + m_Level;// [Quality] Detective of the Royal Guard [Replica]
-        public override int InitMinHits => 150;
-        public override int InitMaxHits => 150;
-        public override bool CanFortify => false;
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1094894 + this.m_Level;
+            }
+        }// [Quality] Detective of the Royal Guard [Replica]
+        public override int InitMinHits
+        {
+            get
+            {
+                return 150;
+            }
+        }
+        public override int InitMaxHits
+        {
+            get
+            {
+                return 150;
+            }
+        }
+        public override bool CanFortify
+        {
+            get
+            {
+                return false;
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public int Level
         {
             get
             {
-                return m_Level;
+                return this.m_Level;
             }
             set
             {
-                m_Level = Math.Max(Math.Min(2, value), 0);
-                Attributes.BonusInt = 2 + m_Level;
-                InvalidateProperties();
+                this.m_Level = Math.Max(Math.Min(2, value), 0);
+                this.Attributes.BonusInt = 2 + this.m_Level;
+                this.InvalidateProperties();
             }
         }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
@@ -49,7 +73,7 @@ namespace Server.Items
 
             int version = reader.ReadInt();
 
-            Level = Attributes.BonusInt - 2;
+            this.Level = this.Attributes.BonusInt - 2;
         }
     }
 }

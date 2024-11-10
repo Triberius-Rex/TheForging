@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Server.Mobiles;
 using Server.Network;
 using Server.Spells;
 using Server.Spells.Necromancy;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -16,14 +16,24 @@ namespace Server.Items
     {
         private static readonly Dictionary<Mobile, BleedTimer> m_BleedTable = new Dictionary<Mobile, BleedTimer>();
 
-        public override int BaseMana => 30;
+        public BleedAttack()
+        {
+        }
 
-        public static bool IsBleeding(Mobile m)
+        public override int BaseMana
+        {
+            get
+            {
+                return 30;
+            }
+        }
+		
+		public static bool IsBleeding(Mobile m)
         {
             return m_BleedTable.ContainsKey(m);
         }
-
-        public static void BeginBleed(Mobile m, Mobile from, bool splintering = false)
+		
+		public static void BeginBleed(Mobile m, Mobile from, bool splintering = false)
         {
             BleedTimer timer = null;
 
@@ -40,7 +50,7 @@ namespace Server.Items
                 }
             }
 
-            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Bleed, 1075829, 1075830, TimeSpan.FromSeconds(10), m, string.Format("{0}\t{1}\t{2}", "1", "10", "2")));
+            BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Bleed, 1075829, 1075830, TimeSpan.FromSeconds(10), m, String.Format("{0}\t{1}\t{2}", "1", "10", "2")));
 
             timer = new BleedTimer(from, m, CheckBloodDrink(from));
             m_BleedTable[m] = timer;
@@ -75,10 +85,8 @@ namespace Server.Items
                     from.Heal(damage);
                 }
 
-                Blood blood = new Blood
-                {
-                    ItemID = Utility.Random(0x122A, 5)
-                };
+                Blood blood = new Blood();
+                blood.ItemID = Utility.Random(0x122A, 5);
                 blood.MoveToWorld(m.Location, m.Map);
             }
             else
@@ -106,11 +114,11 @@ namespace Server.Items
             if (message)
                 m.SendLocalizedMessage(1060167); // The bleeding wounds have healed, you are no longer bleeding!
         }
-
-        public static bool CheckBloodDrink(Mobile attacker)
-        {
+		
+		public static bool CheckBloodDrink(Mobile attacker)
+		{
             return attacker.Weapon is BaseWeapon && ((BaseWeapon)attacker.Weapon).WeaponAttributes.BloodDrinker > 0;
-        }
+		}
 
         public override void OnHit(Mobile attacker, Mobile defender, int damage)
         {
@@ -123,13 +131,13 @@ namespace Server.Items
             TransformContext context = TransformationSpellHelper.GetContext(defender);
 
             if ((context != null && (context.Type == typeof(LichFormSpell) || context.Type == typeof(WraithFormSpell))) ||
-                (defender is BaseCreature && ((BaseCreature)defender).BleedImmune) || Spells.Mysticism.StoneFormSpell.CheckImmunity(defender))
+                (defender is BaseCreature && ((BaseCreature)defender).BleedImmune) || Server.Spells.Mysticism.StoneFormSpell.CheckImmunity(defender))
             {
                 attacker.SendLocalizedMessage(1062052); // Your target is not affected by the bleed attack!
                 return;
             }
 
-            BeginBleed(defender, attacker);
+			BeginBleed(defender, attacker);
         }
 
         private class BleedTimer : Timer
@@ -137,7 +145,7 @@ namespace Server.Items
             private readonly Mobile m_From;
             private readonly Mobile m_Mobile;
             private int m_Count;
-            private readonly int m_MaxCount;
+            private int m_MaxCount;
             private readonly bool m_BloodDrinker;
 
             public BleedTimer(Mobile from, Mobile m, bool blooddrinker)
@@ -146,10 +154,10 @@ namespace Server.Items
                 m_From = from;
                 m_Mobile = m;
                 Priority = TimerPriority.TwoFiftyMS;
-                m_BloodDrinker = blooddrinker;
+				m_BloodDrinker = blooddrinker;
 
                 m_MaxCount = Spells.SkillMasteries.ResilienceSpell.UnderEffects(m) ? 3 : 5;
-            }
+			}
 
             protected override void OnTick()
             {
@@ -161,7 +169,7 @@ namespace Server.Items
                 {
                     int damage = 0;
 
-                    if (!Spells.SkillMasteries.WhiteTigerFormSpell.HasBleedMod(m_From, out damage))
+                    if (!Server.Spells.SkillMasteries.WhiteTigerFormSpell.HasBleedMod(m_From, out damage))
                         damage = Math.Max(1, Utility.RandomMinMax(5 - m_Count, (5 - m_Count) * 2));
 
                     DoBleed(m_Mobile, m_From, damage, m_BloodDrinker);

@@ -1,5 +1,5 @@
-using Server.Items;
 using System;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -8,8 +8,15 @@ namespace Server.Mobiles
     {
         [Constructable]
         public ValoriteElemental()
+            : this(25)
+        {
+        }
+
+        [Constructable]
+        public ValoriteElemental(int oreAmount)
             : base(AIType.AI_Melee, FightMode.Closest, 10, 1, 0.2, 0.4)
         {
+            // TODO: Gas attack
             Name = "a valorite elemental";
             Body = 112;
             BaseSoundID = 268;
@@ -40,6 +47,12 @@ namespace Server.Mobiles
             Fame = 3500;
             Karma = -3500;
 
+            VirtualArmor = 38;
+
+            Item ore = new ValoriteOre(oreAmount);
+            ore.ItemID = 0x19B9;
+            PackItem(ore);
+
             SetAreaEffect(AreaEffect.PoisonBreath);
         }
 
@@ -48,15 +61,32 @@ namespace Server.Mobiles
         {
         }
 
-        public override bool AutoDispel => true;
-        public override bool BleedImmune => true;
-        public override int TreasureMapLevel => 1;
+        public override bool AutoDispel
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override bool BleedImmune
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override int TreasureMapLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich);
             AddLoot(LootPack.Gems, 4);
-            AddLoot(LootPack.LootItem<ValoriteOre>(25));
         }
 
         public override void AlterMeleeDamageFrom(Mobile from, ref int damage)
@@ -84,7 +114,7 @@ namespace Server.Mobiles
             FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
 
             IPooledEnumerable eable = Map.GetMobilesInRange(Location, 4);
-            System.Collections.Generic.List<Mobile> list = new System.Collections.Generic.List<Mobile>();
+            var list = new System.Collections.Generic.List<Mobile>();
 
             foreach (Mobile m in eable)
             {
@@ -95,9 +125,9 @@ namespace Server.Mobiles
                 }
             }
 
-            foreach (Mobile m in list)
+            foreach (var m in list)
             {
-                Timer.DelayCall(TimeSpan.FromSeconds(.5), mob =>
+                Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(.5), mob =>
                 {
                     mob.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
                     mob.PlaySound(0x307);
@@ -118,7 +148,7 @@ namespace Server.Mobiles
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)

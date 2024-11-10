@@ -1,3 +1,5 @@
+using System;
+
 namespace Server.Items
 {
     public class DaemonClaw : Item, ICommodity
@@ -12,8 +14,8 @@ namespace Server.Items
         public DaemonClaw(int amount)
             : base(0x5721)
         {
-            Stackable = true;
-            Amount = amount;
+            this.Stackable = true;
+            this.Amount = amount;
         }
 
         public DaemonClaw(Serial serial)
@@ -21,15 +23,21 @@ namespace Server.Items
         {
         }
 
-        TextDefinition ICommodity.Description => LabelNumber;
-        bool ICommodity.IsDeedable => true;
+        TextDefinition ICommodity.Description { get { return LabelNumber; } }
+        bool ICommodity.IsDeedable { get { return true; } }
 
-        public override int LabelNumber => 1113330;// daemon claw
+        public override int LabelNumber
+        {
+            get
+            {
+                return 1113330;
+            }
+        }// daemon claw
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
 
-            writer.Write(0); // version
+            writer.Write((int)0); // version
         }
 
         public override void Deserialize(GenericReader reader)

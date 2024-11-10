@@ -1,3 +1,4 @@
+using System;
 using Server.Mobiles;
 using Server.Network;
 using Server.Targeting;
@@ -6,7 +7,7 @@ namespace Server.Items
 {
     public class ExplodingJackOLantern : Item
     {
-        public override int LabelNumber => 1159220;  // Exploding Jack o' Lantern
+        public override int LabelNumber { get { return 1159220; } } // Exploding Jack o' Lantern
 
         [Constructable]
         public ExplodingJackOLantern()
@@ -18,11 +19,7 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!IsChildOf(from.Backpack))
-            {
-                from.SendLocalizedMessage(1042010); // You must have the object in your backpack to use it.
-            }
-            else if (from.Mounted)
+            if (from.Mounted)
             {
                 from.SendLocalizedMessage(1061130); // You can't do that while riding a mount.
             }
@@ -35,10 +32,10 @@ namespace Server.Items
 
         private class ThrowTarget : Target
         {
-            private readonly Mobile m_From;
+            private Mobile m_From;
 
             public ThrowTarget(Mobile from)
-                : base(10, true, TargetFlags.None)
+                : base(12, true, TargetFlags.None)
             {
                 m_From = from;
             }
@@ -71,7 +68,7 @@ namespace Server.Items
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
-            writer.Write(0);
+            writer.Write((int)0);
         }
 
         public override void Deserialize(GenericReader reader)
