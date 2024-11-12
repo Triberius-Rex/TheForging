@@ -9,7 +9,7 @@ namespace Server.Diagnostics
 	{
 		private static readonly Dictionary<Type, TargetProfile> _profiles = new Dictionary<Type, TargetProfile>();
 
-		public static IEnumerable<TargetProfile> Profiles => _profiles.Values;
+		public static IEnumerable<TargetProfile> Profiles { get { return _profiles.Values; } }
 
 		public static TargetProfile Acquire(Type type)
 		{
@@ -18,8 +18,9 @@ namespace Server.Diagnostics
 				return null;
 			}
 
+			TargetProfile prof;
 
-			if (!_profiles.TryGetValue(type, out var prof))
+			if (!_profiles.TryGetValue(type, out prof))
 			{
 				_profiles.Add(type, prof = new TargetProfile(type));
 			}

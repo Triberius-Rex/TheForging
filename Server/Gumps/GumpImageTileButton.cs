@@ -18,6 +18,7 @@
  *
  ***************************************************************************/
 
+using System;
 using Server.Network;
 
 namespace Server.Gumps
@@ -38,11 +39,11 @@ namespace Server.Gumps
 
 		private int m_LocalizedTooltip;
 
-		public GumpImageTileButton(int x, int y, int normalID, int pressedID, int buttonID, GumpButtonType type, int param, int itemID, int hue, int width, int height) : this(x, y, normalID, pressedID, buttonID, type, param, itemID, hue, width, height, -1)
+		public GumpImageTileButton( int x, int y, int normalID, int pressedID, int buttonID, GumpButtonType type, int param, int itemID, int hue, int width, int height ) : this(x, y, normalID, pressedID, buttonID, type, param, itemID, hue, width, height, -1 )
 		{
 		}
 
-		public GumpImageTileButton(int x, int y, int normalID, int pressedID, int buttonID, GumpButtonType type, int param, int itemID, int hue, int width, int height, int localizedTooltip)
+		public GumpImageTileButton( int x, int y, int normalID, int pressedID, int buttonID, GumpButtonType type, int param, int itemID, int hue, int width, int height, int localizedTooltip )
 		{
 			m_X = x;
 			m_Y = y;
@@ -62,46 +63,79 @@ namespace Server.Gumps
 
 		public int X
 		{
-			get => m_X;
-			set => Delta(ref m_X, value);
+			get
+			{
+				return m_X;
+			}
+			set
+			{
+				Delta( ref m_X, value );
+			}
 		}
 
 		public int Y
 		{
-			get => m_Y;
-			set => Delta(ref m_Y, value);
+			get
+			{
+				return m_Y;
+			}
+			set
+			{
+				Delta( ref m_Y, value );
+			}
 		}
 
 		public int NormalID
 		{
-			get => m_ID1;
-			set => Delta(ref m_ID1, value);
+			get
+			{
+				return m_ID1;
+			}
+			set
+			{
+				Delta( ref m_ID1, value );
+			}
 		}
 
 		public int PressedID
 		{
-			get => m_ID2;
-			set => Delta(ref m_ID2, value);
+			get
+			{
+				return m_ID2;
+			}
+			set
+			{
+				Delta( ref m_ID2, value );
+			}
 		}
 
 		public int ButtonID
 		{
-			get => m_ButtonID;
-			set => Delta(ref m_ButtonID, value);
+			get
+			{
+				return m_ButtonID;
+			}
+			set
+			{
+				Delta( ref m_ButtonID, value );
+			}
 		}
 
 		public GumpButtonType Type
 		{
-			get => m_Type;
+			get
+			{
+				return m_Type;
+			}
 			set
 			{
-				if (m_Type != value)
+				if( m_Type != value )
 				{
 					m_Type = value;
 
-					var parent = Parent;
+					Gump parent = Parent;
 
-					if (parent != null)
+					if( parent != null )
 					{
 						parent.Invalidate();
 					}
@@ -111,71 +145,107 @@ namespace Server.Gumps
 
 		public int Param
 		{
-			get => m_Param;
-			set => Delta(ref m_Param, value);
+			get
+			{
+				return m_Param;
+			}
+			set
+			{
+				Delta( ref m_Param, value );
+			}
 		}
 
 		public int ItemID
 		{
-			get => m_ItemID;
-			set => Delta(ref m_ItemID, value);
+			get
+			{
+				return m_ItemID;
+			}
+			set
+			{
+				Delta( ref m_ItemID, value );
+			}
 		}
 
 		public int Hue
 		{
-			get => m_Hue;
-			set => Delta(ref m_Hue, value);
+			get
+			{
+				return m_Hue;
+			}
+			set
+			{
+				Delta( ref m_Hue, value );
+			}
 		}
 
 		public int Width
 		{
-			get => m_Width;
-			set => Delta(ref m_Width, value);
+			get
+			{
+				return m_Width;
+			}
+			set
+			{
+				Delta( ref m_Width, value );
+			}
 		}
 
 		public int Height
 		{
-			get => m_Height;
-			set => Delta(ref m_Height, value);
+			get
+			{
+				return m_Height;
+			}
+			set
+			{
+				Delta( ref m_Height, value );
+			}
 		}
 
 		public int LocalizedTooltip
 		{
-			get => m_LocalizedTooltip;
-			set => m_LocalizedTooltip = value;
+			get
+			{
+				return m_LocalizedTooltip;
+			}
+			set
+			{
+				m_LocalizedTooltip = value;
+			}
 		}
 
 		public override string Compile()
 		{
-			if (m_LocalizedTooltip > 0)
-				return System.String.Format("{{ buttontileart {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} }}{{ tooltip {11} }}", m_X, m_Y, m_ID1, m_ID2, (int)m_Type, m_Param, m_ButtonID, m_ItemID, m_Hue, m_Width, m_Height, m_LocalizedTooltip);
+			if( m_LocalizedTooltip > 0 )
+				return String.Format( "{{ buttontileart {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} }}{{ tooltip {11} }}", m_X, m_Y, m_ID1, m_ID2, (int)m_Type, m_Param, m_ButtonID, m_ItemID, m_Hue, m_Width, m_Height, m_LocalizedTooltip );
 			else
-				return System.String.Format("{{ buttontileart {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} }}", m_X, m_Y, m_ID1, m_ID2, (int)m_Type, m_Param, m_ButtonID, m_ItemID, m_Hue, m_Width, m_Height);
+				return String.Format( "{{ buttontileart {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} }}", m_X, m_Y, m_ID1, m_ID2, (int)m_Type, m_Param, m_ButtonID, m_ItemID, m_Hue, m_Width, m_Height );
 		}
 
-		private static readonly byte[] m_LayoutName = Gump.StringToBuffer("buttontileart");
-		private static readonly byte[] m_LayoutTooltip = Gump.StringToBuffer(" }{ tooltip");
+		private static byte[] m_LayoutName = Gump.StringToBuffer( "buttontileart" );
+		private static byte[] m_LayoutTooltip = Gump.StringToBuffer( " }{ tooltip" );
 
-		public override void AppendTo(IGumpWriter disp)
+		public override void AppendTo( IGumpWriter disp )
 		{
-			disp.AppendLayout(m_LayoutName);
-			disp.AppendLayout(m_X);
-			disp.AppendLayout(m_Y);
-			disp.AppendLayout(m_ID1);
-			disp.AppendLayout(m_ID2);
-			disp.AppendLayout((int)m_Type);
-			disp.AppendLayout(m_Param);
-			disp.AppendLayout(m_ButtonID);
+			disp.AppendLayout( m_LayoutName );
+			disp.AppendLayout( m_X );
+			disp.AppendLayout( m_Y );
+			disp.AppendLayout( m_ID1 );
+			disp.AppendLayout( m_ID2 );
+			disp.AppendLayout( (int)m_Type );
+			disp.AppendLayout( m_Param );
+			disp.AppendLayout( m_ButtonID );
 
-			disp.AppendLayout(m_ItemID);
-			disp.AppendLayout(m_Hue);
-			disp.AppendLayout(m_Width);
-			disp.AppendLayout(m_Height);
+			disp.AppendLayout( m_ItemID );
+			disp.AppendLayout( m_Hue );
+			disp.AppendLayout( m_Width );
+			disp.AppendLayout( m_Height );
 
-			if (m_LocalizedTooltip > 0)
+			if( m_LocalizedTooltip > 0 )
 			{
-				disp.AppendLayout(m_LayoutTooltip);
-				disp.AppendLayout(m_LocalizedTooltip);
+				disp.AppendLayout( m_LayoutTooltip );
+				disp.AppendLayout( m_LocalizedTooltip );
 			}
 		}
 	}

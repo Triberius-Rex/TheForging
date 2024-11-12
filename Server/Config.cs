@@ -107,7 +107,7 @@ namespace Server
 		private static readonly Dictionary<string, Entry> _Entries =
 			new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
 
-		public static IEnumerable<Entry> Entries => _Entries.Values;
+		public static IEnumerable<Entry> Entries { get { return _Entries.Values; } }
 
 		public static void Load()
 		{
@@ -151,21 +151,21 @@ namespace Server
 
 					ConsoleKey key;
 
-					do
-					{
-						Console.WriteLine("Ignore this warning? (y/n)");
+                    do
+                    {
+                        Console.WriteLine("Ignore this warning? (y/n)");
 
 						key = Console.ReadKey(true).Key;
-					}
+                    }
 					while (key != ConsoleKey.Y && key != ConsoleKey.N);
-
+                    
 					if (key != ConsoleKey.Y)
 					{
 						Console.WriteLine("Press any key to exit...");
 						Console.ReadKey();
 
 						Core.Kill(false);
-
+					
 						return;
 					}
 				}
@@ -205,7 +205,7 @@ namespace Server
 			var parts = path.Split(Path.DirectorySeparatorChar);
 
 			var scope = String.Join(".", parts.Where(p => !String.IsNullOrWhiteSpace(p)));
-
+			
 			if (scope.Length > 0)
 			{
 				scope += ".";
@@ -242,7 +242,7 @@ namespace Server
 				}
 
 				io = line.IndexOf('=');
-
+				
 				if (io < 0)
 				{
 					throw new FormatException(String.Format("Bad format at line {0}", i + 1));
@@ -277,7 +277,7 @@ namespace Server
 			{
 				Load();
 			}
-
+			
 			if (!Directory.Exists(_Path))
 			{
 				Directory.CreateDirectory(_Path);
@@ -339,7 +339,8 @@ namespace Server
 
 		public static Entry Find(string key)
 		{
-			_Entries.TryGetValue(key, out var e);
+			Entry e;
+			_Entries.TryGetValue(key, out e);
 			return e;
 		}
 
@@ -456,7 +457,7 @@ namespace Server
 
 			var vals = Enum.GetValues(t).Cast<T>();
 
-			foreach (var o in vals.Where(o => o.Equals(value)))
+			foreach (T o in vals.Where(o => o.Equals(value)))
 			{
 				InternalSet(key, o.ToString(CultureInfo.InvariantCulture));
 				return;
@@ -479,8 +480,9 @@ namespace Server
 				Load();
 			}
 
+			Entry e;
 
-			if (_Entries.TryGetValue(key, out var e) && e != null)
+			if (_Entries.TryGetValue(key, out e) && e != null)
 			{
 				return e.UseDefault ? null : e.Value;
 			}
@@ -502,7 +504,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || SByte.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || sbyte.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -517,7 +519,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Byte.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
+			if (value == null || byte.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -532,7 +534,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Int16.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || short.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -547,7 +549,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || UInt16.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
+			if (value == null || ushort.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -562,7 +564,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Int32.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || int.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -577,7 +579,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || UInt32.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
+			if (value == null || uint.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -592,7 +594,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Int64.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || long.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -607,7 +609,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || UInt64.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
+			if (value == null || ulong.TryParse(value, NumberStyles.Any & ~NumberStyles.AllowLeadingSign, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -622,7 +624,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Single.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || float.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -637,7 +639,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Double.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || double.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -652,7 +654,7 @@ namespace Server
 			var ret = defaultValue;
 			var value = InternalGet(key);
 
-			if (value == null || Decimal.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
+			if (value == null || decimal.TryParse(value, NumberStyles.Any, _NumFormatter, out ret))
 			{
 				return ret;
 			}
@@ -665,7 +667,7 @@ namespace Server
 		public static bool Get(string key, bool defaultValue)
 		{
 			var value = InternalGet(key);
-
+			
 			if (value == null)
 			{
 				return defaultValue;
@@ -690,8 +692,9 @@ namespace Server
 		{
 			var value = InternalGet(key);
 
+			TimeSpan ts;
 
-			if (TimeSpan.TryParse(value, out var ts))
+			if (TimeSpan.TryParse(value, out ts))
 			{
 				return ts;
 			}
@@ -705,8 +708,9 @@ namespace Server
 		{
 			var value = InternalGet(key);
 
+			DateTime dt;
 
-			if (DateTime.TryParse(value, out var dt))
+			if (DateTime.TryParse(value, out dt))
 			{
 				return dt;
 			}
@@ -793,7 +797,7 @@ namespace Server
 				if (target != null)
 				{
 					var info = target.GetMethod(method, (BindingFlags)0x38);
-
+	
 					if (info != null)
 					{
 						return (T)(object)Delegate.CreateDelegate(typeof(T), info);

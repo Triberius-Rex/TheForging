@@ -10,11 +10,11 @@ namespace Server.Menus.ItemLists
 		private readonly int m_ItemID;
 		private readonly int m_Hue;
 
-		public string Name => m_Name;
+		public string Name { get { return m_Name; } }
 
-		public int ItemID => m_ItemID;
+		public int ItemID { get { return m_ItemID; } }
 
-		public int Hue => m_Hue;
+		public int Hue { get { return m_Hue; } }
 
 		public ItemListEntry(string name, int itemID)
 			: this(name, itemID, 0)
@@ -36,13 +36,13 @@ namespace Server.Menus.ItemLists
 		private readonly int m_Serial;
 		private static int m_NextSerial;
 
-		int IMenu.Serial => m_Serial;
+		int IMenu.Serial { get { return m_Serial; } }
 
-		int IMenu.EntryLength => m_Entries.Length;
+		int IMenu.EntryLength { get { return m_Entries.Length; } }
 
-		public string Question => m_Question;
+		public string Question { get { return m_Question; } }
 
-		public ItemListEntry[] Entries { get => m_Entries; set => m_Entries = value; }
+		public ItemListEntry[] Entries { get { return m_Entries; } set { m_Entries = value; } }
 
 		public ItemListMenu(string question, ItemListEntry[] entries)
 		{

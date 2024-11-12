@@ -12,9 +12,9 @@ namespace Server.Diagnostics
 	{
 		private long _totalLength;
 
-		public long TotalLength => _totalLength;
+		public long TotalLength { get { return _totalLength; } }
 
-		public double AverageLength => (double)_totalLength / Math.Max(1, Count);
+		public double AverageLength { get { return (double)_totalLength / Math.Max(1, Count); } }
 
 		protected BasePacketProfile(string name)
 			: base(name)
@@ -39,13 +39,14 @@ namespace Server.Diagnostics
 	{
 		private static readonly Dictionary<Type, PacketSendProfile> _profiles = new Dictionary<Type, PacketSendProfile>();
 
-		public static IEnumerable<PacketSendProfile> Profiles => _profiles.Values;
+		public static IEnumerable<PacketSendProfile> Profiles { get { return _profiles.Values; } }
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static PacketSendProfile Acquire(Type type)
 		{
+			PacketSendProfile prof;
 
-			if (!_profiles.TryGetValue(type, out var prof))
+			if (!_profiles.TryGetValue(type, out prof))
 			{
 				_profiles.Add(type, prof = new PacketSendProfile(type));
 			}
@@ -76,13 +77,14 @@ namespace Server.Diagnostics
 	{
 		private static readonly Dictionary<int, PacketReceiveProfile> _profiles = new Dictionary<int, PacketReceiveProfile>();
 
-		public static IEnumerable<PacketReceiveProfile> Profiles => _profiles.Values;
+		public static IEnumerable<PacketReceiveProfile> Profiles { get { return _profiles.Values; } }
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static PacketReceiveProfile Acquire(int packetId)
 		{
+			PacketReceiveProfile prof;
 
-			if (!_profiles.TryGetValue(packetId, out var prof))
+			if (!_profiles.TryGetValue(packetId, out prof))
 			{
 				_profiles.Add(packetId, prof = new PacketReceiveProfile(packetId));
 			}

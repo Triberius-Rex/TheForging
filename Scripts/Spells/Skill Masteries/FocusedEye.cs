@@ -1,22 +1,26 @@
+using System;
+using Server;
+using Server.Spells;
 using Server.Network;
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Spells.SkillMasteries
 {
     public class FocusedEyeSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Focused Eye", "",
                 -1,
                 9002
             );
 
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 20;
-        public override int RequiredMana => 20;
+        public override double RequiredSkill { get { return 90; } }
+        public override double UpKeep { get { return 20; } }
+        public override int RequiredMana { get { return 20; } }
 
-        public override SkillName CastSkill => SkillName.Swords;
-        public override SkillName DamageSkill => SkillName.Tactics;
-        public override bool CheckManaBeforeCast => !HasSpell(Caster, GetType());
+        public override SkillName CastSkill { get { return SkillName.Swords; } }
+        public override SkillName DamageSkill { get { return SkillName.Tactics; } }
 
         private int _PropertyBonus;
 
@@ -27,7 +31,7 @@ namespace Server.Spells.SkillMasteries
 
         public override bool CheckCast()
         {
-            SkillMasterySpell spell = GetSpell(Caster, GetType());
+            SkillMasterySpell spell = GetSpell(Caster, this.GetType());
 
             if (spell != null)
             {
@@ -62,7 +66,7 @@ namespace Server.Spells.SkillMasteries
                 _PropertyBonus = (int)((Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value + (GetMasteryLevel() * 40)) / 12);
 
                 Caster.PrivateOverheadMessage(MessageType.Regular, 1150, 1156002, Caster.NetState); // *You focus your eye on your opponents!*
-                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.FocusedEye, 1156003, 1156004, string.Format("{0}\t{1}", _PropertyBonus.ToString(), ScaleUpkeep().ToString()))); // +~1_VAL~% Hit Chance Increase.<br>Mana Upkeep Cost: ~2_VAL~.
+                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.FocusedEye, 1156003, 1156004, String.Format("{0}\t{1}", _PropertyBonus.ToString(), ScaleUpkeep().ToString()))); // +~1_VAL~% Hit Chance Increase.<br>Mana Upkeep Cost: ~2_VAL~.
 
                 Caster.PlaySound(0x101);
                 Effects.SendTargetParticles(Caster, 0x3789, 1, 40, 2726, 5, 9907, EffectLayer.RightFoot, 0);

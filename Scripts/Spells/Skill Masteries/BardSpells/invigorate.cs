@@ -1,65 +1,70 @@
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
 using System.Collections.Generic;
+using System.Linq;
 
 /*Party Hit Points increased by up to 20 + 6(Collection Bonus), Party healed for 9-20 dmg every 4 seconds. 
 (Provocation Based). Party Strength, Dex, Int, Increased by Up to 8.*/
 
 namespace Server.Spells.SkillMasteries
 {
-    public class InvigorateSpell : BardSpell
-    {
-        public static readonly string StatModName = "Invigorate";
+	public class InvigorateSpell : BardSpell
+	{
+		public static readonly string StatModName = "Invigorate";
+	
+		private DateTime m_NextHeal;
+        private List<Mobile> m_Mods = new List<Mobile>();
 
-        private DateTime m_NextHeal;
-        private readonly List<Mobile> m_Mods = new List<Mobile>();
+		private static SpellInfo m_Info = new SpellInfo(
+				"Invigorate", "An Zu",
+				-1,
+				9002
+			);
 
-        private static readonly SpellInfo m_Info = new SpellInfo(
-                "Invigorate", "An Zu",
-                -1,
-                9002
-            );
-
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 5;
-        public override int RequiredMana => 22;
-        public override bool PartyEffects => true;
-        public override SkillName CastSkill => SkillName.Provocation;
+		public override double RequiredSkill{ get { return 90; } }
+		public override double UpKeep { get { return 5; } }
+		public override int RequiredMana{ get { return 22; } }
+		public override bool PartyEffects { get { return true; } }
+        public override SkillName CastSkill { get { return SkillName.Provocation; } }
 
         private int m_HPBonus;
         private int m_StatBonus;
 
-        public InvigorateSpell(Mobile caster, Item scroll) : base(caster, scroll, m_Info)
-        {
-            m_NextHeal = DateTime.UtcNow + TimeSpan.FromSeconds(4);
-        }
-
-        public override void OnCast()
-        {
-            BardSpell spell = GetSpell(Caster, GetType()) as BardSpell;
-
-            if (spell != null)
-            {
-                spell.Expire();
+		public InvigorateSpell( Mobile caster, Item scroll ) : base(caster, scroll, m_Info)
+		{
+			m_NextHeal = DateTime.UtcNow + TimeSpan.FromSeconds(4);
+		}
+		
+		public override void OnCast()
+		{
+			BardSpell spell = SkillMasterySpell.GetSpell(Caster, this.GetType()) as BardSpell;
+			
+			if(spell != null)
+			{
+				spell.Expire();
                 Caster.SendLocalizedMessage(1115774); //You halt your spellsong.
-            }
-            else if (CheckSequence())
-            {
+			}
+			else if ( CheckSequence() )
+			{
                 m_StatBonus = (int)(BaseSkillBonus + CollectiveBonus);
                 m_HPBonus = (int)((2.5 * BaseSkillBonus) + CollectiveBonus);
 
                 UpdateParty();
-                BeginTimer();
-            }
-
-            FinishSequence();
-        }
+				BeginTimer();
+			}
+			
+			FinishSequence();
+		}
 
         public override void AddPartyEffects(Mobile m)
         {
             m.FixedParticles(0x373A, 10, 15, 5018, EffectLayer.Waist);
             m.SendLocalizedMessage(1115737); // You feel invigorated by the bard's spellsong.
 
-            string args = string.Format("{0}\t{1}\t{2}\t{3}", m_HPBonus, m_StatBonus, m_StatBonus, m_StatBonus);
+            string args = String.Format("{0}\t{1}\t{2}\t{3}", m_HPBonus, m_StatBonus, m_StatBonus, m_StatBonus);
             BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Invigorate, 1115613, 1115730, args.ToString()));
 
             m.AddStatMod(new StatMod(StatType.Str, StatModName + "str", m_StatBonus, TimeSpan.Zero));
@@ -96,18 +101,18 @@ namespace Server.Spells.SkillMasteries
             RemovePartyEffects(Caster);
         }
 
-        public override bool OnTick()
-        {
-            base.OnTick();
-
-            if (m_NextHeal > DateTime.UtcNow)
+		public override bool OnTick()
+		{
+			base.OnTick();
+			
+			if(m_NextHeal > DateTime.UtcNow)
                 return false;
 
             PartyList.IterateReverse(m =>
             {
                 if (CheckPartyEffects(m, true))
                 {
-                    int healRange = (int)((BaseSkillBonus * 2) + CollectiveBonus); // 4 - 16 (22)
+                    int healRange = (int)((BaseSkillBonus * 2) + CollectiveBonus ); // 4 - 16 (22)
 
                     if (m.Hits < m.HitsMax)
                     {
@@ -124,25 +129,25 @@ namespace Server.Spells.SkillMasteries
 
             m_NextHeal = DateTime.UtcNow + TimeSpan.FromSeconds(4);
             return true;
-        }
-
-        /// <summary>
-        /// Called in AOS.cs - HP Bonus
-        /// </summary>
-        /// <returns></returns>
-        public override int StatBonus()
-        {
+		}
+		
+		/// <summary>
+		/// Called in AOS.cs - HP Bonus
+		/// </summary>
+		/// <returns></returns>
+		public override int StatBonus()
+		{
             return m_HPBonus;
-        }
+		}
 
         public static int GetHPBonus(Mobile m)
         {
-            SkillMasterySpell spell = GetSpellForParty(m, typeof(InvigorateSpell));
+            var spell = SkillMasterySpell.GetSpellForParty(m, typeof(InvigorateSpell));
 
             if (spell != null)
                 return spell.StatBonus();
 
             return 0;
         }
-    }
+	}
 }

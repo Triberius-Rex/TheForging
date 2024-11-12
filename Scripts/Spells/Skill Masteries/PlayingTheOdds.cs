@@ -1,24 +1,27 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Mobiles;
+using Server.Items;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Spells.SkillMasteries
 {
     public class PlayingTheOddsSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Playing the Odds", "",
                 -1,
                 9002
             );
 
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 0;  // get
-        public override int RequiredMana => 25;
-        public override bool PartyEffects => true;
+        public override double RequiredSkill { get { return 90; } }
+        public override double UpKeep { get { return 0; } } // get
+        public override int RequiredMana { get { return 25; } }
+        public override bool PartyEffects { get { return true; } }
 
-        public override SkillName CastSkill => SkillName.Archery;
-        public override SkillName DamageSkill => SkillName.Tactics;
+        public override SkillName CastSkill { get { return SkillName.Archery; } }
+        public override SkillName DamageSkill { get { return SkillName.Tactics; } }
 
         private int _HCIBonus;
         private int _SSIBonus;
@@ -37,7 +40,7 @@ namespace Server.Spells.SkillMasteries
 
         public override bool CheckCast()
         {
-            if (IsInCooldown(Caster, GetType()))
+            if (IsInCooldown(Caster, this.GetType()))
                 return false;
 
             if (!CheckWeapon())
@@ -46,7 +49,7 @@ namespace Server.Spells.SkillMasteries
                 return false;
             }
 
-            if (UnderPartyEffects(Caster, typeof(PlayingTheOddsSpell)))
+            if (SkillMasterySpell.UnderPartyEffects(Caster, typeof(PlayingTheOddsSpell)))
             {
                 Caster.SendLocalizedMessage(1062945); // That ability is already in effect.
                 return false;
@@ -69,7 +72,7 @@ namespace Server.Spells.SkillMasteries
                 _HCIBonus = (int)Math.Max(45, skill / 2.667);
                 _SSIBonus = (int)Math.Max(30, skill / 4);
 
-                string args = string.Format("{0}\t{1}\t{2}", Caster.Name, _HCIBonus.ToString(), _SSIBonus.ToString());
+                string args = String.Format("{0}\t{1}\t{2}", Caster.Name, _HCIBonus.ToString(), _SSIBonus.ToString());
                 BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.PlayingTheOddsDebuff, 1155913, 1156091, duration, Caster));
                 //Your bow range has been reduced as you play the odds.
 
@@ -82,7 +85,7 @@ namespace Server.Spells.SkillMasteries
 
                 AddToCooldown(TimeSpan.FromSeconds(90));
 
-                foreach (Mobile mob in AcquireIndirectTargets(Caster.Location, 5).OfType<Mobile>())
+                foreach (var mob in AcquireIndirectTargets(Caster.Location, 5).OfType<Mobile>())
                 {
                     if (HitLower.ApplyDefense(mob))
                     {
@@ -110,7 +113,7 @@ namespace Server.Spells.SkillMasteries
 
             if (m != Caster)
             {
-                string args = string.Format("{0}\t{1}\t{2}", Caster.Name, _HCIBonus.ToString(), _SSIBonus.ToString());
+                string args = String.Format("{0}\t{1}\t{2}", Caster.Name, _HCIBonus.ToString(), _SSIBonus.ToString());
                 BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.PlayingTheOdds, 1155913, 1155998, Expires - DateTime.UtcNow, m, args));
                 //~1_NAME~ grants you the following:<br>+~2_VAl~% Hit Chance Increase.<br>+~3_VAL~% Swing Speed Increase.
             }
@@ -120,7 +123,7 @@ namespace Server.Spells.SkillMasteries
         {
             if (PartyList != null)
             {
-                foreach (Mobile m in PartyList)
+                foreach(var m in PartyList)
                 {
                     RemovePartyEffects(m);
                 }
@@ -174,7 +177,7 @@ namespace Server.Spells.SkillMasteries
                     {
                         return weapon.DefMaxRange / 2;
                     }
-
+                       
                 }
             }
 

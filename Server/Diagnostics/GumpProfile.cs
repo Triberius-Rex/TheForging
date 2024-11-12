@@ -9,7 +9,7 @@ namespace Server.Diagnostics
 	{
 		private static readonly Dictionary<Type, GumpProfile> _profiles = new Dictionary<Type, GumpProfile>();
 
-		public static IEnumerable<GumpProfile> Profiles => _profiles.Values;
+		public static IEnumerable<GumpProfile> Profiles { get { return _profiles.Values; } }
 
 		public static GumpProfile Acquire(Type type)
 		{
@@ -18,8 +18,9 @@ namespace Server.Diagnostics
 				return null;
 			}
 
+			GumpProfile prof;
 
-			if (!_profiles.TryGetValue(type, out var prof))
+			if (!_profiles.TryGetValue(type, out prof))
 			{
 				_profiles.Add(type, prof = new GumpProfile(type));
 			}

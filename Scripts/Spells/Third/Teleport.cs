@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Regions;
 using Server.Targeting;
@@ -17,60 +18,75 @@ namespace Server.Spells.Third
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Third;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Third;
+            }
+        }
         public override bool CheckCast()
         {
-            if (Misc.WeightOverloading.IsOverloaded(Caster))
+            if (Factions.Sigil.ExistsOn(this.Caster))
             {
-                Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
+                this.Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
+                return false;
+            }
+            else if (Server.Misc.WeightOverloading.IsOverloaded(this.Caster))
+            {
+                this.Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
                 return false;
             }
 
-            return SpellHelper.CheckTravel(Caster, TravelCheckType.TeleportFrom);
+            return SpellHelper.CheckTravel(this.Caster, TravelCheckType.TeleportFrom);
         }
 
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(IPoint3D p)
         {
             IPoint3D orig = p;
-            Map map = Caster.Map;
+            Map map = this.Caster.Map;
 
             SpellHelper.GetSurfaceTop(ref p);
 
-            Point3D from = Caster.Location;
+            Point3D from = this.Caster.Location;
             Point3D to = new Point3D(p);
 
-            if (Misc.WeightOverloading.IsOverloaded(Caster))
+            if (Factions.Sigil.ExistsOn(this.Caster))
             {
-                Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
+                this.Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
             }
-            else if (!SpellHelper.CheckTravel(Caster, TravelCheckType.TeleportFrom))
+            else if (Server.Misc.WeightOverloading.IsOverloaded(this.Caster))
+            {
+                this.Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
+            }
+            else if (!SpellHelper.CheckTravel(this.Caster, TravelCheckType.TeleportFrom))
             {
             }
-            else if (!SpellHelper.CheckTravel(Caster, map, to, TravelCheckType.TeleportTo))
+            else if (!SpellHelper.CheckTravel(this.Caster, map, to, TravelCheckType.TeleportTo))
             {
             }
             else if (map == null || !map.CanSpawnMobile(p.X, p.Y, p.Z))
             {
-                Caster.SendLocalizedMessage(501942); // That location is blocked.
+                this.Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
             else if (SpellHelper.CheckMulti(to, map))
             {
-                Caster.SendLocalizedMessage(502831); // Cannot teleport to that spot.
+                this.Caster.SendLocalizedMessage(502831); // Cannot teleport to that spot.
             }
             else if (Region.Find(to, map).GetRegion(typeof(HouseRegion)) != null)
             {
-                Caster.SendLocalizedMessage(502829); // Cannot teleport to that spot.
+                this.Caster.SendLocalizedMessage(502829); // Cannot teleport to that spot.
             }
-            else if (CheckSequence())
+            else if (this.CheckSequence())
             {
-                SpellHelper.Turn(Caster, orig);
+                SpellHelper.Turn(this.Caster, orig);
 
-                Mobile m = Caster;
+                Mobile m = this.Caster;
 
                 m.Location = to;
                 m.ProcessDelta();
@@ -91,23 +107,23 @@ namespace Server.Spells.Third
 
                 foreach (Item item in eable)
                 {
-                    if (item is Fifth.PoisonFieldSpell.InternalItem || item is Fourth.FireFieldSpell.FireFieldItem)
+                    if (item is Server.Spells.Fifth.PoisonFieldSpell.InternalItem || item is Server.Spells.Fourth.FireFieldSpell.FireFieldItem)
                         item.OnMoveOver(m);
                 }
 
                 eable.Free();
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
         {
             private readonly TeleportSpell m_Owner;
             public InternalTarget(TeleportSpell owner)
-                : base(11, true, TargetFlags.None)
+                : base(Core.ML ? 11 : 12, true, TargetFlags.None)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
@@ -115,12 +131,12 @@ namespace Server.Spells.Third
                 IPoint3D p = o as IPoint3D;
 
                 if (p != null)
-                    m_Owner.Target(p);
+                    this.m_Owner.Target(p);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

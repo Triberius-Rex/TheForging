@@ -57,7 +57,7 @@ namespace Server.Network
 				{
 					try
 					{
-						using (var op = new StreamWriter("neterr.log"))
+						using (StreamWriter op = new StreamWriter("neterr.log"))
 						{
 							op.WriteLine("{0}\tInstance pool contains writer", DateTime.UtcNow);
 						}
@@ -190,7 +190,7 @@ namespace Server.Network
 				value = String.Empty;
 			}
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + size);
 
@@ -228,7 +228,7 @@ namespace Server.Network
 				value = String.Empty;
 			}
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + length + 1);
 
@@ -252,7 +252,7 @@ namespace Server.Network
 				value = String.Empty;
 			}
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + ((length + 1) * 2));
 
@@ -281,7 +281,7 @@ namespace Server.Network
 
 			size *= 2;
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + size);
 
@@ -321,7 +321,7 @@ namespace Server.Network
 				value = String.Empty;
 			}
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + ((length + 1) * 2));
 
@@ -351,7 +351,7 @@ namespace Server.Network
 
 			size *= 2;
 
-			var length = value.Length;
+			int length = value.Length;
 
 			m_Stream.SetLength(m_Stream.Length + size);
 
@@ -408,17 +408,17 @@ namespace Server.Network
 		/// <summary>
 		///     Gets the total stream length.
 		/// </summary>
-		public long Length => m_Stream.Length;
+		public long Length { get { return m_Stream.Length; } }
 
 		/// <summary>
 		///     Gets or sets the current stream position.
 		/// </summary>
-		public long Position { get => m_Stream.Position; set => m_Stream.Position = value; }
+		public long Position { get { return m_Stream.Position; } set { m_Stream.Position = value; } }
 
 		/// <summary>
 		///     The internal stream used by this PacketWriter instance.
 		/// </summary>
-		public MemoryStream UnderlyingStream => m_Stream;
+		public MemoryStream UnderlyingStream { get { return m_Stream; } }
 
 		/// <summary>
 		///     Offsets the current position from an origin.

@@ -8,19 +8,22 @@ namespace Server
 	[Parsable]
 	public abstract class Race
 	{
-		public static Race DefaultRace => m_Races[0];
+		public static Race DefaultRace { get { return m_Races[0]; } }
 
 		private static readonly Race[] m_Races = new Race[0x100];
 
-		public static Race[] Races => m_Races;
+		public static Race[] Races { get { return m_Races; } }
 
-		public static Race Human => m_Races[0];
-		public static Race Elf => m_Races[1];
-		public static Race Gargoyle => m_Races[2];
+		public static Race Human { get { return m_Races[0]; } }
+		public static Race Elf { get { return m_Races[1]; } }
+
+		#region Stygian Abyss
+		public static Race Gargoyle { get { return m_Races[2]; } }
+		#endregion
 
 		private static readonly List<Race> m_AllRaces = new List<Race>();
 
-		public static List<Race> AllRaces => m_AllRaces;
+		public static List<Race> AllRaces { get { return m_AllRaces; } }
 
 		private readonly int m_RaceID;
 		private readonly int m_RaceIndex;
@@ -46,7 +49,7 @@ namespace Server
 		{
 			CheckNamesAndValues();
 
-			for (var i = 0; i < m_RaceNames.Length; ++i)
+			for (int i = 0; i < m_RaceNames.Length; ++i)
 			{
 				if (Insensitive.Equals(m_RaceNames[i], value))
 				{
@@ -54,7 +57,8 @@ namespace Server
 				}
 			}
 
-			if (Int32.TryParse(value, out var index))
+			int index;
+			if (int.TryParse(value, out index))
 			{
 				if (index >= 0 && index < m_Races.Length && m_Races[index] != null)
 				{
@@ -75,9 +79,9 @@ namespace Server
 			m_RaceNames = new string[m_AllRaces.Count];
 			m_RaceValues = new Race[m_AllRaces.Count];
 
-			for (var i = 0; i < m_AllRaces.Count; ++i)
+			for (int i = 0; i < m_AllRaces.Count; ++i)
 			{
-				var race = m_AllRaces[i];
+				Race race = m_AllRaces[i];
 
 				m_RaceNames[i] = race.Name;
 				m_RaceValues[i] = race;
@@ -94,11 +98,15 @@ namespace Server
 		private readonly int m_MaleGhostBody;
 		private readonly int m_FemaleGhostBody;
 
-		public int MaleBody => m_MaleBody;
-		public int MaleGhostBody => m_MaleGhostBody;
+		private readonly Expansion m_RequiredExpansion;
 
-		public int FemaleBody => m_FemaleBody;
-		public int FemaleGhostBody => m_FemaleGhostBody;
+		public Expansion RequiredExpansion { get { return m_RequiredExpansion; } }
+
+		public int MaleBody { get { return m_MaleBody; } }
+		public int MaleGhostBody { get { return m_MaleGhostBody; } }
+
+		public int FemaleBody { get { return m_FemaleBody; } }
+		public int FemaleGhostBody { get { return m_FemaleGhostBody; } }
 
 		protected Race(
 			int raceID,
@@ -108,7 +116,8 @@ namespace Server
 			int maleBody,
 			int femaleBody,
 			int maleGhostBody,
-			int femaleGhostBody)
+			int femaleGhostBody,
+			Expansion requiredExpansion)
 		{
 			m_RaceID = raceID;
 			m_RaceIndex = raceIndex;
@@ -120,6 +129,7 @@ namespace Server
 			m_MaleGhostBody = maleGhostBody;
 			m_FemaleGhostBody = femaleGhostBody;
 
+			m_RequiredExpansion = requiredExpansion;
 			PluralName = pluralName;
 		}
 
@@ -151,31 +161,29 @@ namespace Server
 
 		public abstract int RandomFacialHair(bool female); //For the *ahem* bearded ladies
 
-		public virtual bool ValidateFace(Mobile m, int itemID)
-		{
-			return ValidateFace(m.Female, itemID);
-		}
+        public virtual bool ValidateFace(Mobile m, int itemID)
+        {
+            return ValidateFace(m.Female, itemID);
+        }
 
-		public abstract bool ValidateFace(bool female, int itemID);
+        public abstract bool ValidateFace(bool female, int itemID);
 
-		public virtual int RandomFace(Mobile m)
-		{
-			return RandomFace(m.Female);
-		}
-		public abstract int RandomFace(bool female);
+        public virtual int RandomFace(Mobile m)
+        {
+            return RandomFace(m.Female);
+        }
+        public abstract int RandomFace(bool female);
 
-		public abstract bool ValidateEquipment(Item item);
-
-		public abstract int ClipSkinHue(int hue);
+        public abstract int ClipSkinHue(int hue);
 		public abstract int RandomSkinHue();
 
 		public abstract int ClipHairHue(int hue);
 		public abstract int RandomHairHue();
 
-		public abstract int ClipFaceHue(int hue);
-		public abstract int RandomFaceHue();
+        public abstract int ClipFaceHue(int hue);
+        public abstract int RandomFaceHue();
 
-		public virtual int Body(Mobile m)
+        public virtual int Body(Mobile m)
 		{
 			if (m.Alive)
 			{
@@ -192,7 +200,7 @@ namespace Server
 
 		public virtual int AliveBody(bool female)
 		{
-			return female ? m_FemaleBody : m_MaleBody;
+			return (female ? m_FemaleBody : m_MaleBody);
 		}
 
 		public virtual int GhostBody(Mobile m)
@@ -202,14 +210,14 @@ namespace Server
 
 		public virtual int GhostBody(bool female)
 		{
-			return female ? m_FemaleGhostBody : m_MaleGhostBody;
+			return (female ? m_FemaleGhostBody : m_MaleGhostBody);
 		}
 
-		public int RaceID => m_RaceID;
+		public int RaceID { get { return m_RaceID; } }
 
-		public int RaceIndex => m_RaceIndex;
+		public int RaceIndex { get { return m_RaceIndex; } }
 
-		public string Name { get => m_Name; set => m_Name = value; }
+		public string Name { get { return m_Name; } set { m_Name = value; } }
 
 		public string PluralName { get; set; }
 	}

@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -8,9 +8,24 @@ namespace Server.Mobiles
     {
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBHolyMage()
+        {
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
+        public override IShopSellInfo SellInfo
+        {
+            get
+            {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
 
         public class InternalBuyInfo : List<GenericBuyInfo>
         {
@@ -40,7 +55,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(SpidersSilk), 3, 20, 0xF8D, 0));
                 Add(new GenericBuyInfo(typeof(SulfurousAsh), 3, 20, 0xF8C, 0));
 
-                Type[] types = Loot.MageryScrollTypes;
+                Type[] types = Loot.RegularScrollTypes;
 
                 for (int i = 0; i < types.Length && i < 8; ++i)
                 {
@@ -60,14 +75,14 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                Add(typeof(BlackPearl), 3);
-                Add(typeof(Bloodmoss), 3);
-                Add(typeof(MandrakeRoot), 2);
-                Add(typeof(Garlic), 2);
-                Add(typeof(Ginseng), 2);
-                Add(typeof(Nightshade), 2);
-                Add(typeof(SpidersSilk), 2);
-                Add(typeof(SulfurousAsh), 2);
+                Add(typeof(BlackPearl), 3); 
+                Add(typeof(Bloodmoss), 3); 
+                Add(typeof(MandrakeRoot), 2); 
+                Add(typeof(Garlic), 2); 
+                Add(typeof(Ginseng), 2); 
+                Add(typeof(Nightshade), 2); 
+                Add(typeof(SpidersSilk), 2); 
+                Add(typeof(SulfurousAsh), 2); 
                 Add(typeof(RecallRune), 8);
                 Add(typeof(Spellbook), 9);
                 Add(typeof(BlankScroll), 3);
@@ -79,7 +94,7 @@ namespace Server.Mobiles
                 Add(typeof(LesserCurePotion), 7);
                 Add(typeof(LesserHealPotion), 7);
 
-                Type[] types = Loot.MageryScrollTypes;
+                Type[] types = Loot.RegularScrollTypes;
 
                 for (int i = 0; i < types.Length; ++i)
                     Add(types[i], ((i / 8) + 2) * 2);

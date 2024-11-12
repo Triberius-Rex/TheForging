@@ -93,11 +93,11 @@ namespace Server
 
 	public delegate void WorldSaveEventHandler(WorldSaveEventArgs e);
 
-	public delegate void BeforeWorldSaveEventHandler(BeforeWorldSaveEventArgs e);
+    public delegate void BeforeWorldSaveEventHandler(BeforeWorldSaveEventArgs e);
 
-	public delegate void AfterWorldSaveEventHandler(AfterWorldSaveEventArgs e);
+    public delegate void AfterWorldSaveEventHandler(AfterWorldSaveEventArgs e);
 
-	public delegate void SetAbilityEventHandler(SetAbilityEventArgs e);
+    public delegate void SetAbilityEventHandler(SetAbilityEventArgs e);
 
 	public delegate void FastWalkEventHandler(FastWalkEventArgs e);
 
@@ -111,7 +111,7 @@ namespace Server
 
 	public delegate void ClientVersionReceivedHandler(ClientVersionReceivedArgs e);
 
-	public delegate void ClientTypeReceivedHandler(ClientTypeReceivedArgs e);
+    public delegate void ClientTypeReceivedHandler(ClientTypeReceivedArgs e);
 
 	public delegate void OnKilledByEventHandler(OnKilledByEventArgs e);
 
@@ -133,17 +133,17 @@ namespace Server
 
 	public delegate void CraftSuccessEventHandler(CraftSuccessEventArgs e);
 
-	public delegate void SkillGainEventHandler(SkillGainEventArgs e);
+    public delegate void SkillGainEventHandler(SkillGainEventArgs e);
 
-	public delegate void SkillCheckEventHandler(SkillCheckEventArgs e);
+    public delegate void SkillCheckEventHandler(SkillCheckEventArgs e);
 
-	public delegate void SkillCapChangeEventHandler(SkillCapChangeEventArgs e);
+    public delegate void SkillCapChangeEventHandler(SkillCapChangeEventArgs e);
 
-	public delegate void StatCapChangeEventHandler(StatCapChangeEventArgs e);
+    public delegate void StatCapChangeEventHandler(StatCapChangeEventArgs e);
 
-	public delegate void QuestCompleteEventHandler(QuestCompleteEventArgs e);
+    public delegate void QuestCompleteEventHandler(QuestCompleteEventArgs e);
 
-	public delegate void ItemCreatedEventHandler(ItemCreatedEventArgs e);
+    public delegate void ItemCreatedEventHandler(ItemCreatedEventArgs e);
 
 	public delegate void ItemDeletedEventHandler(ItemDeletedEventArgs e);
 
@@ -151,51 +151,51 @@ namespace Server
 
 	public delegate void MobileDeletedEventHandler(MobileDeletedEventArgs e);
 
-	public delegate void TargetedSpellEventHandler(TargetedSpellEventArgs e);
+    public delegate void TargetedSpellEventHandler(TargetedSpellEventArgs e);
 
-	public delegate void TargetedSkillEventHandler(TargetedSkillEventArgs e);
+    public delegate void TargetedSkillEventHandler(TargetedSkillEventArgs e);
 
-	public delegate void TargetedItemUseEventHandler(TargetedItemUseEventArgs e);
+    public delegate void TargetedItemUseEventHandler(TargetedItemUseEventArgs e);
 
-	public delegate void EquipMacroEventHandler(EquipMacroEventArgs e);
+    public delegate void EquipMacroEventHandler(EquipMacroEventArgs e);
 
-	public delegate void UnequipMacroEventHandler(UnequipMacroEventArgs e);
+    public delegate void UnequipMacroEventHandler(UnequipMacroEventArgs e);
 
-	public delegate void TargetByResourceMacroEventHandler(TargetByResourceMacroEventArgs e);
+    public delegate void TargetByResourceMacroEventHandler(TargetByResourceMacroEventArgs e);
 
-	public delegate void JoinGuildEventHandler(JoinGuildEventArgs e);
+    public delegate void JoinGuildEventHandler(JoinGuildEventArgs e);
 
-	public delegate void TameCreatureEventHandler(TameCreatureEventArgs e);
+    public delegate void TameCreatureEventHandler(TameCreatureEventArgs e);
 
-	public delegate void ValidVendorPurchaseEventHandler(ValidVendorPurchaseEventArgs e);
+    public delegate void ValidVendorPurchaseEventHandler(ValidVendorPurchaseEventArgs e);
 
-	public delegate void ValidVendorSellEventHandler(ValidVendorSellEventArgs e);
+    public delegate void ValidVendorSellEventHandler(ValidVendorSellEventArgs e);
 
-	public delegate void CorpseLootEventHandler(CorpseLootEventArgs e);
+    public delegate void CorpseLootEventHandler(CorpseLootEventArgs e);
 
-	public delegate void RepairItemEventHandler(RepairItemEventArgs e);
+    public delegate void RepairItemEventHandler(RepairItemEventArgs e);
 
-	public delegate void AlterItemEventHandler(AlterItemEventArgs e);
+    public delegate void AlterItemEventHandler(AlterItemEventArgs e);
 
-	public delegate void PlacePlayerVendorEventHandler(PlacePlayerVendorEventArgs e);
+    public delegate void PlacePlayerVendorEventHandler(PlacePlayerVendorEventArgs e);
 
-	public delegate void FameChangeEventHandler(FameChangeEventArgs e);
+    public delegate void FameChangeEventHandler(FameChangeEventArgs e);
 
-	public delegate void KarmaChangeEventHandler(KarmaChangeEventArgs e);
+    public delegate void KarmaChangeEventHandler(KarmaChangeEventArgs e);
 
-	public delegate void VirtueLevelChangeEventHandler(VirtueLevelChangeEventArgs e);
+    public delegate void VirtueLevelChangeEventHandler(VirtueLevelChangeEventArgs e);
 
-	public delegate void PlayerMurderedEventHandler(PlayerMurderedEventArgs e);
+    public delegate void PlayerMurderedEventHandler(PlayerMurderedEventArgs e);
 
-	public delegate void AccountGoldChangeEventHandler(AccountGoldChangeEventArgs e);
+    public delegate void AccountGoldChangeEventHandler(AccountGoldChangeEventArgs e);
 
-	public delegate void ContainerDroppedToEventHandler(ContainerDroppedToEventArgs e);
+    public delegate void ContainerDroppedToEventHandler(ContainerDroppedToEventArgs e);
 
-	public delegate void TeleportMovementEventHandler(TeleportMovementEventArgs e);
+    public delegate void TeleportMovementEventHandler(TeleportMovementEventArgs e);
 
-	public delegate void MultiDesignQueryHandler(MultiDesignQueryEventArgs e);
+    public delegate void MultiDesignQueryHandler(MultiDesignQueryEventArgs e);
 
-	public class OnItemObtainedEventArgs : EventArgs
+    public class OnItemObtainedEventArgs : EventArgs
 	{
 		private readonly Mobile m_Mobile;
 		private readonly Item m_Item;
@@ -206,15 +206,15 @@ namespace Server
 			m_Item = item;
 		}
 
-		public Mobile Mobile => m_Mobile;
-		public Item Item => m_Item;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public Item Item { get { return m_Item; } }
 	}
 
 	public class CheckEquipItemEventArgs : EventArgs
 	{
-		public Mobile Mobile { get; }
-		public Item Item { get; }
-		public bool Message { get; }
+		public Mobile Mobile { get; private set; }
+		public Item Item { get; private set; }
+		public bool Message { get; private set; }
 
 		public bool Block { get; set; }
 
@@ -228,9 +228,9 @@ namespace Server
 
 	public class ContextMenuEventArgs : EventArgs
 	{
-		public Mobile Mobile { get; }
-		public IEntity Target { get; }
-		public List<ContextMenuEntry> Entries { get; }
+		public Mobile Mobile { get; private set; }
+		public IEntity Target { get; private set; }
+		public List<ContextMenuEntry> Entries { get; private set; }
 
 		public ContextMenuEventArgs(Mobile m, IEntity target, List<ContextMenuEntry> entries)
 		{
@@ -256,13 +256,13 @@ namespace Server
 		}
 	}
 
-	public class ClientVersionReceivedArgs : EventArgs
+    public class ClientVersionReceivedArgs : EventArgs
 	{
 		private readonly NetState m_State;
 		private readonly ClientVersion m_Version;
 
-		public NetState State => m_State;
-		public ClientVersion Version => m_Version;
+		public NetState State { get { return m_State; } }
+		public ClientVersion Version { get { return m_Version; } }
 
 		public ClientVersionReceivedArgs(NetState state, ClientVersion cv)
 		{
@@ -271,17 +271,17 @@ namespace Server
 		}
 	}
 
-	public class ClientTypeReceivedArgs : EventArgs
-	{
-		private readonly NetState m_State;
+    public class ClientTypeReceivedArgs : EventArgs
+    {
+        private readonly NetState m_State;
 
-		public NetState State => m_State;
+        public NetState State { get { return m_State; } }
 
-		public ClientTypeReceivedArgs(NetState state)
-		{
-			m_State = state;
-		}
-	}
+        public ClientTypeReceivedArgs(NetState state)
+        {
+            m_State = state;
+        }
+    }
 
 	public class CreateGuildEventArgs : EventArgs
 	{
@@ -299,7 +299,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public GuildGumpRequestArgs(Mobile mobile)
 		{
@@ -311,7 +311,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public QuestGumpRequestArgs(Mobile mobile)
 		{
@@ -324,8 +324,8 @@ namespace Server
 		private readonly Mobile m_Mobile;
 		private readonly int m_Index;
 
-		public Mobile Mobile => m_Mobile;
-		public int Index => m_Index;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public int Index { get { return m_Index; } }
 
 		public SetAbilityEventArgs(Mobile mobile, int index)
 		{
@@ -339,8 +339,8 @@ namespace Server
 		private readonly NetState m_State;
 		private readonly int m_Index;
 
-		public NetState State => m_State;
-		public int Index => m_Index;
+		public NetState State { get { return m_State; } }
+		public int Index { get { return m_Index; } }
 
 		public DeleteRequestEventArgs(NetState state, int index)
 		{
@@ -355,9 +355,9 @@ namespace Server
 		private readonly string m_Username;
 		private readonly string m_Password;
 
-		public NetState State => m_State;
-		public string Username => m_Username;
-		public string Password => m_Password;
+		public NetState State { get { return m_State; } }
+		public string Username { get { return m_Username; } }
+		public string Password { get { return m_Password; } }
 		public bool Accepted { get; set; }
 		public CityInfo[] CityInfo { get; set; }
 
@@ -375,9 +375,9 @@ namespace Server
 		private Mobile m_Aggressor;
 		private bool m_Criminal;
 
-		public Mobile Aggressed => m_Aggressed;
-		public Mobile Aggressor => m_Aggressor;
-		public bool Criminal => m_Criminal;
+		public Mobile Aggressed { get { return m_Aggressed; } }
+		public Mobile Aggressor { get { return m_Aggressor; } }
+		public bool Criminal { get { return m_Criminal; } }
 
 		private static readonly Queue<AggressiveActionEventArgs> m_Pool = new Queue<AggressiveActionEventArgs>();
 
@@ -419,8 +419,8 @@ namespace Server
 		private readonly Mobile m_Beholder;
 		private readonly Mobile m_Beheld;
 
-		public Mobile Beholder => m_Beholder;
-		public Mobile Beheld => m_Beheld;
+		public Mobile Beholder { get { return m_Beholder; } }
+		public Mobile Beheld { get { return m_Beheld; } }
 
 		public ProfileRequestEventArgs(Mobile beholder, Mobile beheld)
 		{
@@ -435,9 +435,9 @@ namespace Server
 		private readonly Mobile m_Beheld;
 		private readonly string m_Text;
 
-		public Mobile Beholder => m_Beholder;
-		public Mobile Beheld => m_Beheld;
-		public string Text => m_Text;
+		public Mobile Beholder { get { return m_Beholder; } }
+		public Mobile Beheld { get { return m_Beheld; } }
+		public string Text { get { return m_Text; } }
 
 		public ChangeProfileRequestEventArgs(Mobile beholder, Mobile beheld, string text)
 		{
@@ -452,8 +452,8 @@ namespace Server
 		private readonly Mobile m_Beholder;
 		private readonly Mobile m_Beheld;
 
-		public Mobile Beholder => m_Beholder;
-		public Mobile Beheld => m_Beheld;
+		public Mobile Beholder { get { return m_Beholder; } }
+		public Mobile Beheld { get { return m_Beheld; } }
 
 		public PaperdollRequestEventArgs(Mobile beholder, Mobile beheld)
 		{
@@ -468,9 +468,9 @@ namespace Server
 		private readonly string m_Username;
 		private readonly string m_Password;
 
-		public NetState State => m_State;
-		public string Username => m_Username;
-		public string Password => m_Password;
+		public NetState State { get { return m_State; } }
+		public string Username { get { return m_Username; } }
+		public string Password { get { return m_Password; } }
 		public bool Accepted { get; set; }
 		public ALRReason RejectReason { get; set; }
 
@@ -489,9 +489,9 @@ namespace Server
 		private readonly Mobile m_Beheld;
 		private readonly int m_GumpID;
 
-		public Mobile Beholder => m_Beholder;
-		public Mobile Beheld => m_Beheld;
-		public int GumpID => m_GumpID;
+		public Mobile Beholder { get { return m_Beholder; } }
+		public Mobile Beheld { get { return m_Beheld; } }
+		public int GumpID { get { return m_GumpID; } }
 
 		public VirtueItemRequestEventArgs(Mobile beholder, Mobile beheld, int gumpID)
 		{
@@ -506,8 +506,8 @@ namespace Server
 		private readonly Mobile m_Beholder;
 		private readonly Mobile m_Beheld;
 
-		public Mobile Beholder => m_Beholder;
-		public Mobile Beheld => m_Beheld;
+		public Mobile Beholder { get { return m_Beholder; } }
+		public Mobile Beheld { get { return m_Beheld; } }
 
 		public VirtueGumpRequestEventArgs(Mobile beholder, Mobile beheld)
 		{
@@ -521,8 +521,8 @@ namespace Server
 		private readonly Mobile m_Mobile;
 		private readonly int m_VirtueID;
 
-		public Mobile Mobile => m_Mobile;
-		public int VirtueID => m_VirtueID;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public int VirtueID { get { return m_VirtueID; } }
 
 		public VirtueMacroRequestEventArgs(Mobile mobile, int virtueID)
 		{
@@ -533,9 +533,9 @@ namespace Server
 
 	public class PlayerDeathEventArgs : EventArgs
 	{
-		public Mobile Mobile { get; }
-		public Mobile Killer { get; }
-		public Container Corpse { get; }
+		public Mobile Mobile { get; private set; }
+		public Mobile Killer { get; private set; }
+		public Container Corpse { get; private set; }
 
 		public PlayerDeathEventArgs(Mobile mobile)
 			: this(mobile, mobile.LastKiller, mobile.Corpse)
@@ -551,9 +551,9 @@ namespace Server
 
 	public class CreatureDeathEventArgs : EventArgs
 	{
-		public Mobile Creature { get; }
-		public Mobile Killer { get; }
-		public Container Corpse { get; }
+		public Mobile Creature { get; private set; }
+		public Mobile Killer { get; private set; }
+		public Container Corpse { get; private set; }
 
 		public List<Item> ForcedLoot { get; private set; }
 
@@ -594,9 +594,9 @@ namespace Server
 		private readonly Mobile m_Target;
 		private readonly string m_Name;
 
-		public Mobile From => m_From;
-		public Mobile Target => m_Target;
-		public string Name => m_Name;
+		public Mobile From { get { return m_From; } }
+		public Mobile Target { get { return m_Target; } }
+		public string Name { get { return m_Name; } }
 
 		public RenameRequestEventArgs(Mobile from, Mobile target, string name)
 		{
@@ -610,7 +610,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public LogoutEventArgs(Mobile m)
 		{
@@ -622,7 +622,7 @@ namespace Server
 	{
 		private readonly Socket m_Socket;
 
-		public Socket Socket => m_Socket;
+		public Socket Socket { get { return m_Socket; } }
 		public bool AllowConnection { get; set; }
 
 		public SocketConnectEventArgs(Socket s)
@@ -636,7 +636,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public ConnectedEventArgs(Mobile m)
 		{
@@ -648,7 +648,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public DisconnectedEventArgs(Mobile m)
 		{
@@ -661,8 +661,8 @@ namespace Server
 		private readonly Mobile m_Mobile;
 		private readonly string m_Action;
 
-		public Mobile Mobile => m_Mobile;
-		public string Action => m_Action;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public string Action { get { return m_Action; } }
 
 		public AnimateRequestEventArgs(Mobile m, string action)
 		{
@@ -677,9 +677,9 @@ namespace Server
 		private readonly Item m_Spellbook;
 		private readonly int m_SpellID;
 
-		public Mobile Mobile => m_Mobile;
-		public Item Spellbook => m_Spellbook;
-		public int SpellID => m_SpellID;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public Item Spellbook { get { return m_Spellbook; } }
+		public int SpellID { get { return m_SpellID; } }
 
 		public CastSpellRequestEventArgs(Mobile m, int spellID, Item book)
 		{
@@ -695,9 +695,9 @@ namespace Server
 		private readonly Item m_Bandage;
 		private readonly Mobile m_Target;
 
-		public Mobile Mobile => m_Mobile;
-		public Item Bandage => m_Bandage;
-		public Mobile Target => m_Target;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public Item Bandage { get { return m_Bandage; } }
+		public Mobile Target { get { return m_Target; } }
 
 		public BandageTargetRequestEventArgs(Mobile m, Item bandage, Mobile target)
 		{
@@ -712,8 +712,8 @@ namespace Server
 		private readonly Mobile m_Mobile;
 		private readonly int m_Type;
 
-		public Mobile Mobile => m_Mobile;
-		public int Type => m_Type;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public int Type { get { return m_Type; } }
 
 		public OpenSpellbookRequestEventArgs(Mobile m, int type)
 		{
@@ -726,7 +726,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public StunRequestEventArgs(Mobile m)
 		{
@@ -738,7 +738,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public DisarmRequestEventArgs(Mobile m)
 		{
@@ -750,7 +750,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public HelpRequestEventArgs(Mobile m)
 		{
@@ -765,7 +765,7 @@ namespace Server
 	{
 		private readonly Exception m_Exception;
 
-		public Exception Exception => m_Exception;
+		public Exception Exception { get { return m_Exception; } }
 		public bool Close { get; set; }
 
 		public CrashedEventArgs(Exception e)
@@ -779,8 +779,8 @@ namespace Server
 		private readonly Mobile m_Mobile;
 		private readonly int m_OldValue;
 
-		public Mobile Mobile => m_Mobile;
-		public int OldValue => m_OldValue;
+		public Mobile Mobile { get { return m_Mobile; } }
+		public int OldValue { get { return m_OldValue; } }
 
 		public HungerChangedEventArgs(Mobile mobile, int oldValue)
 		{
@@ -795,9 +795,9 @@ namespace Server
 		private Direction m_Direction;
 		private bool m_Blocked;
 
-		public Mobile Mobile => m_Mobile;
-		public Direction Direction => m_Direction;
-		public bool Blocked { get => m_Blocked; set => m_Blocked = value; }
+		public Mobile Mobile { get { return m_Mobile; } }
+		public Direction Direction { get { return m_Direction; } }
+		public bool Blocked { get { return m_Blocked; } set { m_Blocked = value; } }
 
 		private static readonly Queue<MovementEventArgs> m_Pool = new Queue<MovementEventArgs>();
 
@@ -839,10 +839,10 @@ namespace Server
 		private readonly IAccount m_Account;
 		private readonly List<ServerInfo> m_Servers;
 
-		public NetState State => m_State;
-		public IAccount Account => m_Account;
+		public NetState State { get { return m_State; } }
+		public IAccount Account { get { return m_Account; } }
 		public bool Rejected { get; set; }
-		public List<ServerInfo> Servers => m_Servers;
+		public List<ServerInfo> Servers { get { return m_Servers; } }
 
 		public void AddServer(string name, IPEndPoint address)
 		{
@@ -867,8 +867,8 @@ namespace Server
 		private readonly SkillName m_Name;
 		private readonly int m_Value;
 
-		public SkillName Name => m_Name;
-		public int Value => m_Value;
+		public SkillName Name { get { return m_Name; } }
+		public int Value { get { return m_Value; } }
 
 		public SkillNameValue(SkillName name, int value)
 		{
@@ -896,55 +896,55 @@ namespace Server
 		private readonly int m_Dex;
 		private readonly int m_Int;
 		private readonly Race m_Race;
-		private readonly int m_Face;
-		private readonly int m_FaceHue;
+        private readonly int m_Face;
+        private readonly int m_FaceHue;
 
-		public NetState State => m_State;
-		public IAccount Account => m_Account;
+        public NetState State { get { return m_State; } }
+		public IAccount Account { get { return m_Account; } }
 		public Mobile Mobile { get; set; }
-		public string Name => m_Name;
-		public bool Female => m_Female;
-		public int Hue => m_Hue;
-		public int Str => m_Str;
-		public int Dex => m_Dex;
-		public int Int => m_Int;
-		public CityInfo City => m_City;
-		public SkillNameValue[] Skills => m_Skills;
-		public int ShirtHue => m_ShirtHue;
-		public int PantsHue => m_PantsHue;
-		public int HairID => m_HairID;
-		public int HairHue => m_HairHue;
-		public int BeardID => m_BeardID;
-		public int BeardHue => m_BeardHue;
+		public string Name { get { return m_Name; } }
+		public bool Female { get { return m_Female; } }
+		public int Hue { get { return m_Hue; } }
+		public int Str { get { return m_Str; } }
+		public int Dex { get { return m_Dex; } }
+		public int Int { get { return m_Int; } }
+		public CityInfo City { get { return m_City; } }
+		public SkillNameValue[] Skills { get { return m_Skills; } }
+		public int ShirtHue { get { return m_ShirtHue; } }
+		public int PantsHue { get { return m_PantsHue; } }
+		public int HairID { get { return m_HairID; } }
+		public int HairHue { get { return m_HairHue; } }
+		public int BeardID { get { return m_BeardID; } }
+		public int BeardHue { get { return m_BeardHue; } }
 		public int Profession { get; set; }
-		public Race Race => m_Race;
-		public int FaceID => m_Face;
-		public int FaceHue => m_FaceHue;
+		public Race Race { get { return m_Race; } }
+        public int FaceID { get { return m_Face; } }
+        public int FaceHue { get { return m_FaceHue; } }
 
-		public CharacterCreatedEventArgs(
-			NetState state,
-			IAccount a,
-			string name,
-			bool female,
-			int hue,
-			int str,
-			int dex,
-			int intel,
-			CityInfo city,
-			SkillNameValue[] skills,
-			int shirtHue,
-			int pantsHue,
-			int hairID,
-			int hairHue,
-			int beardID,
-			int beardHue,
-			int profession,
-			Race race)
-			: this(state, a, name, female, hue, str, dex, intel, city, skills, shirtHue, pantsHue, hairID, hairHue, beardID, beardHue, profession, race, 0, 0)
-		{
-		}
+        public CharacterCreatedEventArgs(
+            NetState state,
+            IAccount a,
+            string name,
+            bool female,
+            int hue,
+            int str,
+            int dex,
+            int intel,
+            CityInfo city,
+            SkillNameValue[] skills,
+            int shirtHue,
+            int pantsHue,
+            int hairID,
+            int hairHue,
+            int beardID,
+            int beardHue,
+            int profession,
+            Race race)
+            : this(state, a, name, female, hue, str, dex, intel, city, skills, shirtHue, pantsHue, hairID, hairHue, beardID, beardHue, profession, race, 0, 0)
+        {
+        }
 
-		public CharacterCreatedEventArgs(
+        public CharacterCreatedEventArgs(
 			NetState state,
 			IAccount a,
 			string name,
@@ -963,8 +963,8 @@ namespace Server
 			int beardHue,
 			int profession,
 			Race race,
-			int faceID,
-			int faceHue)
+            int faceID,
+            int faceHue)
 		{
 			m_State = state;
 			m_Account = a;
@@ -984,16 +984,16 @@ namespace Server
 			m_BeardHue = beardHue;
 			Profession = profession;
 			m_Race = race;
-			m_Face = faceID;
-			m_FaceHue = faceHue;
-		}
+            m_Face = faceID;
+            m_FaceHue = faceHue;
+        }
 	}
 
 	public class OpenDoorMacroEventArgs : EventArgs
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public OpenDoorMacroEventArgs(Mobile mobile)
 		{
@@ -1008,17 +1008,17 @@ namespace Server
 		private readonly int m_Hue;
 		private readonly int[] m_Keywords;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 		public string Speech { get; set; }
-		public MessageType Type => m_Type;
-		public int Hue => m_Hue;
-		public int[] Keywords => m_Keywords;
+		public MessageType Type { get { return m_Type; } }
+		public int Hue { get { return m_Hue; } }
+		public int[] Keywords { get { return m_Keywords; } }
 		public bool Handled { get; set; }
 		public bool Blocked { get; set; }
 
 		public bool HasKeyword(int keyword)
 		{
-			for (var i = 0; i < m_Keywords.Length; ++i)
+			for (int i = 0; i < m_Keywords.Length; ++i)
 			{
 				if (m_Keywords[i] == keyword)
 				{
@@ -1043,7 +1043,7 @@ namespace Server
 	{
 		private readonly Mobile m_Mobile;
 
-		public Mobile Mobile => m_Mobile;
+		public Mobile Mobile { get { return m_Mobile; } }
 
 		public LoginEventArgs(Mobile mobile)
 		{
@@ -1055,7 +1055,7 @@ namespace Server
 	{
 		private readonly bool m_Msg;
 
-		public bool Message => m_Msg;
+		public bool Message { get { return m_Msg; } }
 
 		public WorldSaveEventArgs(bool msg)
 		{
@@ -1063,23 +1063,23 @@ namespace Server
 		}
 	}
 
-	public class BeforeWorldSaveEventArgs : EventArgs
-	{
-		public BeforeWorldSaveEventArgs()
-		{
-		}
-	}
+    public class BeforeWorldSaveEventArgs : EventArgs
+    {
+        public BeforeWorldSaveEventArgs()
+        {
+        }
+    }
 
 
-	public class AfterWorldSaveEventArgs : EventArgs
-	{
-		public AfterWorldSaveEventArgs()
-		{
-		}
-	}
+    public class AfterWorldSaveEventArgs : EventArgs
+    {
+        public AfterWorldSaveEventArgs()
+        {
+        }
+    }
 
 
-	public class FastWalkEventArgs : EventArgs
+    public class FastWalkEventArgs : EventArgs
 	{
 		private readonly NetState m_State;
 
@@ -1089,7 +1089,7 @@ namespace Server
 			Blocked = false;
 		}
 
-		public NetState NetState => m_State;
+		public NetState NetState { get { return m_State; } }
 		public bool Blocked { get; set; }
 	}
 
@@ -1104,8 +1104,8 @@ namespace Server
 			m_KilledBy = killedBy;
 		}
 
-		public Mobile Killed => m_Killed;
-		public Mobile KilledBy => m_KilledBy;
+		public Mobile Killed { get { return m_Killed; } }
+		public Mobile KilledBy { get { return m_KilledBy; } }
 	}
 
 	public class OnItemUseEventArgs : EventArgs
@@ -1119,26 +1119,26 @@ namespace Server
 			m_Item = item;
 		}
 
-		public Mobile From => m_From;
-		public Item Item => m_Item;
+		public Mobile From { get { return m_From; } }
+		public Item Item { get { return m_Item; } }
 	}
 
 	public class OnEnterRegionEventArgs : EventArgs
 	{
 		private readonly Mobile m_From;
-		private readonly Region m_OldRegion;
+        private readonly Region m_OldRegion;
 		private readonly Region m_NewRegion;
 
 		public OnEnterRegionEventArgs(Mobile from, Region oldRegion, Region newRegion)
 		{
 			m_From = from;
-			m_OldRegion = oldRegion;
+            m_OldRegion = oldRegion;
 			m_NewRegion = newRegion;
 		}
 
-		public Mobile From => m_From;
-		public Region OldRegion => m_OldRegion;
-		public Region NewRegion => m_NewRegion;
+		public Mobile From { get { return m_From; } }
+		public Region OldRegion { get { return m_OldRegion; } }
+        public Region NewRegion { get { return m_NewRegion; } }
 	}
 
 	public class OnConsumeEventArgs : EventArgs
@@ -1158,20 +1158,20 @@ namespace Server
 			m_Quantity = quantity;
 		}
 
-		public Mobile Consumer => m_Consumer;
+		public Mobile Consumer { get { return m_Consumer; } }
 
-		public Item Consumed => m_Consumed;
+		public Item Consumed { get { return m_Consumed; } }
 
-		public int Quantity => m_Quantity;
+		public int Quantity { get { return m_Quantity; } }
 	}
 
 	public class OnPropertyChangedEventArgs : EventArgs
 	{
-		public Mobile Mobile { get; }
-		public PropertyInfo Property { get; }
-		public object Instance { get; }
-		public object OldValue { get; }
-		public object NewValue { get; }
+		public Mobile Mobile { get; private set; }
+		public PropertyInfo Property { get; private set; }
+		public object Instance { get; private set; }
+		public object OldValue { get; private set; }
+		public object NewValue { get; private set; }
 
 		public OnPropertyChangedEventArgs(Mobile m, object instance, PropertyInfo prop, object oldValue, object newValue)
 		{
@@ -1185,8 +1185,8 @@ namespace Server
 
 	public class BODUsedEventArgs : EventArgs
 	{
-		public Mobile User { get; }
-		public Item BODItem { get; }
+		public Mobile User { get; private set; }
+		public Item BODItem { get; private set; }
 
 		public BODUsedEventArgs(Mobile m, Item i)
 		{
@@ -1197,8 +1197,8 @@ namespace Server
 
 	public class BODOfferEventArgs : EventArgs
 	{
-		public Mobile Player { get; }
-		public Mobile Vendor { get; }
+		public Mobile Player { get; private set; }
+		public Mobile Vendor { get; private set; }
 
 		public BODOfferEventArgs(Mobile p, Mobile v)
 		{
@@ -1209,9 +1209,9 @@ namespace Server
 
 	public class ResourceHarvestAttemptEventArgs : EventArgs
 	{
-		public Mobile Harvester { get; }
-		public Item Tool { get; }
-		public object HarvestSystem { get; }
+		public Mobile Harvester { get; private set; }
+		public Item Tool { get; private set; }
+		public object HarvestSystem { get; private set; }
 
 		public ResourceHarvestAttemptEventArgs(Mobile m, Item i, object o)
 		{
@@ -1223,27 +1223,27 @@ namespace Server
 
 	public class ResourceHarvestSuccessEventArgs : EventArgs
 	{
-		public Mobile Harvester { get; }
-		public Item Tool { get; }
-		public Item Resource { get; }
-		public Item BonusResource { get; }
-		public object HarvestSystem { get; }
+		public Mobile Harvester { get; private set; }
+		public Item Tool { get; private set; }
+		public Item Resource { get; private set; }
+        public Item BonusResource { get; private set; }
+		public object HarvestSystem { get; private set; }
 
 		public ResourceHarvestSuccessEventArgs(Mobile m, Item i, Item r, Item b, object o)
 		{
 			Harvester = m;
 			Tool = i;
 			Resource = r;
-			BonusResource = b;
+            BonusResource = b;
 			HarvestSystem = o;
 		}
 	}
 
 	public class CraftSuccessEventArgs : EventArgs
 	{
-		public Mobile Crafter { get; }
-		public Item Tool { get; }
-		public Item CraftedItem { get; }
+		public Mobile Crafter { get; private set; }
+		public Item Tool { get; private set; }
+		public Item CraftedItem { get; private set; }
 
 		public CraftSuccessEventArgs(Mobile m, Item i, Item t)
 		{
@@ -1253,77 +1253,77 @@ namespace Server
 		}
 	}
 
-	public class SkillGainEventArgs : EventArgs
-	{
-		public int Gained { get; }
-		public Mobile From { get; }
-		public Skill Skill { get; }
+    public class SkillGainEventArgs : EventArgs
+    {
+        public int Gained { get; private set; }
+        public Mobile From { get; private set; }
+        public Skill Skill { get; private set; }
 
-		public SkillGainEventArgs(Mobile from, Skill skill, int toGain)
-		{
-			From = from;
-			Skill = skill;
-			Gained = toGain;
-		}
-	}
+        public SkillGainEventArgs(Mobile from, Skill skill, int toGain)
+        {
+            From = from;
+            Skill = skill;
+            Gained = toGain;
+        }
+    }
 
-	public class SkillCheckEventArgs : EventArgs
-	{
-		public bool Success { get; set; }
-		public Mobile From { get; set; }
-		public Skill Skill { get; set; }
+    public class SkillCheckEventArgs : EventArgs
+    {
+        public bool Success { get; set; }
+        public Mobile From { get; set; }
+        public Skill Skill { get; set; }
 
-		public SkillCheckEventArgs(Mobile from, Skill skill, bool success)
-		{
-			From = from;
-			Skill = skill;
-			Success = success;
-		}
-	}
+        public SkillCheckEventArgs(Mobile from, Skill skill, bool success)
+        {
+            From = from;
+            Skill = skill;
+            Success = success;
+        }
+    }
 
-	public class SkillCapChangeEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; }
-		public Skill Skill { get; }
-		public double OldCap { get; }
-		public double NewCap { get; }
+    public class SkillCapChangeEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; private set; }
+        public Skill Skill { get; private set; }
+        public double OldCap { get; private set; }
+        public double NewCap { get; private set; }
 
-		public SkillCapChangeEventArgs(Mobile from, Skill skill, double oldCap, double newCap)
-		{
-			Mobile = from;
-			Skill = skill;
-			OldCap = oldCap;
-			NewCap = newCap;
-		}
-	}
+        public SkillCapChangeEventArgs(Mobile from, Skill skill, double oldCap, double newCap)
+        {
+            Mobile = from;
+            Skill = skill;
+            OldCap = oldCap;
+            NewCap = newCap;
+        }
+    }
 
-	public class StatCapChangeEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; }
-		public int OldCap { get; }
-		public int NewCap { get; }
+    public class StatCapChangeEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; private set; }
+        public int OldCap { get; private set; }
+        public int NewCap { get; private set; }
 
-		public StatCapChangeEventArgs(Mobile from, int oldCap, int newCap)
-		{
-			Mobile = from;
-			OldCap = oldCap;
-			NewCap = newCap;
-		}
-	}
+        public StatCapChangeEventArgs(Mobile from, int oldCap, int newCap)
+        {
+            Mobile = from;
+            OldCap = oldCap;
+            NewCap = newCap;
+        }
+    }
 
-	public class QuestCompleteEventArgs : EventArgs
-	{
-		public Type QuestType { get; }
-		public Mobile Mobile { get; }
+    public class QuestCompleteEventArgs : EventArgs
+    {
+        public Type QuestType { get; private set; }
+        public Mobile Mobile { get; private set; }
 
-		public QuestCompleteEventArgs(Mobile from, Type type)
-		{
-			Mobile = from;
-			QuestType = type;
-		}
-	}
+        public QuestCompleteEventArgs(Mobile from, Type type)
+        {
+            Mobile = from;
+            QuestType = type;
+        }
+    }
 
-	public class ItemCreatedEventArgs : EventArgs
+    public class ItemCreatedEventArgs : EventArgs
 	{
 		public Item Item { get; set; }
 
@@ -1363,331 +1363,331 @@ namespace Server
 		}
 	}
 
-	public class TargetedSpellEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly IEntity m_Target;
-		private readonly short m_SpellID;
+    public class TargetedSpellEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private IEntity m_Target;
+        private short m_SpellID;
 
-		public Mobile Mobile => m_Mobile;
-		public IEntity Target => m_Target;
-		public short SpellID => m_SpellID;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public IEntity Target { get { return m_Target; } }
+        public short SpellID { get { return m_SpellID; } }
 
-		public TargetedSpellEventArgs(Mobile m, IEntity target, short spellID)
-		{
-			m_Mobile = m;
-			m_Target = target;
-			m_SpellID = spellID;
-		}
-	}
+        public TargetedSpellEventArgs(Mobile m, IEntity target, short spellID)
+        {
+            m_Mobile = m;
+            m_Target = target;
+            m_SpellID = spellID;
+        }
+    }
 
-	public class TargetedSkillEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly IEntity m_Target;
-		private readonly short m_SkillID;
+    public class TargetedSkillEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private IEntity m_Target;
+        private short m_SkillID;
 
-		public Mobile Mobile => m_Mobile;
-		public IEntity Target => m_Target;
-		public short SkillID => m_SkillID;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public IEntity Target { get { return m_Target; } }
+        public short SkillID { get { return m_SkillID; } }
 
-		public TargetedSkillEventArgs(Mobile m, IEntity target, short skillID)
-		{
-			m_Mobile = m;
-			m_Target = target;
-			m_SkillID = skillID;
-		}
-	}
+        public TargetedSkillEventArgs(Mobile m, IEntity target, short skillID)
+        {
+            m_Mobile = m;
+            m_Target = target;
+            m_SkillID = skillID;
+        }
+    }
 
-	public class TargetedItemUseEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly IEntity m_Source;
-		private readonly IEntity m_Target;
+    public class TargetedItemUseEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private IEntity m_Source;
+        private IEntity m_Target;
 
-		public Mobile Mobile => m_Mobile;
-		public IEntity Source => m_Source;
-		public IEntity Target => m_Target;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public IEntity Source { get { return m_Source; } }
+        public IEntity Target { get { return m_Target; } }
 
-		public TargetedItemUseEventArgs(Mobile mobile, IEntity src, IEntity target)
-		{
-			m_Mobile = mobile;
-			m_Source = src;
-			m_Target = target;
-		}
-	}
+        public TargetedItemUseEventArgs(Mobile mobile, IEntity src, IEntity target)
+        {
+            m_Mobile = mobile;
+            m_Source = src;
+            m_Target = target;
+        }
+    }
 
-	public class TargetByResourceMacroEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly Item m_Tool;
-		private readonly int m_ResourceType;
+    public class TargetByResourceMacroEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private Item m_Tool;
+        private int m_ResourceType;
 
-		public Mobile Mobile => m_Mobile;
-		public Item Tool => m_Tool;
-		public int ResourceType => m_ResourceType;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public Item Tool { get { return m_Tool; } }
+        public int ResourceType { get { return m_ResourceType; } }
 
-		public TargetByResourceMacroEventArgs(Mobile mobile, Item tool, int type)
-		{
-			m_Mobile = mobile;
-			m_Tool = tool;
-			m_ResourceType = type;
-		}
-	}
+        public TargetByResourceMacroEventArgs(Mobile mobile, Item tool, int type)
+        {
+            m_Mobile = mobile;
+            m_Tool = tool;
+            m_ResourceType = type;
+        }
+    }
 
-	public class EquipMacroEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly List<int> m_List;
+    public class EquipMacroEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private List<int> m_List;
 
-		public Mobile Mobile => m_Mobile;
-		public List<int> List => m_List;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public List<int> List { get { return m_List; } }
 
-		public EquipMacroEventArgs(Mobile mobile, List<int> list)
-		{
-			m_Mobile = mobile;
-			m_List = list;
-		}
-	}
+        public EquipMacroEventArgs(Mobile mobile, List<int> list)
+        {
+            m_Mobile = mobile;
+            m_List = list;
+        }
+    }
 
-	public class UnequipMacroEventArgs : EventArgs
-	{
-		private readonly Mobile m_Mobile;
-		private readonly List<int> m_List;
+    public class UnequipMacroEventArgs : EventArgs
+    {
+        private Mobile m_Mobile;
+        private List<int> m_List;
 
-		public Mobile Mobile => m_Mobile;
-		public List<int> List => m_List;
+        public Mobile Mobile { get { return m_Mobile; } }
+        public List<int> List { get { return m_List; } }
 
-		public UnequipMacroEventArgs(Mobile mobile, List<int> list)
-		{
-			m_Mobile = mobile;
-			m_List = list;
-		}
-	}
+        public UnequipMacroEventArgs(Mobile mobile, List<int> list)
+        {
+            m_Mobile = mobile;
+            m_List = list;
+        }
+    }
 
-	public class JoinGuildEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public BaseGuild Guild { get; set; }
+    public class JoinGuildEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public BaseGuild Guild { get; set; }
 
-		public JoinGuildEventArgs(Mobile m, BaseGuild g)
-		{
-			Mobile = m;
-			Guild = g;
-		}
-	}
+        public JoinGuildEventArgs(Mobile m, BaseGuild g)
+        {
+            Mobile = m;
+            Guild = g;
+        }
+    }
 
-	public class TameCreatureEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Mobile Creature { get; set; }
+    public class TameCreatureEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Mobile Creature { get; set; }
 
-		public TameCreatureEventArgs(Mobile m, Mobile creature)
-		{
-			Mobile = m;
-			Creature = creature;
-		}
-	}
+        public TameCreatureEventArgs(Mobile m, Mobile creature)
+        {
+            Mobile = m;
+            Creature = creature;
+        }
+    }
 
-	public class ValidVendorPurchaseEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Mobile Vendor { get; set; }
-		public IEntity Bought { get; set; }
-		public int AmountPerUnit { get; set; }
+    public class ValidVendorPurchaseEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Mobile Vendor { get; set; }
+        public IEntity Bought { get; set; }
+        public int AmountPerUnit { get; set; }
 
-		public ValidVendorPurchaseEventArgs(Mobile m, Mobile vendor, IEntity bought, int costPer)
-		{
-			Mobile = m;
-			Vendor = vendor;
-			Bought = bought;
-			AmountPerUnit = costPer;
-		}
-	}
+        public ValidVendorPurchaseEventArgs(Mobile m, Mobile vendor, IEntity bought, int costPer)
+        {
+            Mobile = m;
+            Vendor = vendor;
+            Bought = bought;
+            AmountPerUnit = costPer;
+        }
+    }
 
-	public class ValidVendorSellEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Mobile Vendor { get; set; }
-		public IEntity Sold { get; set; }
-		public int AmountPerUnit { get; set; }
+    public class ValidVendorSellEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Mobile Vendor { get; set; }
+        public IEntity Sold { get; set; }
+        public int AmountPerUnit { get; set; }
 
-		public ValidVendorSellEventArgs(Mobile m, Mobile vendor, IEntity sold, int costPer)
-		{
-			Mobile = m;
-			Vendor = vendor;
-			Sold = sold;
-			AmountPerUnit = costPer;
-		}
-	}
+        public ValidVendorSellEventArgs(Mobile m, Mobile vendor, IEntity sold, int costPer)
+        {
+            Mobile = m;
+            Vendor = vendor;
+            Sold = sold;
+            AmountPerUnit = costPer;
+        }
+    }
 
-	public class CorpseLootEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Container Corpse { get; set; }
-		public Item Looted { get; set; }
+    public class CorpseLootEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Container Corpse { get; set; }
+        public Item Looted { get; set; }
 
-		public CorpseLootEventArgs(Mobile m, Container c, Item looted)
-		{
-			Mobile = m;
-			Corpse = c;
-			Looted = looted;
-		}
-	}
+        public CorpseLootEventArgs(Mobile m, Container c, Item looted)
+        {
+            Mobile = m;
+            Corpse = c;
+            Looted = looted;
+        }
+    }
 
-	public class RepairItemEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Item Tool { get; set; }
-		public IEntity Repaired { get; set; }
+    public class RepairItemEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Item Tool { get; set; }
+        public IEntity Repaired { get; set; }
 
-		public RepairItemEventArgs(Mobile m, Item tool, IEntity repaired)
-		{
-			Mobile = m;
-			Tool = tool;
-			Repaired = repaired;
-		}
-	}
+        public RepairItemEventArgs(Mobile m, Item tool, IEntity repaired)
+        {
+            Mobile = m;
+            Tool = tool;
+            Repaired = repaired;
+        }
+    }
 
-	public class AlterItemEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Item Tool { get; set; }
-		public Item OldItem { get; set; }
-		public Item NewItem { get; set; }
+    public class AlterItemEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Item Tool { get; set; }
+        public Item OldItem { get; set; }
+        public Item NewItem { get; set; }
 
-		public AlterItemEventArgs(Mobile m, Item tool, Item oldItem, Item newItem)
-		{
-			Mobile = m;
-			Tool = tool;
-			OldItem = oldItem;
-			NewItem = newItem;
-		}
-	}
+        public AlterItemEventArgs(Mobile m, Item tool, Item oldItem, Item newItem)
+        {
+            Mobile = m;
+            Tool = tool;
+            OldItem = oldItem;
+            NewItem = newItem;
+        }
+    }
 
-	public class PlacePlayerVendorEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Mobile Vendor { get; set; }
+    public class PlacePlayerVendorEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Mobile Vendor { get; set; }
 
-		public PlacePlayerVendorEventArgs(Mobile m, Mobile vendor)
-		{
-			Mobile = m;
-			Vendor = vendor;
-		}
-	}
+        public PlacePlayerVendorEventArgs(Mobile m, Mobile vendor)
+        {
+            Mobile = m;
+            Vendor = vendor;
+        }
+    }
 
-	public class FameChangeEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public int OldValue { get; set; }
-		public int NewValue { get; set; }
+    public class FameChangeEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public int OldValue { get; set; }
+        public int NewValue { get; set; }
 
-		public FameChangeEventArgs(Mobile m, int oldValue, int newValue)
-		{
-			Mobile = m;
-			OldValue = oldValue;
-			NewValue = newValue;
-		}
-	}
+        public FameChangeEventArgs(Mobile m, int oldValue, int newValue)
+        {
+            Mobile = m;
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+    }
 
-	public class KarmaChangeEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public int OldValue { get; set; }
-		public int NewValue { get; set; }
+    public class KarmaChangeEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public int OldValue { get; set; }
+        public int NewValue { get; set; }
 
-		public KarmaChangeEventArgs(Mobile m, int oldValue, int newValue)
-		{
-			Mobile = m;
-			OldValue = oldValue;
-			NewValue = newValue;
-		}
-	}
+        public KarmaChangeEventArgs(Mobile m, int oldValue, int newValue)
+        {
+            Mobile = m;
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+    }
 
-	public class VirtueLevelChangeEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public int OldLevel { get; set; }
-		public int NewLevel { get; set; }
-		public int Virtue { get; set; }
+    public class VirtueLevelChangeEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public int OldLevel { get; set; }
+        public int NewLevel { get; set; }
+        public int Virtue { get; set; }
 
-		public VirtueLevelChangeEventArgs(Mobile m, int oldLevel, int newLevel, int virtue)
-		{
-			Mobile = m;
-			OldLevel = oldLevel;
-			NewLevel = newLevel;
-			Virtue = virtue;
-		}
-	}
+        public VirtueLevelChangeEventArgs(Mobile m, int oldLevel, int newLevel, int virtue)
+        {
+            Mobile = m;
+            OldLevel = oldLevel;
+            NewLevel = newLevel;
+            Virtue = virtue;
+        }
+    }
 
-	public class PlayerMurderedEventArgs : EventArgs
-	{
-		public Mobile Murderer { get; set; }
-		public Mobile Victim { get; set; }
+    public class PlayerMurderedEventArgs : EventArgs
+    {
+        public Mobile Murderer { get; set; }
+        public Mobile Victim { get; set; }
 
-		public PlayerMurderedEventArgs(Mobile murderer, Mobile victim)
-		{
-			Murderer = murderer;
-			Victim = victim;
-		}
-	}
+        public PlayerMurderedEventArgs(Mobile murderer, Mobile victim)
+        {
+            Murderer = murderer;
+            Victim = victim;
+        }
+    }
 
-	public class AccountGoldChangeEventArgs : EventArgs
-	{
-		public IAccount Account { get; set; }
-		public double OldAmount { get; set; }
-		public double NewAmount { get; set; }
+    public class AccountGoldChangeEventArgs : EventArgs
+    {
+        public IAccount Account { get; set; }
+        public double OldAmount { get; set; }
+        public double NewAmount { get; set; }
 
-		public AccountGoldChangeEventArgs(IAccount account, double oldAmount, double newAmount)
-		{
-			Account = account;
-			OldAmount = oldAmount;
-			NewAmount = newAmount;
-		}
-	}
+        public AccountGoldChangeEventArgs(IAccount account, double oldAmount, double newAmount)
+        {
+            Account = account;
+            OldAmount = oldAmount;
+            NewAmount = newAmount;
+        }
+    }
 
-	public class ContainerDroppedToEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Container Container { get; set; }
-		public Item Dropped { get; set; }
+    public class ContainerDroppedToEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Container Container { get; set; }
+        public Item Dropped { get; set; }
 
-		public ContainerDroppedToEventArgs(Mobile m, Container container, Item dropped)
-		{
-			Mobile = m;
-			Container = container;
-			Dropped = dropped;
-		}
-	}
+        public ContainerDroppedToEventArgs(Mobile m, Container container, Item dropped)
+        {
+            Mobile = m;
+            Container = container;
+            Dropped = dropped;
+        }
+    }
 
-	public class TeleportMovementEventArgs : EventArgs
-	{
-		public Mobile Mobile { get; set; }
-		public Point3D OldLocation { get; set; }
-		public Point3D NewLocation { get; set; }
+    public class TeleportMovementEventArgs : EventArgs
+    {
+        public Mobile Mobile { get; set; }
+        public Point3D OldLocation { get; set; }
+        public Point3D NewLocation { get; set; }
 
-		public TeleportMovementEventArgs(Mobile m, Point3D oldLoc, Point3D newLoc)
-		{
-			Mobile = m;
-			OldLocation = oldLoc;
-			NewLocation = newLoc;
-		}
-	}
+        public TeleportMovementEventArgs(Mobile m, Point3D oldLoc, Point3D newLoc)
+        {
+            Mobile = m;
+            OldLocation = oldLoc;
+            NewLocation = newLoc;
+        }
+    }
 
-	public class MultiDesignQueryEventArgs : EventArgs
-	{
-		public NetState State { get; set; }
-		public BaseMulti Multi { get; set; }
+    public class MultiDesignQueryEventArgs : EventArgs
+    {
+        public NetState State { get; set; }
+        public BaseMulti Multi { get; set; }
 
-		public MultiDesignQueryEventArgs(NetState state, BaseMulti multi)
-		{
-			State = state;
-			Multi = multi;
-		}
-	}
+        public MultiDesignQueryEventArgs(NetState state, BaseMulti multi)
+        {
+            State = state;
+            Multi = multi;
+        }
+    }
 
-	public static class EventSink
+    public static class EventSink
 	{
 		public static event OnItemObtainedEventHandler OnItemObtained;
 		public static event CheckEquipItemEventHandler CheckEquipItem;
@@ -1729,16 +1729,16 @@ namespace Server
 		public static event DeleteRequestEventHandler DeleteRequest;
 		public static event WorldLoadEventHandler WorldLoad;
 		public static event WorldSaveEventHandler WorldSave;
-		public static event BeforeWorldSaveEventHandler BeforeWorldSave;
-		public static event AfterWorldSaveEventHandler AfterWorldSave;
-		public static event SetAbilityEventHandler SetAbility;
+        public static event BeforeWorldSaveEventHandler BeforeWorldSave;
+        public static event AfterWorldSaveEventHandler AfterWorldSave;
+        public static event SetAbilityEventHandler SetAbility;
 		public static event FastWalkEventHandler FastWalk;
 		public static event CreateGuildHandler CreateGuild;
 		public static event ServerStartedEventHandler ServerStarted;
 		public static event GuildGumpRequestHandler GuildGumpRequest;
 		public static event QuestGumpRequestHandler QuestGumpRequest;
 		public static event ClientVersionReceivedHandler ClientVersionReceived;
-		public static event ClientTypeReceivedHandler ClientTypeReceived;
+        public static event ClientTypeReceivedHandler ClientTypeReceived;
 		public static event OnKilledByEventHandler OnKilledBy;
 		public static event OnItemUseEventHandler OnItemUse;
 		public static event OnEnterRegionEventHandler OnEnterRegion;
@@ -1749,42 +1749,42 @@ namespace Server
 		public static event ResourceHarvestAttemptEventHandler ResourceHarvestAttempt;
 		public static event ResourceHarvestSuccessEventHandler ResourceHarvestSuccess;
 		public static event CraftSuccessEventHandler CraftSuccess;
-		public static event SkillGainEventHandler SkillGain;
-		public static event SkillCheckEventHandler SkillCheck;
-		public static event SkillCapChangeEventHandler SkillCapChange;
-		public static event StatCapChangeEventHandler StatCapChange;
-		public static event QuestCompleteEventHandler QuestComplete;
+        public static event SkillGainEventHandler SkillGain;
+        public static event SkillCheckEventHandler SkillCheck;
+        public static event SkillCapChangeEventHandler SkillCapChange;
+        public static event StatCapChangeEventHandler StatCapChange;
+        public static event QuestCompleteEventHandler QuestComplete;
 
-		public static event ItemCreatedEventHandler ItemCreated;
+        public static event ItemCreatedEventHandler ItemCreated;
 		public static event ItemDeletedEventHandler ItemDeleted;
 		public static event MobileCreatedEventHandler MobileCreated;
 		public static event MobileDeletedEventHandler MobileDeleted;
 
-		public static event TargetedSpellEventHandler TargetedSpell;
-		public static event TargetedSkillEventHandler TargetedSkill;
-		public static event TargetedItemUseEventHandler TargetedItemUse;
-		public static event EquipMacroEventHandler EquipMacro;
-		public static event UnequipMacroEventHandler UnequipMacro;
-		public static event TargetByResourceMacroEventHandler TargetByResourceMacro;
+        public static event TargetedSpellEventHandler TargetedSpell;
+        public static event TargetedSkillEventHandler TargetedSkill;
+        public static event TargetedItemUseEventHandler TargetedItemUse;
+        public static event EquipMacroEventHandler EquipMacro;
+        public static event UnequipMacroEventHandler UnequipMacro;
+        public static event TargetByResourceMacroEventHandler TargetByResourceMacro;
 
-		public static event JoinGuildEventHandler JoinGuild;
-		public static event TameCreatureEventHandler TameCreature;
-		public static event ValidVendorPurchaseEventHandler ValidVendorPurchase;
-		public static event ValidVendorSellEventHandler ValidVendorSell;
-		public static event CorpseLootEventHandler CorpseLoot;
-		public static event RepairItemEventHandler RepairItem;
-		public static event AlterItemEventHandler AlterItem;
-		public static event PlacePlayerVendorEventHandler PlacePlayerVendor;
-		public static event FameChangeEventHandler FameChange;
-		public static event KarmaChangeEventHandler KarmaChange;
-		public static event VirtueLevelChangeEventHandler VirtueLevelChange;
-		public static event PlayerMurderedEventHandler PlayerMurdered;
-		public static event AccountGoldChangeEventHandler AccountGoldChange;
-		public static event ContainerDroppedToEventHandler ContainerDroppedTo;
-		public static event TeleportMovementEventHandler TeleportMovement;
-		public static event MultiDesignQueryHandler MultiDesign;
+        public static event JoinGuildEventHandler JoinGuild;
+        public static event TameCreatureEventHandler TameCreature;
+        public static event ValidVendorPurchaseEventHandler ValidVendorPurchase;
+        public static event ValidVendorSellEventHandler ValidVendorSell;
+        public static event CorpseLootEventHandler CorpseLoot;
+        public static event RepairItemEventHandler RepairItem;
+        public static event AlterItemEventHandler AlterItem;
+        public static event PlacePlayerVendorEventHandler PlacePlayerVendor;
+        public static event FameChangeEventHandler FameChange;
+        public static event KarmaChangeEventHandler KarmaChange;
+        public static event VirtueLevelChangeEventHandler VirtueLevelChange;
+        public static event PlayerMurderedEventHandler PlayerMurdered;
+        public static event AccountGoldChangeEventHandler AccountGoldChange;
+        public static event ContainerDroppedToEventHandler ContainerDroppedTo;
+        public static event TeleportMovementEventHandler TeleportMovement;
+        public static event MultiDesignQueryHandler MultiDesign;
 
-		public static void InvokeOnItemObtained(OnItemObtainedEventArgs e)
+        public static void InvokeOnItemObtained(OnItemObtainedEventArgs e)
 		{
 			if (OnItemObtained != null)
 			{
@@ -1816,7 +1816,7 @@ namespace Server
 			}
 		}
 
-		public static void InvokeClientVersionReceived(ClientVersionReceivedArgs e)
+        public static void InvokeClientVersionReceived(ClientVersionReceivedArgs e)
 		{
 			if (ClientVersionReceived != null)
 			{
@@ -1824,13 +1824,13 @@ namespace Server
 			}
 		}
 
-		public static void InvokeClientTypeReceived(ClientTypeReceivedArgs e)
-		{
-			if (ClientTypeReceived != null)
-			{
-				ClientTypeReceived(e);
-			}
-		}
+        public static void InvokeClientTypeReceived(ClientTypeReceivedArgs e)
+        {
+            if (ClientTypeReceived != null)
+            {
+                ClientTypeReceived(e);
+            }
+        }
 
 		public static void InvokeServerStarted()
 		{
@@ -2168,23 +2168,23 @@ namespace Server
 			}
 		}
 
-		public static void InvokeBeforeWorldSave(BeforeWorldSaveEventArgs e)
-		{
-			if (BeforeWorldSave != null)
-			{
-				BeforeWorldSave(e);
-			}
-		}
+        public static void InvokeBeforeWorldSave(BeforeWorldSaveEventArgs e)
+        {
+            if (BeforeWorldSave != null)
+            {
+                BeforeWorldSave(e);
+            }
+        }
 
-		public static void InvokeAfterWorldSave(AfterWorldSaveEventArgs e)
-		{
-			if (AfterWorldSave != null)
-			{
-				AfterWorldSave(e);
-			}
-		}
+        public static void InvokeAfterWorldSave(AfterWorldSaveEventArgs e)
+        {
+            if (AfterWorldSave != null)
+            {
+                AfterWorldSave(e);
+            }
+        }
 
-		public static void InvokeOnKilledBy(OnKilledByEventArgs e)
+        public static void InvokeOnKilledBy(OnKilledByEventArgs e)
 		{
 			if (OnKilledBy != null)
 			{
@@ -2226,7 +2226,7 @@ namespace Server
 
 		public static void InvokeBODUsed(BODUsedEventArgs e)
 		{
-			if (BODUsed != null)
+			if(BODUsed != null)
 			{
 				BODUsed(e);
 			}
@@ -2234,7 +2234,7 @@ namespace Server
 
 		public static void InvokeBODOffered(BODOfferEventArgs e)
 		{
-			if (BODOffered != null)
+			if(BODOffered != null)
 			{
 				BODOffered(e);
 			}
@@ -2242,7 +2242,7 @@ namespace Server
 
 		public static void InvokeResourceHarvestAttempt(ResourceHarvestAttemptEventArgs e)
 		{
-			if (ResourceHarvestAttempt != null)
+			if(ResourceHarvestAttempt != null)
 			{
 				ResourceHarvestAttempt(e);
 			}
@@ -2256,7 +2256,7 @@ namespace Server
 			}
 		}
 
-		public static void InvokeCraftSuccess(CraftSuccessEventArgs e)
+        public static void InvokeCraftSuccess(CraftSuccessEventArgs e)
 		{
 			if (CraftSuccess != null)
 			{
@@ -2264,45 +2264,45 @@ namespace Server
 			}
 		}
 
-		public static void InvokeSkillGain(SkillGainEventArgs e)
-		{
-			if (SkillGain != null)
-			{
-				SkillGain(e);
-			}
-		}
+        public static void InvokeSkillGain(SkillGainEventArgs e)
+        {
+            if(SkillGain != null)
+            {
+                SkillGain(e);
+            }
+        }
 
-		public static void InvokeSkillCheck(SkillCheckEventArgs e)
-		{
-			if (SkillCheck != null)
-			{
-				SkillCheck(e);
-			}
-		}
+        public static void InvokeSkillCheck(SkillCheckEventArgs e)
+        {
+            if (SkillCheck != null)
+            {
+                SkillCheck(e);
+            }
+        }
 
-		public static void InvokeSkillCapChange(SkillCapChangeEventArgs e)
-		{
-			if (SkillCapChange != null)
-			{
-				SkillCapChange(e);
-			}
-		}
+        public static void InvokeSkillCapChange(SkillCapChangeEventArgs e)
+        {
+            if (SkillCapChange != null)
+            {
+                SkillCapChange(e);
+            }
+        }
 
-		public static void InvokeStatCapChange(StatCapChangeEventArgs e)
-		{
-			if (StatCapChange != null)
-			{
-				StatCapChange(e);
-			}
-		}
+        public static void InvokeStatCapChange(StatCapChangeEventArgs e)
+        {
+            if (StatCapChange != null)
+            {
+                StatCapChange(e);
+            }
+        }
 
-		public static void InvokeQuestComplete(QuestCompleteEventArgs e)
-		{
-			if (QuestComplete != null)
-			{
-				QuestComplete(e);
-			}
-		}
+        public static void InvokeQuestComplete(QuestCompleteEventArgs e)
+        {
+            if (QuestComplete != null)
+            {
+                QuestComplete(e);
+            }
+        }
 
 		public static void InvokeItemCreated(ItemCreatedEventArgs e)
 		{
@@ -2336,183 +2336,183 @@ namespace Server
 			}
 		}
 
-		public static void InvokeTargetedSpell(TargetedSpellEventArgs e)
-		{
-			if (TargetedSpell != null)
-			{
-				TargetedSpell(e);
-			}
-		}
+        public static void InvokeTargetedSpell(TargetedSpellEventArgs e)
+        {
+            if (TargetedSpell != null)
+            {
+                TargetedSpell(e);
+            }
+        }
 
-		public static void InvokeTargetedSkill(TargetedSkillEventArgs e)
-		{
-			if (TargetedSkill != null)
-			{
-				TargetedSkill(e);
-			}
-		}
+        public static void InvokeTargetedSkill(TargetedSkillEventArgs e)
+        {
+            if (TargetedSkill != null)
+            {
+                TargetedSkill(e);
+            }
+        }
 
-		public static void InvokeTargetedItemUse(TargetedItemUseEventArgs e)
-		{
-			if (TargetedItemUse != null)
-			{
-				TargetedItemUse(e);
-			}
-		}
+        public static void InvokeTargetedItemUse(TargetedItemUseEventArgs e)
+        {
+            if (TargetedItemUse != null)
+            {
+                TargetedItemUse(e);
+            }
+        }
 
-		public static void InvokeTargetByResourceMacro(TargetByResourceMacroEventArgs e)
-		{
-			if (TargetByResourceMacro != null)
-			{
-				TargetByResourceMacro(e);
-			}
-		}
+        public static void InvokeTargetByResourceMacro(TargetByResourceMacroEventArgs e)
+        {
+            if (TargetByResourceMacro != null)
+            {
+                TargetByResourceMacro(e);
+            }
+        }
 
-		public static void InvokeEquipMacro(EquipMacroEventArgs e)
-		{
-			if (EquipMacro != null)
-			{
-				EquipMacro(e);
-			}
-		}
+        public static void InvokeEquipMacro(EquipMacroEventArgs e)
+        {
+            if (EquipMacro != null)
+            {
+                EquipMacro(e);
+            }
+        }
 
-		public static void InvokeUnequipMacro(UnequipMacroEventArgs e)
-		{
-			if (UnequipMacro != null)
-			{
-				UnequipMacro(e);
-			}
-		}
+        public static void InvokeUnequipMacro(UnequipMacroEventArgs e)
+        {
+            if (UnequipMacro != null)
+            {
+                UnequipMacro(e);
+            }
+        }
 
-		public static void InvokeJoinGuild(JoinGuildEventArgs e)
-		{
-			if (JoinGuild != null)
-			{
-				JoinGuild(e);
-			}
-		}
+        public static void InvokeJoinGuild(JoinGuildEventArgs e)
+        {
+            if (JoinGuild != null)
+            {
+                JoinGuild(e);
+            }
+        }
 
-		public static void InvokeTameCreature(TameCreatureEventArgs e)
-		{
-			if (TameCreature != null)
-			{
-				TameCreature(e);
-			}
-		}
+        public static void InvokeTameCreature(TameCreatureEventArgs e)
+        {
+            if (TameCreature != null)
+            {
+                TameCreature(e);
+            }
+        }
 
-		public static void InvokeValidVendorPurchase(ValidVendorPurchaseEventArgs e)
-		{
-			if (ValidVendorPurchase != null)
-			{
-				ValidVendorPurchase(e);
-			}
-		}
+        public static void InvokeValidVendorPurchase(ValidVendorPurchaseEventArgs e)
+        {
+            if (ValidVendorPurchase != null)
+            {
+                ValidVendorPurchase(e);
+            }
+        }
 
-		public static void InvokeValidVendorSell(ValidVendorSellEventArgs e)
-		{
-			if (ValidVendorSell != null)
-			{
-				ValidVendorSell(e);
-			}
-		}
+        public static void InvokeValidVendorSell(ValidVendorSellEventArgs e)
+        {
+            if (ValidVendorSell != null)
+            {
+                ValidVendorSell(e);
+            }
+        }
 
-		public static void InvokeCorpseLoot(CorpseLootEventArgs e)
-		{
-			if (CorpseLoot != null)
-			{
-				CorpseLoot(e);
-			}
-		}
+        public static void InvokeCorpseLoot(CorpseLootEventArgs e)
+        {
+            if (CorpseLoot != null)
+            {
+                CorpseLoot(e);
+            }
+        }
 
-		public static void InvokeRepairItem(RepairItemEventArgs e)
-		{
-			if (RepairItem != null)
-			{
-				RepairItem(e);
-			}
-		}
+        public static void InvokeRepairItem(RepairItemEventArgs e)
+        {
+            if (RepairItem != null)
+            {
+                RepairItem(e);
+            }
+        }
 
-		public static void InvokeAlterItem(AlterItemEventArgs e)
-		{
-			if (AlterItem != null)
-			{
-				AlterItem(e);
-			}
-		}
+        public static void InvokeAlterItem(AlterItemEventArgs e)
+        {
+            if (AlterItem != null)
+            {
+                AlterItem(e);
+            }
+        }
 
-		public static void InvokePlacePlayerVendor(PlacePlayerVendorEventArgs e)
-		{
-			if (PlacePlayerVendor != null)
-			{
-				PlacePlayerVendor(e);
-			}
-		}
+        public static void InvokePlacePlayerVendor(PlacePlayerVendorEventArgs e)
+        {
+            if (PlacePlayerVendor != null)
+            {
+                PlacePlayerVendor(e);
+            }
+        }
 
-		public static void InvokeFameChange(FameChangeEventArgs e)
-		{
-			if (FameChange != null)
-			{
-				FameChange(e);
-			}
-		}
+        public static void InvokeFameChange(FameChangeEventArgs e)
+        {
+            if (FameChange != null)
+            {
+                FameChange(e);
+            }
+        }
 
-		public static void InvokeKarmaChange(KarmaChangeEventArgs e)
-		{
-			if (KarmaChange != null)
-			{
-				KarmaChange(e);
-			}
-		}
+        public static void InvokeKarmaChange(KarmaChangeEventArgs e)
+        {
+            if (KarmaChange != null)
+            {
+                KarmaChange(e);
+            }
+        }
 
-		public static void InvokeVirtueLevelChange(VirtueLevelChangeEventArgs e)
-		{
-			if (VirtueLevelChange != null)
-			{
-				VirtueLevelChange(e);
-			}
-		}
+        public static void InvokeVirtueLevelChange(VirtueLevelChangeEventArgs e)
+        {
+            if (VirtueLevelChange != null)
+            {
+                VirtueLevelChange(e);
+            }
+        }
 
-		public static void InvokePlayerMurdered(PlayerMurderedEventArgs e)
-		{
-			if (PlayerMurdered != null)
-			{
-				PlayerMurdered(e);
-			}
-		}
+        public static void InvokePlayerMurdered(PlayerMurderedEventArgs e)
+        {
+            if (PlayerMurdered != null)
+            {
+                PlayerMurdered(e);
+            }
+        }
 
-		public static void InvokeAccountGoldChange(AccountGoldChangeEventArgs e)
-		{
-			if (AccountGoldChange != null)
-			{
-				AccountGoldChange(e);
-			}
-		}
+        public static void InvokeAccountGoldChange(AccountGoldChangeEventArgs e)
+        {
+            if (AccountGoldChange != null)
+            {
+                AccountGoldChange(e);
+            }
+        }
 
-		public static void InvokeContainerDroppedTo(ContainerDroppedToEventArgs e)
-		{
-			if (ContainerDroppedTo != null)
-			{
-				ContainerDroppedTo(e);
-			}
-		}
+        public static void InvokeContainerDroppedTo(ContainerDroppedToEventArgs e)
+        {
+            if (ContainerDroppedTo != null)
+            {
+                ContainerDroppedTo(e);
+            }
+        }
 
-		public static void InvokeTeleportMovement(TeleportMovementEventArgs e)
-		{
-			if (TeleportMovement != null)
-			{
-				TeleportMovement(e);
-			}
-		}
+        public static void InvokeTeleportMovement(TeleportMovementEventArgs e)
+        {
+            if (TeleportMovement != null)
+            {
+                TeleportMovement(e);
+            }
+        }
 
-		public static void InvokeMultiDesignQuery(MultiDesignQueryEventArgs e)
-		{
-			if (MultiDesign != null)
-			{
-				MultiDesign(e);
-			}
-		}
+        public static void InvokeMultiDesignQuery(MultiDesignQueryEventArgs e)
+        {
+            if (MultiDesign != null)
+            {
+                MultiDesign(e);
+            }
+        }
 
-		public static void Reset()
+        public static void Reset()
 		{
 			OnItemObtained = null;
 			CheckEquipItem = null;
@@ -2568,34 +2568,34 @@ namespace Server
 			ResourceHarvestSuccess = null;
 			CraftSuccess = null;
 			SkillGain = null;
-			SkillCheck = null;
+            SkillCheck = null;
 
 			ItemCreated = null;
 			ItemDeleted = null;
 			MobileCreated = null;
 			MobileDeleted = null;
 
-			TargetedSpell = null;
-			TargetedSkill = null;
-			TargetedItemUse = null;
+            TargetedSpell = null;
+            TargetedSkill = null;
+            TargetedItemUse = null;
 
-			JoinGuild = null;
-			TameCreature = null;
-			ValidVendorPurchase = null;
-			ValidVendorSell = null;
-			CorpseLoot = null;
-			RepairItem = null;
-			AlterItem = null;
-			PlacePlayerVendor = null;
-			FameChange = null;
-			KarmaChange = null;
-			VirtueLevelChange = null;
-			PlayerMurdered = null;
-			AccountGoldChange = null;
-			ContainerDroppedTo = null;
-			TeleportMovement = null;
+            JoinGuild = null;
+            TameCreature = null;
+            ValidVendorPurchase = null;
+            ValidVendorSell = null;
+            CorpseLoot = null;
+            RepairItem = null;
+            AlterItem = null;
+            PlacePlayerVendor = null;
+            FameChange = null;
+            KarmaChange = null;
+            VirtueLevelChange = null;
+            PlayerMurdered = null;
+            AccountGoldChange = null;
+            ContainerDroppedTo = null;
+            TeleportMovement = null;
 
-			MultiDesign = null;
-		}
+            MultiDesign = null;
+        }
 	}
 }

@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells.SkillMasteries;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.Spells.Spellweaving
@@ -17,9 +17,27 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(0.5);
-        public override double RequiredSkill => 0.0;
-        public override int RequiredMana => 24;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(0.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 24;
+            }
+        }
         public static bool IsValidTile(int itemID)
         {
             //Per OSI, Center tile only
@@ -69,7 +87,7 @@ namespace Server.Spells.Spellweaving
 
         private static bool IsBonus(Point3D p, Map m)
         {
-            return (m == Map.Trammel || m == Map.Felucca) &&
+            return (m == Map.Trammel || m == Map.Felucca) && 
                 (p.X == 6267 && p.Y == 131) ||
                 (p.X == 6589 && p.Y == 178) ||
                 (p.X == 1431 && p.Y == 1696); // new brit bank
@@ -107,7 +125,7 @@ namespace Server.Spells.Spellweaving
             foreach (Item item in eable)
             {
                 ItemData id = item.ItemData;
-
+				
                 if (item == null || item.Z + id.CalcHeight != location.Z)
                     continue;
                 else if (IsValidTile(item.ItemID))
@@ -152,7 +170,7 @@ namespace Server.Spells.Spellweaving
 
             if (focus == null)
             {
-                ArcaneFocus f = new ArcaneFocus((int)duration.TotalSeconds, strengthBonus);
+                ArcaneFocus f = new ArcaneFocus(duration, strengthBonus);
                 if (to.PlaceInBackpack(f))
                 {
                     to.AddStatMod(new StatMod(StatType.Str, "[ArcaneFocus]", strengthBonus, duration));
@@ -168,7 +186,8 @@ namespace Server.Spells.Spellweaving
             else //OSI renewal rules: the new one will override the old one, always.
             {
                 to.SendLocalizedMessage(1072828); // Your arcane focus is renewed.
-                focus.TimeLeft = (int)duration.TotalSeconds;
+                focus.LifeSpan = duration;
+                focus.CreationTime = DateTime.UtcNow;
                 focus.StrengthBonus = strengthBonus;
                 focus.InvalidateProperties();
                 focus.SendTimeRemainingMessage(to);

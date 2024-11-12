@@ -10,7 +10,7 @@ namespace Server.Gumps
 
 		public Gump Parent
 		{
-			get => _Parent;
+			get { return _Parent; }
 			set
 			{
 				if (_Parent == value)

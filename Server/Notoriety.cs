@@ -14,9 +14,9 @@ namespace Server
 
 		public static NotorietyHandler Handler { get; set; }
 
-		private static int[] m_Hues = { 0x000, 0x059, 0x03F, 0x3B2, 0x3B2, 0x090, 0x022, 0x035 };
+		private static int[] m_Hues = {0x000, 0x059, 0x03F, 0x3B2, 0x3B2, 0x090, 0x022, 0x035};
 
-		public static int[] Hues { get => m_Hues; set => m_Hues = value; }
+		public static int[] Hues { get { return m_Hues; } set { m_Hues = value; } }
 
 		public static int GetHue(int noto)
 		{

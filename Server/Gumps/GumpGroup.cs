@@ -18,6 +18,7 @@
  *
  ***************************************************************************/
 
+using System;
 using Server.Network;
 
 namespace Server.Gumps
@@ -26,28 +27,34 @@ namespace Server.Gumps
 	{
 		private int m_Group;
 
-		public GumpGroup(int group)
+		public GumpGroup( int group )
 		{
 			m_Group = group;
 		}
 
 		public int Group
 		{
-			get => m_Group;
-			set => Delta(ref m_Group, value);
+			get
+			{
+				return m_Group;
+			}
+			set
+			{
+				Delta( ref m_Group, value );
+			}
 		}
 
 		public override string Compile()
 		{
-			return System.String.Format("{{ group {0} }}", m_Group);
+			return String.Format( "{{ group {0} }}", m_Group );
 		}
 
-		private static readonly byte[] m_LayoutName = Gump.StringToBuffer("group");
+		private static byte[] m_LayoutName = Gump.StringToBuffer( "group" );
 
-		public override void AppendTo(IGumpWriter disp)
+		public override void AppendTo( IGumpWriter disp )
 		{
-			disp.AppendLayout(m_LayoutName);
-			disp.AppendLayout(m_Group);
+			disp.AppendLayout( m_LayoutName );
+			disp.AppendLayout( m_Group );
 		}
 	}
 }

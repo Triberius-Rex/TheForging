@@ -13,14 +13,14 @@ namespace Server
 	{
 		public static bool UseEditGump = false;
 
-		public override bool IsVirtualItem => true;
+		public override bool IsVirtualItem { get { return true; } }
 
-		public override bool DisplayWeight => false;
-		public override bool DisplayLootType => false;
+		public override bool DisplayWeight { get { return false; } }
+		public override bool DisplayLootType { get { return false; } }
 
-		public override double DefaultWeight => 0;
+		public override double DefaultWeight { get { return 0; } }
 
-		public override string DefaultName => "Offer Of Currency";
+		public override string DefaultName { get { return "Offer Of Currency"; } }
 
 		public EditGump Editor { get; private set; }
 
@@ -29,7 +29,7 @@ namespace Server
 		[CommandProperty(AccessLevel.Administrator)]
 		public int Plat
 		{
-			get => _Plat;
+			get { return _Plat; }
 			set
 			{
 				_Plat = value;
@@ -42,7 +42,7 @@ namespace Server
 		[CommandProperty(AccessLevel.Administrator)]
 		public int Gold
 		{
-			get => _Gold;
+			get { return _Gold; }
 			set
 			{
 				_Gold = value;
@@ -103,6 +103,11 @@ namespace Server
 
 				base.OnDoubleClickSecureTrade(from);
 			}
+		}
+
+		public override void OnSingleClick(Mobile from)
+		{
+			LabelTo(from, "Offer: {0:#,0} platinum, {1:#,0} gold", Plat, Gold);
 		}
 
 		public override void GetProperties(ObjectPropertyList list)
@@ -309,60 +314,60 @@ namespace Server
 				switch ((Buttons)info.ButtonID)
 				{
 					case Buttons.Close:
-					break;
+						break;
 					case Buttons.Clear:
-						{
-							_Plat = _Gold = 0;
-							refresh = true;
-						}
+					{
+						_Plat = _Gold = 0;
+						refresh = true;
+					}
 						break;
 					case Buttons.Accept:
-						{
-							var platText = info.GetTextEntry(0).Text;
-							var goldText = info.GetTextEntry(1).Text;
+					{
+						var platText = info.GetTextEntry(0).Text;
+						var goldText = info.GetTextEntry(1).Text;
 
-							if (!Int32.TryParse(platText, out _Plat))
+						if (!Int32.TryParse(platText, out _Plat))
+						{
+							User.SendMessage("That is not a valid amount of platinum.");
+							refresh = true;
+						}
+						else if (!Int32.TryParse(goldText, out _Gold))
+						{
+							User.SendMessage("That is not a valid amount of gold.");
+							refresh = true;
+						}
+						else
+						{
+							var cur = User.Account.TotalCurrency;
+							var off = _Plat + (_Gold / Math.Max(1.0, AccountGold.CurrencyThreshold));
+
+							if (off > cur)
 							{
-								User.SendMessage("That is not a valid amount of platinum.");
-								refresh = true;
-							}
-							else if (!Int32.TryParse(goldText, out _Gold))
-							{
-								User.SendMessage("That is not a valid amount of gold.");
+								_Plat = User.Account.TotalPlat;
+								_Gold = User.Account.TotalGold;
+								User.SendMessage("You do not have that much currency.");
 								refresh = true;
 							}
 							else
 							{
-								var cur = User.Account.TotalCurrency;
-								var off = _Plat + (_Gold / Math.Max(1.0, AccountGold.CurrencyThreshold));
-
-								if (off > cur)
-								{
-									_Plat = User.Account.TotalPlat;
-									_Gold = User.Account.TotalGold;
-									User.SendMessage("You do not have that much currency.");
-									refresh = true;
-								}
-								else
-								{
-									Check.Plat = _Plat;
-									Check.Gold = _Gold;
-									updated = true;
-								}
+								Check.Plat = _Plat;
+								Check.Gold = _Gold;
+								updated = true;
 							}
 						}
+					}
 						break;
 					case Buttons.AllPlat:
-						{
-							_Plat = User.Account.TotalPlat;
-							refresh = true;
-						}
+					{
+						_Plat = User.Account.TotalPlat;
+						refresh = true;
+					}
 						break;
 					case Buttons.AllGold:
-						{
-							_Gold = User.Account.TotalGold;
-							refresh = true;
-						}
+					{
+						_Gold = User.Account.TotalGold;
+						refresh = true;
+					}
 						break;
 				}
 

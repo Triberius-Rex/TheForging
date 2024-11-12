@@ -1,7 +1,7 @@
-using Server.Accounting;
-using Server.Multis;
 using System;
 using System.Collections.Generic;
+using Server.Multis;
+using Server.Accounting;
 
 namespace Server.Mobiles
 {
@@ -48,7 +48,7 @@ namespace Server.Mobiles
 
             if (m_Items.Count == 0 && m_Gold == 0)
             {
-                Timer.DelayCall(TimeSpan.Zero, Delete);
+                Timer.DelayCall(TimeSpan.Zero, new TimerCallback(Delete));
             }
             else
             {
@@ -102,7 +102,13 @@ namespace Server.Mobiles
                 m_Owner = value;
             }
         }
-        public List<Item> Items => m_Items;
+        public List<Item> Items
+        {
+            get
+            {
+                return m_Items;
+            }
+        }
         public int Gold
         {
             get
@@ -114,7 +120,13 @@ namespace Server.Mobiles
                 m_Gold = value;
             }
         }
-        public DateTime ExpireTime => m_ExpireTime;
+        public DateTime ExpireTime
+        {
+            get
+            {
+                return m_ExpireTime;
+            }
+        }
         public void AddItem(Item item)
         {
             item.Internalize();
@@ -141,12 +153,12 @@ namespace Server.Mobiles
         {
             writer.WriteEncodedInt(0); // version
 
-            writer.Write(m_Owner);
-            writer.Write(m_VendorName);
-            writer.Write(m_ShopName);
+            writer.Write((Mobile)m_Owner);
+            writer.Write((string)m_VendorName);
+            writer.Write((string)m_ShopName);
 
             writer.Write(m_Items, true);
-            writer.Write(m_Gold);
+            writer.Write((int)m_Gold);
 
             writer.WriteDeltaTime(m_ExpireTime);
         }

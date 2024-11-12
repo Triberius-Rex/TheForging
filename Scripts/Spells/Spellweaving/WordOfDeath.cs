@@ -1,5 +1,6 @@
-using Server.Targeting;
 using System;
+using Server.Targeting;
+using Server.Mobiles;
 
 namespace Server.Spells.Spellweaving
 {
@@ -11,23 +12,41 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(3.5);
-        public override double RequiredSkill => 83.0;
-        public override int RequiredMana => 50;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(3.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 83.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 50;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(Mobile m)
         {
-            if (!Caster.CanSee(m))
+            if (!this.Caster.CanSee(m))
             {
-                Caster.SendLocalizedMessage(500237); // Target can not be seen.
+                this.Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (CheckHSequence(m))
+            else if (this.CheckHSequence(m))
             {
-                SpellHelper.CheckReflect(this, Caster, ref m);
+                SpellHelper.CheckReflect(0, Caster, ref m);
 
                 Point3D loc = m.Location;
                 loc.Z += 50;
@@ -37,8 +56,8 @@ namespace Server.Spells.Spellweaving
 
                 Effects.SendMovingParticles(new Entity(Serial.Zero, loc, m.Map), new Entity(Serial.Zero, m.Location, m.Map), 0xF5F, 1, 0, true, false, 0x21, 0x3F, 0x251D, 0, 0, EffectLayer.Head, 0);
 
-                double percentage = 0.05 * FocusLevel;
-                bool pvmThreshold = !m.Player && ((m.Hits / (double)m.HitsMax) < percentage);
+                double percentage = 0.05 * this.FocusLevel;
+                bool pvmThreshold = !m.Player && (((double)m.Hits / (double)m.HitsMax) < percentage);
 
                 int damage;
 
@@ -48,8 +67,8 @@ namespace Server.Spells.Spellweaving
                 }
                 else
                 {
-                    int minDamage = (int)Caster.Skills.Spellweaving.Value / 5;
-                    int maxDamage = (int)Caster.Skills.Spellweaving.Value / 3;
+                    int minDamage = (int)this.Caster.Skills.Spellweaving.Value / 5;
+                    int maxDamage = (int)this.Caster.Skills.Spellweaving.Value / 3;
                     damage = Utility.RandomMinMax(minDamage, maxDamage);
                 }
 
@@ -61,7 +80,7 @@ namespace Server.Spells.Spellweaving
                 SpellHelper.Damage(this, m, damage, 0, 0, 0, 0, 0, !pvmThreshold ? 100 : 0, pvmThreshold ? 100 : 0);
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
@@ -70,20 +89,20 @@ namespace Server.Spells.Spellweaving
             public InternalTarget(WordOfDeathSpell owner)
                 : base(10, false, TargetFlags.Harmful)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile m, object o)
             {
                 if (o is Mobile)
                 {
-                    m_Owner.Target((Mobile)o);
+                    this.m_Owner.Target((Mobile)o);
                 }
             }
 
             protected override void OnTargetFinish(Mobile m)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

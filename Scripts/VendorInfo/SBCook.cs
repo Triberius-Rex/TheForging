@@ -1,19 +1,35 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
-namespace Server.Mobiles
-{
-    public class SBCook : SBInfo
-    {
+namespace Server.Mobiles 
+{ 
+    public class SBCook : SBInfo 
+    { 
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBCook() 
+        { 
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
-
-        public class InternalBuyInfo : List<GenericBuyInfo>
+        public override IShopSellInfo SellInfo
         {
-            public InternalBuyInfo()
+            get
+            {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
+
+        public class InternalBuyInfo : List<GenericBuyInfo> 
+        { 
+            public InternalBuyInfo() 
             {
                 Add(new GenericBuyInfo(typeof(BreadLoaf), 5, 20, 0x103B, 0, true));
                 Add(new GenericBuyInfo(typeof(BreadLoaf), 5, 20, 0x103C, 0, true));
@@ -47,10 +63,10 @@ namespace Server.Mobiles
             }
         }
 
-        public class InternalSellInfo : GenericSellInfo
-        {
-            public InternalSellInfo()
-            {
+        public class InternalSellInfo : GenericSellInfo 
+        { 
+            public InternalSellInfo() 
+            { 
                 Add(typeof(CheeseWheel), 12);
                 Add(typeof(CookedBird), 8);
                 Add(typeof(RoastPig), 53);

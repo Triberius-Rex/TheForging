@@ -1,18 +1,24 @@
-using Server.Items;
-using Server.Mobiles;
-using Server.Network;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Items;
 using System.Collections.Generic;
 
 namespace Server.Spells.SkillMasteries
 {
     public class OnslaughtSpell : SkillMasteryMove
     {
-        public override int BaseMana => 20;
-        public override double RequiredSkill => 90.0;
+        public override int BaseMana { get { return 20; } }
+        public override double RequiredSkill { get { return 90.0; } }
 
-        public override SkillName MoveSkill => SkillName.Swords;
-        public override TextDefinition AbilityMessage => new TextDefinition(1156007);  // *You ready an onslaught!*
+        public override SkillName MoveSkill { get { return SkillName.Swords; } }
+        public override TextDefinition AbilityMessage { get { return new TextDefinition(1156007); } } // *You ready an onslaught!*
+
+        public OnslaughtSpell()
+        {
+        }
 
         public override bool Validate(Mobile from)
         {
@@ -85,7 +91,7 @@ namespace Server.Spells.SkillMasteries
                 defender.AddResistanceMod(mod);
 
                 attacker.PrivateOverheadMessage(MessageType.Regular, 1150, 1156008, attacker.NetState);  // You deliver an onslaught of sword strikes!
-                BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.Onslaught, 1156009, 1156010, TimeSpan.FromSeconds(duration), defender, string.Format("{0}\t{1}", amount.ToString(), resistType.ToString()))); // -~2_VAL~% ~1_RESIST~ Debuff.
+                BuffInfo.AddBuff(defender, new BuffInfo(BuffIcon.Onslaught, 1156009, 1156010, TimeSpan.FromSeconds(duration), defender, String.Format("{0}\t{1}", amount.ToString(), resistType.ToString()))); // -~2_VAL~% ~1_RESIST~ Debuff.
 
                 defender.FixedEffect(0x37B9, 10, 5, 632, 0);
 

@@ -17,13 +17,13 @@ namespace Server.Items
 		private Mobile m_Owner;
 		private bool m_Open;
 
-		public override int DefaultMaxWeight => 0;
+		public override int DefaultMaxWeight { get { return 0; } }
 
-		public override bool IsVirtualItem => true;
+		public override bool IsVirtualItem { get { return true; } }
 
-		public Mobile Owner => m_Owner;
+		public Mobile Owner { get { return m_Owner; } }
 
-		public bool Opened => m_Open;
+		public bool Opened { get { return m_Open; } }
 
 		public BankBox(Mobile owner)
 			: base(0xE7C)
@@ -37,12 +37,12 @@ namespace Server.Items
 		public BankBox(Serial serial)
 			: base(serial)
 		{ }
-
+		
 		public void Open()
 		{
 			if (m_Owner != null && m_Owner.NetState != null)
 			{
-				m_Open = true;
+			m_Open = true;
 
 				m_Owner.PrivateOverheadMessage(
 					MessageType.Regular,
@@ -66,6 +66,9 @@ namespace Server.Items
 				m_Owner.Send(RemovePacket);
 			}
 		}
+
+		public override void OnSingleClick(Mobile from)
+		{ }
 
 		public override void OnDoubleClick(Mobile from)
 		{ }
@@ -117,7 +120,7 @@ namespace Server.Items
 
 		public override bool CheckHold(Mobile m, Item item, bool message, bool checkItems, int plusItems, int plusWeight)
 		{
-			var type = item.GetType();
+			Type type = item.GetType();
 
 			if (AccountGold.Enabled && Owner != null && Owner.Account != null && (type.IsAssignableFrom(_GoldType) || type.IsAssignableFrom(_CheckType)))
 			{

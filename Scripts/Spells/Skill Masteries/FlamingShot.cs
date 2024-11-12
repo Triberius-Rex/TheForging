@@ -1,24 +1,29 @@
-using Server.Items;
-using Server.Network;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Spells.SkillMasteries
 {
     public class FlamingShotSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Flameing Shot", "",
                 -1,
                 9002
             );
 
-        public override int RequiredMana => 30;
+        public override int RequiredMana { get { return 30; } }
 
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
-        public override SkillName CastSkill => SkillName.Archery;
-        public override SkillName DamageSkill => SkillName.Tactics;
-        public override bool DelayedDamage => true;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
+        public override SkillName CastSkill { get { return SkillName.Archery; } }
+        public override SkillName DamageSkill { get { return SkillName.Tactics; } }
+        public override bool DelayedDamage { get { return true; } }
 
         public FlamingShotSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
@@ -58,10 +63,10 @@ namespace Server.Spells.SkillMasteries
 
                 if (p != null && SpellHelper.CheckTown(p, Caster) && CheckSequence())
                 {
-                    System.Collections.Generic.List<Mobile> targets = AcquireIndirectTargets(p, 5).OfType<Mobile>().ToList();
+                    var targets = AcquireIndirectTargets(p, 5).OfType<Mobile>().ToList();
                     int count = targets.Count;
 
-                    foreach (Mobile mob in targets)
+                    foreach (var mob in targets)
                     {
                         Caster.MovingEffect(mob, ((BaseRanged)weapon).EffectID, 18, 1, false, false);
 

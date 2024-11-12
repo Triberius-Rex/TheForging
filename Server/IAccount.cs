@@ -47,8 +47,10 @@ namespace Server.Accounting
 				return 0;
 			}
 
+			int gold;
+			double totalGold;
 
-			a.GetGoldBalance(out int gold, out var totalGold);
+			a.GetGoldBalance(out gold, out totalGold);
 
 			return totalGold;
 		}
@@ -70,8 +72,10 @@ namespace Server.Accounting
 				return 0;
 			}
 
+			int plat;
+			double totalPlat;
 
-			a.GetPlatBalance(out int plat, out var totalPlat);
+			a.GetPlatBalance(out plat, out totalPlat);
 
 			return totalPlat;
 		}
@@ -270,7 +274,7 @@ namespace Server.Accounting
 
 		[CommandProperty(AccessLevel.Administrator)]
 		bool Young { get; set; }
-
+		
 		Mobile this[int index] { get; set; }
 
 		void Delete();

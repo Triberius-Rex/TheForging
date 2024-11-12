@@ -1,5 +1,4 @@
 #region References
-
 using Server.Accounting;
 using Server.Network;
 #endregion
@@ -10,7 +9,7 @@ namespace Server.Items
 	{
 		private readonly SecureTrade m_Trade;
 
-		public SecureTrade Trade => m_Trade;
+		public SecureTrade Trade { get { return m_Trade; } }
 
 		public SecureTradeContainer(SecureTrade trade)
 			: base(0x1E5E)
@@ -18,7 +17,7 @@ namespace Server.Items
 			m_Trade = trade;
 			Movable = false;
 
-			Layer = Layer.SecureTrade;
+            Layer = Layer.SecureTrade;
 		}
 
 		public SecureTradeContainer(Serial serial)
@@ -107,7 +106,7 @@ namespace Server.Items
 		{
 			if (child is VirtualCheck)
 			{
-				return !AccountGold.Enabled;
+				return AccountGold.Enabled && (m.NetState == null || !m.NetState.NewSecureTrading);
 			}
 
 			return base.IsChildVisibleTo(m, child);

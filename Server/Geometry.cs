@@ -23,10 +23,10 @@ namespace Server
 		{ }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int X { get => m_X; set => m_X = value; }
+		public int X { get { return m_X; } set { m_X = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Y { get => m_Y; set => m_Y = value; }
+		public int Y { get { return m_Y; } set { m_Y = value; } }
 
 		public override string ToString()
 		{
@@ -35,26 +35,26 @@ namespace Server
 
 		public static Point2D Parse(string value)
 		{
-			var start = value.IndexOf('(');
-			var end = value.IndexOf(',', start + 1);
+			int start = value.IndexOf('(');
+			int end = value.IndexOf(',', start + 1);
 
-			var param1 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(')', start + 1);
 
-			var param2 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			return new Point2D(Convert.ToInt32(param1), Convert.ToInt32(param2));
 		}
 
 		public int CompareTo(Point2D other)
 		{
-			var v = m_X.CompareTo(other.m_X);
+			int v = (m_X.CompareTo(other.m_X));
 
 			if (v == 0)
 			{
-				v = m_Y.CompareTo(other.m_Y);
+				v = (m_Y.CompareTo(other.m_Y));
 			}
 
 			return v;
@@ -66,7 +66,7 @@ namespace Server
 			{
 				return CompareTo((Point2D)other);
 			}
-
+			
 			if (other == null)
 			{
 				return -1;
@@ -82,7 +82,7 @@ namespace Server
 				return false;
 			}
 
-			var p = (IPoint2D)o;
+			IPoint2D p = (IPoint2D)o;
 
 			return m_X == p.X && m_Y == p.Y;
 		}
@@ -236,13 +236,13 @@ namespace Server
 		{ }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int X { get => m_X; set => m_X = value; }
+		public int X { get { return m_X; } set { m_X = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Y { get => m_Y; set => m_Y = value; }
+		public int Y { get { return m_Y; } set { m_Y = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Z { get => m_Z; set => m_Z = value; }
+		public int Z { get { return m_Z; } set { m_Z = value; } }
 
 		public override string ToString()
 		{
@@ -256,7 +256,7 @@ namespace Server
 				return false;
 			}
 
-			var p = (IPoint3D)o;
+			IPoint3D p = (IPoint3D)o;
 
 			return m_X == p.X && m_Y == p.Y && m_Z == p.Z;
 		}
@@ -277,20 +277,20 @@ namespace Server
 
 		public static Point3D Parse(string value)
 		{
-			var start = value.IndexOf('(');
-			var end = value.IndexOf(',', start + 1);
+			int start = value.IndexOf('(');
+			int end = value.IndexOf(',', start + 1);
 
-			var param1 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(',', start + 1);
 
-			var param2 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(')', start + 1);
 
-			var param3 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param3 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			return new Point3D(Convert.ToInt32(param1), Convert.ToInt32(param2), Convert.ToInt32(param3));
 		}
@@ -327,15 +327,15 @@ namespace Server
 
 		public int CompareTo(Point3D other)
 		{
-			var v = m_X.CompareTo(other.m_X);
+			int v = (m_X.CompareTo(other.m_X));
 
 			if (v == 0)
 			{
-				v = m_Y.CompareTo(other.m_Y);
+				v = (m_Y.CompareTo(other.m_Y));
 
 				if (v == 0)
 				{
-					v = m_Z.CompareTo(other.m_Z);
+					v = (m_Z.CompareTo(other.m_Z));
 				}
 			}
 
@@ -348,7 +348,7 @@ namespace Server
 			{
 				return CompareTo((Point3D)other);
 			}
-
+			
 			if (other == null)
 			{
 				return -1;
@@ -386,25 +386,25 @@ namespace Server
 
 		public static Rectangle2D Parse(string value)
 		{
-			var start = value.IndexOf('(');
-			var end = value.IndexOf(',', start + 1);
+			int start = value.IndexOf('(');
+			int end = value.IndexOf(',', start + 1);
 
-			var param1 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-			start = end;
-			end = value.IndexOf(',', start + 1);
-
-			var param2 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(',', start + 1);
 
-			var param3 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
+
+			start = end;
+			end = value.IndexOf(',', start + 1);
+
+			string param3 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(')', start + 1);
 
-			var param4 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param4 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			return new Rectangle2D(
 				Convert.ToInt32(param1),
@@ -414,22 +414,22 @@ namespace Server
 		}
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Point2D Start { get => m_Start; set => m_Start = value; }
+		public Point2D Start { get { return m_Start; } set { m_Start = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Point2D End { get => m_End; set => m_End = value; }
+		public Point2D End { get { return m_End; } set { m_End = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int X { get => m_Start.m_X; set => m_Start.m_X = value; }
+		public int X { get { return m_Start.m_X; } set { m_Start.m_X = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Y { get => m_Start.m_Y; set => m_Start.m_Y = value; }
+		public int Y { get { return m_Start.m_Y; } set { m_Start.m_Y = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Width { get => m_End.m_X - m_Start.m_X; set => m_End.m_X = m_Start.m_X + value; }
+		public int Width { get { return m_End.m_X - m_Start.m_X; } set { m_End.m_X = m_Start.m_X + value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Height { get => m_End.m_Y - m_Start.m_Y; set => m_End.m_Y = m_Start.m_Y + value; }
+		public int Height { get { return m_End.m_Y - m_Start.m_Y; } set { m_End.m_Y = m_Start.m_Y + value; } }
 
 		public void MakeHold(Rectangle2D r)
 		{
@@ -456,19 +456,19 @@ namespace Server
 
 		public bool Contains(Point3D p)
 		{
-			return m_Start.m_X <= p.m_X && m_Start.m_Y <= p.m_Y && m_End.m_X > p.m_X && m_End.m_Y > p.m_Y;
+			return (m_Start.m_X <= p.m_X && m_Start.m_Y <= p.m_Y && m_End.m_X > p.m_X && m_End.m_Y > p.m_Y);
 			//return ( m_Start <= p && m_End > p );
 		}
 
 		public bool Contains(Point2D p)
 		{
-			return m_Start.m_X <= p.m_X && m_Start.m_Y <= p.m_Y && m_End.m_X > p.m_X && m_End.m_Y > p.m_Y;
+			return (m_Start.m_X <= p.m_X && m_Start.m_Y <= p.m_Y && m_End.m_X > p.m_X && m_End.m_Y > p.m_Y);
 			//return ( m_Start <= p && m_End > p );
 		}
 
 		public bool Contains(IPoint2D p)
 		{
-			return m_Start <= p && m_End > p;
+			return (m_Start <= p && m_End > p);
 		}
 
 		public override string ToString()
@@ -517,35 +517,35 @@ namespace Server
 
 		public static Rectangle3D Parse(string value)
 		{
-			var start = value.IndexOf('(');
-			var end = value.IndexOf(',', start + 1);
+			int start = value.IndexOf('(');
+			int end = value.IndexOf(',', start + 1);
 
-			var param1 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-			start = end;
-			end = value.IndexOf(',', start + 1);
-
-			var param2 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(',', start + 1);
 
-			var param3 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(',', start + 1);
 
-			var param4 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param3 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(',', start + 1);
 
-			var param5 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param4 = value.Substring(start + 1, end - (start + 1)).Trim();
+
+			start = end;
+			end = value.IndexOf(',', start + 1);
+
+			string param5 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			start = end;
 			end = value.IndexOf(')', start + 1);
 
-			var param6 = value.Substring(start + 1, end - (start + 1)).Trim();
+			string param6 = value.Substring(start + 1, end - (start + 1)).Trim();
 
 			return new Rectangle3D(
 				Convert.ToInt32(param1),
@@ -557,19 +557,19 @@ namespace Server
 		}
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Point3D Start { get => m_Start; set => m_Start = value; }
+		public Point3D Start { get { return m_Start; } set { m_Start = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Point3D End { get => m_End; set => m_End = value; }
+		public Point3D End { get { return m_End; } set { m_End = value; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Width => m_End.X - m_Start.X;
+		public int Width { get { return m_End.X - m_Start.X; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Height => m_End.Y - m_Start.Y;
+		public int Height { get { return m_End.Y - m_Start.Y; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int Depth => m_End.Z - m_Start.Z;
+		public int Depth { get { return m_End.Z - m_Start.Z; } }
 
 		public bool Contains(Point3D p)
 		{

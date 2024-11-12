@@ -1,5 +1,5 @@
-using Server.Mobiles;
 using System;
+using Server.Mobiles;
 
 namespace Server.Spells.Spellweaving
 {
@@ -16,9 +16,9 @@ namespace Server.Spells.Spellweaving
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 1) > Caster.FollowersMax)
+            if ((this.Caster.Followers + 1) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1074270); // You have too many followers to summon another one.
+                this.Caster.SendLocalizedMessage(1074270); // You have too many followers to summon another one.
                 return false;
             }
 
@@ -27,10 +27,10 @@ namespace Server.Spells.Spellweaving
 
         public override void OnCast()
         {
-            if (CheckSequence())
+            if (this.CheckSequence())
             {
-                TimeSpan duration = TimeSpan.FromMinutes(Caster.Skills.Spellweaving.Value / 24 + FocusLevel * 2);
-                int summons = Math.Min(1 + FocusLevel, Caster.FollowersMax - Caster.Followers);
+                TimeSpan duration = TimeSpan.FromMinutes(this.Caster.Skills.Spellweaving.Value / 24 + this.FocusLevel * 2);
+                int summons = Math.Min(1 + this.FocusLevel, this.Caster.FollowersMax - this.Caster.Followers);
 
                 for (int i = 0; i < summons; i++)
                 {
@@ -40,16 +40,15 @@ namespace Server.Spells.Spellweaving
                     {
                         bc = Activator.CreateInstance<T>();
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        Diagnostics.ExceptionLogging.LogException(e);
                         break;
                     }
 
-                    SpellHelper.Summon(bc, Caster, Sound, duration, false, false);
+                    SpellHelper.Summon(bc, this.Caster, this.Sound, duration, false, false);
                 }
 
-                FinishSequence();
+                this.FinishSequence();
             }
         }
     }

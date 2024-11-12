@@ -11,8 +11,8 @@ namespace Server
 		private static Serial m_LastMobile = Zero;
 		private static Serial m_LastItem = 0x40000000;
 
-		public static Serial LastMobile => m_LastMobile;
-		public static Serial LastItem => m_LastItem;
+		public static Serial LastMobile { get { return m_LastMobile; } }
+		public static Serial LastItem { get { return m_LastItem; } }
 
 		public static readonly Serial MinusOne = new Serial(-1);
 		public static readonly Serial Zero = new Serial(0);
@@ -21,7 +21,7 @@ namespace Server
 		{
 			get
 			{
-				while (World.FindMobile(m_LastMobile = m_LastMobile + 1) != null)
+				while (World.FindMobile(m_LastMobile = (m_LastMobile + 1)) != null)
 				{
 					;
 				}
@@ -34,7 +34,7 @@ namespace Server
 		{
 			get
 			{
-				while (World.FindItem(m_LastItem = m_LastItem + 1) != null)
+				while (World.FindItem(m_LastItem = (m_LastItem + 1)) != null)
 				{
 					;
 				}
@@ -48,13 +48,13 @@ namespace Server
 			m_Serial = serial;
 		}
 
-		public int Value => m_Serial;
+		public int Value { get { return m_Serial; } }
 
-		public bool IsMobile => m_Serial > 0 && m_Serial < 0x40000000;
+		public bool IsMobile { get { return (m_Serial > 0 && m_Serial < 0x40000000); } }
 
-		public bool IsItem => m_Serial >= 0x40000000 && m_Serial <= 0x7FFFFFFF;
+		public bool IsItem { get { return (m_Serial >= 0x40000000 && m_Serial <= 0x7FFFFFFF); } }
 
-		public bool IsValid => m_Serial > 0;
+		public bool IsValid { get { return (m_Serial > 0); } }
 
 		public override int GetHashCode()
 		{

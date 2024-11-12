@@ -1,16 +1,31 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 
-namespace Server.Mobiles
-{
+namespace Server.Mobiles 
+{ 
     public class SBVarietyDealer : SBInfo
     {
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBVarietyDealer()
+        {
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
+        public override IShopSellInfo SellInfo
+        {
+            get
+            {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
 
         public class InternalBuyInfo : List<GenericBuyInfo>
         {
@@ -32,19 +47,19 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Bolt), 6, Utility.Random(30, 60), 0x1BFB, 0, true));
                 Add(new GenericBuyInfo(typeof(Arrow), 3, Utility.Random(30, 60), 0xF3F, 0, true));
 
-                Add(new GenericBuyInfo(typeof(BlackPearl), 5, 999, 0xF7A, 0));
-                Add(new GenericBuyInfo(typeof(Bloodmoss), 5, 999, 0xF7B, 0));
-                Add(new GenericBuyInfo(typeof(MandrakeRoot), 3, 999, 0xF86, 0));
-                Add(new GenericBuyInfo(typeof(Garlic), 3, 999, 0xF84, 0));
-                Add(new GenericBuyInfo(typeof(Ginseng), 3, 999, 0xF85, 0));
-                Add(new GenericBuyInfo(typeof(Nightshade), 3, 999, 0xF88, 0));
-                Add(new GenericBuyInfo(typeof(SpidersSilk), 3, 999, 0xF8D, 0));
+                Add(new GenericBuyInfo(typeof(BlackPearl), 5, 999, 0xF7A, 0)); 
+                Add(new GenericBuyInfo(typeof(Bloodmoss), 5, 999, 0xF7B, 0)); 
+                Add(new GenericBuyInfo(typeof(MandrakeRoot), 3, 999, 0xF86, 0)); 
+                Add(new GenericBuyInfo(typeof(Garlic), 3, 999, 0xF84, 0)); 
+                Add(new GenericBuyInfo(typeof(Ginseng), 3, 999, 0xF85, 0)); 
+                Add(new GenericBuyInfo(typeof(Nightshade), 3, 999, 0xF88, 0)); 
+                Add(new GenericBuyInfo(typeof(SpidersSilk), 3, 999, 0xF8D, 0)); 
                 Add(new GenericBuyInfo(typeof(SulfurousAsh), 3, 999, 0xF8C, 0));
 
                 Add(new GenericBuyInfo(typeof(BreadLoaf), 7, 10, 0x103B, 0, true));
                 Add(new GenericBuyInfo(typeof(Backpack), 15, 20, 0x9B2, 0));
 
-                Type[] types = Loot.MageryScrollTypes;
+                Type[] types = Loot.RegularScrollTypes;
 
                 int circles = 3;
 
@@ -60,13 +75,16 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(types[i], 12 + ((i / 8) * 10), 20, itemID, 0, true));
                 }
 
-                Add(new GenericBuyInfo(typeof(BatWing), 3, 999, 0xF78, 0));
-                Add(new GenericBuyInfo(typeof(GraveDust), 3, 999, 0xF8F, 0));
-                Add(new GenericBuyInfo(typeof(DaemonBlood), 6, 999, 0xF7D, 0));
-                Add(new GenericBuyInfo(typeof(NoxCrystal), 6, 999, 0xF8E, 0));
-                Add(new GenericBuyInfo(typeof(PigIron), 5, 999, 0xF8A, 0));
+                if (Core.AOS)
+                {
+                    Add(new GenericBuyInfo(typeof(BatWing), 3, 999, 0xF78, 0));
+                    Add(new GenericBuyInfo(typeof(GraveDust), 3, 999, 0xF8F, 0));
+                    Add(new GenericBuyInfo(typeof(DaemonBlood), 6, 999, 0xF7D, 0));
+                    Add(new GenericBuyInfo(typeof(NoxCrystal), 6, 999, 0xF8E, 0));
+                    Add(new GenericBuyInfo(typeof(PigIron), 5, 999, 0xF8A, 0));
 
-                Add(new GenericBuyInfo(typeof(NecromancerSpellbook), 115, 10, 0x2253, 0));
+                    Add(new GenericBuyInfo(typeof(NecromancerSpellbook), 115, 10, 0x2253, 0));
+                }
 
                 Add(new GenericBuyInfo(typeof(RecallRune), 15, 10, 0x1f14, 0));
                 Add(new GenericBuyInfo(typeof(Spellbook), 18, 10, 0xEFA, 0));
@@ -110,13 +128,16 @@ namespace Server.Mobiles
                 Add(typeof(Spellbook), 9);
                 Add(typeof(BlankScroll), 3);
 
-                Add(typeof(BatWing), 2);
-                Add(typeof(GraveDust), 2);
-                Add(typeof(DaemonBlood), 3);
-                Add(typeof(NoxCrystal), 3);
-                Add(typeof(PigIron), 3);
+                if (Core.AOS)
+                {
+                    Add(typeof(BatWing), 2);
+                    Add(typeof(GraveDust), 2);
+                    Add(typeof(DaemonBlood), 3);
+                    Add(typeof(NoxCrystal), 3);
+                    Add(typeof(PigIron), 3);
+                }
 
-                Type[] types = Loot.MageryScrollTypes;
+                Type[] types = Loot.RegularScrollTypes;
 
                 for (int i = 0; i < types.Length; ++i)
                     Add(types[i], ((i / 8) + 2) * 5);

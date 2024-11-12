@@ -11,16 +11,16 @@ namespace Server
 			m_Count = 0;
 		}
 
-		public int Count => m_Count;
+		public int Count { get { return m_Count; } }
 
 		public void Clear()
 		{
 			m_Count = 0;
 		}
 
-		public Point3D Last => m_List[m_Count - 1];
+		public Point3D Last { get { return m_List[m_Count - 1]; } }
 
-		public Point3D this[int index] => m_List[index];
+		public Point3D this[int index] { get { return m_List[index]; } }
 
 		public void Add(int x, int y, int z)
 		{
@@ -29,7 +29,7 @@ namespace Server
 				var old = m_List;
 				m_List = new Point3D[old.Length * 2];
 
-				for (var i = 0; i < old.Length; ++i)
+				for (int i = 0; i < old.Length; ++i)
 				{
 					m_List[i] = old[i];
 				}
@@ -48,7 +48,7 @@ namespace Server
 				var old = m_List;
 				m_List = new Point3D[old.Length * 2];
 
-				for (var i = 0; i < old.Length; ++i)
+				for (int i = 0; i < old.Length; ++i)
 				{
 					m_List[i] = old[i];
 				}
@@ -71,7 +71,7 @@ namespace Server
 
 			var list = new Point3D[m_Count];
 
-			for (var i = 0; i < m_Count; ++i)
+			for (int i = 0; i < m_Count; ++i)
 			{
 				list[i] = m_List[i];
 			}

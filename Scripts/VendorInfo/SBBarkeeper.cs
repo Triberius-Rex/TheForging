@@ -1,5 +1,6 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
 namespace Server.Mobiles
 {
@@ -7,9 +8,24 @@ namespace Server.Mobiles
     {
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBBarkeeper()
+        {
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
+        public override IShopSellInfo SellInfo
+        {
+            get
+            {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
 
         public class InternalBuyInfo : List<GenericBuyInfo>
         {
@@ -51,7 +67,16 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Dices), 2, 20, 0xFA7, 0));
                 Add(new GenericBuyInfo("1041243", typeof(ContractOfEmployment), 1252, 20, 0x14F0, 0));
                 Add(new GenericBuyInfo("a barkeep contract", typeof(BarkeepContract), 1252, 20, 0x14F0, 0));
-                Add(new GenericBuyInfo("1062332", typeof(VendorRentalContract), 1252, 20, 0x14F0, 0x672));
+                if (Multis.BaseHouse.NewVendorSystem)
+                    Add(new GenericBuyInfo("1062332", typeof(VendorRentalContract), 1252, 20, 0x14F0, 0x672));
+                /*if ( Map == Tokuno )
+                {
+                Add( new GenericBuyInfo( typeof( Wasabi ), 2, 20, 0x24E8, 0 ) );
+                Add( new GenericBuyInfo( typeof( Wasabi ), 2, 20, 0x24E9, 0 ) );
+                Add( new GenericBuyInfo( typeof( BentoBox ), 6, 20, 0x2836, 0 ) );
+                Add( new GenericBuyInfo( typeof( BentoBox ), 6, 20, 0x2837, 0 ) );
+                Add( new GenericBuyInfo( typeof( GreenTeaBasket ), 2, 20, 0x284B, 0 ) );
+                }*/
             }
         }
 

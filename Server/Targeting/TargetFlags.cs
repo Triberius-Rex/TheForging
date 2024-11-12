@@ -1,8 +1,5 @@
-using System;
-
 namespace Server.Targeting
 {
-	[Flags]
 	public enum TargetFlags : byte
 	{
 		None = 0x00,

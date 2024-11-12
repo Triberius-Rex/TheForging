@@ -18,6 +18,7 @@
  *
  ***************************************************************************/
 
+using System;
 using Server.Network;
 
 namespace Server.Gumps
@@ -26,28 +27,34 @@ namespace Server.Gumps
 	{
 		private int m_Serial;
 
-		public GumpItemProperty(int serial)
+		public GumpItemProperty( int serial )
 		{
 			m_Serial = serial;
 		}
 
 		public int Serial
 		{
-			get => m_Serial;
-			set => Delta(ref m_Serial, value);
+			get
+			{
+				return m_Serial;
+			}
+			set
+			{
+				Delta( ref m_Serial, value );
+			}
 		}
 
 		public override string Compile()
 		{
-			return System.String.Format("{{ itemproperty {0} }}", m_Serial);
+			return String.Format( "{{ itemproperty {0} }}", m_Serial );
 		}
 
-		private static readonly byte[] m_LayoutName = Gump.StringToBuffer("itemproperty");
+		private static byte[] m_LayoutName = Gump.StringToBuffer( "itemproperty" );
 
-		public override void AppendTo(IGumpWriter disp)
+		public override void AppendTo( IGumpWriter disp )
 		{
-			disp.AppendLayout(m_LayoutName);
-			disp.AppendLayout(m_Serial);
+			disp.AppendLayout( m_LayoutName );
+			disp.AppendLayout( m_Serial );
 		}
 	}
 }

@@ -8,10 +8,10 @@ namespace Server
 	{
 		Serial Serial { get; }
 
-		Point3D Location { get; set; }
+        Point3D Location { get; set; }
 		Map Map { get; set; }
 
-		bool NoMoveHS { get; set; }
+        bool NoMoveHS { get; set; }
 
 		Direction Direction { get; set; }
 
@@ -24,7 +24,7 @@ namespace Server
 		void Delete();
 		void ProcessDelta();
 		void InvalidateProperties();
-		void OnStatsQuery(Mobile m);
+        void OnStatsQuery(Mobile m);
 	}
 
 	public class Entity : IEntity, IComparable<Entity>
@@ -34,9 +34,9 @@ namespace Server
 		public Point3D Location { get; set; }
 		public Map Map { get; set; }
 
-		public int X => Location.X;
-		public int Y => Location.Y;
-		public int Z => Location.Z;
+		public int X { get { return Location.X; } }
+		public int Y { get { return Location.Y; } }
+		public int Z { get { return Location.Z; } }
 
 		public bool Deleted { get; private set; }
 

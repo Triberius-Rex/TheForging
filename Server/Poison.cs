@@ -8,11 +8,17 @@ namespace Server
 	[Parsable]
 	public abstract class Poison
 	{
+		#region Mondain's Legacy
 		public abstract int LabelNumber { get; }
 		public abstract int RealLevel { get; }
+		#endregion
+
+		/*public abstract TimeSpan Interval{ get; }
+        public abstract TimeSpan Duration{ get; }*/
 		public abstract string Name { get; }
 		public abstract int Level { get; }
 		public abstract Timer ConstructTimer(Mobile m);
+		/*public abstract void OnDamage( Mobile m, ref object state );*/
 
 		public override string ToString()
 		{
@@ -23,9 +29,9 @@ namespace Server
 
 		public static void Register(Poison reg)
 		{
-			var regName = reg.Name.ToLower();
+			string regName = reg.Name.ToLower();
 
-			for (var i = 0; i < m_Poisons.Count; i++)
+			for (int i = 0; i < m_Poisons.Count; i++)
 			{
 				if (reg.Level == m_Poisons[i].Level)
 				{
@@ -40,22 +46,26 @@ namespace Server
 			m_Poisons.Add(reg);
 		}
 
-		public static Poison Lesser => GetPoison("Lesser");
-		public static Poison Regular => GetPoison("Regular");
-		public static Poison Greater => GetPoison("Greater");
-		public static Poison Deadly => GetPoison("Deadly");
-		public static Poison Lethal => GetPoison("Lethal");
-		public static Poison Parasitic => GetPoison("DeadlyParasitic");
-		public static Poison DarkGlow => GetPoison("GreaterDarkglow");
+		public static Poison Lesser { get { return GetPoison("Lesser"); } }
+		public static Poison Regular { get { return GetPoison("Regular"); } }
+		public static Poison Greater { get { return GetPoison("Greater"); } }
+		public static Poison Deadly { get { return GetPoison("Deadly"); } }
+		public static Poison Lethal { get { return GetPoison("Lethal"); } }
 
-		public static List<Poison> Poisons => m_Poisons;
+		#region Mondain's Legacy
+		public static Poison Parasitic { get { return GetPoison("DeadlyParasitic"); } }
+		public static Poison DarkGlow { get { return GetPoison("GreaterDarkglow"); } }
+		#endregion
+
+		public static List<Poison> Poisons { get { return m_Poisons; } }
 
 		public static Poison Parse(string value)
 		{
 			Poison p = null;
 
+			int plevel;
 
-			if (Int32.TryParse(value, out var plevel))
+			if (int.TryParse(value, out plevel))
 			{
 				p = GetPoison(plevel);
 			}
@@ -70,9 +80,9 @@ namespace Server
 
 		public static Poison GetPoison(int level)
 		{
-			for (var i = 0; i < m_Poisons.Count; ++i)
+			for (int i = 0; i < m_Poisons.Count; ++i)
 			{
-				var p = m_Poisons[i];
+				Poison p = m_Poisons[i];
 
 				if (p.Level == level)
 				{
@@ -85,9 +95,9 @@ namespace Server
 
 		public static Poison GetPoison(string name)
 		{
-			for (var i = 0; i < m_Poisons.Count; ++i)
+			for (int i = 0; i < m_Poisons.Count; ++i)
 			{
-				var p = m_Poisons[i];
+				Poison p = m_Poisons[i];
 
 				if (Utility.InsensitiveCompare(p.Name, name) == 0)
 				{
@@ -116,14 +126,14 @@ namespace Server
 			switch (reader.ReadByte())
 			{
 				case 1:
-				return GetPoison(reader.ReadByte());
+					return GetPoison(reader.ReadByte());
 				case 2:
-				//no longer used, safe to remove?
-				reader.ReadInt();
-				reader.ReadDouble();
-				reader.ReadInt();
-				reader.ReadTimeSpan();
-				break;
+					//no longer used, safe to remove?
+					reader.ReadInt();
+					reader.ReadDouble();
+					reader.ReadInt();
+					reader.ReadTimeSpan();
+					break;
 			}
 			return null;
 		}

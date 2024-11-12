@@ -1,3 +1,4 @@
+using System;
 using Server.Items;
 using Server.Network;
 using Server.Targeting;
@@ -22,19 +23,25 @@ namespace Server.Spells.Third
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Third;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Third;
+            }
+        }
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         private class InternalTarget : Target
         {
             private readonly UnlockSpell m_Owner;
             public InternalTarget(UnlockSpell owner)
-                : base(10, false, TargetFlags.None)
+                : base(Core.ML ? 10 : 12, false, TargetFlags.None)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
@@ -44,7 +51,7 @@ namespace Server.Spells.Third
                 if (loc == null)
                     return;
 
-                if (m_Owner.CheckSequence())
+                if (this.m_Owner.CheckSequence())
                 {
                     SpellHelper.Turn(from, o);
 
@@ -92,7 +99,7 @@ namespace Server.Spells.Third
                                 level = (int)(from.Skills[SkillName.Magery].Value * 0.8) - 4;
                                 reqSkill = cont.RequiredSkill;
                             }
-
+   
                             if (level >= reqSkill)
                             {
                                 cont.Locked = false;
@@ -106,12 +113,12 @@ namespace Server.Spells.Third
                     }
                 }
 
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                m_Owner.FinishSequence();
+                this.m_Owner.FinishSequence();
             }
         }
     }

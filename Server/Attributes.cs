@@ -79,7 +79,7 @@ namespace Server
 				return 0;
 			}
 
-			var attr = objs[0] as CallPriorityAttribute;
+			CallPriorityAttribute attr = objs[0] as CallPriorityAttribute;
 
 			if (attr == null)
 			{
@@ -95,7 +95,7 @@ namespace Server
 	{
 		private readonly string[] m_Aliases;
 
-		public string[] Aliases => m_Aliases;
+		public string[] Aliases { get { return m_Aliases; } }
 
 		public TypeAliasAttribute(params string[] aliases)
 		{
@@ -112,7 +112,7 @@ namespace Server
 	{
 		private readonly string[] m_Names;
 
-		public string[] Names => m_Names;
+		public string[] Names { get { return m_Names; } }
 
 		public CustomEnumAttribute(string[] names)
 		{
@@ -181,11 +181,11 @@ namespace Server
 		private readonly AccessLevel m_WriteLevel;
 		private readonly bool m_ReadOnly;
 
-		public AccessLevel ReadLevel => m_ReadLevel;
+		public AccessLevel ReadLevel { get { return m_ReadLevel; } }
 
-		public AccessLevel WriteLevel => m_WriteLevel;
+		public AccessLevel WriteLevel { get { return m_WriteLevel; } }
 
-		public bool ReadOnly => m_ReadOnly;
+		public bool ReadOnly { get { return m_ReadOnly; } }
 
 		public CommandPropertyAttribute(AccessLevel level, bool readOnly)
 		{

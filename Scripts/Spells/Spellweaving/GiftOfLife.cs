@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
-using System.Collections.Generic;
 
 namespace Server.Spells.Spellweaving
 {
@@ -19,10 +19,34 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(4.0);
-        public override double RequiredSkill => 38.0;
-        public override int RequiredMana => 70;
-        public double HitsScalar => ((Caster.Skills.Spellweaving.Value / 2.4) + FocusLevel) / 100;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(4.0);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 38.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 70;
+            }
+        }
+        public double HitsScalar
+        {
+            get
+            {
+                return ((Caster.Skills.Spellweaving.Value / 2.4) + FocusLevel) / 100;
+            }
+        }
         public static void Initialize()
         {
             EventSink.PlayerDeath += HandleDeath;
@@ -37,7 +61,7 @@ namespace Server.Spells.Spellweaving
         public static void HandleDeath(Mobile m)
         {
             if (m_Table.ContainsKey(m))
-                Timer.DelayCall(TimeSpan.FromSeconds(Utility.RandomMinMax(2, 4)), HandleDeath_OnCallback, m);
+                Timer.DelayCall<Mobile>(TimeSpan.FromSeconds(Utility.RandomMinMax(2, 4)), new TimerStateCallback<Mobile>(HandleDeath_OnCallback), m);
         }
 
         public static void Login(LoginEventArgs e)
@@ -46,7 +70,7 @@ namespace Server.Spells.Spellweaving
 
             if (m_Table.ContainsKey(m))
             {
-                ExpireTimer timer = m_Table[m];
+                var timer = m_Table[m];
 
                 if (timer.EndTime > DateTime.UtcNow)
                 {
@@ -211,7 +235,13 @@ namespace Server.Spells.Spellweaving
                 EndTime = DateTime.UtcNow + delay;
             }
 
-            public GiftOfLifeSpell Spell => m_Spell;
+            public GiftOfLifeSpell Spell
+            {
+                get
+                {
+                    return m_Spell;
+                }
+            }
             public void DoExpire()
             {
                 Stop();

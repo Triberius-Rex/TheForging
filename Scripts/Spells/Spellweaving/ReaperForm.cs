@@ -1,4 +1,5 @@
 using System;
+using Server.Network;
 
 namespace Server.Spells.Spellweaving
 {
@@ -10,27 +11,118 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.5);
-        public override double RequiredSkill => 24.0;
-        public override int RequiredMana => 34;
-        public override int Body => 0x11D;
-        public override int FireResistOffset => -25;
-        public override int PhysResistOffset => 5 + FocusLevel;
-        public override int ColdResistOffset => 5 + FocusLevel;
-        public override int PoisResistOffset => 5 + FocusLevel;
-        public override int NrgyResistOffset => 5 + FocusLevel;
-        public virtual int SwingSpeedBonus => 10 + FocusLevel;
-        public virtual int SpellDamageBonus => 10 + FocusLevel;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(2.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 24.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 34;
+            }
+        }
+        public override int Body
+        {
+            get
+            {
+                return 0x11D;
+            }
+        }
+        public override int FireResistOffset
+        {
+            get
+            {
+                return -25;
+            }
+        }
+        public override int PhysResistOffset
+        {
+            get
+            {
+                return 5 + this.FocusLevel;
+            }
+        }
+        public override int ColdResistOffset
+        {
+            get
+            {
+                return 5 + this.FocusLevel;
+            }
+        }
+        public override int PoisResistOffset
+        {
+            get
+            {
+                return 5 + this.FocusLevel;
+            }
+        }
+        public override int NrgyResistOffset
+        {
+            get
+            {
+                return 5 + this.FocusLevel;
+            }
+        }
+        public virtual int SwingSpeedBonus
+        {
+            get
+            {
+                return 10 + this.FocusLevel;
+            }
+        }
+        public virtual int SpellDamageBonus
+        {
+            get
+            {
+                return 10 + this.FocusLevel;
+            }
+        }
+        public static void Initialize()
+        {
+            if (!Core.SA)
+            {
+                EventSink.Login += new LoginEventHandler(OnLogin);
+            }
+        }
+
+        public static void OnLogin(LoginEventArgs e)
+        {
+            TransformContext context = TransformationSpellHelper.GetContext(e.Mobile);
+
+            if (context != null && context.Type == typeof(ReaperFormSpell))
+                e.Mobile.SendSpeedControl(SpeedControlType.WalkSpeed);
+        }
 
         public override void DoEffect(Mobile m)
         {
             m.PlaySound(0x1BA);
 
             BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ReaperForm, 1071034, 1153781, "10\t10\t5\t5\t5\t5\t25"));
+
+            if (!Core.SA)
+            {
+                m.SendSpeedControl(SpeedControlType.WalkSpeed);
+            }
         }
 
         public override void RemoveEffect(Mobile m)
         {
+            if (!Core.SA)
+            {
+                m.SendSpeedControl(SpeedControlType.Disable);
+            }
+
             BuffInfo.RemoveBuff(m, BuffIcon.ReaperForm);
         }
     }

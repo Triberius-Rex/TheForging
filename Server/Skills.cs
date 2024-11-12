@@ -149,15 +149,15 @@ namespace Server
 								m_Lock = (SkillLock)reader.ReadByte();
 							}
 
-							if ((version & 0x8) != 0)
-							{
-								VolumeLearned = reader.ReadInt();
-							}
+                            if ((version & 0x8) != 0)
+                            {
+                                VolumeLearned = reader.ReadInt();
+                            }
 
-							if ((version & 0x10) != 0)
-							{
-								NextGGSGain = reader.ReadDateTime();
-							}
+                            if ((version & 0x10) != 0)
+                            {
+                                NextGGSGain = reader.ReadDateTime();
+                            }
 						}
 
 						break;
@@ -192,13 +192,13 @@ namespace Server
 
 		public void Serialize(GenericWriter writer)
 		{
-			if (m_Base == 0 && m_Cap == 1000 && m_Lock == SkillLock.Up && VolumeLearned == 0 && NextGGSGain == DateTime.MinValue)
+            if (m_Base == 0 && m_Cap == 1000 && m_Lock == SkillLock.Up && VolumeLearned == 0 && NextGGSGain == DateTime.MinValue)
 			{
 				writer.Write((byte)0xFF); // default
 			}
 			else
 			{
-				var flags = 0x0;
+				int flags = 0x0;
 
 				if (m_Base != 0)
 				{
@@ -215,15 +215,15 @@ namespace Server
 					flags |= 0x4;
 				}
 
-				if (VolumeLearned != 0)
-				{
-					flags |= 0x8;
-				}
+                if (VolumeLearned != 0)
+                {
+                    flags |= 0x8;
+                }
 
-				if (NextGGSGain != DateTime.MinValue)
-				{
-					flags |= 0x10;
-				}
+                if (NextGGSGain != DateTime.MinValue)
+                {
+                    flags |= 0x10;
+                }
 
 				writer.Write((byte)flags); // version
 
@@ -242,49 +242,49 @@ namespace Server
 					writer.Write((byte)m_Lock);
 				}
 
-				if (VolumeLearned != 0)
-				{
-					writer.Write(VolumeLearned);
-				}
+                if (VolumeLearned != 0)
+                {
+                    writer.Write((int)VolumeLearned);
+                }
 
-				if (NextGGSGain != DateTime.MinValue)
-				{
-					writer.Write(NextGGSGain);
-				}
+                if (NextGGSGain != DateTime.MinValue)
+                {
+                    writer.Write(NextGGSGain);
+                }
 			}
 		}
 
-		public Skills Owner => m_Owner;
+		public Skills Owner { get { return m_Owner; } }
 
-		public SkillName SkillName => (SkillName)m_Info.SkillID;
+		public SkillName SkillName { get { return (SkillName)m_Info.SkillID; } }
 
-		public int SkillID => m_Info.SkillID;
-
-		[CommandProperty(AccessLevel.Counselor)]
-		public string Name => m_Info.Name;
-
-		public SkillInfo Info => m_Info;
+		public int SkillID { get { return m_Info.SkillID; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public SkillLock Lock => m_Lock;
+		public string Name { get { return m_Info.Name; } }
+
+		public SkillInfo Info { get { return m_Info; } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public int VolumeLearned
-		{
-			get;
-			set;
-		}
+		public SkillLock Lock { get { return m_Lock; } }
 
-		[CommandProperty(AccessLevel.Counselor)]
-		public DateTime NextGGSGain
-		{
-			get;
-			set;
-		}
+        [CommandProperty(AccessLevel.Counselor)]
+        public int VolumeLearned
+        {
+            get;
+            set;
+        }
+
+        [CommandProperty(AccessLevel.Counselor)]
+        public DateTime NextGGSGain
+        {
+            get;
+            set;
+        }
 
 		public int BaseFixedPoint
 		{
-			get => m_Base;
+			get { return m_Base; }
 			set
 			{
 				if (value < 0)
@@ -296,19 +296,19 @@ namespace Server
 					value = 0xFFFF;
 				}
 
-				var sv = (ushort)value;
+				ushort sv = (ushort)value;
 
 				int oldBase = m_Base;
 
 				if (m_Base != sv)
 				{
-					m_Owner.Total = m_Owner.Total - m_Base + sv;
+					m_Owner.Total = (m_Owner.Total - m_Base) + sv;
 
 					m_Base = sv;
 
 					m_Owner.OnSkillChange(this);
 
-					var m = m_Owner.Owner;
+					Mobile m = m_Owner.Owner;
 
 					if (m != null)
 					{
@@ -319,11 +319,11 @@ namespace Server
 		}
 
 		[CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
-		public double Base { get => m_Base / 10.0; set => BaseFixedPoint = (int)(value * 10.0); }
+		public double Base { get { return (m_Base / 10.0); } set { BaseFixedPoint = (int)(value * 10.0); } }
 
 		public int CapFixedPoint
 		{
-			get => m_Cap;
+			get { return m_Cap; }
 			set
 			{
 				if (value < 0)
@@ -335,7 +335,7 @@ namespace Server
 					value = 0xFFFF;
 				}
 
-				var sv = (ushort)value;
+				ushort sv = (ushort)value;
 
 				if (m_Cap != sv)
 				{
@@ -347,27 +347,27 @@ namespace Server
 		}
 
 		[CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
-		public double Cap
-		{
-			get => m_Cap / 10.0;
-			set
-			{
-				double old = m_Cap / 10;
+		public double Cap 
+        { 
+            get { return (m_Cap / 10.0); }
+            set
+            {
+                double old = m_Cap / 10;
 
-				CapFixedPoint = (int)(value * 10.0);
+                CapFixedPoint = (int)(value * 10.0);
 
-				if (old != value && Owner.Owner != null)
-				{
-					EventSink.InvokeSkillCapChange(new SkillCapChangeEventArgs(Owner.Owner, this, old, value));
-				}
-			}
-		}
+                if (old != value && Owner.Owner != null)
+                {
+                    EventSink.InvokeSkillCapChange(new SkillCapChangeEventArgs(Owner.Owner, this, old, value));
+                }
+            }
+        }
 
 		private static bool m_UseStatMods;
 
-		public static bool UseStatMods { get => m_UseStatMods; set => m_UseStatMods = value; }
+		public static bool UseStatMods { get { return m_UseStatMods; } set { m_UseStatMods = value; } }
 
-		public int Fixed => (int)(Value * 10);
+		public int Fixed { get { return (int)(Value * 10); } }
 
 		[CommandProperty(AccessLevel.Counselor)]
 		public double Value
@@ -375,9 +375,9 @@ namespace Server
 			get
 			{
 				//There has to be this distinction between the racial values and not to account for gaining skills and these skills aren't displayed nor Totaled up.
-				var value = NonRacialValue;
+				double value = NonRacialValue;
 
-				var raceBonus = m_Owner.Owner.GetRacialSkillBonus(SkillName);
+				double raceBonus = m_Owner.Owner.GetRacialSkillBonus(this.SkillName);
 
 				if (raceBonus > value)
 				{
@@ -393,8 +393,8 @@ namespace Server
 		{
 			get
 			{
-				var baseValue = Base;
-				var inv = 100.0 - baseValue;
+				double baseValue = Base;
+				double inv = 100.0 - baseValue;
 
 				if (inv < 0.0)
 				{
@@ -403,10 +403,10 @@ namespace Server
 
 				inv /= 100.0;
 
-				var statsOffset = ((m_UseStatMods ? m_Owner.Owner.Str : m_Owner.Owner.RawStr) * m_Info.StrScale) +
+				double statsOffset = ((m_UseStatMods ? m_Owner.Owner.Str : m_Owner.Owner.RawStr) * m_Info.StrScale) +
 									 ((m_UseStatMods ? m_Owner.Owner.Dex : m_Owner.Owner.RawDex) * m_Info.DexScale) +
 									 ((m_UseStatMods ? m_Owner.Owner.Int : m_Owner.Owner.RawInt) * m_Info.IntScale);
-				var statTotal = m_Info.StatTotal * inv;
+				double statTotal = m_Info.StatTotal * inv;
 
 				statsOffset *= inv;
 
@@ -415,7 +415,7 @@ namespace Server
 					statsOffset = statTotal;
 				}
 
-				var value = baseValue + statsOffset;
+				double value = baseValue + statsOffset;
 
 				m_Owner.Owner.ValidateSkillMods();
 
@@ -423,9 +423,9 @@ namespace Server
 
 				double bonusObey = 0.0, bonusNotObey = 0.0;
 
-				for (var i = 0; i < mods.Count; ++i)
+				for (int i = 0; i < mods.Count; ++i)
 				{
-					var mod = mods[i];
+					SkillMod mod = mods[i];
 
 					if (mod.Skill == (SkillName)m_Info.SkillID)
 					{
@@ -467,44 +467,50 @@ namespace Server
 			}
 		}
 
-		public bool IsMastery => m_Info.IsMastery;
+        public bool IsMastery
+        {
+            get
+            {
+                return m_Info.IsMastery;
+            }
+        }
 
-		public bool LearnMastery(int volume)
-		{
-			if (!IsMastery || HasLearnedVolume(volume))
-				return false;
+        public bool LearnMastery(int volume)
+        {
+            if (!IsMastery || HasLearnedVolume(volume))
+                return false;
 
-			VolumeLearned = volume;
+            VolumeLearned = volume;
 
-			if (VolumeLearned > 3)
-				VolumeLearned = 3;
+            if (VolumeLearned > 3)
+                VolumeLearned = 3;
 
-			if (VolumeLearned < 0)
-				VolumeLearned = 0;
+            if (VolumeLearned < 0)
+                VolumeLearned = 0;
 
-			return true;
-		}
+            return true;
+        }
 
-		public bool HasLearnedVolume(int volume)
-		{
-			return VolumeLearned >= volume;
-		}
+        public bool HasLearnedVolume(int volume)
+        {
+            return VolumeLearned >= volume;
+        }
 
-		public bool HasLearnedMastery()
-		{
-			return VolumeLearned > 0;
-		}
+        public bool HasLearnedMastery()
+        {
+            return VolumeLearned > 0;
+        }
 
-		public bool SetCurrent()
-		{
-			if (IsMastery)
-			{
-				m_Owner.CurrentMastery = (SkillName)m_Info.SkillID;
-				return true;
-			}
+        public bool SetCurrent()
+        {
+            if (IsMastery)
+            {
+                m_Owner.CurrentMastery = (SkillName)m_Info.SkillID;
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
 		public void Update()
 		{
@@ -529,9 +535,9 @@ namespace Server
 			double intGain,
 			double gainFactor,
 			StatCode primary,
-			StatCode secondary,
-			bool mastery = false,
-			bool usewhilecasting = false)
+            StatCode secondary, 
+            bool mastery = false,
+            bool usewhilecasting = false)
 		{
 			Name = name;
 			Title = title;
@@ -546,8 +552,8 @@ namespace Server
 			GainFactor = gainFactor;
 			Primary = primary;
 			Secondary = secondary;
-			IsMastery = mastery;
-			UseWhileCasting = usewhilecasting;
+            IsMastery = mastery;
+            UseWhileCasting = usewhilecasting;
 
 			StatTotal = strScale + dexScale + intScale;
 		}
@@ -557,7 +563,7 @@ namespace Server
 
 		public SkillUseCallback Callback { get; set; }
 
-		public int SkillID => m_SkillID;
+		public int SkillID { get { return m_SkillID; } }
 
 		public string Name { get; set; }
 
@@ -579,13 +585,13 @@ namespace Server
 
 		public double GainFactor { get; set; }
 
-		public bool IsMastery { get; set; }
+        public bool IsMastery { get; set; }
 
-		public bool UseWhileCasting { get; set; }
+        public bool UseWhileCasting { get; set; }
 
-		public int Localization => 1044060 + SkillID;
+        public int Localization { get { return 1044060 + SkillID; } }
 
-		private static SkillInfo[] m_Table = new SkillInfo[58]
+        private static SkillInfo[] m_Table = new SkillInfo[58]
 		{
 			new SkillInfo(0, "Alchemy", 0.0, 5.0, 5.0, "Alchemist", null, 0.0, 0.5, 0.5, 1.0, StatCode.Int, StatCode.Dex),
 			new SkillInfo(1, "Anatomy", 0.0, 0.0, 0.0, "Biologist", null, 0.15, 0.15, 0.7, 1.0, StatCode.Int, StatCode.Str),
@@ -645,9 +651,9 @@ namespace Server
 			new SkillInfo(55, "Mysticism", 0.0, 0.0, 0.0, "Mystic", null, 0.0, 0.0, 0.0, 1.0, StatCode.Str, StatCode.Int, true ),
 			new SkillInfo(56, "Imbuing", 0.0, 0.0, 0.0, "Artificer", null, 0.0, 0.0, 0.0, 1.0, StatCode.Int, StatCode.Str),
 			new SkillInfo(57, "Throwing", 0.0, 0.0, 0.0, "Bladeweaver", null, 0.0, 0.0, 0.0, 1.0, StatCode.Dex, StatCode.Str, true ),
-		};
+        };
 
-		public static SkillInfo[] Table { get => m_Table; set => m_Table = value; }
+		public static SkillInfo[] Table { get { return m_Table; } set { m_Table = value; } }
 	}
 
 	[PropertyObject]
@@ -660,197 +666,197 @@ namespace Server
 
 		#region Skill Getters & Setters
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Alchemy { get => this[SkillName.Alchemy]; set { } }
+		public Skill Alchemy { get { return this[SkillName.Alchemy]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Anatomy { get => this[SkillName.Anatomy]; set { } }
+		public Skill Anatomy { get { return this[SkillName.Anatomy]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill AnimalLore { get => this[SkillName.AnimalLore]; set { } }
+		public Skill AnimalLore { get { return this[SkillName.AnimalLore]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill ItemID { get => this[SkillName.ItemID]; set { } }
+		public Skill ItemID { get { return this[SkillName.ItemID]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill ArmsLore { get => this[SkillName.ArmsLore]; set { } }
+		public Skill ArmsLore { get { return this[SkillName.ArmsLore]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Parry { get => this[SkillName.Parry]; set { } }
+		public Skill Parry { get { return this[SkillName.Parry]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Begging { get => this[SkillName.Begging]; set { } }
+		public Skill Begging { get { return this[SkillName.Begging]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Blacksmith { get => this[SkillName.Blacksmith]; set { } }
+		public Skill Blacksmith { get { return this[SkillName.Blacksmith]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Fletching { get => this[SkillName.Fletching]; set { } }
+		public Skill Fletching { get { return this[SkillName.Fletching]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Peacemaking { get => this[SkillName.Peacemaking]; set { } }
+		public Skill Peacemaking { get { return this[SkillName.Peacemaking]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Camping { get => this[SkillName.Camping]; set { } }
+		public Skill Camping { get { return this[SkillName.Camping]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Carpentry { get => this[SkillName.Carpentry]; set { } }
+		public Skill Carpentry { get { return this[SkillName.Carpentry]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Cartography { get => this[SkillName.Cartography]; set { } }
+		public Skill Cartography { get { return this[SkillName.Cartography]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Cooking { get => this[SkillName.Cooking]; set { } }
+		public Skill Cooking { get { return this[SkillName.Cooking]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill DetectHidden { get => this[SkillName.DetectHidden]; set { } }
+		public Skill DetectHidden { get { return this[SkillName.DetectHidden]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Discordance { get => this[SkillName.Discordance]; set { } }
+		public Skill Discordance { get { return this[SkillName.Discordance]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill EvalInt { get => this[SkillName.EvalInt]; set { } }
+		public Skill EvalInt { get { return this[SkillName.EvalInt]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Healing { get => this[SkillName.Healing]; set { } }
+		public Skill Healing { get { return this[SkillName.Healing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Fishing { get => this[SkillName.Fishing]; set { } }
+		public Skill Fishing { get { return this[SkillName.Fishing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Forensics { get => this[SkillName.Forensics]; set { } }
+		public Skill Forensics { get { return this[SkillName.Forensics]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Herding { get => this[SkillName.Herding]; set { } }
+		public Skill Herding { get { return this[SkillName.Herding]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Hiding { get => this[SkillName.Hiding]; set { } }
+		public Skill Hiding { get { return this[SkillName.Hiding]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Provocation { get => this[SkillName.Provocation]; set { } }
+		public Skill Provocation { get { return this[SkillName.Provocation]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Inscribe { get => this[SkillName.Inscribe]; set { } }
+		public Skill Inscribe { get { return this[SkillName.Inscribe]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Lockpicking { get => this[SkillName.Lockpicking]; set { } }
+		public Skill Lockpicking { get { return this[SkillName.Lockpicking]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Magery { get => this[SkillName.Magery]; set { } }
+		public Skill Magery { get { return this[SkillName.Magery]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill MagicResist { get => this[SkillName.MagicResist]; set { } }
+		public Skill MagicResist { get { return this[SkillName.MagicResist]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Tactics { get => this[SkillName.Tactics]; set { } }
+		public Skill Tactics { get { return this[SkillName.Tactics]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Snooping { get => this[SkillName.Snooping]; set { } }
+		public Skill Snooping { get { return this[SkillName.Snooping]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Musicianship { get => this[SkillName.Musicianship]; set { } }
+		public Skill Musicianship { get { return this[SkillName.Musicianship]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Poisoning { get => this[SkillName.Poisoning]; set { } }
+		public Skill Poisoning { get { return this[SkillName.Poisoning]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Archery { get => this[SkillName.Archery]; set { } }
+		public Skill Archery { get { return this[SkillName.Archery]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill SpiritSpeak { get => this[SkillName.SpiritSpeak]; set { } }
+		public Skill SpiritSpeak { get { return this[SkillName.SpiritSpeak]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Stealing { get => this[SkillName.Stealing]; set { } }
+		public Skill Stealing { get { return this[SkillName.Stealing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Tailoring { get => this[SkillName.Tailoring]; set { } }
+		public Skill Tailoring { get { return this[SkillName.Tailoring]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill AnimalTaming { get => this[SkillName.AnimalTaming]; set { } }
+		public Skill AnimalTaming { get { return this[SkillName.AnimalTaming]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill TasteID { get => this[SkillName.TasteID]; set { } }
+		public Skill TasteID { get { return this[SkillName.TasteID]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Tinkering { get => this[SkillName.Tinkering]; set { } }
+		public Skill Tinkering { get { return this[SkillName.Tinkering]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Tracking { get => this[SkillName.Tracking]; set { } }
+		public Skill Tracking { get { return this[SkillName.Tracking]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Veterinary { get => this[SkillName.Veterinary]; set { } }
+		public Skill Veterinary { get { return this[SkillName.Veterinary]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Swords { get => this[SkillName.Swords]; set { } }
+		public Skill Swords { get { return this[SkillName.Swords]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Macing { get => this[SkillName.Macing]; set { } }
+		public Skill Macing { get { return this[SkillName.Macing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Fencing { get => this[SkillName.Fencing]; set { } }
+		public Skill Fencing { get { return this[SkillName.Fencing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Wrestling { get => this[SkillName.Wrestling]; set { } }
+		public Skill Wrestling { get { return this[SkillName.Wrestling]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Lumberjacking { get => this[SkillName.Lumberjacking]; set { } }
+		public Skill Lumberjacking { get { return this[SkillName.Lumberjacking]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Mining { get => this[SkillName.Mining]; set { } }
+		public Skill Mining { get { return this[SkillName.Mining]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Meditation { get => this[SkillName.Meditation]; set { } }
+		public Skill Meditation { get { return this[SkillName.Meditation]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Stealth { get => this[SkillName.Stealth]; set { } }
+		public Skill Stealth { get { return this[SkillName.Stealth]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill RemoveTrap { get => this[SkillName.RemoveTrap]; set { } }
+		public Skill RemoveTrap { get { return this[SkillName.RemoveTrap]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Necromancy { get => this[SkillName.Necromancy]; set { } }
+		public Skill Necromancy { get { return this[SkillName.Necromancy]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Focus { get => this[SkillName.Focus]; set { } }
+		public Skill Focus { get { return this[SkillName.Focus]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Chivalry { get => this[SkillName.Chivalry]; set { } }
+		public Skill Chivalry { get { return this[SkillName.Chivalry]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Bushido { get => this[SkillName.Bushido]; set { } }
+		public Skill Bushido { get { return this[SkillName.Bushido]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Ninjitsu { get => this[SkillName.Ninjitsu]; set { } }
+		public Skill Ninjitsu { get { return this[SkillName.Ninjitsu]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Spellweaving { get => this[SkillName.Spellweaving]; set { } }
+		public Skill Spellweaving { get { return this[SkillName.Spellweaving]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Mysticism { get => this[SkillName.Mysticism]; set { } }
+		public Skill Mysticism { get { return this[SkillName.Mysticism]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Imbuing { get => this[SkillName.Imbuing]; set { } }
+		public Skill Imbuing { get { return this[SkillName.Imbuing]; } set { } }
 
 		[CommandProperty(AccessLevel.Counselor)]
-		public Skill Throwing { get => this[SkillName.Throwing]; set { } }
+		public Skill Throwing { get { return this[SkillName.Throwing]; } set { } }
 		#endregion
 
 		[CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
-		public int Cap { get => m_Cap; set => m_Cap = value; }
+		public int Cap { get { return m_Cap; } set { m_Cap = value; } }
 
-		[CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
-		public SkillName CurrentMastery
-		{
-			get;
-			set;
-		}
+        [CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
+        public SkillName CurrentMastery
+        {
+            get;
+            set;
+        }
 
-		public int Total { get => m_Total; set => m_Total = value; }
+		public int Total { get { return m_Total; } set { m_Total = value; } }
 
-		public Mobile Owner => m_Owner;
+		public Mobile Owner { get { return m_Owner; } }
 
-		public int Length => m_Skills.Length;
+		public int Length { get { return m_Skills.Length; } }
 
-		public Skill this[SkillName name] => this[(int)name];
+		public Skill this[SkillName name] { get { return this[(int)name]; } }
 
 		public Skill this[int skillID]
 		{
@@ -861,7 +867,7 @@ namespace Server
 					return null;
 				}
 
-				var sk = m_Skills[skillID];
+				Skill sk = m_Skills[skillID];
 
 				if (sk == null)
 				{
@@ -899,7 +905,7 @@ namespace Server
 
 			if (skillID >= 0 && skillID < SkillInfo.Table.Length)
 			{
-				var info = SkillInfo.Table[skillID];
+				SkillInfo info = SkillInfo.Table[skillID];
 
 				if (info.Callback != null)
 				{
@@ -907,7 +913,7 @@ namespace Server
 					{
 						from.DisruptiveAction();
 
-						from.NextSkillTime = Core.TickCount + (int)info.Callback(from).TotalMilliseconds;
+						from.NextSkillTime = Core.TickCount + (int)(info.Callback(from)).TotalMilliseconds;
 
 						return true;
 					}
@@ -932,11 +938,11 @@ namespace Server
 				if (m_Highest == null)
 				{
 					Skill highest = null;
-					var value = Int32.MinValue;
+					int value = int.MinValue;
 
-					for (var i = 0; i < m_Skills.Length; ++i)
+					for (int i = 0; i < m_Skills.Length; ++i)
 					{
-						var sk = m_Skills[i];
+						Skill sk = m_Skills[i];
 
 						if (sk != null && sk.BaseFixedPoint > value)
 						{
@@ -963,14 +969,14 @@ namespace Server
 
 			writer.Write(4); // version
 
-			writer.Write((int)CurrentMastery);
+            writer.Write((int)CurrentMastery);
 
 			writer.Write(m_Cap);
 			writer.Write(m_Skills.Length);
 
-			for (var i = 0; i < m_Skills.Length; ++i)
+			for (int i = 0; i < m_Skills.Length; ++i)
 			{
-				var sk = m_Skills[i];
+				Skill sk = m_Skills[i];
 
 				if (sk == null)
 				{
@@ -987,7 +993,7 @@ namespace Server
 		public Skills(Mobile owner)
 		{
 			m_Owner = owner;
-			m_Cap = Config.Get("PlayerCaps.TotalSkillCap", 7000); ;
+            m_Cap = Config.Get("PlayerCaps.TotalSkillCap", 7000); ;
 
 			var info = SkillInfo.Table;
 
@@ -1001,13 +1007,13 @@ namespace Server
 		{
 			m_Owner = owner;
 
-			var version = reader.ReadInt();
+			int version = reader.ReadInt();
 
 			switch (version)
 			{
-				case 4:
-				CurrentMastery = (SkillName)reader.ReadInt();
-				goto case 3;
+                case 4:
+                    CurrentMastery = (SkillName)reader.ReadInt();
+                    goto case 3;
 				case 3:
 				case 2:
 					{
@@ -1032,15 +1038,15 @@ namespace Server
 
 						m_Skills = new Skill[info.Length];
 
-						var count = reader.ReadInt();
+						int count = reader.ReadInt();
 
-						for (var i = 0; i < count; ++i)
+						for (int i = 0; i < count; ++i)
 						{
 							if (i < info.Length)
 							{
-								var sk = new Skill(this, info[i], reader);
+								Skill sk = new Skill(this, info[i], reader);
 
-								if (sk.BaseFixedPoint != 0 || sk.CapFixedPoint != 1000 || sk.Lock != SkillLock.Up || sk.VolumeLearned != 0)
+                                if (sk.BaseFixedPoint != 0 || sk.CapFixedPoint != 1000 || sk.Lock != SkillLock.Up || sk.VolumeLearned != 0)
 								{
 									m_Skills[i] = sk;
 									m_Total += sk.BaseFixedPoint;
@@ -1079,7 +1085,7 @@ namespace Server
 
 			m_Owner.OnSkillInvalidated(skill);
 
-			var ns = m_Owner.NetState;
+			NetState ns = m_Owner.NetState;
 
 			if (ns != null)
 			{

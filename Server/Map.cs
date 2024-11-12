@@ -278,17 +278,18 @@ namespace Server
 				yield break;
 			}
 
-			int x1 = bounds.Start.X, y1 = bounds.Start.Y, x2 = bounds.End.X, y2 = bounds.End.Y;
+			int x1 = bounds.Start.X, y1 = bounds.Start.Y, x2 = bounds.End.X, y2 = bounds.End.Y, xSector, ySector;
 
-			if (!Bound(map, ref x1, ref y1, ref x2, ref y2, out var xSector, out var ySector))
+			if (!Bound(map, ref x1, ref y1, ref x2, ref y2, out xSector, out ySector))
 			{
 				yield break;
 			}
 
+			Sector s;
 
 			var index = 0;
 
-			while (NextSector(map, x1, y1, x2, y2, ref index, ref xSector, ref ySector, out var s))
+			while (NextSector(map, x1, y1, x2, y2, ref index, ref xSector, ref ySector, out s))
 			{
 				yield return s;
 			}
@@ -399,19 +400,19 @@ namespace Server
 
 		private static readonly Map[] m_Maps = new Map[0x100];
 
-		public static Map[] Maps => m_Maps;
+		public static Map[] Maps { get { return m_Maps; } }
 
-		public static Map Felucca => m_Maps[0];
-		public static Map Trammel => m_Maps[1];
-		public static Map Ilshenar => m_Maps[2];
-		public static Map Malas => m_Maps[3];
-		public static Map Tokuno => m_Maps[4];
-		public static Map TerMur => m_Maps[5];
-		public static Map Internal => m_Maps[0x7F];
+		public static Map Felucca { get { return m_Maps[0]; } }
+		public static Map Trammel { get { return m_Maps[1]; } }
+		public static Map Ilshenar { get { return m_Maps[2]; } }
+		public static Map Malas { get { return m_Maps[3]; } }
+		public static Map Tokuno { get { return m_Maps[4]; } }
+		public static Map TerMur { get { return m_Maps[5]; } }
+		public static Map Internal { get { return m_Maps[0x7F]; } }
 
 		private static readonly List<Map> m_AllMaps = new List<Map>();
 
-		public static List<Map> AllMaps => m_AllMaps;
+		public static List<Map> AllMaps { get { return m_AllMaps; } }
 
 		private readonly int m_MapID;
 		private readonly int m_MapIndex;
@@ -454,8 +455,9 @@ namespace Server
 				return Internal;
 			}
 
+			int index;
 
-			if (!Int32.TryParse(value, out var index))
+			if (!Int32.TryParse(value, out index))
 			{
 				return m_Maps.FirstOrDefault(m => m != null && Insensitive.Equals(m.Name, value));
 			}
@@ -549,10 +551,10 @@ namespace Server
 
 		public void GetAverageZ(int x, int y, ref int z, ref int avg, ref int top)
 		{
-			var zTop = Tiles.GetLandTile(x, y).Z;
-			var zLeft = Tiles.GetLandTile(x, y + 1).Z;
-			var zRight = Tiles.GetLandTile(x + 1, y).Z;
-			var zBottom = Tiles.GetLandTile(x + 1, y + 1).Z;
+			int zTop = Tiles.GetLandTile(x, y).Z;
+			int zLeft = Tiles.GetLandTile(x, y + 1).Z;
+			int zRight = Tiles.GetLandTile(x + 1, y).Z;
+			int zBottom = Tiles.GetLandTile(x + 1, y + 1).Z;
 
 			z = zTop;
 			if (zLeft < z)
@@ -594,14 +596,14 @@ namespace Server
 
 		private static int FloorAverage(int a, int b)
 		{
-			var v = a + b;
+			int v = a + b;
 
 			if (v < 0)
 			{
 				--v;
 			}
 
-			return v / 2;
+			return (v / 2);
 		}
 
 #if Map_NewEnumerables || Map_AllUpdates
@@ -842,45 +844,40 @@ namespace Server
 
 		public bool CanFit(Point3D p, int height, bool checkBlocksFit, bool checkMobiles)
 		{
-			return CanFit(p.m_X, p.m_Y, p.m_Z, height, checkBlocksFit, checkMobiles, true, false);
+			return CanFit(p.m_X, p.m_Y, p.m_Z, height, checkBlocksFit, checkMobiles, true);
 		}
 
 		public bool CanFit(Point2D p, int z, int height, bool checkBlocksFit)
 		{
-			return CanFit(p.m_X, p.m_Y, z, height, checkBlocksFit, true, true, false);
+			return CanFit(p.m_X, p.m_Y, z, height, checkBlocksFit, true, true);
 		}
 
 		public bool CanFit(Point3D p, int height)
 		{
-			return CanFit(p.m_X, p.m_Y, p.m_Z, height, false, true, true, false);
+			return CanFit(p.m_X, p.m_Y, p.m_Z, height, false, true, true);
 		}
 
 		public bool CanFit(Point2D p, int z, int height)
 		{
-			return CanFit(p.m_X, p.m_Y, z, height, false, true, true, false);
+			return CanFit(p.m_X, p.m_Y, z, height, false, true, true);
 		}
 
 		public bool CanFit(int x, int y, int z, int height)
 		{
-			return CanFit(x, y, z, height, false, true, true, false);
+			return CanFit(x, y, z, height, false, true, true);
 		}
 
 		public bool CanFit(int x, int y, int z, int height, bool checksBlocksFit)
 		{
-			return CanFit(x, y, z, height, checksBlocksFit, true, true, false);
+			return CanFit(x, y, z, height, checksBlocksFit, true, true);
 		}
 
 		public bool CanFit(int x, int y, int z, int height, bool checkBlocksFit, bool checkMobiles)
 		{
-			return CanFit(x, y, z, height, checkBlocksFit, checkMobiles, true, false);
+			return CanFit(x, y, z, height, checkBlocksFit, checkMobiles, true);
 		}
 
 		public bool CanFit(int x, int y, int z, int height, bool checkBlocksFit, bool checkMobiles, bool requireSurface)
-		{
-			return CanFit(x, y, z, height, checkBlocksFit, checkMobiles, requireSurface, false);
-		}
-
-		public bool CanFit(int x, int y, int z, int height, bool checkBlocksFit, bool checkMobiles, bool requireSurface, bool ignoreRoof)
 		{
 			if (this == Internal)
 			{
@@ -909,20 +906,19 @@ namespace Server
 
 			var staticTiles = Tiles.GetStaticTiles(x, y, true);
 
-			bool surface, impassable, roof;
+			bool surface, impassable;
 
 			foreach (var t in staticTiles)
 			{
-				var id = TileData.ItemTable[t.ID & TileData.MaxItemValue];
+				ItemData id = TileData.ItemTable[t.ID & TileData.MaxItemValue];
 				surface = id.Surface;
 				impassable = id.Impassable;
-				roof = (id.Flags & TileFlag.Roof) != 0;
 
-				if ((surface || impassable) && (!ignoreRoof || !roof) && (t.Z + id.CalcHeight) > z && (z + height) > t.Z)
+				if ((surface || impassable) && (t.Z + id.CalcHeight) > z && (z + height) > t.Z)
 				{
 					return false;
 				}
-
+				
 				if (surface && !impassable && z == (t.Z + id.CalcHeight))
 				{
 					hasSurface = true;
@@ -947,7 +943,7 @@ namespace Server
 					{
 						return false;
 					}
-
+					
 					if (surface && !impassable && !item.Movable && z == (item.Z + id.CalcHeight))
 					{
 						hasSurface = true;
@@ -972,139 +968,137 @@ namespace Server
 			return !requireSurface || hasSurface;
 		}
 
-		public bool CanFit(int x, int y, int z, int height, bool checkBlocksFit, bool checkMobiles, bool requireSurface, Mobile mob)
-		{
-			if (this == Internal)
-				return false;
+        public bool CanFit(int x, int y, int z, int height, bool checkBlocksFit, bool checkMobiles, bool requireSurface, Mobile mob)
+        {
+            if (this == Internal)
+                return false;
 
-			if (x < 0 || y < 0 || x >= Width || y >= Height)
-				return false;
+            if (x < 0 || y < 0 || x >= Width || y >= Height)
+                return false;
 
-			var hasSurface = false;
-			var checkmob = false;
-			var canswim = false;
-			var cantwalk = false;
+            bool hasSurface = false;
+            bool checkmob = false;
+            bool canswim = false;
+            bool cantwalk = false;
 
-			if (mob != null)
-			{
-				checkmob = true;
-				canswim = mob.CanSwim;
-				cantwalk = mob.CantWalk;
-			}
+            if (mob != null)
+            {
+                checkmob = true;
+                canswim = mob.CanSwim;
+                cantwalk = mob.CantWalk;
+            }
 
-			var lt = Tiles.GetLandTile(x, y);
-			int lowZ = 0, avgZ = 0, topZ = 0;
+            LandTile lt = Tiles.GetLandTile(x, y);
+            int lowZ = 0, avgZ = 0, topZ = 0;
 
-			bool surface, impassable;
-			var wet = false;
+            bool surface, impassable;
+            bool wet = false;
 
-			GetAverageZ(x, y, ref lowZ, ref avgZ, ref topZ);
-			var landFlags = TileData.LandTable[lt.ID & TileData.MaxLandValue].Flags;
+            GetAverageZ(x, y, ref lowZ, ref avgZ, ref topZ);
+            TileFlag landFlags = TileData.LandTable[lt.ID & TileData.MaxLandValue].Flags;
 
-			impassable = (landFlags & TileFlag.Impassable) != 0;
+            impassable = (landFlags & TileFlag.Impassable) != 0;
 
-			if (checkmob)
-			{
-				wet = (landFlags & TileFlag.Wet) != 0;
-				// dont allow wateronly creatures on land
-				if (cantwalk && !wet)
-					impassable = true;
-				// allow water creatures on water
-				if (canswim && wet)
-				{
-					impassable = false;
-				}
-			}
-
-
-			if (impassable && avgZ > z && (z + height) > lowZ)
-				return false;
-			else if (!impassable && z == avgZ && !lt.Ignored)
-				hasSurface = true;
-
-			var staticTiles = Tiles.GetStaticTiles(x, y, true);
-
-			for (var i = 0; i < staticTiles.Length; ++i)
-			{
-				var id = TileData.ItemTable[staticTiles[i].ID & TileData.MaxItemValue];
-				surface = id.Surface;
-				impassable = id.Impassable;
-				if (checkmob)
-				{
-					wet = (id.Flags & TileFlag.Wet) != 0;
-					// dont allow wateronly creatures on land
-					if (cantwalk && !wet)
-						impassable = true;
-					// allow water creatures on water
-					if (canswim && wet)
-					{
-						surface = true;
-						impassable = false;
-					}
-				}
-
-				if ((surface || impassable) && (staticTiles[i].Z + id.CalcHeight) > z && (z + height) > staticTiles[i].Z)
-					return false;
-				else if (surface && !impassable && z == (staticTiles[i].Z + id.CalcHeight))
-					hasSurface = true;
+            if (checkmob)
+            {
+                wet = (landFlags & TileFlag.Wet) != 0;
+                // dont allow wateronly creatures on land
+                if (cantwalk && !wet)
+                    impassable = true;
+                // allow water creatures on water
+                if (canswim && wet)
+                {
+                    impassable = false;
+                }
+            }
 
 
-			}
+            if (impassable && avgZ > z && (z + height) > lowZ)
+                return false;
+            else if (!impassable && z == avgZ && !lt.Ignored)
+                hasSurface = true;
 
-			var sector = GetSector(x, y);
-			var items = sector.Items;
-			var mobs = sector.Mobiles;
+            StaticTile[] staticTiles = Tiles.GetStaticTiles(x, y, true);
 
-			for (var i = 0; i < items.Count; ++i)
-			{
-				var item = items[i];
+            for (int i = 0; i < staticTiles.Length; ++i)
+            {
+                ItemData id = TileData.ItemTable[staticTiles[i].ID & TileData.MaxItemValue];
+                surface = id.Surface;
+                impassable = id.Impassable;
+                if (checkmob)
+                {
+                    wet = (id.Flags & TileFlag.Wet) != 0;
+                    // dont allow wateronly creatures on land
+                    if (cantwalk && !wet)
+                        impassable = true;
+                    // allow water creatures on water
+                    if (canswim && wet)
+                    {
+                        surface = true;
+                        impassable = false;
+                    }
+                }
 
-				if (item.ItemID < 0x4000 && item.AtWorldPoint(x, y))
-				{
-					var id = item.ItemData;
-					surface = id.Surface;
-					impassable = id.Impassable;
-					if (checkmob)
-					{
-						wet = (id.Flags & TileFlag.Wet) != 0;
-						// dont allow wateronly creatures on land
-						if (cantwalk && !wet)
-							impassable = true;
-						// allow water creatures on water
-						if (canswim && wet)
-						{
-							surface = true;
-							impassable = false;
-						}
-					}
+                if ((surface || impassable) && (staticTiles[i].Z + id.CalcHeight) > z && (z + height) > staticTiles[i].Z)
+                    return false;
+                else if (surface && !impassable && z == (staticTiles[i].Z + id.CalcHeight))
+                    hasSurface = true;
 
-					if ((surface || impassable || (checkBlocksFit && item.BlocksFit)) && (item.Z + id.CalcHeight) > z && (z + height) > item.Z)
-						return false;
-					else if (surface && !impassable && !item.Movable && z == (item.Z + id.CalcHeight))
-						hasSurface = true;
-				}
-			}
 
-			if (checkMobiles)
-			{
-				for (var i = 0; i < mobs.Count; ++i)
-				{
-					var m = mobs[i];
+            }
 
-					if (m.Location.X == x && m.Location.Y == y && (m.AccessLevel == AccessLevel.Player || !m.Hidden))
-					{
-						if ((m.Z + 16) > z && (z + height) > m.Z)
-							return false;
-					}
-				}
-			}
+            Sector sector = GetSector(x, y);
+            List<Item> items = sector.Items;
+            List<Mobile> mobs = sector.Mobiles;
 
-			return !requireSurface || hasSurface;
-		}
-		#endregion
+            for (int i = 0; i < items.Count; ++i)
+            {
+                Item item = items[i];
 
-		#region CanSpawnMobile
-		public bool CanSpawnMobile(Point3D p)
+                if (item.ItemID < 0x4000 && item.AtWorldPoint(x, y))
+                {
+                    ItemData id = item.ItemData;
+                    surface = id.Surface;
+                    impassable = id.Impassable;
+                    if (checkmob)
+                    {
+                        wet = (id.Flags & TileFlag.Wet) != 0;
+                        // dont allow wateronly creatures on land
+                        if (cantwalk && !wet)
+                            impassable = true;
+                        // allow water creatures on water
+                        if (canswim && wet)
+                        {
+                            surface = true;
+                            impassable = false;
+                        }
+                    }
+
+                    if ((surface || impassable || (checkBlocksFit && item.BlocksFit)) && (item.Z + id.CalcHeight) > z && (z + height) > item.Z)
+                        return false;
+                    else if (surface && !impassable && !item.Movable && z == (item.Z + id.CalcHeight))
+                        hasSurface = true;
+                }
+            }
+
+            if (checkMobiles)
+            {
+                for (int i = 0; i < mobs.Count; ++i)
+                {
+                    Mobile m = mobs[i];
+
+                    if (m.Location.X == x && m.Location.Y == y && (m.AccessLevel == AccessLevel.Player || !m.Hidden))
+                        if ((m.Z + 16) > z && (z + height) > m.Z)
+                            return false;
+                }
+            }
+
+            return !requireSurface || hasSurface;
+        }
+        #endregion
+
+        #region CanSpawnMobile
+        public bool CanSpawnMobile(Point3D p)
 		{
 			return CanSpawnMobile(p.m_X, p.m_Y, p.m_Z);
 		}
@@ -1123,118 +1117,88 @@ namespace Server
 
 			return CanFit(x, y, z, 16);
 		}
-		#endregion
+        #endregion
 
-		#region Find Item/Mobile
-		public TItem FindItem<TItem>(Point3D p, int range = 0) where TItem : Item
-		{
+        #region Find Item/Mobile
+        public TItem FindItem<TItem>(Point3D p, int range = 0) where TItem : Item
+        {
 			var eable = GetItemsInRange(p, range);
 
 			foreach (var item in eable)
-			{
-				if (item.GetType() == typeof(TItem))
-				{
-					eable.Free();
-					return item as TItem;
-				}
-			}
+            {
+                if (item.GetType() == typeof(TItem))
+                {
+                    eable.Free();
+                    return item as TItem;
+                }
+            }
 
-			eable.Free();
-			return null;
-		}
+            eable.Free();
+            return null;
+        }
 
-		public IEnumerable<TItem> FindItems<TItem>(Point3D p, int range = 0) where TItem : Item
-		{
-			var eable = GetItemsInRange(p, range);
-
-			foreach (var item in eable)
-			{
-				if (item.GetType() == typeof(TItem))
-				{
-					yield return item as TItem;
-				}
-			}
-
-			eable.Free();
-		}
-
-		public TMob FindMobile<TMob>(Point3D p, int range = 0) where TMob : Mobile
-		{
+        public TMob FindMobile<TMob>(Point3D p, int range = 0) where TMob : Mobile
+        {
 			var eable = GetMobilesInRange(p, range);
 
 			foreach (var m in eable)
-			{
-				if (m.GetType() == typeof(TMob))
-				{
-					eable.Free();
-					return m as TMob;
-				}
-			}
+            {
+                if (m.GetType() == typeof(TMob))
+                {
+                    eable.Free();
+                    return m as TMob;
+                }
+            }
 
-			eable.Free();
-			return null;
-		}
-
-		public IEnumerable<TMob> FindMobiles<TMob>(Point3D p, int range = 0) where TMob : Mobile
-		{
-			var eable = GetMobilesInRange(p, range);
-
-			foreach (var m in eable)
-			{
-				if (m.GetType() == typeof(TMob))
-				{
-					yield return m as TMob;
-				}
-			}
-
-			eable.Free();
-		}
+            eable.Free();
+            return null;
+        }
 		#endregion
 
-		#region Spawn Position
-		public Point3D GetSpawnPosition(Point3D center, int range)
-		{
-			for (var i = 0; i < 10; i++)
-			{
-				var x = center.X + (Utility.Random((range * 2) + 1) - range);
-				var y = center.Y + (Utility.Random((range * 2) + 1) - range);
-				var z = GetAverageZ(x, y);
+        #region Spawn Position
+        public Point3D GetSpawnPosition(Point3D center, int range)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                int x = center.X + (Utility.Random((range * 2) + 1) - range);
+                int y = center.Y + (Utility.Random((range * 2) + 1) - range);
+                int z = GetAverageZ(x, y);
 
-				if (CanSpawnMobile(new Point2D(x, y), center.Z))
-					return new Point3D(x, y, center.Z);
-
+                if (CanSpawnMobile(new Point2D(x, y), center.Z))
+                    return new Point3D(x, y, center.Z);
+                
 				if (CanSpawnMobile(new Point2D(x, y), z))
-					return new Point3D(x, y, z);
-			}
+                    return new Point3D(x, y, z);
+            }
 
-			return center;
-		}
+            return center;
+        }
 
-		public Point3D GetRandomSpawnPoint(Rectangle2D rec)
-		{
-			if (this == Internal)
-				return Point3D.Zero;
+        public Point3D GetRandomSpawnPoint(Rectangle2D rec)
+        {
+            if (this == Internal)
+                return Point3D.Zero;
 
-			var x = Utility.RandomMinMax(rec.X, rec.X + rec.Width);
-			var y = Utility.RandomMinMax(rec.Y, rec.Y + rec.Height);
-			var z = GetAverageZ(x, y);
+            int x = Utility.RandomMinMax(rec.X, rec.X + rec.Width);
+            int y = Utility.RandomMinMax(rec.Y, rec.Y + rec.Height);
+            int z = GetAverageZ(x, y);
 
-			return new Point3D(x, y, z);
-		}
-		#endregion
+            return new Point3D(x, y, z);
+        }
+        #endregion
 
-		private class ZComparer : IComparer<Item>
-		{
-			public static readonly ZComparer Default = new ZComparer();
+        private class ZComparer : IComparer<Item>
+        {
+            public static readonly ZComparer Default = new ZComparer();
 
-			public int Compare(Item x, Item y)
+            public int Compare(Item x, Item y)
 			{
 				if (x == null || y == null)
 					return 0;
 
-				return x.Z.CompareTo(y.Z);
-			}
-		}
+                return x.Z.CompareTo(y.Z);
+            }
+        }
 
 #if Map_PoolFixColumn || Map_AllUpdates
 		private static readonly Queue<List<Item>> _FixPool = new Queue<List<Item>>(128);
@@ -1313,7 +1277,7 @@ namespace Server
 					continue;
 				}
 
-				var z = Int32.MinValue;
+				var z = int.MinValue;
 				var currentZ = toFix.Z;
 
 				if (!landTile.Ignored && landAvg <= currentZ)
@@ -1363,7 +1327,7 @@ namespace Server
 					}
 				}
 
-				if (z != Int32.MinValue)
+				if (z != int.MinValue)
 				{
 					toFix.Location = new Point3D(toFix.X, toFix.Y, z);
 				}
@@ -1487,13 +1451,13 @@ namespace Server
 			}
 
 			object surface = null;
-			var surfaceZ = Int32.MinValue;
+			int surfaceZ = int.MinValue;
 
-			var lt = Tiles.GetLandTile(p.X, p.Y);
+			LandTile lt = Tiles.GetLandTile(p.X, p.Y);
 
 			if (!lt.Ignored)
 			{
-				var avgZ = GetAverageZ(p.X, p.Y);
+				int avgZ = GetAverageZ(p.X, p.Y);
 
 				if (avgZ <= p.Z)
 				{
@@ -1515,7 +1479,7 @@ namespace Server
 
 				if (id.Surface || (id.Flags & TileFlag.Wet) != 0)
 				{
-					var tileZ = tile.Z + id.CalcHeight;
+					int tileZ = tile.Z + id.CalcHeight;
 
 					if (tileZ > surfaceZ && tileZ <= p.Z)
 					{
@@ -1540,7 +1504,7 @@ namespace Server
 
 					if (id.Surface || (id.Flags & TileFlag.Wet) != 0)
 					{
-						var itemZ = item.Z + id.CalcHeight;
+						int itemZ = item.Z + id.CalcHeight;
 
 						if (itemZ > surfaceZ && itemZ <= p.Z)
 						{
@@ -1663,14 +1627,14 @@ namespace Server
 		{
 			if (x >= 0 && x < m_SectorsWidth && y >= 0 && y < m_SectorsHeight)
 			{
-				var xSectors = m_Sectors[x];
+				Sector[] xSectors = m_Sectors[x];
 
 				if (xSectors == null)
 				{
 					m_Sectors[x] = xSectors = new Sector[m_SectorsHeight];
 				}
 
-				var sec = xSectors[y];
+				Sector sec = xSectors[y];
 
 				if (sec == null)
 				{
@@ -1688,9 +1652,9 @@ namespace Server
 
 		public void ActivateSectors(int cx, int cy)
 		{
-			for (var x = cx - SectorActiveRange; x <= cx + SectorActiveRange; ++x)
+			for (int x = cx - SectorActiveRange; x <= cx + SectorActiveRange; ++x)
 			{
-				for (var y = cy - SectorActiveRange; y <= cy + SectorActiveRange; ++y)
+				for (int y = cy - SectorActiveRange; y <= cy + SectorActiveRange; ++y)
 				{
 					var sect = GetRealSector(x, y);
 
@@ -1704,9 +1668,9 @@ namespace Server
 
 		public void DeactivateSectors(int cx, int cy)
 		{
-			for (var x = cx - SectorActiveRange; x <= cx + SectorActiveRange; ++x)
+			for (int x = cx - SectorActiveRange; x <= cx + SectorActiveRange; ++x)
 			{
-				for (var y = cy - SectorActiveRange; y <= cy + SectorActiveRange; ++y)
+				for (int y = cy - SectorActiveRange; y <= cy + SectorActiveRange; ++y)
 				{
 					var sect = GetRealSector(x, y);
 
@@ -1720,9 +1684,9 @@ namespace Server
 
 		private bool PlayersInRange(Sector sect, int range)
 		{
-			for (var x = sect.X - range; x <= sect.X + range; ++x)
+			for (int x = sect.X - range; x <= sect.X + range; ++x)
 			{
-				for (var y = sect.Y - range; y <= sect.Y + range; ++y)
+				for (int y = sect.Y - range; y <= sect.Y + range; ++y)
 				{
 					var check = GetRealSector(x, y);
 
@@ -1809,9 +1773,9 @@ namespace Server
 				return;
 			}
 
-			for (var x = start.X; x <= end.X; ++x)
+			for (int x = start.X; x <= end.X; ++x)
 			{
-				for (var y = start.Y; y <= end.Y; ++y)
+				for (int y = start.Y; y <= end.Y; ++y)
 				{
 					InternalGetSector(x, y).OnMultiLeave(m);
 				}
@@ -1825,9 +1789,9 @@ namespace Server
 				return;
 			}
 
-			for (var x = start.X; x <= end.X; ++x)
+			for (int x = start.X; x <= end.X; ++x)
 			{
-				for (var y = start.Y; y <= end.Y; ++y)
+				for (int y = start.Y; y <= end.Y; ++y)
 				{
 					InternalGetSector(x, y).OnMultiEnter(m);
 				}
@@ -1912,19 +1876,19 @@ namespace Server
 			}
 		}
 
-		public int MapID => m_MapID;
+		public int MapID { get { return m_MapID; } }
 
-		public int MapIndex => m_MapIndex;
+		public int MapIndex { get { return m_MapIndex; } }
 
-		public int Width => m_Width;
+		public int Width { get { return m_Width; } }
 
-		public int Height => m_Height;
+		public int Height { get { return m_Height; } }
 
-		public Dictionary<string, Region> Regions => m_Regions;
+		public Dictionary<string, Region> Regions { get { return m_Regions; } }
 
 		public void RegisterRegion(Region reg)
 		{
-			var regName = reg.Name;
+			string regName = reg.Name;
 
 			if (regName != null)
 			{
@@ -1941,7 +1905,7 @@ namespace Server
 
 		public void UnregisterRegion(Region reg)
 		{
-			var regName = reg.Name;
+			string regName = reg.Name;
 
 			if (regName != null)
 			{
@@ -1951,13 +1915,13 @@ namespace Server
 
 		public Region DefaultRegion
 		{
-			get => m_DefaultRegion ?? (m_DefaultRegion = new Region(null, this, 0, new Rectangle3D[0]));
-			set => m_DefaultRegion = value;
+			get { return m_DefaultRegion ?? (m_DefaultRegion = new Region(null, this, 0, new Rectangle3D[0])); }
+			set { m_DefaultRegion = value; }
 		}
 
 		public MapRules Rules { get; set; }
 
-		public Sector InvalidSector => m_InvalidSector;
+		public Sector InvalidSector { get { return m_InvalidSector; } }
 
 		public string Name { get; set; }
 
@@ -2113,8 +2077,8 @@ namespace Server
 				public void Reset()
 				{ }
 
-				object IEnumerator.Current => null; 
-				public K Current => default(K); 
+				object IEnumerator.Current { get { return null; } }
+				public K Current { get { return default(K); } }
 
 				public bool MoveNext()
 				{
@@ -2272,9 +2236,9 @@ namespace Server
 				m_Bounds = bounds;
 			}
 
-			public NetState Current => m_CurrentList[m_CurrentIndex]; 
+			public NetState Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
-			object IEnumerator.Current => m_CurrentList[m_CurrentIndex]; 
+			object IEnumerator.Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
 			void IDisposable.Dispose()
 			{ }
@@ -2395,9 +2359,9 @@ namespace Server
 				m_Bounds = bounds;
 			}
 
-			public IEntity Current => (IEntity)m_CurrentList[m_CurrentIndex]; 
+			public IEntity Current { get { return (IEntity)m_CurrentList[m_CurrentIndex]; } }
 
-			object IEnumerator.Current => m_CurrentList[m_CurrentIndex]; 
+			object IEnumerator.Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
 			void IDisposable.Dispose()
 			{ }
@@ -2554,9 +2518,9 @@ namespace Server
 				m_Bounds = bounds;
 			}
 
-			public Item Current => m_CurrentList[m_CurrentIndex]; 
+			public Item Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
-			object IEnumerator.Current => m_CurrentList[m_CurrentIndex]; 
+			object IEnumerator.Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
 			void IDisposable.Dispose()
 			{ }
@@ -2676,9 +2640,9 @@ namespace Server
 				m_Bounds = bounds;
 			}
 
-			public Mobile Current => m_CurrentList[m_CurrentIndex]; 
+			public Mobile Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
-			object IEnumerator.Current => m_CurrentList[m_CurrentIndex]; 
+			object IEnumerator.Current { get { return m_CurrentList[m_CurrentIndex]; } }
 
 			void IDisposable.Dispose()
 			{ }
@@ -2776,9 +2740,9 @@ namespace Server
 				m_Location = loc;
 			}
 
-			public StaticTile[] Current => m_Current; 
+			public StaticTile[] Current { get { return m_Current; } }
 
-			object IEnumerator.Current => m_Current; 
+			object IEnumerator.Current { get { return m_Current; } }
 
 			void IDisposable.Dispose()
 			{ }
@@ -2881,7 +2845,7 @@ namespace Server
 				var st = (StaticTarget)o;
 				var id = TileData.ItemTable[st.ItemID & TileData.MaxItemValue];
 
-				p = new Point3D(st.X, st.Y, st.Z - id.CalcHeight + (id.Height / 2));
+				p = new Point3D(st.X, st.Y, st.Z - id.CalcHeight + (id.Height / 2) + 1);
 			}
 			else if (o is IPoint3D)
 			{
@@ -2900,7 +2864,7 @@ namespace Server
 		#region Line Of Sight
 		private static int m_MaxLOSDistance = Core.GlobalMaxUpdateRange + 1;
 
-		public static int MaxLOSDistance { get => m_MaxLOSDistance; set => m_MaxLOSDistance = value; }
+		public static int MaxLOSDistance { get { return m_MaxLOSDistance; } set { m_MaxLOSDistance = value; } }
 
 		public bool LineOfSight(Point3D org, Point3D dest)
 		{
@@ -2928,7 +2892,7 @@ namespace Server
 			{
 				return true;
 			}
-
+			
 			var xd = dest.m_X - org.m_X;
 			var yd = dest.m_Y - org.m_Y;
 			var zd = dest.m_Z - org.m_Z;
@@ -2948,14 +2912,14 @@ namespace Server
 
 			var rise = yd / sq3d;
 			var run = xd / sq3d;
-
+			
 			zslp = zd / sq3d;
 
-			double x = org.m_X;
-			double y = org.m_Y;
-			double z = org.m_Z;
+			var x = (double)org.m_X;
+			var y = (double)org.m_Y;
+			var z = (double)org.m_Z;
 
-			var path = new Point3DList();
+			Point3DList path = new Point3DList();
 
 			int ix, iy, iz;
 			Point3D p;
@@ -3002,8 +2966,8 @@ namespace Server
 
 			Utility.FixPoints(ref pTop, ref pBottom);
 
-			var pathCount = path.Count;
-			var endTop = end.m_Z + 1;
+			int pathCount = path.Count;
+			int endTop = end.m_Z + 1;
 
 			int height, landZ, landAvg, landTop, pointTop, ltID;
 			bool contains;
@@ -3017,7 +2981,7 @@ namespace Server
 			for (var i = 0; i < pathCount; ++i)
 			{
 				point = path[i];
-				pointTop = point.m_Z;
+				pointTop = point.m_Z + 1;
 
 				landTile = Tiles.GetLandTile(point.X, point.Y);
 
@@ -3036,7 +3000,7 @@ namespace Server
 				contains = false;
 				ltID = landTile.ID;
 
-				for (var j = 0; !contains && j < m_InvalidLandTiles.Length; ++j)
+				for (int j = 0; !contains && j < m_InvalidLandTiles.Length; ++j)
 				{
 					contains = ltID == m_InvalidLandTiles[j];
 				}
@@ -3083,7 +3047,7 @@ namespace Server
 				}
 			}
 
-			var rect = new Rectangle2D(pTop.m_X, pTop.m_Y, pBottom.m_X - pTop.m_X + 1, pBottom.m_Y - pTop.m_Y + 1);
+			var rect = new Rectangle2D(pTop.m_X, pTop.m_Y, (pBottom.m_X - pTop.m_X) + 1, (pBottom.m_Y - pTop.m_Y) + 1);
 
 			var area = GetItemsInBounds(rect);
 
@@ -3158,7 +3122,7 @@ namespace Server
 			{
 				return true;
 			}
-
+			
 			if (dest is Item && from is Mobile && ((Item)dest).RootParent == from)
 			{
 				return true;
@@ -3174,7 +3138,7 @@ namespace Server
 				return true;
 			}
 
-			var eye = from.Location;
+			Point3D eye = from.Location;
 
 			eye.Z += 14;
 
@@ -3188,8 +3152,8 @@ namespace Server
 				return true;
 			}
 
-			var eye = from.Location;
-			var target = to.Location;
+			Point3D eye = from.Location;
+			Point3D target = to.Location;
 
 			eye.Z += 14;
 			target.Z += 14;
@@ -3198,9 +3162,9 @@ namespace Server
 		}
 		#endregion
 
-		private static int[] m_InvalidLandTiles = { 0x244 };
+		private static int[] m_InvalidLandTiles = {0x244};
 
-		public static int[] InvalidLandTiles { get => m_InvalidLandTiles; set => m_InvalidLandTiles = value; }
+		public static int[] InvalidLandTiles { get { return m_InvalidLandTiles; } set { m_InvalidLandTiles = value; } }
 
 		public int CompareTo(Map other)
 		{

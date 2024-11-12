@@ -1,7 +1,9 @@
-using Server.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Server.Mobiles;
+using Server.Network;
 
 namespace Server.Spells.Spellweaving
 {
@@ -13,16 +15,34 @@ namespace Server.Spells.Spellweaving
 
         private static readonly Dictionary<Mobile, Timer> m_Table = new Dictionary<Mobile, Timer>();
 
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
         public ThunderstormSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.5);
-        public override double RequiredSkill => 10.0;
-        public override int RequiredMana => 32;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 10.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 32;
+            }
+        }
         public static int GetCastRecoveryMalus(Mobile m)
         {
             return m_Table.ContainsKey(m) ? 6 : 0;
@@ -53,19 +73,19 @@ namespace Server.Spells.Spellweaving
                 int damage = Math.Max(11, 10 + (int)(skill / 24)) + FocusLevel;
 
                 int sdiBonus = AosAttributes.GetValue(Caster, AosAttribute.SpellDamage);
-
+						
                 int pvmDamage = damage * (100 + sdiBonus);
                 pvmDamage /= 100;
 
                 if (sdiBonus > 15)
                     sdiBonus = 15;
-
+						
                 int pvpDamage = damage * (100 + sdiBonus);
                 pvpDamage /= 100;
 
                 TimeSpan duration = TimeSpan.FromSeconds(5 + FocusLevel);
 
-                foreach (Mobile m in AcquireIndirectTargets(Caster.Location, 3 + FocusLevel).OfType<Mobile>())
+                foreach (var m in AcquireIndirectTargets(Caster.Location, 3 + FocusLevel).OfType<Mobile>())
                 {
                     Caster.DoHarmful(m);
 
@@ -78,7 +98,7 @@ namespace Server.Spells.Spellweaving
                     {
                         if (!CheckResisted(m))
                         {
-                            m_Table[m] = Timer.DelayCall(duration, DoExpire, m);
+                            m_Table[m] = Timer.DelayCall<Mobile>(duration, DoExpire, m);
 
                             BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.Thunderstorm, 1075800, duration, m, GetCastRecoveryMalus(m)));
                             m.Delta(MobileDelta.WeaponDamage);

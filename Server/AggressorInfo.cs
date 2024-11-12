@@ -69,11 +69,11 @@ namespace Server
 
 		private static TimeSpan m_ExpireDelay = TimeSpan.FromMinutes(2.0);
 
-		public static TimeSpan ExpireDelay { get => m_ExpireDelay; set => m_ExpireDelay = value; }
+		public static TimeSpan ExpireDelay { get { return m_ExpireDelay; } set { m_ExpireDelay = value; } }
 
 		public static void DumpAccess()
 		{
-			using (var op = new StreamWriter("warnings.log", true))
+			using (StreamWriter op = new StreamWriter("warnings.log", true))
 			{
 				op.WriteLine("Warning: Access to queued AggressorInfo:");
 				op.WriteLine(new StackTrace());
@@ -91,7 +91,7 @@ namespace Server
 					DumpAccess();
 				}
 
-				return m_Attacker.Deleted || m_Defender.Deleted || DateTime.UtcNow >= (m_LastCombatTime + m_ExpireDelay);
+				return (m_Attacker.Deleted || m_Defender.Deleted || DateTime.UtcNow >= (m_LastCombatTime + m_ExpireDelay));
 			}
 		}
 

@@ -1,7 +1,7 @@
+using System;
 using Server.Misc;
 using Server.Mobiles;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Third
 {
@@ -19,7 +19,13 @@ namespace Server.Spells.Third
         {
         }
 
-        public override SpellCircle Circle => SpellCircle.Third;
+        public override SpellCircle Circle
+        {
+            get
+            {
+                return SpellCircle.Third;
+            }
+        }
         public override void OnCast()
         {
             Caster.Target = new InternalTarget(this);
@@ -107,12 +113,18 @@ namespace Server.Spells.Third
             {
             }
 
-            public override bool BlocksFit => true;
+            public override bool BlocksFit
+            {
+                get
+                {
+                    return true;
+                }
+            }
             public override void Serialize(GenericWriter writer)
             {
                 base.Serialize(writer);
 
-                writer.Write(1); // version
+                writer.Write((int)1); // version
 
                 writer.WriteDeltaTime(m_End);
             }
@@ -123,7 +135,7 @@ namespace Server.Spells.Third
 
                 int version = reader.ReadInt();
 
-                switch (version)
+                switch ( version )
                 {
                     case 1:
                         {
@@ -193,7 +205,7 @@ namespace Server.Spells.Third
         {
             private readonly WallOfStoneSpell m_Owner;
             public InternalTarget(WallOfStoneSpell owner)
-                : base(15, true, TargetFlags.None)
+                : base(Core.TOL ? 15 : Core.ML ? 10 : 12, true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

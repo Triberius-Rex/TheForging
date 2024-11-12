@@ -26,12 +26,12 @@ namespace Server
 	{
 		private static ParticleSupportType m_ParticleSupportType = ParticleSupportType.Detect;
 
-		public static ParticleSupportType ParticleSupportType { get => m_ParticleSupportType; set => m_ParticleSupportType = value; }
+		public static ParticleSupportType ParticleSupportType { get { return m_ParticleSupportType; } set { m_ParticleSupportType = value; } }
 
 		public static bool SendParticlesTo(NetState state)
 		{
-			return m_ParticleSupportType == ParticleSupportType.Full ||
-					(m_ParticleSupportType == ParticleSupportType.Detect && (state.IsUOTDClient || state.IsEnhancedClient));
+			return (m_ParticleSupportType == ParticleSupportType.Full ||
+					(m_ParticleSupportType == ParticleSupportType.Detect && (state.IsUOTDClient || state.IsEnhancedClient)));
 		}
 
 		public static void PlayExplodeSound(IPoint3D p, Map map)
@@ -52,7 +52,7 @@ namespace Server
 
 				var eable = map.GetClientsInRange(new Point3D(p));
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 
@@ -80,21 +80,21 @@ namespace Server
 			SendBoltEffect(e, sound, 0);
 		}
 
-		public static void SendBoltEffect(IEntity e, bool sound, int hue, bool delay)
-		{
-			if (delay)
-			{
-				Timer.DelayCall(() => SendBoltEffect(e, sound, hue));
-			}
-			else
-			{
-				SendBoltEffect(e, sound, hue);
-			}
-		}
+        public static void SendBoltEffect(IEntity e, bool sound, int hue, bool delay)
+        {
+            if (delay)
+            {
+                Timer.DelayCall(() => SendBoltEffect(e, sound, hue));
+            }
+            else
+            {
+                SendBoltEffect(e, sound, hue);
+            }
+        }
 
 		public static void SendBoltEffect(IEntity e, bool sound, int hue)
 		{
-			var map = e.Map;
+			Map map = e.Map;
 
 			if (map == null)
 			{
@@ -103,17 +103,17 @@ namespace Server
 
 			e.ProcessDelta();
 
-			Packet preEffect = null, postEffect = null, boltEffect = null, playSound = null;
+            Packet preEffect = null, postEffect = null, boltEffect = null, playSound = null;
 
 			var eable = map.GetClientsInRange(e.Location);
 
-			foreach (var state in eable)
+			foreach (NetState state in eable)
 			{
 				if (state.Mobile.CanSee(e))
 				{
-					var sendParticles = SendParticlesTo(state);
+                    bool sendParticles = SendParticlesTo(state);
 
-					if (sendParticles)
+                    if (sendParticles)
 					{
 						if (preEffect == null)
 						{
@@ -125,27 +125,27 @@ namespace Server
 
 					if (boltEffect == null)
 					{
-						if (hue == 0)
-						{
-							boltEffect = Packet.Acquire(new BoltEffectNew(e));
-						}
-						else
-						{
-							boltEffect = Packet.Acquire(new BoltEffect(e, hue));
-						}
+                        if (Core.SA && hue == 0)
+                        {
+                            boltEffect = Packet.Acquire(new BoltEffectNew(e));
+                        }
+                        else
+                        {
+                            boltEffect = Packet.Acquire(new BoltEffect(e, hue));
+                        }
 					}
 
 					state.Send(boltEffect);
 
-					if (sendParticles)
-					{
-						if (postEffect == null)
-						{
-							postEffect = Packet.Acquire(new GraphicalEffect(EffectType.FixedFrom, e.Serial, Serial.Zero, 0, e.Location, e.Location, 0, 0, false, 0));
-						}
+                    if (sendParticles)
+                    {
+                        if (postEffect == null)
+                        {
+                            postEffect = Packet.Acquire(new GraphicalEffect(EffectType.FixedFrom, e.Serial, Serial.Zero, 0, e.Location, e.Location, 0, 0, false, 0));
+                        }
 
-						state.Send(postEffect);
-					}
+                        state.Send(postEffect);
+                    }
 
 					if (sound)
 					{
@@ -160,7 +160,7 @@ namespace Server
 			}
 
 			Packet.Release(preEffect);
-			Packet.Release(postEffect);
+            Packet.Release(postEffect);
 			Packet.Release(boltEffect);
 			Packet.Release(playSound);
 
@@ -201,7 +201,7 @@ namespace Server
 		public static void SendLocationParticles(
 			IEntity e, int itemID, int speed, int duration, int hue, int renderMode, int effect, int unknown)
 		{
-			var map = e.Map;
+			Map map = e.Map;
 
 			if (map != null)
 			{
@@ -209,7 +209,7 @@ namespace Server
 
 				var eable = map.GetClientsInRange(e.Location);
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 
@@ -295,7 +295,7 @@ namespace Server
 				((Mobile)target).ProcessDelta();
 			}
 
-			var map = target.Map;
+			Map map = target.Map;
 
 			if (map != null)
 			{
@@ -303,7 +303,7 @@ namespace Server
 
 				var eable = map.GetClientsInRange(target.Location);
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 
@@ -462,7 +462,7 @@ namespace Server
 				((Mobile)to).ProcessDelta();
 			}
 
-			var map = from.Map;
+			Map map = from.Map;
 
 			if (map != null)
 			{
@@ -470,7 +470,7 @@ namespace Server
 
 				var eable = map.GetClientsInRange(from.Location);
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 
@@ -528,7 +528,7 @@ namespace Server
 
 				p.Acquire();
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 					state.Send(p);
@@ -548,7 +548,7 @@ namespace Server
 
 				p.Acquire();
 
-				foreach (var state in eable)
+				foreach (NetState state in eable)
 				{
 					state.Mobile.ProcessDelta();
 					state.Send(p);

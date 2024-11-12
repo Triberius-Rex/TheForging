@@ -1,29 +1,33 @@
-using Server.Items;
-using Server.Misc;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Misc;
 using System.Collections.Generic;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Spells.SkillMasteries
 {
     public class NetherBlastSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Nether Blast", "In Vas Por Grav",
                 204,
-                9061,
+				9061,
                 Reagent.DragonBlood,
                 Reagent.DaemonBone
             );
 
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 0;
-        public override int RequiredMana => 40;
-        public override bool PartyEffects => false;
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.0);
-        public override double TickTime => 1;
+        public override double RequiredSkill { get { return 90; } }
+        public override double UpKeep { get { return 0; } }
+        public override int RequiredMana { get { return 40; } }
+        public override bool PartyEffects { get { return false; } }
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromSeconds(2.0); } }
+        public override double TickTime { get { return 1; } }
 
-        public override SkillName CastSkill => SkillName.Mysticism;
+        public override SkillName CastSkill { get { return SkillName.Mysticism; } }
         public override SkillName DamageSkill
         {
             get
@@ -49,7 +53,7 @@ namespace Server.Spells.SkillMasteries
 
         public override bool CheckCast()
         {
-            if (HasSpell(Caster, GetType()))
+            if (HasSpell(Caster, this.GetType()))
             {
                 Caster.SendMessage("You cannot use this ability until the last one has expired.");
                 return false;
@@ -60,7 +64,7 @@ namespace Server.Spells.SkillMasteries
 
         public override void OnCast()
         {
-            Caster.Target = new MasteryTarget(this, 10, true, Targeting.TargetFlags.None);
+            Caster.Target = new MasteryTarget(this, 10, true, Server.Targeting.TargetFlags.None);
         }
 
         protected override void OnTarget(object o)
@@ -81,27 +85,27 @@ namespace Server.Spells.SkillMasteries
 
                     for (int i = 0; i < 5; ++i)
                     {
-                        Server.Timer.DelayCall(TimeSpan.FromMilliseconds(i * 250), () =>
-                              {
-                                  int x = loc.X;
-                                  int y = loc.Y;
-                                  int z = loc.Z;
+                        Server.Timer.DelayCall(TimeSpan.FromMilliseconds(i*250), () =>
+                            {
+                                int x = loc.X;
+                                int y = loc.Y;
+                                int z = loc.Z;
 
-                                  Movement.Movement.Offset(d, ref x, ref y);
+                                Movement.Movement.Offset(d, ref x, ref y);
 
-                                  loc = new Point3D(x, y, z);
+                                loc = new Point3D(x, y, z);
 
-                                  bool canFit = SpellHelper.AdjustField(ref loc, Caster.Map, 12, false);
+                                bool canFit = SpellHelper.AdjustField(ref loc, Caster.Map, 12, false);
 
-                                  if (canFit)
-                                  {
-                                      InternalItem item = new InternalItem(Caster, 0x37CC, loc, Caster.Map);
-                                      item.ProcessDelta();
-                                      Effects.SendLocationParticles(EffectItem.Create(loc, Caster.Map, EffectItem.DefaultDuration), 0x376A, 9, 10, 5048);
+                                if (canFit)
+                                {
+                                    var item = new InternalItem(Caster, 0x37CC, loc, Caster.Map);
+                                    item.ProcessDelta();
+                                    Effects.SendLocationParticles(EffectItem.Create(loc, Caster.Map, EffectItem.DefaultDuration), 0x376A, 9, 10, 5048);
 
-                                      Items.Add(item);
-                                  }
-                              });
+                                    Items.Add(item);
+                                }
+                            });
                     }
 
                     Expires = DateTime.UtcNow + duration;
@@ -116,9 +120,9 @@ namespace Server.Spells.SkillMasteries
         {
             Dictionary<Mobile, InternalItem> list = new Dictionary<Mobile, InternalItem>();
 
-            foreach (InternalItem item in Items.Where(i => !i.Deleted))
+            foreach (var item in Items.Where(i => !i.Deleted))
             {
-                foreach (Mobile m in AcquireIndirectTargets(item.Location, 1).OfType<Mobile>().Where(m =>
+                foreach (var m in AcquireIndirectTargets(item.Location, 1).OfType<Mobile>().Where(m =>
                      (m.Z + 16) > item.Z &&
                      (item.Z + 12) > m.Z))
                 {
@@ -129,7 +133,7 @@ namespace Server.Spells.SkillMasteries
                 }
             }
 
-            foreach (KeyValuePair<Mobile, InternalItem> kvp in list)
+            foreach (var kvp in list)
             {
                 DoDamage(kvp.Key, kvp.Value);
             }
@@ -140,7 +144,7 @@ namespace Server.Spells.SkillMasteries
 
         public override void OnExpire()
         {
-            foreach (InternalItem item in Items)
+            foreach (var item in Items)
             {
                 item.Delete();
             }
@@ -148,7 +152,7 @@ namespace Server.Spells.SkillMasteries
 
         private bool DoDamage(Mobile m, InternalItem item)
         {
-            if (item.Visible && Caster != null && m != Caster && SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanBeHarmful(m, false))
+            if (item.Visible && Caster != null && (!Core.AOS || m != Caster) && SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanBeHarmful(m, false))
             {
                 if (SpellHelper.CanRevealCaster(m))
                     Caster.RevealingAction();
@@ -166,10 +170,9 @@ namespace Server.Spells.SkillMasteries
                 damage *= (100 + sdiBonus);
                 damage /= 100;
 
-                Caster.DoHarmful(m);
-                m.FixedParticles(0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255);
-
                 AOS.Damage(m, Caster, damage, 0, 0, 0, 0, 0, 100, 0, DamageType.SpellAOE);
+
+                m.FixedParticles(0x374A, 1, 15, 9502, 97, 3, (EffectLayer)255);
 
                 int manaRip = Math.Min(m.Mana, damage / 4);
 
@@ -186,7 +189,7 @@ namespace Server.Spells.SkillMasteries
         [DispellableField]
         public class InternalItem : Item
         {
-            public override bool BlocksFit => true;
+            public override bool BlocksFit { get { return true; } }
 
             public InternalItem(Mobile caster, int itemID, Point3D loc, Map map)
                 : base(itemID)
@@ -215,7 +218,7 @@ namespace Server.Spells.SkillMasteries
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)

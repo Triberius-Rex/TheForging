@@ -1,20 +1,36 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
-namespace Server.Mobiles
-{
-    public class SBWeaponSmith : SBInfo
-    {
+namespace Server.Mobiles 
+{ 
+    public class SBWeaponSmith : SBInfo 
+    { 
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBWeaponSmith() 
+        { 
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
-
-        public class InternalBuyInfo : List<GenericBuyInfo>
+        public override IShopSellInfo SellInfo
         {
-            public InternalBuyInfo()
+            get
             {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
+
+        public class InternalBuyInfo : List<GenericBuyInfo> 
+        { 
+            public InternalBuyInfo() 
+            { 
                 Add(new GenericBuyInfo(typeof(BlackStaff), 22, 20, 0xDF1, 0));
                 Add(new GenericBuyInfo(typeof(Club), 16, 20, 0x13B4, 0));
                 Add(new GenericBuyInfo(typeof(GnarledStaff), 16, 20, 0x13F8, 0));
@@ -28,15 +44,18 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(WarHammer), 25, 20, 0x1439, 0));
                 Add(new GenericBuyInfo(typeof(WarMace), 31, 20, 0x1407, 0));
 
-                Add(new GenericBuyInfo(typeof(Scepter), 39, 20, 0x26BC, 0));
-                Add(new GenericBuyInfo(typeof(BladedStaff), 40, 20, 0x26BD, 0));
+                if (Core.AOS)
+                {
+                    Add(new GenericBuyInfo(typeof(Scepter), 39, 20, 0x26BC, 0));
+                    Add(new GenericBuyInfo(typeof(BladedStaff), 40, 20, 0x26BD, 0));
+                }
 
                 Add(new GenericBuyInfo(typeof(Hatchet), 25, 20, 0xF44, 0));
                 Add(new GenericBuyInfo(typeof(Hatchet), 27, 20, 0xF43, 0));
                 Add(new GenericBuyInfo(typeof(WarFork), 32, 20, 0x1405, 0));
 
-                switch (Utility.Random(3))
-                {
+                switch ( Utility.Random(3)) 
+                { 
                     case 0:
                         {
                             Add(new GenericBuyInfo(typeof(ExecutionersAxe), 30, 20, 0xF45, 0));
@@ -78,14 +97,17 @@ namespace Server.Mobiles
                             Add(new GenericBuyInfo(typeof(LargeBattleAxe), 33, 20, 0x13FB, 0));
                             Add(new GenericBuyInfo(typeof(WarAxe), 29, 20, 0x13B0, 0));
 
-                            Add(new GenericBuyInfo(typeof(BoneHarvester), 35, 20, 0x26BB, 0));
-                            Add(new GenericBuyInfo(typeof(CrescentBlade), 37, 20, 0x26C1, 0));
-                            Add(new GenericBuyInfo(typeof(DoubleBladedStaff), 35, 20, 0x26BF, 0));
-                            Add(new GenericBuyInfo(typeof(Lance), 34, 20, 0x26C0, 0));
-                            Add(new GenericBuyInfo(typeof(Pike), 39, 20, 0x26BE, 0));
-                            Add(new GenericBuyInfo(typeof(Scythe), 39, 20, 0x26BA, 0));
-                            Add(new GenericBuyInfo(typeof(CompositeBow), 50, 20, 0x26C2, 0));
-                            Add(new GenericBuyInfo(typeof(RepeatingCrossbow), 57, 20, 0x26C3, 0));
+                            if (Core.AOS)
+                            {
+                                Add(new GenericBuyInfo(typeof(BoneHarvester), 35, 20, 0x26BB, 0));
+                                Add(new GenericBuyInfo(typeof(CrescentBlade), 37, 20, 0x26C1, 0));
+                                Add(new GenericBuyInfo(typeof(DoubleBladedStaff), 35, 20, 0x26BF, 0));
+                                Add(new GenericBuyInfo(typeof(Lance), 34, 20, 0x26C0, 0));
+                                Add(new GenericBuyInfo(typeof(Pike), 39, 20, 0x26BE, 0));
+                                Add(new GenericBuyInfo(typeof(Scythe), 39, 20, 0x26BA, 0));
+                                Add(new GenericBuyInfo(typeof(CompositeBow), 50, 20, 0x26C2, 0));
+                                Add(new GenericBuyInfo(typeof(RepeatingCrossbow), 57, 20, 0x26C3, 0));
+                            }
 
                             break;
                         }
@@ -93,10 +115,10 @@ namespace Server.Mobiles
             }
         }
 
-        public class InternalSellInfo : GenericSellInfo
-        {
-            public InternalSellInfo()
-            {
+        public class InternalSellInfo : GenericSellInfo 
+        { 
+            public InternalSellInfo() 
+            { 
                 Add(typeof(BattleAxe), 13);
                 Add(typeof(DoubleAxe), 26);
                 Add(typeof(ExecutionersAxe), 15);
@@ -123,20 +145,23 @@ namespace Server.Mobiles
 
                 Add(typeof(HeavyCrossbow), 27);
                 Add(typeof(Bow), 17);
-                Add(typeof(Crossbow), 23);
+                Add(typeof(Crossbow), 23); 
 
-                Add(typeof(CompositeBow), 25);
-                Add(typeof(RepeatingCrossbow), 28);
-                Add(typeof(Scepter), 20);
-                Add(typeof(BladedStaff), 20);
-                Add(typeof(Scythe), 19);
-                Add(typeof(BoneHarvester), 17);
-                Add(typeof(Scepter), 18);
-                Add(typeof(BladedStaff), 16);
-                Add(typeof(Pike), 19);
-                Add(typeof(DoubleBladedStaff), 17);
-                Add(typeof(Lance), 17);
-                Add(typeof(CrescentBlade), 18);
+                if (Core.AOS)
+                {
+                    Add(typeof(CompositeBow), 25);
+                    Add(typeof(RepeatingCrossbow), 28);
+                    Add(typeof(Scepter), 20);
+                    Add(typeof(BladedStaff), 20);
+                    Add(typeof(Scythe), 19);
+                    Add(typeof(BoneHarvester), 17);
+                    Add(typeof(Scepter), 18);
+                    Add(typeof(BladedStaff), 16);
+                    Add(typeof(Pike), 19);
+                    Add(typeof(DoubleBladedStaff), 17);
+                    Add(typeof(Lance), 17);
+                    Add(typeof(CrescentBlade), 18);
+                }
 
                 Add(typeof(Spear), 15);
                 Add(typeof(Pitchfork), 9);

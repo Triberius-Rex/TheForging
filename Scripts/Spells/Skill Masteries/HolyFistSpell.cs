@@ -1,8 +1,10 @@
-using Server.Items;
-using Server.Mobiles;
-using Server.Network;
-using Server.Spells.Ninjitsu;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Items;
+using Server.Spells.Ninjitsu;
 
 /*The paladin unleashes a flying fist against a target that does energy damage based on the paladin's chivalry 
  * skill, best weapon skill, and mastery level.  A bonus to damage is provided by high karma as well against undead 
@@ -12,23 +14,23 @@ namespace Server.Spells.SkillMasteries
 {
     public class HolyFistSpell : SkillMasterySpell
     {
-        private static readonly SpellInfo m_Info = new SpellInfo(
+        private static SpellInfo m_Info = new SpellInfo(
                 "Holy Fist", "Kal Vas Grav",
                 -1,
                 9002
             );
 
-        public override double RequiredSkill => 90;
-        public override int RequiredMana => 50;
+        public override double RequiredSkill { get { return 90; } }
+        public override int RequiredMana { get { return 50; } }
 
-        public override SkillName CastSkill => SkillName.Chivalry;
-        public override SkillName DamageSkill => SkillName.Chivalry;
+        public override SkillName CastSkill { get { return SkillName.Chivalry; } }
+        public override SkillName DamageSkill { get { return SkillName.Chivalry; } }
 
-        public int RequiredTithing => 100;
+        public int RequiredTithing { get { return 100; } }
 
-        public override bool DelayedDamage => true;
+        public override bool DelayedDamage { get { return true; } }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(2.5);
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromSeconds(2.5); } }
 
         public HolyFistSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
@@ -69,7 +71,7 @@ namespace Server.Spells.SkillMasteries
 
                     SpellHelper.Turn(Caster, target);
 
-                    if (SpellHelper.CheckReflect(this, ref source, ref target))
+                    if (SpellHelper.CheckReflect(0, ref source, ref target))
                     {
                         Server.Timer.DelayCall(TimeSpan.FromSeconds(.5), () =>
                         {
@@ -112,10 +114,9 @@ namespace Server.Spells.SkillMasteries
 
                         Server.Timer.DelayCall(TimeSpan.FromSeconds(skill / 60), () =>
                             {
-                                if (!TransformationSpellHelper.UnderTransformation(mob, typeof(AnimalForm)))
-                                {
+                                if (!TransformationSpellHelper.UnderTransformation(mob, typeof(AnimalForm)) &&
+                                    (Core.SA || !TransformationSpellHelper.UnderTransformation(mob, typeof(Server.Spells.Spellweaving.ReaperFormSpell))))
                                     mob.SendSpeedControl(SpeedControlType.Disable);
-                                }
                             });
                     }
                 }
@@ -124,7 +125,7 @@ namespace Server.Spells.SkillMasteries
 
         public override bool CheckSequence()
         {
-            int requiredTithing = RequiredTithing;
+            int requiredTithing = this.RequiredTithing;
 
             if (Caster is PlayerMobile && Caster.TithingPoints < requiredTithing)
             {
@@ -135,7 +136,7 @@ namespace Server.Spells.SkillMasteries
             if (AosAttributes.GetValue(Caster, AosAttribute.LowerRegCost) > Utility.Random(100))
                 requiredTithing = 0;
 
-            if (requiredTithing > 0 && Caster is PlayerMobile)
+            if(requiredTithing > 0 && Caster is PlayerMobile)
                 Caster.TithingPoints -= requiredTithing;
 
             return base.CheckSequence();

@@ -1,6 +1,6 @@
-using Server.Items;
 using System;
 using System.Collections.Generic;
+using Server.Items;
 using System.Linq;
 
 namespace Server.Mobiles
@@ -38,7 +38,7 @@ namespace Server.Mobiles
 
         public GenericBuyInfo(string name, Type type, int price, int amount, int itemID, int hue, object[] args, bool stacks = false)
         {
-            if (type != null)
+            if(type != null)
                 BuyPrices[type] = price;
 
             m_Type = type;
@@ -47,6 +47,7 @@ namespace Server.Mobiles
             m_Hue = hue;
             m_Args = args;
             m_Stackable = stacks;
+
             if (type != null && EconomyItem)
             {
                 m_MaxAmount = m_Amount = BaseVendor.EconomyStockAmount;
@@ -56,7 +57,7 @@ namespace Server.Mobiles
                 m_MaxAmount = m_Amount = amount;
             }
 
-            if (Siege.SiegeShard)
+            if(Siege.SiegeShard)
             {
                 m_Price *= 3;
             }
@@ -67,8 +68,20 @@ namespace Server.Mobiles
                 m_Name = name;
         }
 
-        public virtual int ControlSlots => 0;
-        public virtual bool CanCacheDisplay => false;//return ( m_Args == null || m_Args.Length == 0 ); } 
+        public virtual int ControlSlots
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public virtual bool CanCacheDisplay
+        {
+            get
+            {
+                return false;
+            }
+        }//return ( m_Args == null || m_Args.Length == 0 ); } 
         public Type Type
         {
             get
@@ -91,7 +104,13 @@ namespace Server.Mobiles
                 m_Name = value;
             }
         }
-        public int DefaultPrice => m_PriceScalar;
+        public int DefaultPrice
+        {
+            get
+            {
+                return m_PriceScalar;
+            }
+        }
         public int PriceScalar
         {
             get
@@ -122,7 +141,7 @@ namespace Server.Mobiles
             set { m_Stackable = value; }
         }
 
-        public bool EconomyItem => BaseVendor.UseVendorEconomy && m_Stackable;
+        public bool EconomyItem { get { return BaseVendor.UseVendorEconomy && m_Stackable; } }
 
         public int Price
         {
@@ -287,11 +306,10 @@ namespace Server.Mobiles
         public virtual IEntity GetEntity()
         {
             if (m_Args == null || m_Args.Length == 0)
-            {
                 return (IEntity)Activator.CreateInstance(m_Type);
-            }
 
             return (IEntity)Activator.CreateInstance(m_Type, m_Args);
+            //return (Item)Activator.CreateInstance( m_Type );
         }
 
         //Attempt to restock with item, (return true if restock sucessful)
@@ -349,7 +367,7 @@ namespace Server.Mobiles
         {
             if (EconomyItem)
             {
-                foreach (GenericBuyInfo bii in vendor.GetBuyInfo().OfType<GenericBuyInfo>())
+                foreach (var bii in vendor.GetBuyInfo().OfType<GenericBuyInfo>())
                 {
                     if (bii.Type == m_Type || (m_Type == typeof(UncutCloth) && bii.Type == typeof(Cloth)) || (m_Type == typeof(Cloth) && bii.Type == typeof(UncutCloth)))
                     {
@@ -365,7 +383,7 @@ namespace Server.Mobiles
         {
             if (EconomyItem)
             {
-                foreach (GenericBuyInfo bii in vendor.GetBuyInfo().OfType<GenericBuyInfo>())
+                foreach (var bii in vendor.GetBuyInfo().OfType<GenericBuyInfo>())
                 {
                     if (bii.Type == m_Type || (m_Type == typeof(UncutCloth) && bii.Type == typeof(Cloth)) || (m_Type == typeof(Cloth) && bii.Type == typeof(UncutCloth)))
                     {
@@ -391,8 +409,8 @@ namespace Server.Mobiles
             private Dictionary<Type, IEntity> m_Table;
             private List<Mobile> m_Mobiles;
 
-            public List<Mobile> Mobiles => m_Mobiles;
-            public Dictionary<Type, IEntity> Table => m_Table;
+            public List<Mobile> Mobiles { get { return m_Mobiles; } }
+            public Dictionary<Type, IEntity> Table { get { return m_Table; } }
 
             public DisplayCache()
                 : base(0)
@@ -455,7 +473,7 @@ namespace Server.Mobiles
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
 
                 writer.Write(m_Mobiles);
             }
@@ -484,44 +502,6 @@ namespace Server.Mobiles
 
                 m_Table = new Dictionary<Type, IEntity>();
             }
-        }
-    }
-
-    public class GenericBuyInfo<T> : GenericBuyInfo
-    {
-        public Action<T, GenericBuyInfo> CreateCallback { get; set; }
-
-        public GenericBuyInfo(int price, int amount, int itemID, int hue, bool stacks = false, Action<T, GenericBuyInfo> callback = null)
-            : this(null, price, amount, itemID, hue, null, stacks, callback)
-        {
-        }
-
-        public GenericBuyInfo(string name, int price, int amount, int itemID, int hue, bool stacks = false, Action<T, GenericBuyInfo> callback = null)
-            : this(name, price, amount, itemID, hue, null, stacks, callback)
-        {
-        }
-
-        public GenericBuyInfo(int price, int amount, int itemID, int hue, object[] args, bool stacks = false, Action<T, GenericBuyInfo> callback = null)
-            : this(null, price, amount, itemID, hue, args, stacks, callback)
-        {
-        }
-
-        public GenericBuyInfo(string name, int price, int amount, int itemID, int hue, object[] args, bool stacks = false, Action<T, GenericBuyInfo> callback = null)
-            : base(name, typeof(T), price, amount, itemID, hue, args, stacks)
-        {
-            CreateCallback = callback;
-        }
-
-        public override IEntity GetEntity()
-        {
-            var entity = base.GetEntity();
-
-            if (CreateCallback != null)
-            {
-                CreateCallback((T)entity, this);
-            }
-
-            return entity;
         }
     }
 }

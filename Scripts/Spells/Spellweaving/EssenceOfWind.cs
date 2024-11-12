@@ -9,16 +9,34 @@ namespace Server.Spells.Spellweaving
         private static readonly SpellInfo m_Info = new SpellInfo("Essence of Wind", "Anathrae", -1);
         private static readonly Dictionary<Mobile, EssenceOfWindInfo> m_Table = new Dictionary<Mobile, EssenceOfWindInfo>();
 
-        public override DamageType SpellDamageType => DamageType.SpellAOE;
+        public override DamageType SpellDamageType { get { return DamageType.SpellAOE; } }
 
         public EssenceOfWindSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(3.0);
-        public override double RequiredSkill => 52.0;
-        public override int RequiredMana => 40;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(3.0);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 52.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 40;
+            }
+        }
         public static int GetFCMalus(Mobile m)
         {
             EssenceOfWindInfo info;
@@ -69,7 +87,7 @@ namespace Server.Spells.Spellweaving
                 int fcMalus = FocusLevel + 1;
                 int ssiMalus = 2 * (FocusLevel + 1);
 
-                foreach (Mobile m in AcquireIndirectTargets(Caster.Location, 5 + FocusLevel).OfType<Mobile>())
+                foreach (var m in AcquireIndirectTargets(Caster.Location, 5 + FocusLevel).OfType<Mobile>())
                 {
                     Caster.DoHarmful(m);
 
@@ -79,11 +97,11 @@ namespace Server.Spells.Spellweaving
                     {
                         m_Table[m] = new EssenceOfWindInfo(m, fcMalus, ssiMalus, duration);
 
-                        BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.EssenceOfWind, 1075802, duration, m, string.Format("{0}\t{1}", fcMalus.ToString(), ssiMalus.ToString())));
+                        BuffInfo.AddBuff(m, new BuffInfo(BuffIcon.EssenceOfWind, 1075802, duration, m, String.Format("{0}\t{1}", fcMalus.ToString(), ssiMalus.ToString())));
 
                         m.Delta(MobileDelta.WeaponDamage);
                     }
-                }
+                }    
             }
 
             FinishSequence();
@@ -105,10 +123,34 @@ namespace Server.Spells.Spellweaving
                 m_Timer.Start();
             }
 
-            public Mobile Defender => m_Defender;
-            public int FCMalus => m_FCMalus;
-            public int SSIMalus => m_SSIMalus;
-            public ExpireTimer Timer => m_Timer;
+            public Mobile Defender
+            {
+                get
+                {
+                    return m_Defender;
+                }
+            }
+            public int FCMalus
+            {
+                get
+                {
+                    return m_FCMalus;
+                }
+            }
+            public int SSIMalus
+            {
+                get
+                {
+                    return m_SSIMalus;
+                }
+            }
+            public ExpireTimer Timer
+            {
+                get
+                {
+                    return m_Timer;
+                }
+            }
         }
 
         private class ExpireTimer : Timer

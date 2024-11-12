@@ -14,9 +14,27 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(3);
-        public override double RequiredSkill => 24.0;
-        public override int RequiredMana => 50;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(3);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 24.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 50;
+            }
+        }
 
         public static double GetDispellBonus(Mobile m)
         {
@@ -30,17 +48,17 @@ namespace Server.Spells.Spellweaving
         public static int GetSpellBonus(Mobile m, bool playerVsPlayer)
         {
             EmpowermentInfo info = m_Table[m] as EmpowermentInfo;
-
+			
             if (info != null)
                 return info.Bonus + (playerVsPlayer ? info.Focus : 0);
-
+			
             return 0;
         }
 
         public static void AddHealBonus(Mobile m, ref int toHeal)
         {
             EmpowermentInfo info = m_Table[m] as EmpowermentInfo;
-
+			
             if (info != null)
                 toHeal = (int)Math.Floor((1 + (10 + info.Bonus) / 100.0) * toHeal);
         }
@@ -48,10 +66,10 @@ namespace Server.Spells.Spellweaving
         public static void RemoveBonus(Mobile m)
         {
             EmpowermentInfo info = m_Table[m] as EmpowermentInfo;
-
+			
             if (info != null && info.Timer != null)
-                info.Timer.Stop();
-
+                info.Timer.Stop();			
+				
             m_Table.Remove(m);
         }
 
@@ -63,22 +81,22 @@ namespace Server.Spells.Spellweaving
         public override void OnCast()
         {
             if (m_Table.ContainsKey(Caster))
-            {
+            { 
                 Caster.SendLocalizedMessage(501775); // This spell is already in effect.
             }
             else if (CheckSequence())
             {
                 Caster.PlaySound(0x5C1);
-
+				
                 int level = GetFocusLevel(Caster);
                 double skill = Caster.Skills[SkillName.Spellweaving].Value;
-
+				
                 TimeSpan duration = TimeSpan.FromSeconds(15 + (int)(skill / 24) + level * 2);
                 int bonus = (int)Math.Floor(skill / 12) + level * 5;
 
                 m_Table[Caster] = new EmpowermentInfo(Caster, duration, bonus, level);
 
-                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ArcaneEmpowerment, 1031616, 1075808, duration, Caster, new TextDefinition(string.Format("{0}\t10", bonus.ToString()))));
+                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ArcaneEmpowerment, 1031616, 1075808, duration, Caster, new TextDefinition(String.Format("{0}\t10", bonus.ToString()))));
 
                 Caster.Delta(MobileDelta.WeaponDamage);
             }

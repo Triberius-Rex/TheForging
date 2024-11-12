@@ -1,7 +1,7 @@
+using System;
 using Server.Mobiles;
 using Server.Regions;
 using Server.Targeting;
-using System;
 
 namespace Server.Spells.Spellweaving
 {
@@ -16,17 +16,35 @@ namespace Server.Spells.Spellweaving
         {
         }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(1.5);
-        public override double RequiredSkill => 0.0;
-        public override int RequiredMana => 24;
+        public override TimeSpan CastDelayBase
+        {
+            get
+            {
+                return TimeSpan.FromSeconds(1.5);
+            }
+        }
+        public override double RequiredSkill
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
+        public override int RequiredMana
+        {
+            get
+            {
+                return 24;
+            }
+        }
         public override bool CheckCast()
         {
             if (!base.CheckCast())
                 return false;
 
-            if ((Caster.Followers + 1) > Caster.FollowersMax)
+            if ((this.Caster.Followers + 1) > this.Caster.FollowersMax)
             {
-                Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
+                this.Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;
             }
 
@@ -35,37 +53,37 @@ namespace Server.Spells.Spellweaving
 
         public override void OnCast()
         {
-            Caster.Target = new InternalTarget(this);
+            this.Caster.Target = new InternalTarget(this);
         }
 
         public void Target(IPoint3D point)
         {
             Point3D p = new Point3D(point);
-            Map map = Caster.Map;
+            Map map = this.Caster.Map;
 
             if (map == null)
                 return;
 
             HouseRegion r = Region.Find(p, map).GetRegion(typeof(HouseRegion)) as HouseRegion;
 
-            if (r != null && r.House != null && !r.House.IsFriend(Caster))
+            if (r != null && r.House != null && !r.House.IsFriend(this.Caster))
                 return;
 
             if (!map.CanSpawnMobile(p.X, p.Y, p.Z))
             {
-                Caster.SendLocalizedMessage(501942); // That location is blocked.
+                this.Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
-            else if (SpellHelper.CheckTown(p, Caster) && CheckSequence())
+            else if (SpellHelper.CheckTown(p, this.Caster) && this.CheckSequence())
             {
-                TimeSpan duration = TimeSpan.FromSeconds(Caster.Skills.Spellweaving.Value / 24 + 25 + FocusLevel * 2);
+                TimeSpan duration = TimeSpan.FromSeconds(this.Caster.Skills.Spellweaving.Value / 24 + 25 + this.FocusLevel * 2);
 
                 NatureFury nf = new NatureFury();
-                BaseCreature.Summon(nf, false, Caster, p, 0x5CB, duration);
+                BaseCreature.Summon(nf, false, this.Caster, p, 0x5CB, duration);
 
                 new InternalTimer(nf).Start();
             }
 
-            FinishSequence();
+            this.FinishSequence();
         }
 
         public class InternalTarget : Target
@@ -74,19 +92,19 @@ namespace Server.Spells.Spellweaving
             public InternalTarget(NatureFurySpell owner)
                 : base(10, true, TargetFlags.None)
             {
-                m_Owner = owner;
+                this.m_Owner = owner;
             }
 
             protected override void OnTarget(Mobile from, object o)
             {
                 if (o is IPoint3D)
-                    m_Owner.Target((IPoint3D)o);
+                    this.m_Owner.Target((IPoint3D)o);
             }
 
             protected override void OnTargetFinish(Mobile from)
             {
-                if (m_Owner != null)
-                    m_Owner.FinishSequence();
+                if (this.m_Owner != null)
+                    this.m_Owner.FinishSequence();
             }
         }
 
@@ -96,19 +114,19 @@ namespace Server.Spells.Spellweaving
             public InternalTimer(NatureFury nf)
                 : base(TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0))
             {
-                m_NatureFury = nf;
+                this.m_NatureFury = nf;
             }
 
             protected override void OnTick()
             {
-                if (m_NatureFury.Deleted || !m_NatureFury.Alive || m_NatureFury.DamageMin > 20)
+                if (this.m_NatureFury.Deleted || !this.m_NatureFury.Alive || this.m_NatureFury.DamageMin > 20)
                 {
-                    Stop();
+                    this.Stop();
                 }
                 else
                 {
-                    ++m_NatureFury.DamageMin;
-                    ++m_NatureFury.DamageMax;
+                    ++this.m_NatureFury.DamageMin;
+                    ++this.m_NatureFury.DamageMax;
                 }
             }
         }

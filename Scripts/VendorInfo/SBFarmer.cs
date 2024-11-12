@@ -1,19 +1,35 @@
-using Server.Items;
+using System;
 using System.Collections.Generic;
+using Server.Items;
 
-namespace Server.Mobiles
-{
-    public class SBFarmer : SBInfo
-    {
+namespace Server.Mobiles 
+{ 
+    public class SBFarmer : SBInfo 
+    { 
         private readonly List<GenericBuyInfo> m_BuyInfo = new InternalBuyInfo();
         private readonly IShopSellInfo m_SellInfo = new InternalSellInfo();
+        public SBFarmer() 
+        { 
+        }
 
-        public override IShopSellInfo SellInfo => m_SellInfo;
-        public override List<GenericBuyInfo> BuyInfo => m_BuyInfo;
-
-        public class InternalBuyInfo : List<GenericBuyInfo>
+        public override IShopSellInfo SellInfo
         {
-            public InternalBuyInfo()
+            get
+            {
+                return m_SellInfo;
+            }
+        }
+        public override List<GenericBuyInfo> BuyInfo
+        {
+            get
+            {
+                return m_BuyInfo;
+            }
+        }
+
+        public class InternalBuyInfo : List<GenericBuyInfo> 
+        { 
+            public InternalBuyInfo() 
             {
                 Add(new GenericBuyInfo("1031235", typeof(FreshGinger), 505, 10, 11235, 0));
                 Add(new GenericBuyInfo(typeof(Cabbage), 5, 20, 0xC7B, 0, true));
@@ -42,10 +58,10 @@ namespace Server.Mobiles
             }
         }
 
-        public class InternalSellInfo : GenericSellInfo
-        {
-            public InternalSellInfo()
-            {
+        public class InternalSellInfo : GenericSellInfo 
+        { 
+            public InternalSellInfo() 
+            { 
                 Add(typeof(Pitcher), 5);
                 Add(typeof(Eggs), 1);
                 Add(typeof(Apple), 1);

@@ -23,17 +23,17 @@ namespace Server
 		private readonly ClientType m_Type;
 		private readonly string m_SourceString;
 
-		public int Major => m_Major;
+		public int Major { get { return m_Major; } }
 
-		public int Minor => m_Minor;
+		public int Minor { get { return m_Minor; } }
 
-		public int Revision => m_Revision;
+		public int Revision { get { return m_Revision; } }
 
-		public int Patch => m_Patch;
+		public int Patch { get { return m_Patch; } }
 
-		public ClientType Type => m_Type;
+		public ClientType Type { get { return m_Type; } }
 
-		public string SourceString => m_SourceString;
+		public string SourceString { get { return m_SourceString; } }
 
 		public ClientVersion(int maj, int min, int rev, int pat)
 			: this(maj, min, rev, pat, ClientType.Regular)
@@ -47,42 +47,42 @@ namespace Server
 			m_Patch = pat;
 			m_Type = type;
 
-			if (m_Type != ClientType.SA && m_Major >= 67)
-			{
-				m_Type = ClientType.SA;
-			}
+            if (m_Type != ClientType.SA && m_Major >= 67)
+            {
+                m_Type = ClientType.SA;
+            }
 
 			m_SourceString = _ToStringImpl();
 		}
 
 		public static bool operator ==(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) == 0;
+			return (Compare(l, r) == 0);
 		}
 
 		public static bool operator !=(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) != 0;
+			return (Compare(l, r) != 0);
 		}
 
 		public static bool operator >=(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) >= 0;
+			return (Compare(l, r) >= 0);
 		}
 
 		public static bool operator >(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) > 0;
+			return (Compare(l, r) > 0);
 		}
 
 		public static bool operator <=(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) <= 0;
+			return (Compare(l, r) <= 0);
 		}
 
 		public static bool operator <(ClientVersion l, ClientVersion r)
 		{
-			return Compare(l, r) < 0;
+			return (Compare(l, r) < 0);
 		}
 
 		public override int GetHashCode()
@@ -97,7 +97,7 @@ namespace Server
 				return false;
 			}
 
-			var v = obj as ClientVersion;
+			ClientVersion v = obj as ClientVersion;
 
 			if (v == null)
 			{
@@ -110,7 +110,7 @@ namespace Server
 
 		private string _ToStringImpl()
 		{
-			var builder = new StringBuilder(16);
+			StringBuilder builder = new StringBuilder(16);
 
 			builder.Append(m_Major);
 			builder.Append('.');
@@ -153,10 +153,10 @@ namespace Server
 			{
 				fmt = fmt.ToLower();
 
-				var br1 = fmt.IndexOf('.');
-				var br2 = fmt.IndexOf('.', br1 + 1);
+				int br1 = fmt.IndexOf('.');
+				int br2 = fmt.IndexOf('.', br1 + 1);
 
-				var br3 = br2 + 1;
+				int br3 = br2 + 1;
 				while (br3 < fmt.Length && Char.IsDigit(fmt, br3))
 				{
 					br3++;
@@ -172,7 +172,7 @@ namespace Server
 					{
 						if (!Char.IsWhiteSpace(fmt, br3))
 						{
-							m_Patch = fmt[br3] - 'a' + 1;
+							m_Patch = (fmt[br3] - 'a') + 1;
 						}
 					}
 					else
@@ -181,11 +181,11 @@ namespace Server
 					}
 				}
 
-				if (m_Major >= 67)
-				{
-					m_Type = ClientType.SA;
-				}
-				else if (fmt.IndexOf("god") >= 0 || fmt.IndexOf("gq") >= 0)
+                if (m_Major >= 67)
+                {
+                    m_Type = ClientType.SA;
+                }
+                else if(fmt.IndexOf("god") >= 0 || fmt.IndexOf("gq") >= 0)
 				{
 					m_Type = ClientType.God;
 				}
@@ -216,7 +216,7 @@ namespace Server
 				return 1;
 			}
 
-			var o = obj as ClientVersion;
+			ClientVersion o = obj as ClientVersion;
 
 			if (o == null)
 			{
@@ -281,8 +281,8 @@ namespace Server
 				return 1;
 			}
 
-			var a = x as ClientVersion;
-			var b = y as ClientVersion;
+			ClientVersion a = x as ClientVersion;
+			ClientVersion b = y as ClientVersion;
 
 			if (IsNull(a) || IsNull(b))
 			{

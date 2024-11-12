@@ -51,9 +51,9 @@ namespace Server
 			}
 		}
 
-		public static bool IsHardwareRNG => _Random is IHardwareRNG;
+		public static bool IsHardwareRNG { get { return _Random is IHardwareRNG; } }
 
-		public static Type Type => _Random.GetType();
+		public static Type Type { get { return _Random.GetType(); } }
 
 		public static int Next(int c)
 		{
@@ -95,9 +95,9 @@ namespace Server
 
 		public int Next(int c)
 		{
-			if (c <= 0)
-				return 0;
-
+            if(c <= 0)
+                return 0;
+            
 			int r;
 			lock (m_Random)
 				r = m_Random.Next(c);
@@ -128,8 +128,8 @@ namespace Server
 	{
 		private readonly RNGCryptoServiceProvider _CSP = new RNGCryptoServiceProvider();
 
-		private static readonly int BUFFER_SIZE = 0x4000;
-		private static readonly int LARGE_REQUEST = 0x40;
+		private static int BUFFER_SIZE = 0x4000;
+		private static int LARGE_REQUEST = 0x40;
 
 		private byte[] _Working = new byte[BUFFER_SIZE];
 		private byte[] _Buffer = new byte[BUFFER_SIZE];
@@ -174,7 +174,7 @@ namespace Server
 
 		private void _GetBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			CheckSwap(c);
 
@@ -216,7 +216,7 @@ namespace Server
 
 		public void NextBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			if (c >= LARGE_REQUEST)
 			{
@@ -245,7 +245,7 @@ namespace Server
 			ulong r = 0;
 			fixed (byte* buf = b)
 			{
-				r = *(ulong*)&buf[0] >> 3;
+				r = *(ulong*)(&buf[0]) >> 3;
 			}
 
 			/* double: 53 bits of significand precision
@@ -262,14 +262,14 @@ namespace Server
 		internal class SafeNativeMethods
 		{
 			[DllImport("drng32")]
-			static internal extern RDRandError rdrand_32(ref uint rand, bool retry);
+			internal static extern RDRandError rdrand_32(ref uint rand, bool retry);
 
 			[DllImport("drng32")]
-			static internal extern RDRandError rdrand_get_bytes(int n, byte[] buffer);
+			internal static extern RDRandError rdrand_get_bytes(int n, byte[] buffer);
 		}
 
-		private static readonly int BUFFER_SIZE = 0x10000;
-		private static readonly int LARGE_REQUEST = 0x40;
+		private static int BUFFER_SIZE = 0x10000;
+		private static int LARGE_REQUEST = 0x40;
 
 		private byte[] _Working = new byte[BUFFER_SIZE];
 		private byte[] _Buffer = new byte[BUFFER_SIZE];
@@ -319,7 +319,7 @@ namespace Server
 
 		private void _GetBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			CheckSwap(c);
 
@@ -361,7 +361,7 @@ namespace Server
 
 		public void NextBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			if (c >= LARGE_REQUEST)
 			{
@@ -389,7 +389,7 @@ namespace Server
 			ulong r = 0;
 			fixed (byte* buf = b)
 			{
-				r = *(ulong*)&buf[0] >> 3;
+				r = *(ulong*)(&buf[0]) >> 3;
 			}
 
 			/* double: 53 bits of significand precision
@@ -406,14 +406,14 @@ namespace Server
 		internal class SafeNativeMethods
 		{
 			[DllImport("drng64")]
-			static internal extern RDRandError rdrand_64(ref ulong rand, bool retry);
+			internal static extern RDRandError rdrand_64(ref ulong rand, bool retry);
 
 			[DllImport("drng64")]
-			static internal extern RDRandError rdrand_get_bytes(int n, byte[] buffer);
+			internal static extern RDRandError rdrand_get_bytes(int n, byte[] buffer);
 		}
 
-		private static readonly int BUFFER_SIZE = 0x10000;
-		private static readonly int LARGE_REQUEST = 0x40;
+		private static int BUFFER_SIZE = 0x10000;
+		private static int LARGE_REQUEST = 0x40;
 
 		private byte[] _Working = new byte[BUFFER_SIZE];
 		private byte[] _Buffer = new byte[BUFFER_SIZE];
@@ -463,7 +463,7 @@ namespace Server
 
 		private void _GetBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			CheckSwap(c);
 
@@ -505,7 +505,7 @@ namespace Server
 
 		public void NextBytes(byte[] b)
 		{
-			var c = b.Length;
+			int c = b.Length;
 
 			if (c >= LARGE_REQUEST)
 			{
@@ -533,7 +533,7 @@ namespace Server
 			ulong r = 0;
 			fixed (byte* buf = b)
 			{
-				r = *(ulong*)&buf[0] >> 3;
+				r = *(ulong*)(&buf[0]) >> 3;
 			}
 
 			/* double: 53 bits of significand precision

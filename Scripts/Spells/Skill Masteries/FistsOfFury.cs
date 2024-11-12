@@ -1,33 +1,41 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Items;
 using System.Collections.Generic;
-
+ 
 /*The wrestler attempts to land three hits in rapid succession to the next target that damages you within a 2 tile radius. 
   If successful the third hit will deal direct damage based on the wrestler's mastery level. The duration of this ability 
   is based on wrestling skill and anatomy skill or evaluating intelligence skill.*/
-
-// Add OnCasterDamaged virutal in SkillMagerySpell and point to it in CheckDisruption(...) method
+ 
+ // Add OnCasterDamaged virutal in SkillMagerySpell and point to it in CheckDisruption(...) method
 namespace Server.Spells.SkillMasteries
 {
-    public class FistsOfFurySpell : SkillMasteryMove
-    {
-        public override int BaseMana => 20;
-        public override double RequiredSkill => 90.0;
+	public class FistsOfFurySpell : SkillMasteryMove
+	{
+        public override int BaseMana { get { return 20; } }
+        public override double RequiredSkill { get { return 90.0; } }
 
-        public override SkillName MoveSkill => SkillName.Wrestling;
-        public override TextDefinition AbilityMessage => new TextDefinition(1155895);  // You ready yourself to unleash your fists of fury!
+        public override SkillName MoveSkill { get { return SkillName.Wrestling; } }
+        public override TextDefinition AbilityMessage { get { return new TextDefinition(1155895); } } // You ready yourself to unleash your fists of fury!
 
-        public override TimeSpan CooldownPeriod => TimeSpan.FromSeconds(20);
-
+        public override TimeSpan CooldownPeriod { get { return TimeSpan.FromSeconds(20); } }
+ 
         private Dictionary<Mobile, FistsOfFuryContext> _Table;
 
-        public override bool Validate(Mobile from)
-        {
-            if (!CheckWeapon(from))
-            {
-                from.SendLocalizedMessage(1155979); // You may not wield a weapon and use this ability.
-                return false;
-            }
+        public FistsOfFurySpell()
+		{
+		} 
+		
+		public override bool Validate(Mobile from)
+		{
+			if(!CheckWeapon(from))
+			{
+				from.SendLocalizedMessage(1155979); // You may not wield a weapon and use this ability.
+				return false;
+			}
 
             bool validate = base.Validate(from);
 
@@ -35,7 +43,7 @@ namespace Server.Spells.SkillMasteries
                 return false;
 
             return CheckMana(from, true);
-        }
+		}
 
         public override void OnUse(Mobile from)
         {
@@ -53,7 +61,7 @@ namespace Server.Spells.SkillMasteries
 
                     Timer.DelayCall(TimeSpan.FromSeconds(duration), () => Expire(from));
 
-                    BuffInfo.AddBuff(from, new BuffInfo(BuffIcon.FistsOfFury, 1155930, 1156256, TimeSpan.FromSeconds(duration), from));
+                    BuffInfo.AddBuff(from, new BuffInfo(BuffIcon.FistsOfFury, 1155930, 1156256, TimeSpan.FromSeconds(duration), from)); 
                     // You prepare yourself to attempt to land three hits in rapid succession to the next target that damages you within a 2 tile radius.
                 });
         }
@@ -142,5 +150,5 @@ namespace Server.Spells.SkillMasteries
                 Hit = 0;
             }
         }
-    }
+	}
 }

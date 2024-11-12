@@ -1,4 +1,5 @@
 #region References
+using Server.Network;
 using System;
 #endregion
 
@@ -20,12 +21,12 @@ namespace Server.Items
 		[CommandProperty(AccessLevel.GameMaster)]
 		public override int ItemID
 		{
-			get => base.ItemID;
+			get { return base.ItemID; }
 			set
 			{
 				if (base.ItemID != value)
 				{
-					var facet = Parent == null ? Map : null;
+					Map facet = (Parent == null ? Map : null);
 
 					if (facet != null)
 					{
@@ -47,7 +48,7 @@ namespace Server.Items
 		{
 			if (Parent == null)
 			{
-				var facet = Map;
+				Map facet = Map;
 
 				if (facet != null)
 				{
@@ -57,11 +58,11 @@ namespace Server.Items
 			}
 		}
 
-		public override int LabelNumber
+        public override int LabelNumber
 		{
 			get
 			{
-				var mcl = Components;
+				MultiComponentList mcl = Components;
 
 				if (mcl.List.Length > 0)
 				{
@@ -81,26 +82,26 @@ namespace Server.Items
 			}
 		}
 
-		public virtual bool AllowsRelativeDrop => false;
-
+		public virtual bool AllowsRelativeDrop { get { return false; } }
+	
 		public override int GetUpdateRange(Mobile m)
 		{
-			var min = m.NetState != null ? m.NetState.UpdateRange : Core.GlobalUpdateRange;
-			var max = Core.GlobalRadarRange - 1;
+            int min = m.NetState != null ? m.NetState.UpdateRange : Core.GlobalUpdateRange;
+            int max = Core.GlobalRadarRange - 1;
 
-			var w = Components.Width;
-			var h = Components.Height - 1;
-			var v = min + ((w > h ? w : h) / 2);
+            int w = Components.Width;
+            int h = Components.Height - 1;
+            int v = min + ((w > h ? w : h) / 2);
 
-			if (v > max)
-				v = max;
-			else if (v < min)
-				v = min;
+            if (v > max)
+                v = max;
+            else if (v < min)
+                v = min;
 
-			return v;
+            return v;
 		}
 
-		public virtual MultiComponentList Components => MultiData.GetComponents(ItemID);
+		public virtual MultiComponentList Components { get { return MultiData.GetComponents(ItemID); } }
 
 		public virtual bool Contains(Point2D p)
 		{
@@ -119,7 +120,7 @@ namespace Server.Items
 
 		public virtual bool Contains(int x, int y)
 		{
-			var mcl = Components;
+			MultiComponentList mcl = Components;
 
 			x -= X + mcl.Min.m_X;
 			y -= Y + mcl.Min.m_Y;
@@ -154,13 +155,23 @@ namespace Server.Items
 		public override void Serialize(GenericWriter writer)
 		{
 			base.Serialize(writer);
+
 			writer.Write(1); // version
 		}
 
 		public override void Deserialize(GenericReader reader)
 		{
 			base.Deserialize(reader);
-			var version = reader.ReadInt();
+
+			int version = reader.ReadInt();
+
+			if (version == 0)
+			{
+				if (ItemID >= 0x4000)
+				{
+					ItemID -= 0x4000;
+				}
+			}
 		}
 	}
 }

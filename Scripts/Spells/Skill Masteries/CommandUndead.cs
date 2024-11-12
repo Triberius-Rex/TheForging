@@ -1,34 +1,37 @@
-using Server.Items;
-using Server.Mobiles;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using Server.Items;
 
 namespace Server.Spells.SkillMasteries
 {
-    public class CommandUndeadSpell : SkillMasterySpell
-    {
-        private static readonly SpellInfo m_Info = new SpellInfo(
-                "Command Undead", "In Corp Xen Por",
-                204,
-                9061,
+	public class CommandUndeadSpell : SkillMasterySpell
+	{
+		private static SpellInfo m_Info = new SpellInfo(
+				"Command Undead", "In Corp Xen Por",
+				204,
+				9061,
                 Reagent.DaemonBlood,
                 Reagent.PigIron,
                 Reagent.BatWing
-            );
+			);
 
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 0;
-        public override int RequiredMana => 40;
-        public override bool PartyEffects => false;
+		public override double RequiredSkill{ get { return 90; } }
+		public override double UpKeep { get { return 0; } }
+		public override int RequiredMana{ get { return 40; } }
+		public override bool PartyEffects { get { return false; } }
 
-        public override SkillName CastSkill => SkillName.Necromancy;
-        public override SkillName DamageSkill => SkillName.SpiritSpeak;
+        public override SkillName CastSkill { get { return SkillName.Necromancy; } }
+        public override SkillName DamageSkill { get { return SkillName.SpiritSpeak; } }
 
-        public override TimeSpan CastDelayBase => TimeSpan.FromSeconds(3.0);
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromSeconds(3.0); } }
 
         public CommandUndeadSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
-        {
-        }
+		{
+		}
 
         public override void OnCast()
         {
@@ -55,7 +58,7 @@ namespace Server.Spells.SkillMasteries
                 }
                 else if (CheckSequence())
                 {
-                    double difficulty = BaseInstrument.GetBaseDifficulty(bc);
+                    double difficulty = Items.BaseInstrument.GetBaseDifficulty(bc);
                     double skill = ((Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value) / 2) + (GetMasteryLevel() * 3) + 1;
 
                     double chance = (skill - (difficulty - 25)) / ((difficulty + 25) - (difficulty - 25));
@@ -91,7 +94,7 @@ namespace Server.Spells.SkillMasteries
 
                             if (bc is SkeletalDragon)
                             {
-                                Engines.Quests.Doom.BellOfTheDead.TryRemoveDragon((SkeletalDragon)bc);
+                                Server.Engines.Quests.Doom.BellOfTheDead.TryRemoveDragon((SkeletalDragon)bc);
                             }
 
                             Caster.PlaySound(0x5C4);
@@ -110,15 +113,15 @@ namespace Server.Spells.SkillMasteries
             //FinishSequence();
         }
 
-        public static Type[] CommandTypes => _CommandTypes;
-        public static Type[] NoCommandTypes => _NoCommandTypes;
+        public static Type[] CommandTypes { get { return _CommandTypes; } }
+        public static Type[] NoCommandTypes { get { return _NoCommandTypes; } }
 
-        private static readonly Type[] _CommandTypes =
+        private static Type[] _CommandTypes =
         {
             typeof(SkeletalDragon)
         };
 
-        private static readonly Type[] _NoCommandTypes =
+        private static Type[] _NoCommandTypes =
         {
 
             typeof(UnfrozenMummy),
@@ -134,16 +137,16 @@ namespace Server.Spells.SkillMasteries
 
         public static bool ValidateTarget(BaseCreature bc)
         {
-            if (bc is BaseRenowned || bc is BaseChampion || bc is Engines.Shadowguard.ShadowguardBoss)
+            if (bc is BaseRenowned || bc is BaseChampion || bc is Server.Engines.Shadowguard.ShadowguardBoss)
                 return false;
 
-            foreach (Type t in _CommandTypes)
+            foreach (var t in _CommandTypes)
             {
                 if (t == bc.GetType())
                     return true;
             }
 
-            foreach (Type t in _NoCommandTypes)
+            foreach (var t in _NoCommandTypes)
             {
                 if (t == bc.GetType())
                     return false;
@@ -153,5 +156,5 @@ namespace Server.Spells.SkillMasteries
 
             return entry != null && entry.Slays(bc);
         }
-    }
+	}
 }

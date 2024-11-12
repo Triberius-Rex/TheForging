@@ -1,28 +1,33 @@
-using Server.Items;
 using System;
+using Server;
+using Server.Spells;
+using Server.Network;
+using Server.Mobiles;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Items;
 
 namespace Server.Spells.SkillMasteries
 {
-    public class ConduitSpell : SkillMasterySpell
-    {
-        private static readonly SpellInfo m_Info = new SpellInfo(
-                "Conduit", "Uus Corp Grav",
-                204,
-                9061,
+	public class ConduitSpell : SkillMasterySpell
+	{
+		private static SpellInfo m_Info = new SpellInfo(
+				"Conduit", "Uus Corp Grav",
+				204,
+				9061,
                 Reagent.NoxCrystal,
                 Reagent.BatWing,
                 Reagent.GraveDust
-            );
+			);
 
-        public override double RequiredSkill => 90;
-        public override double UpKeep => 0;
-        public override int RequiredMana => 40;
-        public override bool PartyEffects => false;
+		public override double RequiredSkill{ get { return 90; } }
+		public override double UpKeep { get { return 0; } }
+		public override int RequiredMana{ get { return 40; } }
+		public override bool PartyEffects { get { return false; } }
 
-        public override SkillName CastSkill => SkillName.Necromancy;
-        public override SkillName DamageSkill => SkillName.SpiritSpeak;
+        public override SkillName CastSkill { get { return SkillName.Necromancy; } }
+        public override SkillName DamageSkill { get { return SkillName.SpiritSpeak; } }
 
         public int Strength { get; set; }
         public List<Item> Skulls { get; set; }
@@ -30,8 +35,8 @@ namespace Server.Spells.SkillMasteries
 
         public ConduitSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
-        {
-        }
+		{
+		}
 
         public override void OnBeginCast()
         {
@@ -40,10 +45,10 @@ namespace Server.Spells.SkillMasteries
             Effects.SendLocationParticles(EffectItem.Create(Caster.Location, Caster.Map, EffectItem.DefaultDuration), 0x36CB, 1, 14, 0x55C, 7, 9915, 0);
         }
 
-        public override void OnCast()
-        {
-            Caster.Target = new MasteryTarget(this, 10, true, Targeting.TargetFlags.None);
-        }
+		public override void OnCast()
+		{
+            Caster.Target = new MasteryTarget(this, 10, true, Server.Targeting.TargetFlags.None);
+		}
 
         protected override void OnTarget(object o)
         {
@@ -76,7 +81,7 @@ namespace Server.Spells.SkillMasteries
 
                 Zone = rec;
                 Strength = (int)((Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value + (GetMasteryLevel() * 20)) / 3.75);
-                Expires = DateTime.UtcNow + TimeSpan.FromSeconds(6);
+                Expires = DateTime.UtcNow + TimeSpan.FromSeconds(Core.TOL ? 6 : 4 + (Caster.Skills[CastSkill].Value + Caster.Skills[DamageSkill].Value) / 36);
 
                 BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.Conduit, 1155901, 1156053, Strength.ToString())); //Targeted Necromancy spells used on a target within the Conduit field will affect all valid targets within the field at ~1_PERCT~% strength. 
 
@@ -124,7 +129,7 @@ namespace Server.Spells.SkillMasteries
 
                     if (toAffect != null && callback != null)
                     {
-                        toAffect.ForEach(m => callback(m, conduit.Strength / 100.0));
+                        toAffect.ForEach(m => callback(m, (double)conduit.Strength / 100.0));
                         ColUtility.Free(toAffect);
                         return true;
                     }
@@ -150,7 +155,7 @@ namespace Server.Spells.SkillMasteries
             {
                 base.Serialize(writer);
 
-                writer.Write(0); // version
+                writer.Write((int)0); // version
             }
 
             public override void Deserialize(GenericReader reader)
@@ -162,5 +167,5 @@ namespace Server.Spells.SkillMasteries
                 Delete();
             }
         }
-    }
+	}
 }
