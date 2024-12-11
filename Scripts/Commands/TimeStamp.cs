@@ -14,7 +14,7 @@ namespace Server.Commands
         public static void CheckTime_OnCommand(CommandEventArgs e)
         {
             Mobile m = e.Mobile;
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             m.SendMessage("The Current Date And Time Is " + now + "(EST)");         
         }
     }

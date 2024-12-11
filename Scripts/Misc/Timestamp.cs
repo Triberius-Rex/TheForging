@@ -25,7 +25,7 @@ namespace System
         {
             get
             {
-                return String.Format("{0:D2}:{1:D2}:{2:D2} ", DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second);
+                return String.Format("{0:D2}:{1:D2}:{2:D2} ", DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
             }
         }
         public static void Initialize()

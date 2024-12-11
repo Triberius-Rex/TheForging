@@ -18,7 +18,7 @@ namespace Server.Engines.Quests
 		//This is the Quest Title the player sees at the top of the Gump
 		public override object Title{ get{ return "Kill 100 Succubus Daily Quest"; } }
 		//This tells the story of the quest
-		public override object Description { get { return "Hail Adventurer!<BR>To combat the ever growing presence of this new evil that is beginning to plague our world. Lord Blackthorn has decreed that bounties shall be set on these foul beasts! You, in the smelly tunic! Do you have what it takes to become a hero!?<BR><BR>Kill 100 Succubus and return to me for your reward!<BR><BR>Reward: 50 Golden Quest Ticket"; } }
+		public override object Description { get { return "Hail Adventurer!<BR>To combat the ever growing presence of this new evil that is beginning to plague our world. Lord Blackthorn has decreed that bounties shall be set on these foul beasts! You, in the smelly tunic! Do you have what it takes to become a hero!?<BR><BR>Kill 100 Succubus and return to me for your reward!<BR>"; } }
 		//This decides how the npc reacts in text the player refusing the quest
 		public override object Refuse{ get{ return "Awe! scared of a few Succubus? The off with you!"; } }
 		//This is what the npc says when the player returns without completing the objective(s)
@@ -32,7 +32,7 @@ namespace Server.Engines.Quests
 			AddObjective(new SlayObjective(typeof(Succubus),"Succubus",100));
 			
 			//AddReward( new BaseReward( typeof( GoldenQuestTicket ), 50, "Daily Golden Quest Ticket" ) );
-			AddReward(new BaseReward(typeof(HeritageSovereign), 75, "Sovereigns"));
+			AddReward(new BaseReward(typeof(HeritageSovereign), 275, "Sovereigns"));
 		}
 
 		public override void GiveRewards()

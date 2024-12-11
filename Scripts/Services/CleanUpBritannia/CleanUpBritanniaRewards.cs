@@ -20,7 +20,7 @@ namespace Server.Engines.CleanUpBritannia
             Rewards.Add(new CollectionItem(typeof(WeArePiratesRobe), 0x1F03, 1151204, 0, 1000));
             Rewards.Add(new CollectionItem(typeof(FollowerOfBaneRobe), 0x1F03, 1151205, 0, 1000));
             Rewards.Add(new CollectionItem(typeof(QueenDawnForeverRobe), 0x1F03, 1151206, 0, 1000));
-
+            
             Rewards.Add(new CollectionItem(typeof(LillyPad), 0xDBC, 1023516, 0, 5000));
             Rewards.Add(new CollectionItem(typeof(LillyPads), 0xDBE, 1023518, 0, 5000));
             Rewards.Add(new CollectionItem(typeof(Mushrooms1), 0x0D0F, 1023340, 0, 5000));
@@ -96,6 +96,7 @@ namespace Server.Engines.CleanUpBritannia
 
             Rewards.Add(new CollectionItem(typeof(DragonHeadAddonDeed), 0x2234, 1028756, 0, 50000));
             Rewards.Add(new CollectionItem(typeof(NestWithEggs), 0x1AD4, 1026868, 2415, 50000));
+            
 
             if (Core.HS)
             {
@@ -172,6 +173,7 @@ namespace Server.Engines.CleanUpBritannia
                 Rewards.Add(new CollectionItem(typeof(MysticsMemento), 0x2F5B, 1154744, 1912, 300000));
 
                 Rewards.Add(new CollectionItem(typeof(VollemHeldInCrystal), 0x1f19, 1113629, 1154, 500000));
+                Rewards.Add(new CollectionItem(typeof(ItemBlessDeed),0x14F0, 1006018, 0, 500000));
             }
         }
     }

@@ -18,7 +18,7 @@ namespace Server.Engines.Quests
 		//This is the Quest Title the player sees at the top of the Gump
 		public override object Title{ get{ return "Kill 100 Lich Daily Quest"; } }
 		//This tells the story of the quest
-		public override object Description { get { return "Hail Adventurer!<BR>To combat the ever growing presence of this new evil that is beginning to plague our world. Lord Blackthorn has decreed that bounties shall be set on these foul beasts! Hey! You!, with the ugly horse! Do you have what it takes to become a hero!?<BR><BR>Kill 100 Lich and return to me for your reward!<BR><BR>Reward: 50 Golden Quest Ticket"; } }
+		public override object Description { get { return "Hail Adventurer!<BR>To combat the ever growing presence of this new evil that is beginning to plague our world. Lord Blackthorn has decreed that bounties shall be set on these foul beasts! Hey! You!, with the ugly horse! Do you have what it takes to become a hero!?<BR><BR>Kill 100 Lich and return to me for your reward!<BR>"; } }
 		//This decides how the npc reacts in text the player refusing the quest
 		public override object Refuse{ get{ return "Awe! scared of a few lich? The off with you!"; } }
 		//This is what the npc says when the player returns without completing the objective(s)
@@ -32,7 +32,7 @@ namespace Server.Engines.Quests
 			AddObjective(new SlayObjective(typeof(Lich),"Lich",100));
 			
 			//AddReward(new BaseReward(typeof(GoldenQuestTicket), 50, "Golden Quest Ticket"));
-			AddReward(new BaseReward(typeof(HeritageSovereign), 15, "Sovereigns"));
+			AddReward(new BaseReward(typeof(HeritageSovereign), 100, "Sovereigns"));
 		}
 
 		public override void GiveRewards()

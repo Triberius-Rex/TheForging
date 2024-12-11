@@ -18,7 +18,7 @@ namespace Server.Engines.Quests
 		//This is the Quest Title the player sees at the top of the Gump
 		public override object Title{ get{ return "Kill 100 Earth Elementals Daily Quest"; } }
 		//This tells the story of the quest
-		public override object Description { get { return "Hail Adventurer!<BR><BR>Kill 100 Earth Elementals and return to me for your reward!<BR><BR>Reward: 1 Golden Quest Ticket"; } }
+		public override object Description { get { return "Hail Adventurer!<BR><BR>Kill 100 Earth Elementals and return to me for your reward!<BR>"; } }
 		//This decides how the npc reacts in text the player refusing the quest
 		public override object Refuse{ get{ return "Awe! scared of few Earth Elementals? Then off with you!"; } }
 		//This is what the npc says when the player returns without completing the objective(s)
@@ -32,7 +32,7 @@ namespace Server.Engines.Quests
 			AddObjective(new SlayObjective(typeof(EarthElemental),"Earth Elemental",100));
 			
 			//AddReward( new BaseReward( typeof( GoldenQuestTicket ), 25, "Daily Golden Quest Ticket" ) );
-			AddReward(new BaseReward(typeof(HeritageSovereign), 15, "Sovereigns"));
+			AddReward(new BaseReward(typeof(HeritageSovereign), 100, "Sovereigns"));
 		}
 
 		public override void GiveRewards()
